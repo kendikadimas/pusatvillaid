@@ -1,0 +1,107 @@
+<?php
+
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BookingAdminController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ReviewAdminController;
+use App\Http\Controllers\Admin\VillaAdminController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\IcalController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\VillaController;
+use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\Admin\DestinationAdminController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Base Path: /api/v1
+|
+*/
+
+Route::prefix('v1')->group(function () {
+
+    // ==========================================
+    // Public Endpoints (No Auth)
+    // ==========================================
+    Route::get('/villas', [VillaController::class, 'index']);
+    Route::get('/villas/{slug}', [VillaController::class, 'show']);
+    Route::get('/villas/{slug}/availability', [VillaController::class, 'availability']);
+    Route::get('/destinations', [DestinationController::class, 'index']);
+    
+    Route::post('/bookings', [BookingController::class, 'store']);
+    Route::get('/bookings/{code}', [BookingController::class, 'show']);
+    
+    Route::post('/payment/notification', [PaymentController::class, 'notification']);
+    
+    Route::get('/reviews/{villa_slug}', [ReviewController::class, 'getByVilla']);
+    Route::get('/review/{token}', [ReviewController::class, 'showByToken']);
+    Route::post('/review/{token}', [ReviewController::class, 'storeByToken']);
+
+    // iCal Feed Export (public — OTAs subscribe to this URL)
+    Route::get('/villas/{id}/ical.ics', [IcalController::class, 'export']);
+
+    // Admin Auth Login (Does not require token)
+    Route::post('/admin/login', [AuthController::class, 'login']);
+
+    // ==========================================
+    // Protected Admin Endpoints (Sanctum Token Required)
+    // ==========================================
+    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+        
+        // Admin Profile Actions
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/dashboard', [DashboardController::class, 'index']);
+
+        // Bookings Management
+        Route::get('/bookings', [BookingAdminController::class, 'index']);
+        Route::get('/bookings/{id}', [BookingAdminController::class, 'show']);
+        Route::patch('/bookings/{id}/status', [BookingAdminController::class, 'updateStatus']);
+        Route::post('/bookings/{id}/resend-email', [BookingAdminController::class, 'resendEmail']);
+
+        // Villas Management
+        Route::get('/villas', [VillaAdminController::class, 'index']);
+        Route::post('/villas', [VillaAdminController::class, 'store']);
+        Route::get('/villas/{id}', [VillaAdminController::class, 'show']);
+        Route::put('/villas/{id}', [VillaAdminController::class, 'update']);
+        Route::delete('/villas/{id}', [VillaAdminController::class, 'destroy']);
+        Route::post('/villas/{id}/photos', [VillaAdminController::class, 'uploadPhotos']);
+        Route::delete('/villas/{id}/photos', [VillaAdminController::class, 'deletePhoto']);
+
+        // Destinations Management
+        Route::get('/destinations', [DestinationAdminController::class, 'index']);
+        Route::post('/destinations', [DestinationAdminController::class, 'store']);
+        Route::get('/destinations/{id}', [DestinationAdminController::class, 'show']);
+        Route::put('/destinations/{id}', [DestinationAdminController::class, 'update']);
+        Route::delete('/destinations/{id}', [DestinationAdminController::class, 'destroy']);
+
+        // Blocked Dates Management
+        Route::get('/blocked-dates', [VillaAdminController::class, 'listBlockedDates']);
+        Route::post('/blocked-dates', [VillaAdminController::class, 'blockDate']);
+        Route::delete('/blocked-dates/{id}', [VillaAdminController::class, 'unblockDate']);
+
+        // Reviews Moderation
+        Route::get('/reviews', [ReviewAdminController::class, 'index']);
+        Route::post('/reviews', [ReviewAdminController::class, 'store']);
+        Route::put('/reviews/{id}', [ReviewAdminController::class, 'update']);
+        Route::patch('/reviews/{id}/approve', [ReviewAdminController::class, 'approve']);
+        Route::delete('/reviews/{id}', [ReviewAdminController::class, 'destroy']);
+
+        // Analytics & Exports
+        Route::get('/analytics', [AnalyticsController::class, 'index']);
+        Route::get('/analytics/export', [AnalyticsController::class, 'export']);
+
+        // iCal Links Management (per villa)
+        Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks']);
+        Route::post('/villas/{villaId}/ical-links', [VillaAdminController::class, 'storeIcalLink']);
+        Route::delete('/ical-links/{id}', [VillaAdminController::class, 'destroyIcalLink']);
+        Route::post('/ical-links/{linkId}/sync', [VillaAdminController::class, 'syncIcalLinks']);
+        Route::post('/ical/verify', [VillaAdminController::class, 'verifyIcal']);
+    });
+});
