@@ -15,8 +15,9 @@ class DestinationAdminController extends Controller
     public function index(): JsonResponse
     {
         $destinations = Destination::orderBy('created_at', 'desc')->get();
+
         return response()->json([
-            'data' => $destinations
+            'data' => $destinations,
         ]);
     }
 
@@ -28,16 +29,20 @@ class DestinationAdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'city' => 'required|string|max:255',
-            'query' => 'required|string|max:255',
-            'image' => 'required|string|url|max:1000',
+            'query' => 'nullable|string|max:255',
+            'image' => 'required|string|max:1000',
             'count_fallback' => 'nullable|string|max:255',
         ]);
+
+        if (empty($validated['query'])) {
+            $validated['query'] = $validated['name'];
+        }
 
         $destination = Destination::create($validated);
 
         return response()->json([
             'message' => 'Destinasi berhasil dibuat.',
-            'data' => $destination
+            'data' => $destination,
         ], 201);
     }
 
@@ -48,12 +53,12 @@ class DestinationAdminController extends Controller
     {
         $destination = Destination::find($id);
 
-        if (!$destination) {
+        if (! $destination) {
             return response()->json(['message' => 'Destinasi tidak ditemukan.'], 404);
         }
 
         return response()->json([
-            'data' => $destination
+            'data' => $destination,
         ]);
     }
 
@@ -64,23 +69,27 @@ class DestinationAdminController extends Controller
     {
         $destination = Destination::find($id);
 
-        if (!$destination) {
+        if (! $destination) {
             return response()->json(['message' => 'Destinasi tidak ditemukan.'], 404);
         }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'city' => 'required|string|max:255',
-            'query' => 'required|string|max:255',
-            'image' => 'required|string|url|max:1000',
+            'query' => 'nullable|string|max:255',
+            'image' => 'required|string|max:1000',
             'count_fallback' => 'nullable|string|max:255',
         ]);
+
+        if (empty($validated['query'])) {
+            $validated['query'] = $validated['name'];
+        }
 
         $destination->update($validated);
 
         return response()->json([
             'message' => 'Destinasi berhasil diperbarui.',
-            'data' => $destination
+            'data' => $destination,
         ]);
     }
 
@@ -91,14 +100,36 @@ class DestinationAdminController extends Controller
     {
         $destination = Destination::find($id);
 
-        if (!$destination) {
+        if (! $destination) {
             return response()->json(['message' => 'Destinasi tidak ditemukan.'], 404);
         }
 
         $destination->delete();
 
         return response()->json([
-            'message' => 'Destinasi berhasil dihapus.'
+            'message' => 'Destinasi berhasil dihapus.',
         ]);
+    }
+
+    /**
+     * Upload image for a destination.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max 2MB
+        ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('destinations', 'public');
+            $url = asset('storage/'.$path);
+
+            return response()->json([
+                'image_url' => $url,
+                'message' => 'Foto destinasi berhasil diunggah.',
+            ]);
+        }
+
+        return response()->json(['message' => 'File gambar tidak ditemukan.'], 400);
     }
 }

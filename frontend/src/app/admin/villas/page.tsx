@@ -4,17 +4,23 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axiosClient from '@/lib/axios';
 import { Villa } from '@/types';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import EmptyState from '@/components/ui/EmptyState';
+import PageHeader from '@/components/ui/PageHeader';
+import StatusBadge from '@/components/ui/StatusBadge';
+import { formatPrice } from '@/lib/format';
+import { getMainPhoto } from '@/lib/villaUtils';
 import { 
     Plus, 
-    Home, 
+    Home,
     MapPin, 
     BedDouble, 
     Bath, 
     Users, 
-    Loader2, 
+    Loader2,
     Edit, 
-    ToggleLeft, 
-    ToggleRight, 
+    ToggleLeft,
+    ToggleRight,
     ExternalLink 
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -73,14 +79,14 @@ export default function AdminVillasPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#dddddd] pb-5">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Villa</h1>
-                    <p className="text-slate-500 text-sm mt-1">Kelola konten deskripsi, galeri foto, fasilitas, harga sewa, dan penutupan tanggal villa.</p>
+                    <h1 className="text-3xl font-extrabold text-[#222222] tracking-tight">Katalog Villa</h1>
+                    <p className="text-[#6a6a6a] text-sm mt-1">Kelola konten deskripsi, galeri foto, fasilitas, harga sewa, dan penutupan tanggal villa.</p>
                 </div>
                 <Link
                     href="/admin/villas/new"
-                    className="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-[8px]  transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
                     <Plus className="w-4.5 h-4.5" />
                     <span>Tambah Villa Baru</span>
@@ -88,122 +94,199 @@ export default function AdminVillasPage() {
             </div>
 
             {/* Table or Cards grid */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] overflow-hidden">
                 {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-                    </div>
+                    <LoadingSpinner fullPage={false} />
                 ) : villas.length === 0 ? (
                     <div className="py-20 text-center">
-                        <p className="text-slate-400 text-sm mb-4">Katalog villa Anda masih kosong.</p>
+                        <p className="text-slate-500 text-sm mb-4">Katalog villa Anda masih kosong.</p>
                         <Link 
                             href="/admin/villas/new" 
-                            className="inline-flex bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl"
+                            className="inline-flex bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-[8px]"
                         >
                             Tambah Villa Pertama Anda
                         </Link>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-xs text-left text-slate-500 border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-200 bg-slate-50 text-slate-400 uppercase font-bold text-[10px] tracking-wider">
-                                    <th className="py-3 px-4 w-16">Foto</th>
-                                    <th className="py-3 px-4">Nama Villa</th>
-                                    <th className="py-3 px-4">Lokasi</th>
-                                    <th className="py-3 px-4 text-center">Spek</th>
-                                    <th className="py-3 px-4 text-right">Weekday / Malam</th>
-                                    <th className="py-3 px-4 text-right">Weekend / Malam</th>
-                                    <th className="py-3 px-4 text-center">Status</th>
-                                    <th className="py-3 px-4 text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {villas.map((villa) => {
-                                    const mainPhoto = villa.photos && villa.photos.length > 0 
-                                        ? villa.photos[0] 
-                                        : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=80&q=80';
-
-                                    return (
-                                        <tr key={villa.id} className="border-b border-slate-150 hover:bg-slate-55/50">
-                                            <td className="py-3 px-4">
-                                                <div className="w-14 aspect-video rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                                                    <img src={mainPhoto} alt={villa.name} className="w-full h-full object-cover" />
+                    <>
+                        {/* Mobile card view */}
+                        <div className="md:hidden divide-y divide-[#dddddd]">
+                            {villas.map((villa) => {
+                                const mainPhoto = getMainPhoto(villa);
+                                return (
+                                    <div key={villa.id} className="p-4 space-y-3">
+                                        <div className="flex gap-3">
+                                            <div className="w-20 aspect-video rounded-[8px] overflow-hidden bg-[#f7f7f7] border border-[#dddddd] shrink-0">
+                                                <img src={mainPhoto} alt={villa.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-[#222222] text-sm truncate">{villa.name}</p>
+                                                <span className="text-[10px] text-slate-500 font-semibold block truncate">{villa.slug}</span>
+                                                <div className="flex items-center text-slate-500 text-xs mt-0.5">
+                                                    <MapPin className="w-3 h-3 mr-0.5 shrink-0" />
+                                                    <span className="truncate">{villa.location}</span>
                                                 </div>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <p className="font-bold text-slate-900 text-sm">{villa.name}</p>
-                                                <span className="text-[10px] text-slate-400 font-semibold">{villa.slug}</span>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <div className="flex items-center text-slate-600">
-                                                    <MapPin className="w-3.5 h-3.5 mr-0.5 text-slate-400" />
-                                                    <span>{villa.location}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-3 px-4 text-center font-medium">
-                                                <div className="flex items-center justify-center space-x-3 text-slate-600">
-                                                    <div className="flex items-center space-x-0.5" title="Kamar Tidur">
-                                                        <BedDouble className="w-3.5 h-3.5 text-rose-500" />
-                                                        <span>{villa.bedrooms}</span>
-                                                    </div>
-                                                    <div className="flex items-center space-x-0.5" title="Kamar Mandi">
-                                                        <Bath className="w-3.5 h-3.5 text-rose-500" />
-                                                        <span>{villa.bathrooms}</span>
-                                                    </div>
-                                                    <div className="flex items-center space-x-0.5" title="Kapasitas Tamu">
-                                                        <Users className="w-3.5 h-3.5 text-rose-500" />
-                                                        <span>{villa.max_guests}</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-3 px-4 text-right font-extrabold text-slate-900">
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
+                                            <div className="flex items-center space-x-0.5" title="Kamar Tidur">
+                                                <BedDouble className="w-3.5 h-3.5 text-blue-500" />
+                                                <span>{villa.bedrooms}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-0.5" title="Kamar Mandi">
+                                                <Bath className="w-3.5 h-3.5 text-blue-500" />
+                                                <span>{villa.bathrooms}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-0.5" title="Kapasitas Tamu">
+                                                <Users className="w-3.5 h-3.5 text-blue-500" />
+                                                <span>{villa.max_guests}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs">
+                                            <span className="font-extrabold text-[#222222] font-mono tabular-nums">
                                                 Rp {Number(villa.price_per_night).toLocaleString('id-ID')}
-                                            </td>
-                                            <td className="py-3 px-4 text-right font-extrabold text-slate-900">
-                                                {villa.weekend_price !== null 
-                                                    ? `Rp ${Number(villa.weekend_price).toLocaleString('id-ID')}` 
-                                                    : '-'}
-                                            </td>
-                                            <td className="py-3 px-4 text-center">
-                                                <button
-                                                    onClick={() => handleToggleStatus(villa)}
-                                                    className="focus:outline-none cursor-pointer"
-                                                    title={villa.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
+                                            </span>
+                                            {villa.weekend_price !== null && (
+                                                <span className="text-blue-600 font-semibold text-[10px]">
+                                                    | Weekend Rp {Number(villa.weekend_price).toLocaleString('id-ID')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-[#dddddd] pt-3">
+                                            <button
+                                                onClick={() => handleToggleStatus(villa)}
+                                                className="focus:outline-none cursor-pointer active:scale-90 transition-transform duration-200"
+                                                title={villa.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
+                                            >
+                                                {villa.is_active ? (
+                                                    <ToggleRight className="w-9 h-6 text-blue-600" />
+                                                ) : (
+                                                    <ToggleLeft className="w-9 h-6 text-slate-300" />
+                                                )}
+                                            </button>
+                                            <div className="flex items-center space-x-2">
+                                                <a
+                                                    href={`/villas/${villa.slug}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-[#f7f7f7] hover:bg-[#eeeeee] text-slate-500 p-1.5 rounded-[8px] border border-[#dddddd] transition-all duration-200 active:scale-95"
+                                                    title="Lihat di Website"
                                                 >
-                                                    {villa.is_active ? (
-                                                        <ToggleRight className="w-9 h-6 text-rose-600" />
-                                                    ) : (
-                                                        <ToggleLeft className="w-9 h-6 text-slate-300" />
-                                                    )}
-                                                </button>
-                                            </td>
-                                            <td className="py-3 px-4 text-right space-x-2">
-                                                <div className="flex items-center justify-end space-x-2">
-                                                    <a
-                                                        href={`/villas/${villa.slug}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-1.5 rounded-lg border border-slate-200 transition-colors"
-                                                        title="Lihat di Website"
+                                                    <ExternalLink className="w-3.5 h-3.5" />
+                                                </a>
+                                                <Link 
+                                                    href={`/admin/villas/edit?id=${villa.id}`}
+                                                    className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-1.5 px-2.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200"
+                                                >
+                                                    <Edit className="w-3.5 h-3.5" />
+                                                    <span>Edit</span>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {/* Desktop table */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full text-xs text-left text-slate-500 border-collapse">
+                                <thead>
+                                    <tr className="border-b border-[#dddddd] bg-[#f7f7f7] text-slate-500 uppercase font-bold text-[10px] sm:text-[11px] tracking-wider">
+                                        <th className="py-3 px-4 w-16">Foto</th>
+                                        <th className="py-3 px-4">Nama Villa</th>
+                                        <th className="py-3 px-4 hidden sm:table-cell">Lokasi</th>
+                                        <th className="py-3 px-4 text-center hidden lg:table-cell">Spek</th>
+                                        <th className="py-3 px-4 text-right">Weekday / Malam</th>
+                                        <th className="py-3 px-4 text-right hidden sm:table-cell">Weekend / Malam</th>
+                                        <th className="py-3 px-4 text-center hidden sm:table-cell">Status</th>
+                                        <th className="py-3 px-4 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {villas.map((villa) => {
+                                        const mainPhoto = getMainPhoto(villa);
+
+                                        return (
+                                            <tr key={villa.id} className="border-b border-[#dddddd] hover:bg-[#f7f7f7] transition-colors">
+                                                <td className="py-3 px-4">
+                                                    <div className="w-14 aspect-video rounded-[8px] overflow-hidden bg-[#f7f7f7] border border-[#dddddd]">
+                                                        <img src={mainPhoto} alt={villa.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <p className="font-bold text-[#222222] text-sm">{villa.name}</p>
+                                                    <span className="text-[10px] text-slate-500 font-semibold">{villa.slug}</span>
+                                                </td>
+                                                <td className="py-3 px-4 hidden sm:table-cell">
+                                                    <div className="flex items-center text-slate-500">
+                                                        <MapPin className="w-3.5 h-3.5 mr-0.5 text-slate-500" />
+                                                        <span>{villa.location}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-4 text-center font-medium hidden lg:table-cell">
+                                                    <div className="flex items-center justify-center space-x-3 text-slate-500">
+                                                        <div className="flex items-center space-x-0.5" title="Kamar Tidur">
+                                                            <BedDouble className="w-3.5 h-3.5 text-blue-500" />
+                                                            <span>{villa.bedrooms}</span>
+                                                        </div>
+                                                        <div className="flex items-center space-x-0.5" title="Kamar Mandi">
+                                                            <Bath className="w-3.5 h-3.5 text-blue-500" />
+                                                            <span>{villa.bathrooms}</span>
+                                                        </div>
+                                                        <div className="flex items-center space-x-0.5" title="Kapasitas Tamu">
+                                                            <Users className="w-3.5 h-3.5 text-blue-500" />
+                                                            <span>{villa.max_guests}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-4 text-right font-extrabold text-[#222222] font-mono tabular-nums">
+                                                    Rp {Number(villa.price_per_night).toLocaleString('id-ID')}
+                                                </td>
+                                                <td className="py-3 px-4 text-right font-extrabold text-[#222222] font-mono tabular-nums hidden sm:table-cell">
+                                                    {villa.weekend_price !== null 
+                                                        ? `Rp ${Number(villa.weekend_price).toLocaleString('id-ID')}` 
+                                                        : '-'}
+                                                </td>
+                                                <td className="py-3 px-4 text-center hidden sm:table-cell">
+                                                    <button
+                                                        onClick={() => handleToggleStatus(villa)}
+                                                        className="focus:outline-none cursor-pointer active:scale-90 transition-transform duration-200"
+                                                        title={villa.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
                                                     >
-                                                        <ExternalLink className="w-3.5 h-3.5" />
-                                                    </a>
-                                                    <Link 
-                                                        href={`/admin/villas/${villa.id}/edit`}
-                                                        className="inline-flex bg-rose-600 hover:bg-rose-700 text-white font-bold py-1.5 px-2.5 rounded-lg text-xs items-center space-x-1"
-                                                    >
-                                                        <Edit className="w-3.5 h-3.5" />
-                                                        <span>Edit</span>
-                                                    </Link>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                                        {villa.is_active ? (
+                                                            <ToggleRight className="w-9 h-6 text-blue-600" />
+                                                        ) : (
+                                                            <ToggleLeft className="w-9 h-6 text-slate-300" />
+                                                        )}
+                                                    </button>
+                                                </td>
+                                                <td className="py-3 px-4 text-right space-x-2">
+                                                    <div className="flex items-center justify-end space-x-2">
+                                                        <a
+                                                            href={`/villas/${villa.slug}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-[#f7f7f7] hover:bg-[#eeeeee] text-slate-500 p-1.5 rounded-[8px] border border-[#dddddd] transition-all duration-200 active:scale-95"
+                                                            title="Lihat di Website"
+                                                        >
+                                                            <ExternalLink className="w-3.5 h-3.5" />
+                                                        </a>
+                                                        <Link 
+                                                            href={`/admin/villas/edit?id=${villa.id}`}
+                                                            className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-1.5 px-2.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200"
+                                                        >
+                                                            <Edit className="w-3.5 h-3.5" />
+                                                            <span>Edit</span>
+                                                        </Link>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

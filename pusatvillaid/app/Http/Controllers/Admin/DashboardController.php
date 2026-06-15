@@ -9,7 +9,6 @@ use App\Models\Review;
 use App\Models\Villa;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -21,7 +20,7 @@ class DashboardController extends Controller
         $todayStr = Carbon::today()->toDateString();
         $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
-        
+
         // 1. Stats Cards
         // Booking Check-in Today
         $checkInsToday = Booking::where('check_in', $todayStr)
@@ -50,7 +49,7 @@ class DashboardController extends Controller
         $activeVillasCount = Villa::where('is_active', true)->count();
         $daysInMonth = Carbon::now()->daysInMonth;
         $totalCapacityDays = $activeVillasCount * $daysInMonth;
-        
+
         $occupiedNightsThisMonth = 0;
         if ($totalCapacityDays > 0) {
             $bookingsOverlap = Booking::whereIn('status', ['confirmed', 'completed'])
@@ -59,22 +58,22 @@ class DashboardController extends Controller
                         ->orWhereBetween('check_out', [$startOfMonth, $endOfMonth])
                         ->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
                             $q->where('check_in', '<=', $startOfMonth)
-                              ->where('check_out', '>=', $endOfMonth);
+                                ->where('check_out', '>=', $endOfMonth);
                         });
                 })->get(['check_in', 'check_out']);
 
             foreach ($bookingsOverlap as $b) {
                 $checkIn = Carbon::parse($b->check_in);
                 $checkOut = Carbon::parse($b->check_out);
-                
+
                 // Clamp dates to current month boundaries
                 $start = $checkIn->isBefore(Carbon::now()->startOfMonth()) ? Carbon::now()->startOfMonth() : $checkIn;
                 $end = $checkOut->isAfter(Carbon::now()->endOfMonth()) ? Carbon::now()->endOfMonth() : $checkOut;
-                
+
                 $nights = $start->diffInDays($end);
                 $occupiedNightsThisMonth += max(0, $nights);
             }
-            
+
             $occupancyRate = round(($occupiedNightsThisMonth / $totalCapacityDays) * 100, 1);
         } else {
             $occupancyRate = 0.0;

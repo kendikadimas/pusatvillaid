@@ -12,8 +12,8 @@ export interface Villa {
     price_per_night: number;
     weekend_price: number | null;
     min_nights: number;
-    amenities: string[] | null;
-    photos: string[] | null;
+    amenities: Array<{ name: string; icon: string }> | null;
+    photos: Array<string | { url: string; description: string }> | null;
     rules: string | null;
     check_in_time: string;
     check_out_time: string;
@@ -31,8 +31,14 @@ export interface Villa {
     cancellation_policy?: string | null;
     safety_property?: string[] | null;
     neighborhood_desc?: string | null;
+    refundable_surcharge_rate?: number;
+    cancellation_free_days?: number;
+    beds?: number | null;
+    cleaning_fee?: number | null;
     reviews_avg_rating?: string | number | null;
     reviews_count?: number;
+    destination_id?: number | null;
+    destination?: Destination | null;
     created_at?: string;
     updated_at?: string;
 }
@@ -74,9 +80,22 @@ export interface Payment {
     amount: number;
     status: 'pending' | 'success' | 'failed' | 'expire' | 'cancel';
     snap_token: string | null;
+    payment_proof?: string | null;
     expired_at: string | null;
     paid_at: string | null;
     raw_response: any | null;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface PaymentMethod {
+    id: number;
+    name: string;
+    code: string;
+    account_number: string;
+    account_name: string;
+    logo_url: string | null;
+    is_active: boolean;
     created_at?: string;
     updated_at?: string;
 }

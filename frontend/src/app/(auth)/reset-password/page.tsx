@@ -61,15 +61,20 @@ function ResetPasswordForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="grid gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {status && (
-                <div className="text-center text-sm font-medium text-green-600 dark:text-green-400">
+                <div className="rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                     {status}
                 </div>
             )}
-            
-            <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+
+            <div className="grid gap-1.5">
+                <Label
+                    htmlFor="email"
+                    className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                >
+                    Email
+                </Label>
                 <Input
                     id="email"
                     type="email"
@@ -77,48 +82,56 @@ function ResetPasswordForm() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="mt-1 block w-full"
+                    className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                     readOnly={!!initialEmail}
                 />
                 <InputError message={errors.email} />
             </div>
 
-            <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+            <div className="grid gap-1.5">
+                <Label
+                    htmlFor="password"
+                    className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                >
+                    New password
+                </Label>
                 <PasswordInput
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
-                    className="mt-1 block w-full"
                     autoFocus
-                    placeholder="Password"
+                    placeholder="Create a new password"
+                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                 />
                 <InputError message={errors.password} />
             </div>
 
-            <div className="grid gap-2">
-                <Label htmlFor="password_confirmation">
-                    Confirm password
+            <div className="grid gap-1.5">
+                <Label
+                    htmlFor="password_confirmation"
+                    className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                >
+                    Confirm new password
                 </Label>
                 <PasswordInput
                     id="password_confirmation"
                     value={passwordConfirmation}
                     onChange={(e) => setPasswordConfirmation(e.target.value)}
                     autoComplete="new-password"
-                    className="mt-1 block w-full"
-                    placeholder="Confirm password"
+                    placeholder="Repeat your new password"
+                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                 />
                 <InputError message={errors.password_confirmation} />
             </div>
 
             <Button
                 type="submit"
-                className="mt-4 w-full cursor-pointer"
+                className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                 disabled={processing}
             >
-                {processing && <Spinner />}
-                Reset password
+                {processing && <Spinner className="mr-2" />}
+                {processing ? 'Resetting...' : 'Reset password'}
             </Button>
         </form>
     );

@@ -40,14 +40,14 @@ return new class extends Migration
                 'co_hosts',
                 'cancellation_policy',
                 'safety_property',
-                'neighborhood_desc'
+                'neighborhood_desc',
             ]);
         });
 
         Schema::table('reviews', function (Blueprint $table) {
             $table->dropColumn([
                 'guest_avatar',
-                'guest_subtitle'
+                'guest_subtitle',
             ]);
         });
     }

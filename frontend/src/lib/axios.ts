@@ -13,7 +13,11 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use((config) => {
     if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('admin_token');
+        const isAdminApi = config.url?.startsWith('/admin') || config.url?.includes('/admin/');
+        const token = isAdminApi 
+            ? localStorage.getItem('admin_token') 
+            : (localStorage.getItem('user_token') || localStorage.getItem('admin_token'));
+            
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

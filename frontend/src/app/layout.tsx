@@ -37,8 +37,9 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${walheim.variable} ${plusJakartaSans.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ colorScheme: "light" }}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           <TooltipProvider>
             {children}

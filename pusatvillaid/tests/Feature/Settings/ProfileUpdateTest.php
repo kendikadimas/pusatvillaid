@@ -11,7 +11,7 @@ test('profile page is displayed', function () {
 
     $response->assertOk()
         ->assertJsonStructure([
-            'user', 'mustVerifyEmail', 'status'
+            'user', 'mustVerifyEmail', 'status',
         ]);
 });
 
@@ -69,7 +69,7 @@ test('user can delete their account', function () {
     $response
         ->assertOk()
         ->assertJsonFragment([
-            'message' => __('Account deleted.')
+            'message' => __('Account deleted.'),
         ]);
 
     $this->assertGuest();

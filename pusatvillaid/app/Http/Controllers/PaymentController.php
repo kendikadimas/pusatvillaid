@@ -32,15 +32,19 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Payload tidak lengkap.'], 400);
         }
 
-        // 1. Signature Key Verification (SHA512)
+        // 1. Signature Key Verification (SHA512) - SECURITY: Server key MUST be configured
         $serverKey = env('MIDTRANS_SERVER_KEY');
-        if (! empty($serverKey)) {
-            $expectedSignature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
-            if ($signatureKey !== $expectedSignature) {
-                Log::warning("Midtrans Webhook: Invalid Signature for Order {$orderId}");
+        if (empty($serverKey)) {
+            Log::error('Midtrans Webhook: Server key not configured. Rejecting webhook for security.');
 
-                return response()->json(['message' => 'Signature key tidak valid.'], 403);
-            }
+            return response()->json(['message' => 'Server key tidak terkonfigurasi.'], 500);
+        }
+
+        $expectedSignature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
+        if ($signatureKey !== $expectedSignature) {
+            Log::warning("Midtrans Webhook: Invalid Signature for Order {$orderId}");
+
+            return response()->json(['message' => 'Signature key tidak valid.'], 403);
         }
 
         // 2. Fetch Payment Record
@@ -126,6 +130,31 @@ class PaymentController extends Controller
             Log::info("Email konfirmasi berhasil dikirim ke {$booking->guest_email} untuk Booking {$booking->booking_code}");
         } catch (\Exception $e) {
             Log::error("Gagal mengirim email konfirmasi ke {$booking->guest_email}: ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Generate review token for post-stay review invitation.
+     */
+    private function generateReviewToken(Booking $booking): void
+    {
+        try {
+            // Check if token already exists
+            $existing = ReviewToken::where('booking_id', $booking->id)->first();
+            if ($existing) {
+                return;
+            }
+
+            ReviewToken::create([
+                'booking_id' => $booking->id,
+                'token' => Str::random(64),
+                'used' => false,
+                'expires_at' => now()->addDays(30),
+            ]);
+
+            Log::info("Review token generated for Booking {$booking->booking_code}");
+        } catch (\Exception $e) {
+            Log::error("Failed to generate review token for Booking {$booking->booking_code}: ".$e->getMessage());
         }
     }
 }

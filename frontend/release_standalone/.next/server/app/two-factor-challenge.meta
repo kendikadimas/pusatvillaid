@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(auth)/layout,_N_T_/(auth)/two-factor-challenge/layout,_N_T_/(auth)/two-factor-challenge/page,_N_T_/two-factor-challenge"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KGF1dGgp/two-factor-challenge/__PAGE__",
+    "/!KGF1dGgp/two-factor-challenge",
+    "/!KGF1dGgp",
+    "/_index",
+    "/_head"
+  ]
+}

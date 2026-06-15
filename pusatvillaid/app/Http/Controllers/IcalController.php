@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Villa;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\Response;
 
 class IcalController extends Controller
@@ -19,7 +18,7 @@ class IcalController extends Controller
     {
         $villa = Villa::find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             abort(404, 'Villa not found.');
         }
 
@@ -33,10 +32,10 @@ class IcalController extends Controller
 
         foreach ($bookings as $booking) {
             $events[] = [
-                'uid' => $booking->booking_code . '@pusatvilla.id',
+                'uid' => $booking->booking_code.'@pusatvilla.id',
                 'dtstart' => Carbon::parse($booking->check_in)->format('Ymd'),
                 'dtend' => Carbon::parse($booking->check_out)->format('Ymd'),
-                'summary' => 'Reserved - ' . $booking->booking_code,
+                'summary' => 'Reserved - '.$booking->booking_code,
                 'description' => "Status: {$booking->status}",
                 'created' => Carbon::parse($booking->created_at)->format('Ymd\THis\Z'),
             ];
@@ -84,10 +83,10 @@ class IcalController extends Controller
 
             foreach ($ranges as $i => $range) {
                 $events[] = [
-                    'uid' => "blocked-{$villa->id}-{$i}-" . $range['start']->format('Ymd') . '@pusatvilla.id',
+                    'uid' => "blocked-{$villa->id}-{$i}-".$range['start']->format('Ymd').'@pusatvilla.id',
                     'dtstart' => $range['start']->format('Ymd'),
                     'dtend' => $range['end']->format('Ymd'),
-                    'summary' => 'Blocked - ' . ($range['reason'] ?? 'Maintenance'),
+                    'summary' => 'Blocked - '.($range['reason'] ?? 'Maintenance'),
                     'description' => $range['reason'] ?? 'Maintenance',
                     'created' => Carbon::parse($range['created'])->format('Ymd\THis\Z'),
                 ];
@@ -100,17 +99,17 @@ class IcalController extends Controller
         $ical .= "PRODID:-//PusatVilla.id//Booking Calendar//ID\r\n";
         $ical .= "CALSCALE:GREGORIAN\r\n";
         $ical .= "METHOD:PUBLISH\r\n";
-        $ical .= "X-WR-CALNAME:" . $this->escapeIcal($villa->name) . " - PusatVilla.id\r\n";
+        $ical .= 'X-WR-CALNAME:'.$this->escapeIcal($villa->name)." - PusatVilla.id\r\n";
         $ical .= "X-WR-TIMEZONE:Asia/Jakarta\r\n";
 
         foreach ($events as $event) {
             $ical .= "BEGIN:VEVENT\r\n";
-            $ical .= "UID:" . $event['uid'] . "\r\n";
-            $ical .= "DTSTART;VALUE=DATE:" . $event['dtstart'] . "\r\n";
-            $ical .= "DTEND;VALUE=DATE:" . $event['dtend'] . "\r\n";
-            $ical .= "SUMMARY:" . $this->escapeIcal($event['summary']) . "\r\n";
-            $ical .= "DESCRIPTION:" . $this->escapeIcal($event['description']) . "\r\n";
-            $ical .= "DTSTAMP:" . $event['created'] . "\r\n";
+            $ical .= 'UID:'.$event['uid']."\r\n";
+            $ical .= 'DTSTART;VALUE=DATE:'.$event['dtstart']."\r\n";
+            $ical .= 'DTEND;VALUE=DATE:'.$event['dtend']."\r\n";
+            $ical .= 'SUMMARY:'.$this->escapeIcal($event['summary'])."\r\n";
+            $ical .= 'DESCRIPTION:'.$this->escapeIcal($event['description'])."\r\n";
+            $ical .= 'DTSTAMP:'.$event['created']."\r\n";
             $ical .= "STATUS:CONFIRMED\r\n";
             $ical .= "TRANSP:OPAQUE\r\n";
             $ical .= "END:VEVENT\r\n";
@@ -120,7 +119,7 @@ class IcalController extends Controller
 
         return response($ical, 200)
             ->header('Content-Type', 'text/calendar; charset=utf-8')
-            ->header('Content-Disposition', 'inline; filename="' . $villa->slug . '.ics"');
+            ->header('Content-Disposition', 'inline; filename="'.$villa->slug.'.ics"');
     }
 
     /**

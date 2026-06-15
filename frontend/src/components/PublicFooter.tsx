@@ -1,0 +1,59 @@
+import React from 'react';
+import Link from 'next/link';
+
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '6281234567890';
+
+// Format WhatsApp number for display (e.g., "6281234567890" -> "+62 812 3456 7890")
+const formatWhatsAppDisplay = (num: string): string => {
+    if (num.length >= 12) {
+        return `+${num.slice(0, 2)} ${num.slice(2, 5)} ${num.slice(5, 9)} ${num.slice(9)}`;
+    }
+    return `+${num}`;
+};
+
+export default function PublicFooter() {
+    const whatsappDisplay = formatWhatsAppDisplay(WHATSAPP_NUMBER);
+    
+    return (
+        <footer className="bg-[#FBFBFA] border-t border-[#EAEAEA] py-16 sm:py-20">
+            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div className="space-y-3">
+                    <h3 className="text-base font-medium text-[#2563EB] tracking-tight">pusatvilla.id</h3>
+                    <p className="text-sm leading-relaxed text-[#787774] max-w-xs">
+                        Platform persewaan villa premium terbaik di Indonesia. Akomodasi berkualitas tinggi dengan reservasi modern, instan, dan aman.
+                    </p>
+                </div>
+                <div className="space-y-3">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#787774]">Hubungi Kami</h3>
+                    <ul className="text-sm space-y-2 text-[#787774]">
+                        <li className="flex items-center space-x-2">
+                            <span>Yogyakarta, Indonesia</span>
+                        </li>
+                        <li className="flex items-center space-x-2">
+                            <span>support@pusatvilla.id</span>
+                        </li>
+                        <li className="flex items-center space-x-2">
+                            <a 
+                                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-[#2563EB] transition-colors"
+                            >
+                                {whatsappDisplay}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div className="space-y-3">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#787774]">Navigasi</h3>
+                    <ul className="text-sm space-y-2">
+                        <li><Link href="/villas" className="text-[#787774] hover:text-[#2563EB] transition-colors duration-200">Cari Katalog Villa</Link></li>
+                    </ul>
+                </div>
+            </div>
+            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#EAEAEA] mt-12 pt-6 text-center text-xs text-[#787774]">
+                <p>&copy; {new Date().getFullYear()} pusatvilla.id &mdash; Dibuat oleh KalanaLabs.</p>
+            </div>
+        </footer>
+    );
+}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Villa;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -13,7 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -43,7 +46,7 @@ class BookingController extends Controller
 
         $villa = Villa::find($request->villa_id);
 
-        if (!$villa->is_active) {
+        if (! $villa->is_active) {
             return response()->json(['message' => 'Villa ini sedang tidak aktif.'], 422);
         }
 
@@ -70,16 +73,16 @@ class BookingController extends Controller
                 // 1. Lock existing bookings check
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
                     ->where('status', '!=', 'cancelled')
-                    ->where(function($query) use ($checkIn, $checkOut) {
-                        $query->where(function($q) use ($checkIn, $checkOut) {
+                    ->where(function ($query) use ($checkIn, $checkOut) {
+                        $query->where(function ($q) use ($checkIn, $checkOut) {
                             $q->where('check_in', '>=', $checkIn)
-                              ->where('check_in', '<', $checkOut);
-                        })->orWhere(function($q) use ($checkIn, $checkOut) {
+                                ->where('check_in', '<', $checkOut);
+                        })->orWhere(function ($q) use ($checkIn, $checkOut) {
                             $q->where('check_out', '>', $checkIn)
-                              ->where('check_out', '<=', $checkOut);
-                        })->orWhere(function($q) use ($checkIn, $checkOut) {
+                                ->where('check_out', '<=', $checkOut);
+                        })->orWhere(function ($q) use ($checkIn, $checkOut) {
                             $q->where('check_in', '<=', $checkIn)
-                              ->where('check_out', '>=', $checkOut);
+                                ->where('check_out', '>=', $checkOut);
                         });
                     })
                     ->lockForUpdate()
@@ -101,7 +104,7 @@ class BookingController extends Controller
                 // 3. Calculate total pricing (weekday vs weekend pricing)
                 $totalAmount = 0;
                 $period = CarbonPeriod::create($checkIn, Carbon::parse($checkOut)->subDay());
-                
+
                 foreach ($period as $date) {
                     $isWeekend = $date->isFriday() || $date->isSaturday();
                     if ($isWeekend && $villa->weekend_price !== null) {
@@ -115,22 +118,41 @@ class BookingController extends Controller
                     $totalAmount = round($totalAmount * 1.11111);
                 }
 
-                // 4. Generate sequential booking code (VB-YYYY-XXXX) — atomic with lock
+                // 4. Generate sequential booking code (VB-YYYY-XXXX) — atomic with lock and retry
                 $year = now()->year;
-                $count = Booking::whereYear('created_at', $year)->lockForUpdate()->count();
-                $bookingCode = 'VB-' . $year . '-' . str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+                $maxRetries = 5;
+                $bookingCode = null;
+
+                for ($retry = 0; $retry < $maxRetries; $retry++) {
+                    $count = Booking::whereYear('created_at', $year)->lockForUpdate()->count();
+                    $candidateCode = 'VB-'.$year.'-'.str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+
+                    // Check if this code already exists (collision check)
+                    if (! Booking::where('booking_code', $candidateCode)->exists()) {
+                        $bookingCode = $candidateCode;
+                        break;
+                    }
+
+                    // Small delay before retry
+                    usleep(10000); // 10ms
+                }
+
+                if (! $bookingCode) {
+                    throw new \Exception('Gagal menghasilkan kode booking. Silakan coba lagi.');
+                }
 
                 $notes = $request->notes;
                 if ($request->input('is_refundable')) {
-                    $notes = trim(($notes ? $notes . "\n" : "") . "[Pilihan Tarif: Bisa dikembalikan (Refundable)]");
+                    $notes = trim(($notes ? $notes."\n" : '').'[Pilihan Tarif: Bisa dikembalikan (Refundable)]');
                 } else {
-                    $notes = trim(($notes ? $notes . "\n" : "") . "[Pilihan Tarif: Tanpa pengembalian dana (Non-refundable)]");
+                    $notes = trim(($notes ? $notes."\n" : '').'[Pilihan Tarif: Tanpa pengembalian dana (Non-refundable)]');
                 }
 
                 // 5. Save Booking
                 $booking = Booking::create([
                     'booking_code' => $bookingCode,
                     'villa_id' => $villa->id,
+                    'user_id' => $request->user()?->id,
                     'guest_name' => $request->guest_name,
                     'guest_email' => $request->guest_email,
                     'guest_phone' => $request->guest_phone,
@@ -157,7 +179,7 @@ class BookingController extends Controller
             // Create payment record
             Payment::create([
                 'booking_id' => $bookingData->id,
-                'midtrans_order_id' => $bookingData->booking_code . '-' . time(),
+                'midtrans_order_id' => $bookingData->booking_code.'-'.time(),
                 'amount' => $bookingData->total_amount,
                 'status' => 'pending',
                 'snap_token' => $snapToken,
@@ -168,7 +190,7 @@ class BookingController extends Controller
                 'booking_code' => $bookingData->booking_code,
                 'snap_token' => $snapToken,
                 'total_amount' => $bookingData->total_amount,
-                'message' => 'Booking berhasil dibuat. Silakan selesaikan pembayaran.'
+                'message' => 'Booking berhasil dibuat. Silakan selesaikan pembayaran.',
             ], 201);
 
         } catch (\Exception $e) {
@@ -183,7 +205,7 @@ class BookingController extends Controller
     {
         $email = $request->query('email');
 
-        if (!$email) {
+        if (! $email) {
             return response()->json(['message' => 'Email verifikasi diperlukan.'], 400);
         }
 
@@ -192,11 +214,86 @@ class BookingController extends Controller
             ->with(['villa', 'payment'])
             ->first();
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan atau email tidak sesuai.'], 404);
         }
 
         return response()->json($booking);
+    }
+
+    /**
+     * Confirm manual payment upload for a booking.
+     */
+    public function confirmManualPayment(Request $request, string $code): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $booking = Booking::where('booking_code', $code)->first();
+
+        if (! $booking) {
+            return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        if ($booking->payment_status === 'paid') {
+            return response()->json(['message' => 'Booking ini sudah dibayar.'], 400);
+        }
+
+        $paymentMethod = PaymentMethod::find($request->payment_method_id);
+
+        if (! $paymentMethod || ! $paymentMethod->is_active) {
+            return response()->json(['message' => 'Metode pembayaran tidak aktif.'], 422);
+        }
+
+        // Handle file upload
+        $proofUrl = null;
+        if ($request->hasFile('payment_proof')) {
+            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+            $proofUrl = asset('storage/'.$path);
+        }
+
+        if (! $proofUrl) {
+            return response()->json(['message' => 'Gagal mengunggah bukti pembayaran.'], 400);
+        }
+
+        // Fetch or create payment record
+        $payment = $booking->payment;
+
+        if ($payment) {
+            // Delete old proof if it was a local file
+            $oldProof = $payment->payment_proof;
+            $pathPrefix = asset('storage/');
+            if ($oldProof && Str::startsWith($oldProof, $pathPrefix)) {
+                $relativePath = Str::after($oldProof, $pathPrefix);
+                Storage::disk('public')->delete($relativePath);
+            }
+
+            $payment->update([
+                'payment_type' => 'manual_'.$paymentMethod->code,
+                'status' => 'pending',
+                'payment_proof' => $proofUrl,
+            ]);
+        } else {
+            $payment = Payment::create([
+                'booking_id' => $booking->id,
+                'midtrans_order_id' => 'manual-'.$booking->booking_code.'-'.time(),
+                'amount' => $booking->total_amount,
+                'status' => 'pending',
+                'payment_type' => 'manual_'.$paymentMethod->code,
+                'payment_proof' => $proofUrl,
+            ]);
+        }
+
+        return response()->json([
+            'payment' => $payment,
+            'message' => 'Bukti pembayaran transfer manual berhasil diunggah. Menunggu konfirmasi admin.',
+        ]);
     }
 
     /**
@@ -209,16 +306,17 @@ class BookingController extends Controller
 
         if (empty($serverKey)) {
             Log::warning('Midtrans server key is not configured. Generating mock token.');
-            return 'mock-snap-token-' . uniqid();
+
+            return 'mock-snap-token-'.uniqid();
         }
 
-        $baseUrl = $isProduction 
-            ? 'https://app.midtrans.com/snap/v1/transactions' 
+        $baseUrl = $isProduction
+            ? 'https://app.midtrans.com/snap/v1/transactions'
             : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
         $payload = [
             'transaction_details' => [
-                'order_id' => $booking->booking_code . '-' . time(),
+                'order_id' => $booking->booking_code.'-'.time(),
                 'gross_amount' => (int) $booking->total_amount,
             ],
             'customer_details' => [
@@ -228,17 +326,17 @@ class BookingController extends Controller
             ],
             'item_details' => [
                 [
-                    'id' => 'villa-' . $villa->id,
+                    'id' => 'villa-'.$villa->id,
                     'price' => (int) $booking->total_amount,
                     'quantity' => 1,
-                    'name' => 'Sewa ' . $villa->name . ' (' . $booking->total_nights . ' malam)',
-                ]
+                    'name' => 'Sewa '.$villa->name.' ('.$booking->total_nights.' malam)',
+                ],
             ],
             'expiry' => [
                 'start_time' => now()->format('Y-m-d H:i:s O'),
                 'unit' => 'minutes',
-                'duration' => 60
-            ]
+                'duration' => 60,
+            ],
         ];
 
         try {
@@ -246,18 +344,34 @@ class BookingController extends Controller
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])
-            ->withBasicAuth($serverKey, '')
-            ->post($baseUrl, $payload);
+                ->withBasicAuth($serverKey, '')
+                ->post($baseUrl, $payload);
 
             if ($response->successful()) {
                 return $response->json('token');
             }
 
-            Log::error('Midtrans API Request failed: ' . $response->body());
-            return 'mock-snap-token-' . uniqid(); // Fallback for testing/offline environments
+            Log::error('Midtrans API Request failed: '.$response->body());
+
+            return 'mock-snap-token-'.uniqid(); // Fallback for testing/offline environments
         } catch (\Exception $e) {
-            Log::error('Midtrans API Exception: ' . $e->getMessage());
-            return 'mock-snap-token-' . uniqid(); // Fallback for testing/offline environments
+            Log::error('Midtrans API Exception: '.$e->getMessage());
+
+            return 'mock-snap-token-'.uniqid(); // Fallback for testing/offline environments
         }
+    }
+
+    /**
+     * Fetch list of bookings for the authenticated user.
+     */
+    public function userBookings(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $bookings = Booking::where('user_id', $user->id)
+            ->with(['villa', 'payment'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($bookings);
     }
 }

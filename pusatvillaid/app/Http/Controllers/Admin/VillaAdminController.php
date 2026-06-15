@@ -22,6 +22,7 @@ class VillaAdminController extends Controller
     public function index(): JsonResponse
     {
         $villas = Villa::orderBy('created_at', 'desc')->get();
+
         return response()->json($villas);
     }
 
@@ -35,6 +36,7 @@ class VillaAdminController extends Controller
             'description' => 'required|string',
             'short_desc' => 'required|string|max:500',
             'location' => 'required|string|max:255',
+            'destination_id' => 'required|exists:destinations,id',
             'maps_url' => 'nullable|string',
             'bedrooms' => 'required|integer|min:1',
             'bathrooms' => 'required|integer|min:1',
@@ -43,6 +45,8 @@ class VillaAdminController extends Controller
             'weekend_price' => 'nullable|numeric|min:0',
             'min_nights' => 'required|integer|min:1',
             'amenities' => 'nullable|array',
+            'amenities.*.name' => 'required|string|max:255',
+            'amenities.*.icon' => 'required|string|max:100',
             'rules' => 'nullable|string',
             'check_in_time' => 'required|string',
             'check_out_time' => 'required|string',
@@ -67,12 +71,12 @@ class VillaAdminController extends Controller
         }
 
         $slug = Str::slug($request->name);
-        
+
         // Ensure slug is unique
         $originalSlug = $slug;
         $count = 1;
         while (Villa::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count;
+            $slug = $originalSlug.'-'.$count;
             $count++;
         }
 
@@ -91,7 +95,7 @@ class VillaAdminController extends Controller
 
         return response()->json([
             'villa' => $villa,
-            'message' => 'Villa berhasil ditambahkan.'
+            'message' => 'Villa berhasil ditambahkan.',
         ], 201);
     }
 
@@ -100,9 +104,9 @@ class VillaAdminController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $villa = Villa::with('blockedDates')->find($id);
+        $villa = Villa::with(['blockedDates', 'destination'])->find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -116,7 +120,7 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -125,6 +129,7 @@ class VillaAdminController extends Controller
             'description' => 'required|string',
             'short_desc' => 'required|string|max:500',
             'location' => 'required|string|max:255',
+            'destination_id' => 'required|exists:destinations,id',
             'maps_url' => 'nullable|string',
             'bedrooms' => 'required|integer|min:1',
             'bathrooms' => 'required|integer|min:1',
@@ -133,6 +138,8 @@ class VillaAdminController extends Controller
             'weekend_price' => 'nullable|numeric|min:0',
             'min_nights' => 'required|integer|min:1',
             'amenities' => 'nullable|array',
+            'amenities.*.name' => 'required|string|max:255',
+            'amenities.*.icon' => 'required|string|max:100',
             'rules' => 'nullable|string',
             'check_in_time' => 'required|string',
             'check_out_time' => 'required|string',
@@ -163,7 +170,7 @@ class VillaAdminController extends Controller
             $originalSlug = $slug;
             $count = 1;
             while (Villa::where('slug', $slug)->where('id', '!=', $id)->exists()) {
-                $slug = $originalSlug . '-' . $count;
+                $slug = $originalSlug.'-'.$count;
                 $count++;
             }
             $villa->slug = $slug;
@@ -182,7 +189,7 @@ class VillaAdminController extends Controller
 
         return response()->json([
             'villa' => $villa,
-            'message' => 'Detail villa berhasil diperbarui.'
+            'message' => 'Detail villa berhasil diperbarui.',
         ]);
     }
 
@@ -193,7 +200,7 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -203,7 +210,7 @@ class VillaAdminController extends Controller
         $villa->save();
 
         return response()->json([
-            'message' => 'Villa telah dinonaktifkan.'
+            'message' => 'Villa telah dinonaktifkan.',
         ]);
     }
 
@@ -214,7 +221,7 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -227,24 +234,27 @@ class VillaAdminController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $uploadedUrls = [];
+        $uploadedPhotos = [];
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $file) {
                 // Save to public storage disk (storage/app/public/villas)
                 $path = $file->store('villas', 'public');
-                $uploadedUrls[] = asset('storage/' . $path);
+                $uploadedPhotos[] = [
+                    'url' => asset('storage/'.$path),
+                    'description' => '',
+                ];
             }
         }
 
         // Merge with existing photos
         $currentPhotos = $villa->photos ?? [];
-        $newPhotos = array_merge($currentPhotos, $uploadedUrls);
+        $newPhotos = array_merge($currentPhotos, $uploadedPhotos);
         $villa->photos = $newPhotos;
         $villa->save();
 
         return response()->json([
             'photos' => $villa->photos,
-            'message' => 'Foto villa berhasil diunggah.'
+            'message' => 'Foto villa berhasil diunggah.',
         ]);
     }
 
@@ -255,21 +265,30 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($id);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
         $photoUrl = $request->input('photo_url');
 
-        if (!$photoUrl) {
+        if (! $photoUrl) {
             return response()->json(['message' => 'URL foto diperlukan.'], 400);
         }
 
         $photos = $villa->photos ?? [];
+        $foundKey = null;
 
-        if (($key = array_search($photoUrl, $photos)) !== false) {
-            unset($photos[$key]);
-            
+        foreach ($photos as $key => $photo) {
+            $currentUrl = is_array($photo) ? ($photo['url'] ?? '') : (is_object($photo) ? ($photo->url ?? '') : $photo);
+            if ($currentUrl === $photoUrl) {
+                $foundKey = $key;
+                break;
+            }
+        }
+
+        if ($foundKey !== null) {
+            unset($photos[$foundKey]);
+
             // Delete actual file from storage if it is local
             $pathPrefix = asset('storage/');
             if (Str::startsWith($photoUrl, $pathPrefix)) {
@@ -283,7 +302,7 @@ class VillaAdminController extends Controller
 
         return response()->json([
             'photos' => $villa->photos,
-            'message' => 'Foto villa berhasil dihapus.'
+            'message' => 'Foto villa berhasil dihapus.',
         ]);
     }
 
@@ -348,7 +367,7 @@ class VillaAdminController extends Controller
 
         return response()->json([
             'blocked_date' => $blockedDate,
-            'message' => 'Tanggal berhasil diblokir.'
+            'message' => 'Tanggal berhasil diblokir.',
         ], 201);
     }
 
@@ -359,14 +378,14 @@ class VillaAdminController extends Controller
     {
         $blockedDate = BlockedDate::find($id);
 
-        if (!$blockedDate) {
+        if (! $blockedDate) {
             return response()->json(['message' => 'Data pemblokiran tidak ditemukan.'], 404);
         }
 
         $blockedDate->delete();
 
         return response()->json([
-            'message' => 'Pemblokiran tanggal berhasil dibatalkan.'
+            'message' => 'Pemblokiran tanggal berhasil dibatalkan.',
         ]);
     }
 
@@ -381,7 +400,7 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($villaId);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -400,7 +419,7 @@ class VillaAdminController extends Controller
     {
         $villa = Villa::find($villaId);
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -468,7 +487,7 @@ class VillaAdminController extends Controller
         try {
             // 1. Fetch iCal content
             $response = Http::timeout(10)->get($url);
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return response()->json(['message' => 'URL iCal tidak valid atau tidak dapat diakses.'], 400);
             }
 
@@ -500,12 +519,12 @@ class VillaAdminController extends Controller
             return response()->json([
                 'calendar_name' => $calName ?? 'Tidak diketahui',
                 'external_listing_id' => $externalId,
-                'is_already_linked' => !is_null($exists),
+                'is_already_linked' => ! is_null($exists),
                 'linked_to_villa' => $exists ? $exists->villa->name : null,
-                'message' => 'iCal feed verified successfully.'
+                'message' => 'iCal feed verified successfully.',
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Gagal menghubungi server iCal: ' . $e->getMessage()], 400);
+            return response()->json(['message' => 'Gagal menghubungi server iCal: '.$e->getMessage()], 400);
         }
     }
 
@@ -516,7 +535,7 @@ class VillaAdminController extends Controller
     {
         $link = VillaIcalLink::find($id);
 
-        if (!$link) {
+        if (! $link) {
             return response()->json(['message' => 'iCal link tidak ditemukan.'], 404);
         }
 
@@ -535,7 +554,7 @@ class VillaAdminController extends Controller
     {
         $link = VillaIcalLink::find($linkId);
 
-        if (!$link) {
+        if (! $link) {
             return response()->json(['message' => 'iCal link tidak ditemukan.'], 404);
         }
 
@@ -552,6 +571,46 @@ class VillaAdminController extends Controller
         return response()->json([
             'data' => $link,
             'message' => "Sync selesai untuk iCal feed {$link->channel_name}.",
+        ]);
+    }
+
+    /**
+     * Upload host avatar for a villa.
+     */
+    public function uploadHostAvatar(Request $request, int $id): JsonResponse
+    {
+        $villa = Villa::find($id);
+
+        if (! $villa) {
+            return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max 2MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if it exists and is local
+            $oldAvatar = $villa->host_avatar;
+            $pathPrefix = asset('storage/');
+            if ($oldAvatar && Str::startsWith($oldAvatar, $pathPrefix)) {
+                $relativePath = Str::after($oldAvatar, $pathPrefix);
+                Storage::disk('public')->delete($relativePath);
+            }
+
+            // Store new avatar in public storage disk under avatars
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $villa->host_avatar = asset('storage/'.$path);
+            $villa->save();
+        }
+
+        return response()->json([
+            'host_avatar' => $villa->host_avatar,
+            'message' => 'Avatar tuan rumah berhasil diunggah.',
         ]);
     }
 }

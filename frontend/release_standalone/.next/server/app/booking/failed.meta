@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/booking/layout,_N_T_/booking/failed/layout,_N_T_/booking/failed/page,_N_T_/booking/failed"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/booking/failed/__PAGE__",
+    "/booking/failed",
+    "/booking",
+    "/_index",
+    "/_head"
+  ]
+}

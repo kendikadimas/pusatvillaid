@@ -5,17 +5,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/bookingStore';
 import axiosClient from '@/lib/axios';
+import { formatPrice } from '@/lib/format';
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
+import PublicHeader from '@/components/PublicHeader';
+import BookingSummaryCard from '@/components/BookingSummaryCard';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { getMainPhoto } from '@/lib/villaUtils';
+import FormField from '@/components/ui/FormField';
+import CountdownTimer from '@/components/ui/CountdownTimer';
 import { 
-    Calendar, 
-    MapPin, 
-    ArrowLeft, 
     ChevronRight,
-    Loader2, 
-    ShieldAlert, 
-    CheckSquare,
-    Star,
+    Loader2,
     CreditCard,
     Smartphone,
     Building2,
@@ -23,9 +24,11 @@ import {
     Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BookingConfirmPage() {
     const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
     const { 
         selectedVilla, 
         checkIn, 
@@ -65,6 +68,23 @@ export default function BookingConfirmPage() {
     const [holdExpired, setHoldExpired] = useState(false);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    // Enforce login
+    useEffect(() => {
+        if (!authLoading && !user) {
+            toast.error('Silakan masuk (login) terlebih dahulu untuk melanjutkan pembayaran.');
+            router.push('/login?redirect=/booking/confirm');
+        }
+    }, [user, authLoading, router]);
+
+    // Prefill form states once user loads
+    useEffect(() => {
+        if (user) {
+            setName(prev => prev || user.name || '');
+            setEmail(prev => prev || user.email || '');
+            setPhone(prev => prev || user.phone || '');
+        }
+    }, [user]);
+
     useEffect(() => {
         // Guard check: redirect if booking details are missing
         if (!selectedVilla || !checkIn || !checkOut || totalNights <= 0) {
@@ -98,12 +118,8 @@ export default function BookingConfirmPage() {
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
-    if (!selectedVilla || !checkIn || !checkOut) {
-        return (
-            <div className="flex justify-center items-center py-64 min-h-screen bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-            </div>
-        );
+    if (authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
+        return <LoadingSpinner />;
     }
 
     const validateForm = () => {
@@ -201,7 +217,7 @@ export default function BookingConfirmPage() {
             resetStore();
 
             // Redirect directly to payment checkout page
-            router.push(`/booking/${response.data.booking_code}/payment?token=${response.data.snap_token}`);
+            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
@@ -216,56 +232,33 @@ export default function BookingConfirmPage() {
         }
     };
 
-    const mainPhoto = selectedVilla.photos && selectedVilla.photos.length > 0 
-        ? selectedVilla.photos[0] 
-        : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80';
+    const mainPhoto = getMainPhoto(selectedVilla);
 
     return (
         <div className="flex-1 flex flex-col bg-slate-50 text-slate-900 font-sans">
             {/* Header */}
-            <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-150/80 shadow-xs">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <button 
-                            onClick={() => router.back()} 
-                            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-655 rounded-full transition-all cursor-pointer active:scale-90"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                        </button>
-                        <span className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-rose-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
-                            PusatVilla.id
-                        </span>
-                    </div>
-                </div>
-            </header>
+            <PublicHeader
+                showBackButton
+                onBackClick={() => router.back()}
+            />
 
             <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex-1">
                 {/* Stepper Progress */}
-                <div className="flex items-center space-x-2.5 text-[9px] text-slate-400 font-black uppercase tracking-widest mb-10">
+                <div className="flex items-center flex-wrap gap-y-1.5 space-x-2.5 text-[8px] sm:text-[9px] text-slate-400 font-black uppercase tracking-widest mb-10">
                     <span>1. Pilih Tanggal</span>
                     <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                    <span className="text-rose-500">2. Konfirmasi & Bayar</span>
+                    <span className="text-blue-500">2. Konfirmasi & Bayar</span>
                     <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                     <span>3. Selesai</span>
                 </div>
 
                 {/* Layer 4: Hold Timer Banner */}
-                <div className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl mb-8 border transition-colors ${
-                    secondsLeft <= 300 
-                        ? 'bg-red-50 border-red-200 text-red-700' 
-                        : 'bg-amber-50 border-amber-200 text-amber-700'
-                }`}>
-                    <Clock className="w-4.5 h-4.5 flex-shrink-0" />
-                    <p className="text-sm font-medium">
-                        Selesaikan pembayaran dalam <span className="font-black tabular-nums">{formatTimer(secondsLeft)}</span>
-                        <span className="hidden sm:inline"> — tanggal Anda di-hold sementara</span>
-                    </p>
-                </div>
+                <CountdownTimer totalSeconds={HOLD_DURATION_SECONDS} onExpired={() => setHoldExpired(true)} />
 
                 {/* Layer 4: Expired Modal Overlay */}
                 {holdExpired && (
                     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl space-y-5">
+                        <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
                                 <Clock className="w-8 h-8 text-red-500" />
                             </div>
@@ -279,7 +272,7 @@ export default function BookingConfirmPage() {
                                     resetStore();
                                     router.push('/villas');
                                 }}
-                                className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+                                className="w-full py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-all active:scale-[0.98] cursor-pointer"
                             >
                                 Pilih Tanggal Baru
                             </button>
@@ -298,19 +291,19 @@ export default function BookingConfirmPage() {
                             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                                     <h2 className="font-serif text-lg font-bold text-slate-905">1. Metode Pembayaran</h2>
-                                    <span className="text-[9px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                    <span className="text-[9px] text-blue-600 font-black uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
                                         ⚡ Otomatis
                                     </span>
                                 </div>
 
                                 {/* Selection Grid */}
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setPaymentMethod('bank_transfer')}
                                         className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
                                             paymentMethod === 'bank_transfer'
-                                                ? 'bg-rose-50/50 border-rose-500 text-rose-500 shadow-xs ring-1 ring-rose-500/20'
+                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
                                                 : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
                                         }`}
                                     >
@@ -323,7 +316,7 @@ export default function BookingConfirmPage() {
                                         onClick={() => setPaymentMethod('qris')}
                                         className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
                                             paymentMethod === 'qris'
-                                                ? 'bg-rose-50/50 border-rose-500 text-rose-500 shadow-xs ring-1 ring-rose-500/20'
+                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
                                                 : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
                                         }`}
                                     >
@@ -336,7 +329,7 @@ export default function BookingConfirmPage() {
                                         onClick={() => setPaymentMethod('credit_card')}
                                         className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
                                             paymentMethod === 'credit_card'
-                                                ? 'bg-rose-50/50 border-rose-500 text-rose-500 shadow-xs ring-1 ring-rose-500/20'
+                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
                                                 : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
                                         }`}
                                     >
@@ -361,7 +354,7 @@ export default function BookingConfirmPage() {
 
                                     {paymentMethod === 'credit_card' && (
                                         <div className="space-y-4">
-                                            <div className="text-[10px] font-black text-rose-550 uppercase tracking-widest mb-2">
+                                            <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">
                                                 Simulasi Kartu Kredit
                                             </div>
                                             <div className="space-y-3">
@@ -370,22 +363,22 @@ export default function BookingConfirmPage() {
                                                     placeholder="Nomor Kartu (16 digit)"
                                                     value={cardNumber}
                                                     onChange={(e) => setCardNumber(e.target.value)}
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                                 />
-                                                <div className="grid grid-cols-2 gap-3">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     <input 
                                                         type="text" 
                                                         placeholder="Kedaluwarsa (MM/YY)"
                                                         value={cardExpiry}
                                                         onChange={(e) => setCardExpiry(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                                     />
                                                     <input 
                                                         type="password" 
                                                         placeholder="CVV"
                                                         value={cardCvv}
                                                         onChange={(e) => setCardCvv(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                                     />
                                                 </div>
                                                 <input 
@@ -393,7 +386,7 @@ export default function BookingConfirmPage() {
                                                     placeholder="Alamat Penagihan (Kota/Kode Pos)"
                                                     value={billingAddress}
                                                     onChange={(e) => setBillingAddress(e.target.value)}
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                                 />
                                             </div>
                                             <div className="text-[10px] text-slate-450 font-semibold leading-relaxed mt-2 pt-2 border-t border-slate-200/50">
@@ -409,7 +402,7 @@ export default function BookingConfirmPage() {
                                 <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">2. Detail Tamu</h2>
                                 
                                 <div className="space-y-6">
-                                    <div className="relative border-b border-slate-200 focus-within:border-rose-500 transition-colors py-1">
+                                    <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                         <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Nama Lengkap Sesuai KTP</label>
                                         <input 
                                             type="text" 
@@ -424,7 +417,7 @@ export default function BookingConfirmPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div className="relative border-b border-slate-200 focus-within:border-rose-500 transition-colors py-1">
+                                        <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                             <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Alamat Email</label>
                                             <input 
                                                 type="email" 
@@ -438,7 +431,7 @@ export default function BookingConfirmPage() {
                                             )}
                                         </div>
 
-                                        <div className="relative border-b border-slate-200 focus-within:border-rose-500 transition-colors py-1">
+                                        <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                             <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Nomor WhatsApp</label>
                                             <input 
                                                 type="tel" 
@@ -453,7 +446,7 @@ export default function BookingConfirmPage() {
                                         </div>
                                     </div>
 
-                                    <div className="relative border-b border-slate-200 focus-within:border-rose-500 transition-colors py-1">
+                                    <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                         <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Catatan Tambahan (Opsional)</label>
                                         <textarea 
                                             rows={2}
@@ -476,10 +469,10 @@ export default function BookingConfirmPage() {
                                             type="checkbox" 
                                             checked={agree}
                                             onChange={(e) => setAgree(e.target.checked)}
-                                            className="mt-0.5 rounded border-slate-350 text-rose-500 focus:ring-rose-500 w-4 h-4 cursor-pointer"
+                                            className="mt-0.5 rounded border-slate-350 text-blue-500 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                                         />
                                         <span className="text-xs text-slate-555 leading-normal font-semibold">
-                                            Saya menyetujui <span className="text-rose-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
+                                            Saya menyetujui <span className="text-blue-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
                                         </span>
                                     </label>
                                     {formErrors.agree && (
@@ -489,7 +482,7 @@ export default function BookingConfirmPage() {
                                     <button 
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-4 rounded-2xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-4 cursor-pointer"
+                                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-4 rounded-2xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-4 cursor-pointer"
                                     >
                                         {loading ? (
                                             <>
@@ -510,31 +503,16 @@ export default function BookingConfirmPage() {
 
                     {/* Right Column (Summary Card - Airbnb Inspired Layout) */}
                     <div className="lg:col-span-5">
-                        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-24 space-y-6">
+                        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl sticky top-24 space-y-6">
                             {/* Villa Card Summary Header */}
-                            <div className="flex space-x-4 border-b border-slate-100 pb-5">
-                                <div className="w-24 aspect-[4/3] rounded-2xl overflow-hidden bg-slate-105 flex-shrink-0">
-                                    <img src={mainPhoto} alt={selectedVilla.name} className="w-full h-full object-cover" />
-                                </div>
-                                <div className="flex flex-col justify-between py-0.5">
-                                    <div>
-                                        <h4 className="font-serif font-bold text-slate-955 text-sm line-clamp-2">{selectedVilla.name}</h4>
-                                        <div className="flex items-center text-slate-400 text-[9px] font-bold mt-1.5 uppercase tracking-wider">
-                                            <MapPin className="w-3.5 h-3.5 mr-0.5 text-slate-350" />
-                                            <span>{selectedVilla.location.split(',').pop()?.trim() || selectedVilla.location}</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center text-slate-700 text-[10px] font-bold mt-1.5">
-                                        <Star className="w-3 h-3 fill-amber-400 text-amber-400 mr-1" />
-                                        <span>5.0</span>
-                                        <span className="text-slate-455 font-semibold ml-1.5">(Terfavorit)</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <BookingSummaryCard
+                                villa={selectedVilla}
+                                mainPhoto={mainPhoto}
+                            />
 
                             {/* Free Cancellation Banner (Semantically Styled Checkmark) */}
                             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start space-x-3 text-xs text-slate-655 leading-relaxed font-semibold">
-                                <div className="w-5 h-5 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5 border border-rose-500/20">
+                                <div className="w-5 h-5 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5 border border-blue-500/20">
                                     ✓
                                 </div>
                                 <span>
@@ -554,7 +532,7 @@ export default function BookingConfirmPage() {
                                                 {format(parseISO(checkIn), 'dd MMM')} - {format(parseISO(checkOut), 'dd MMM yyyy', { locale: localeID })}
                                             </span>
                                         </div>
-                                        <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-rose-500 hover:underline active:scale-95 transition-transform">
+                                        <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline active:scale-95 transition-transform">
                                             Ubah
                                         </Link>
                                     </div>
@@ -564,7 +542,7 @@ export default function BookingConfirmPage() {
                                             <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">Tamu</span>
                                             <span className="text-slate-800">{numGuests} Tamu</span>
                                         </div>
-                                        <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-rose-500 hover:underline active:scale-95 transition-transform">
+                                        <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline active:scale-95 transition-transform">
                                             Ubah
                                         </Link>
                                     </div>
@@ -589,14 +567,14 @@ export default function BookingConfirmPage() {
                                     {isRefundable && (
                                         <div className="flex justify-between">
                                             <span>Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                            <span className="text-rose-500 font-bold font-sans">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                            <span className="text-blue-500 font-bold font-sans">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="border-t border-slate-150 pt-4 flex justify-between font-black text-slate-950 text-sm">
                                     <span>Total Biaya</span>
-                                    <span className="text-rose-500 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                    <span className="text-blue-500 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
                                 </div>
                             </div>
 

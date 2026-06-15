@@ -47,18 +47,23 @@ export default function ForgotPasswordPage() {
     return (
         <AuthLayout
             title="Forgot password"
-            description="Enter your email to receive a password reset link"
+            description="No worries — we'll send you a reset link"
         >
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600 dark:text-green-400">
+                <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                     {status}
                 </div>
             )}
 
-            <div className="space-y-6">
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+            <div className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="email"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
+                            Email address
+                        </Label>
                         <Input
                             id="email"
                             type="email"
@@ -69,26 +74,29 @@ export default function ForgotPasswordPage() {
                             autoFocus
                             placeholder="email@example.com"
                             required
+                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
-
                         <InputError message={errors.email} />
                     </div>
 
-                    <div className="my-6 flex items-center justify-start">
-                        <Button
-                            type="submit"
-                            className="w-full cursor-pointer"
-                            disabled={processing}
-                        >
-                            {processing && <Spinner />}
-                            Email password reset link
-                        </Button>
-                    </div>
+                    <Button
+                        type="submit"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                        disabled={processing}
+                    >
+                        {processing && <Spinner className="mr-2" />}
+                        {processing ? 'Sending link...' : 'Send reset link'}
+                    </Button>
                 </form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
-                    <span>Or, return to</span>
-                    <TextLink href="/login">log in</TextLink>
+                <div className="mt-2 text-center text-sm text-[#787774] dark:text-slate-400">
+                    Or, return to{' '}
+                    <TextLink
+                        href="/login"
+                        className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                        log in
+                    </TextLink>
                 </div>
             </div>
         </AuthLayout>

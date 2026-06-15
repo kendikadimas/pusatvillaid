@@ -22,6 +22,16 @@ class AnalyticsController extends Controller
         $from = $request->query('from', Carbon::now()->subDays(30)->toDateString());
         $to = $request->query('to', Carbon::now()->toDateString());
 
+        // Validate date range - max 365 days to prevent performance issues
+        $fromDate = Carbon::parse($from);
+        $toDate = Carbon::parse($to);
+        if ($fromDate->greaterThan($toDate)) {
+            return response()->json(['message' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.'], 422);
+        }
+        if ($fromDate->diffInDays($toDate) > 365) {
+            return response()->json(['message' => 'Rentang tanggal maksimal 365 hari.'], 422);
+        }
+
         // 1. Daily Revenue Chart (last 30 days default)
         $dailyRevenue = Payment::where('status', 'success')
             ->whereBetween('paid_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
@@ -42,10 +52,10 @@ class AnalyticsController extends Controller
 
         $villaIds = $bookingsPerVilla->pluck('villa_id')->toArray();
         $villasMap = Villa::whereIn('id', $villaIds)->pluck('name', 'id')->toArray();
-        
-        $bookingsPerVillaFormatted = $bookingsPerVilla->map(fn($item) => [
+
+        $bookingsPerVillaFormatted = $bookingsPerVilla->map(fn ($item) => [
             'villa_name' => $villasMap[$item->villa_id] ?? 'Unknown Villa',
-            'bookings_count' => $item->count
+            'bookings_count' => $item->count,
         ]);
 
         // 3. Payment Methods share
@@ -54,10 +64,10 @@ class AnalyticsController extends Controller
             ->select('payment_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
             ->groupBy('payment_type')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'method' => $item->payment_type ?? 'Lainnya',
                 'count' => $item->count,
-                'revenue' => (float) $item->total_amount
+                'revenue' => (float) $item->total_amount,
             ]);
 
         // 4. Lead Sources
@@ -66,9 +76,9 @@ class AnalyticsController extends Controller
             ->select('utm_source', DB::raw('COUNT(*) as count'))
             ->groupBy('utm_source')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'source' => $item->utm_source ?? 'Direct / Langsung',
-                'count' => $item->count
+                'count' => $item->count,
             ]);
 
         // 5. Conversion Funnel (Pending -> Confirmed -> Completed)
@@ -91,7 +101,7 @@ class AnalyticsController extends Controller
             'bookings_per_villa' => $bookingsPerVillaFormatted,
             'payment_methods' => $paymentMethods,
             'lead_sources' => $leadSources,
-            'conversion_funnel' => $funnelData
+            'conversion_funnel' => $funnelData,
         ]);
     }
 
@@ -110,7 +120,7 @@ class AnalyticsController extends Controller
 
         $response = new StreamedResponse(function () use ($bookings) {
             $handle = fopen('php://output', 'w');
-            
+
             // Add UTF-8 BOM for Excel to open CSV correctly with special characters
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
@@ -133,7 +143,7 @@ class AnalyticsController extends Controller
                 'Tanggal Dibuat',
                 'UTM Source',
                 'UTM Medium',
-                'UTM Campaign'
+                'UTM Campaign',
             ]);
 
             // CSV Data
@@ -156,7 +166,7 @@ class AnalyticsController extends Controller
                     $b->created_at->toDateTimeString(),
                     $b->utm_source ?? '-',
                     $b->utm_medium ?? '-',
-                    $b->utm_campaign ?? '-'
+                    $b->utm_campaign ?? '-',
                 ]);
             }
 
@@ -166,7 +176,7 @@ class AnalyticsController extends Controller
         $fileName = "laporan-booking-{$from}-ke-{$to}.csv";
 
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$fileName.'"');
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Expires', '0');
 

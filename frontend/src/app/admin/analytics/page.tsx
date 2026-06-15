@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import axiosClient from '@/lib/axios';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
+import { formatPrice } from '@/lib/format';
 import { 
     ResponsiveContainer, 
     BarChart, 
@@ -105,36 +108,36 @@ export default function AdminAnalyticsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#dddddd] pb-5">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Analisis & Pendapatan</h1>
-                    <p className="text-slate-500 text-sm mt-1">Pantau tren omset penyewaan, performa okupansi villa, dan demografi transaksi.</p>
+                    <h1 className="text-3xl font-extrabold text-[#222222] tracking-tight">Analisis & pendapatan</h1>
+                    <p className="text-[#6a6a6a] text-xs sm:text-sm mt-1.5 font-medium">Pantau tren omset penyewaan, performa okupansi villa, dan demografi transaksi.</p>
                 </div>
 
                 {/* Filter and Export buttons */}
                 <div className="flex flex-col sm:flex-row items-center gap-3">
-                    <div className="flex items-center space-x-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm text-xs font-semibold">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        <input 
-                            type="date" 
-                            value={from} 
-                            onChange={(e) => setFrom(e.target.value)} 
-                            className="bg-transparent border-0 focus:outline-none w-28 text-slate-700 font-bold"
-                        />
-                        <span className="text-slate-400 font-normal">s/d</span>
-                        <input 
-                            type="date" 
-                            value={to} 
-                            onChange={(e) => setTo(e.target.value)} 
-                            className="bg-transparent border-0 focus:outline-none w-28 text-slate-700 font-bold"
-                        />
+                    <div className="flex items-center space-x-2 bg-white border border-[#dddddd] rounded-[8px] px-3 py-1.5 text-xs font-semibold text-[#222222]">
+                        <Calendar className="w-4 h-4 text-[#6a6a6a]" />
+                            <input 
+                                type="date" 
+                                value={from} 
+                                onChange={(e) => setFrom(e.target.value)} 
+                                className="bg-transparent border-0 focus:outline-none w-full sm:w-28 text-[#222222] font-bold"
+                            />
+                            <span className="text-[#6a6a6a] font-normal shrink-0">s/d</span>
+                            <input 
+                                type="date" 
+                                value={to} 
+                                onChange={(e) => setTo(e.target.value)} 
+                                className="bg-transparent border-0 focus:outline-none w-full sm:w-28 text-[#222222] font-bold"
+                            />
                     </div>
                     <button
                         onClick={handleExport}
-                        className="w-full sm:w-auto bg-slate-900 hover:bg-slate-850 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                        className="w-full sm:w-auto bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#222222] font-extrabold py-2.5 px-4 rounded-[8px] hover:border-slate-300 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
-                        <Download className="w-4 h-4" />
-                        <span>Ekspor Laporan</span>
+                        <Download className="w-4 h-4 text-[#6a6a6a]" />
+                        <span>Ekspor laporan</span>
                     </button>
                 </div>
             </div>
@@ -142,46 +145,48 @@ export default function AdminAnalyticsPage() {
             {/* Loading Board */}
             {loading ? (
                 <div className="flex justify-center items-center py-32">
-                    <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
                 </div>
             ) : (
                 <div className="space-y-8">
                     
                     {/* Summary row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
-                            <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 flex-shrink-0">
-                                <DollarSign className="w-6 h-6" />
+                    <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                    <DollarSign className="w-6 h-6" />
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Total omset</span>
+                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
+                                        Rp {summary.totalRevenue.toLocaleString('id-ID')}
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <span className="text-xs text-slate-400 font-bold block uppercase tracking-wider">Total Omset</span>
-                                <span className="text-2xl font-extrabold text-slate-900">
-                                    Rp {summary.totalRevenue.toLocaleString('id-ID')}
-                                </span>
-                            </div>
-                        </div>
 
-                        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
-                                <BookOpen className="w-6 h-6" />
+                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
+                                <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                                    <BookOpen className="w-6 h-6" />
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Total reservasi aktif</span>
+                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
+                                        {summary.totalBookings} <span className="font-sans text-sm font-bold text-[#6a6a6a] lowercase">booking</span>
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <span className="text-xs text-slate-400 font-bold block uppercase tracking-wider">Total Reservasi Aktif</span>
-                                <span className="text-2xl font-extrabold text-slate-900">
-                                    {summary.totalBookings} Booking
-                                </span>
-                            </div>
-                        </div>
 
-                        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
-                            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
-                                <TrendingUp className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <span className="text-xs text-slate-400 font-bold block uppercase tracking-wider">Nilai Rata-Rata Sewa</span>
-                                <span className="text-2xl font-extrabold text-slate-900">
-                                    Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
-                                </span>
+                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
+                                <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Nilai rata-rata sewa</span>
+                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
+                                        Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,14 +194,14 @@ export default function AdminAnalyticsPage() {
                     {/* Chart Rows */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Daily Revenue Bar Chart (2 cols) */}
-                        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
-                                <BarChart3 className="w-4.5 h-4.5 text-rose-500" />
-                                <span>Tren Penjualan Harian (IDR)</span>
+                        <div className="lg:col-span-2 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full">
+                            <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
+                                <BarChart3 className="w-4.5 h-4.5 text-blue-500" />
+                                <span>Tren penjualan harian (IDR)</span>
                             </h3>
-                            <div className="h-80 w-full text-xs font-medium text-slate-500">
+                            <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
                                 {dailyRevenue.length === 0 ? (
-                                    <div className="h-full flex items-center justify-center text-slate-400">Belum ada data pendapatan.</div>
+                                    <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data pendapatan.</div>
                                 ) : (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={dailyRevenue} margin={{ left: -10, right: 10 }}>
@@ -212,13 +217,13 @@ export default function AdminAnalyticsPage() {
                         </div>
 
                         {/* Booking shares per Villa (1 col) */}
-                        <div className="lg:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
-                                <span>Performa Penjualan Villa</span>
+                        <div className="lg:col-span-1 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full flex flex-col justify-between">
+                            <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
+                                <span>Performa penjualan villa</span>
                             </h3>
-                            <div className="h-80 w-full flex flex-col justify-between text-xs font-semibold text-slate-600">
+                            <div className="h-80 w-full flex flex-col justify-between text-xs font-semibold text-[#6a6a6a] overflow-x-auto">
                                 {bookingsPerVilla.length === 0 ? (
-                                    <div className="h-full flex items-center justify-center text-slate-400">Belum ada data pesanan.</div>
+                                    <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data pesanan.</div>
                                 ) : (
                                     <>
                                         <div className="h-56">
@@ -242,11 +247,11 @@ export default function AdminAnalyticsPage() {
                                             </ResponsiveContainer>
                                         </div>
                                         {/* Custom legend */}
-                                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-slate-500 pt-2 border-t border-slate-50">
+                                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-[#6a6a6a] pt-2 border-t border-[#dddddd]">
                                             {bookingsPerVilla.map((item, index) => (
                                                 <div key={index} className="flex items-center space-x-1.5 truncate">
                                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                                                    <span className="truncate">{item.villa_name}: {item.bookings_count}</span>
+                                                    <span className="truncate">{item.villa_name}: <span className="font-mono tabular-nums text-[#222222] font-bold">{item.bookings_count}</span></span>
                                                 </div>
                                             ))}
                                         </div>
@@ -258,13 +263,13 @@ export default function AdminAnalyticsPage() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Payment methods donut chart */}
-                        <div className="lg:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-6 uppercase tracking-wider">
-                                Metode Pembayaran Terfavorit
+                        <div className="lg:col-span-1 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full flex flex-col justify-between">
+                            <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider">
+                                Metode pembayaran terfavorit
                             </h3>
-                            <div className="h-80 w-full flex flex-col justify-between text-xs font-semibold text-slate-600">
+                            <div className="h-80 w-full flex flex-col justify-between text-xs font-semibold text-[#6a6a6a] overflow-x-auto">
                                 {paymentMethods.length === 0 ? (
-                                    <div className="h-full flex items-center justify-center text-slate-400">Belum ada data pembayaran.</div>
+                                    <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data pembayaran.</div>
                                 ) : (
                                     <>
                                         <div className="h-56">
@@ -288,11 +293,11 @@ export default function AdminAnalyticsPage() {
                                             </ResponsiveContainer>
                                         </div>
                                         {/* Custom legend */}
-                                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-slate-500 pt-2 border-t border-slate-50">
+                                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-[#6a6a6a] pt-2 border-t border-[#dddddd]">
                                             {paymentMethods.map((item, index) => (
                                                 <div key={index} className="flex items-center space-x-1.5 truncate">
                                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[(index + 2) % COLORS.length] }} />
-                                                    <span className="truncate">{item.method || 'Unknown'}: {item.count}</span>
+                                                    <span className="truncate">{item.method || 'Unknown'}: <span className="font-mono tabular-nums text-[#222222] font-bold">{item.count}</span></span>
                                                 </div>
                                             ))}
                                         </div>
@@ -302,14 +307,14 @@ export default function AdminAnalyticsPage() {
                         </div>
 
                         {/* Conversion Funnel / Status */}
-                        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
-                                <Clock className="w-4.5 h-4.5 text-rose-500" />
-                                <span>Status Rasio Pemesanan (Kuantitas)</span>
+                        <div className="lg:col-span-2 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full">
+                            <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
+                                <Clock className="w-4.5 h-4.5 text-blue-500" />
+                                <span>Status rasio pemesanan (kuantitas)</span>
                             </h3>
-                            <div className="h-80 w-full text-xs font-medium text-slate-500">
+                            <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
                                 {funnelData.length === 0 ? (
-                                    <div className="h-full flex items-center justify-center text-slate-400">Belum ada data konversi.</div>
+                                    <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data konversi.</div>
                                 ) : (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={funnelData} margin={{ left: -10, right: 10 }}>

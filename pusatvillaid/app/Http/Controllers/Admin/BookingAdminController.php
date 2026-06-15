@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingConfirmationMail;
 use App\Models\Booking;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class BookingAdminController extends Controller
@@ -25,8 +27,8 @@ class BookingAdminController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('booking_code', 'like', "%{$search}%")
-                  ->orWhere('guest_name', 'like', "%{$search}%")
-                  ->orWhere('guest_email', 'like', "%{$search}%");
+                    ->orWhere('guest_name', 'like', "%{$search}%")
+                    ->orWhere('guest_email', 'like', "%{$search}%");
             });
         }
 
@@ -60,7 +62,7 @@ class BookingAdminController extends Controller
         // Sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
-        
+
         if (in_array($sortBy, ['booking_code', 'check_in', 'check_out', 'total_amount', 'status', 'created_at'])) {
             $query->orderBy($sortBy, $sortOrder);
         } else {
@@ -76,7 +78,7 @@ class BookingAdminController extends Controller
                 'last_page' => $bookings->lastPage(),
                 'per_page' => $bookings->perPage(),
                 'total' => $bookings->total(),
-            ]
+            ],
         ]);
     }
 
@@ -87,7 +89,7 @@ class BookingAdminController extends Controller
     {
         $booking = Booking::with(['villa', 'payment', 'review'])->find($id);
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
@@ -101,7 +103,7 @@ class BookingAdminController extends Controller
     {
         $booking = Booking::find($id);
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
@@ -126,20 +128,20 @@ class BookingAdminController extends Controller
                 ->where(function ($query) use ($booking) {
                     $query->where(function ($q) use ($booking) {
                         $q->where('check_in', '>=', $booking->check_in)
-                          ->where('check_in', '<', $booking->check_out);
+                            ->where('check_in', '<', $booking->check_out);
                     })->orWhere(function ($q) use ($booking) {
                         $q->where('check_out', '>', $booking->check_in)
-                          ->where('check_out', '<=', $booking->check_out);
+                            ->where('check_out', '<=', $booking->check_out);
                     })->orWhere(function ($q) use ($booking) {
                         $q->where('check_in', '<=', $booking->check_in)
-                          ->where('check_out', '>=', $booking->check_out);
+                            ->where('check_out', '>=', $booking->check_out);
                     });
                 })
                 ->exists();
 
             if ($overlapping) {
                 return response()->json([
-                    'message' => 'Tidak bisa konfirmasi: tanggal bertabrakan dengan booking lain yang sudah dikonfirmasi.'
+                    'message' => 'Tidak bisa konfirmasi: tanggal bertabrakan dengan booking lain yang sudah dikonfirmasi.',
                 ], 422);
             }
         }
@@ -167,7 +169,7 @@ class BookingAdminController extends Controller
 
         return response()->json([
             'booking' => $booking,
-            'message' => 'Status booking berhasil diperbarui.'
+            'message' => 'Status booking berhasil diperbarui.',
         ]);
     }
 
@@ -176,17 +178,27 @@ class BookingAdminController extends Controller
      */
     public function resendEmail(int $id): JsonResponse
     {
-        $booking = Booking::find($id);
+        $booking = Booking::with(['villa', 'payment'])->find($id);
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
-        Log::info("Admin me-resend email konfirmasi untuk Booking Code: {$booking->booking_code} ke {$booking->guest_email}");
+        try {
+            Mail::to($booking->guest_email)
+                ->send(new BookingConfirmationMail($booking));
 
-        // Simulate successful email dispatch
-        return response()->json([
-            'message' => "Email konfirmasi untuk booking {$booking->booking_code} berhasil dikirim ulang ke {$booking->guest_email}."
-        ]);
+            Log::info("Admin resend email konfirmasi untuk Booking Code: {$booking->booking_code} ke {$booking->guest_email}");
+
+            return response()->json([
+                'message' => "Email konfirmasi untuk booking {$booking->booking_code} berhasil dikirim ulang ke {$booking->guest_email}.",
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Gagal mengirim email konfirmasi untuk booking {$booking->booking_code}: ".$e->getMessage());
+
+            return response()->json([
+                'message' => 'Gagal mengirim email. Silakan coba lagi.',
+            ], 500);
+        }
     }
 }

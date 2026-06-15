@@ -26,15 +26,15 @@ export default function TwoFactorChallenge() {
                 title: 'Recovery code',
                 description:
                     'Please confirm access to your account by entering one of your emergency recovery codes.',
-                toggleText: 'login using an authentication code',
+                toggleText: 'use authentication code instead',
             };
         }
 
         return {
             title: 'Authentication code',
             description:
-                'Enter the authentication code provided by your authenticator application.',
-            toggleText: 'login using a recovery code',
+                'Enter the code from your authenticator application.',
+            toggleText: 'use a recovery code instead',
         };
     }, [showRecoveryInput]);
 
@@ -53,30 +53,36 @@ export default function TwoFactorChallenge() {
         <>
             <Head title="Two-factor authentication" />
 
-            <div className="space-y-6">
+            <div className="flex flex-col gap-5">
                 <Form
                     {...store.form()}
-                    className="space-y-4"
                     resetOnError
                     resetOnSuccess={!showRecoveryInput}
                 >
                     {({ errors, processing, clearErrors }) => (
-                        <>
+                        <div className="flex flex-col gap-5">
                             {showRecoveryInput ? (
-                                <>
+                                <div className="grid gap-1.5">
+                                    <label className="text-sm sm:text-base font-medium text-slate-700">
+                                        Recovery code
+                                    </label>
                                     <Input
                                         name="recovery_code"
                                         type="text"
                                         placeholder="Enter recovery code"
                                         autoFocus={showRecoveryInput}
                                         required
+                                        className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                     />
                                     <InputError
                                         message={errors.recovery_code}
                                     />
-                                </>
+                                </div>
                             ) : (
-                                <div className="flex flex-col items-center justify-center space-y-3 text-center">
+                                <div className="flex flex-col items-center justify-center gap-3 text-center">
+                                    <label className="text-sm sm:text-base font-medium text-slate-700">
+                                        Authentication code
+                                    </label>
                                     <div className="flex w-full items-center justify-center">
                                         <InputOTP
                                             name="code"
@@ -86,6 +92,7 @@ export default function TwoFactorChallenge() {
                                             disabled={processing}
                                             pattern={REGEXP_ONLY_DIGITS}
                                             autoFocus
+                                            containerClassName="gap-3"
                                         >
                                             <InputOTPGroup>
                                                 {Array.from(
@@ -94,6 +101,7 @@ export default function TwoFactorChallenge() {
                                                         <InputOTPSlot
                                                             key={index}
                                                             index={index}
+                                                            className="size-11 rounded-lg border-slate-300 text-lg font-semibold shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                                         />
                                                     ),
                                                 )}
@@ -106,17 +114,17 @@ export default function TwoFactorChallenge() {
 
                             <Button
                                 type="submit"
-                                className="w-full"
+                                className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                                 disabled={processing}
                             >
-                                Continue
+                                {processing ? 'Verifying...' : 'Continue'}
                             </Button>
 
-                            <div className="text-center text-sm text-muted-foreground">
-                                <span>or you can </span>
+                            <div className="text-center text-sm text-slate-500">
+                                <span>Or </span>
                                 <button
                                     type="button"
-                                    className="cursor-pointer text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                    className="font-semibold text-blue-600 underline decoration-blue-300 underline-offset-4 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-400"
                                     onClick={() =>
                                         toggleRecoveryMode(clearErrors)
                                     }
@@ -124,7 +132,7 @@ export default function TwoFactorChallenge() {
                                     {authConfigContent.toggleText}
                                 </button>
                             </div>
-                        </>
+                        </div>
                     )}
                 </Form>
             </div>

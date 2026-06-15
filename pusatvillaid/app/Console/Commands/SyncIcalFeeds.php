@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\BlockedDate;
+use App\Models\User;
 use App\Models\VillaIcalLink;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -32,12 +33,14 @@ class SyncIcalFeeds extends Command
     {
         if ($linkId = $this->option('link-id')) {
             $link = VillaIcalLink::where('id', $linkId)->with('villa:id,name')->first();
-            if (!$link) {
+            if (! $link) {
                 $this->error("iCal link with ID {$linkId} not found.");
+
                 return 1;
             }
             if ($link->sync_status !== 'active') {
                 $this->error("iCal link with ID {$linkId} is not active.");
+
                 return 1;
             }
             $links = collect([$link]);
@@ -53,6 +56,7 @@ class SyncIcalFeeds extends Command
 
         if ($links->isEmpty()) {
             $this->info('No active iCal links to sync.');
+
             return self::SUCCESS;
         }
 
@@ -65,7 +69,7 @@ class SyncIcalFeeds extends Command
             try {
                 $response = Http::timeout(15)->get($link->ical_url);
 
-                if (!$response->successful()) {
+                if (! $response->successful()) {
                     throw new \Exception("HTTP {$response->status()}: Failed to fetch iCal feed.");
                 }
 
@@ -73,10 +77,11 @@ class SyncIcalFeeds extends Command
                 $events = $this->parseIcal($icalContent);
 
                 if ($this->option('dry-run')) {
-                    $this->warn("    [DRY RUN] Found " . count($events) . " event(s):");
+                    $this->warn('    [DRY RUN] Found '.count($events).' event(s):');
                     foreach ($events as $event) {
                         $this->line("      {$event['start']} → {$event['end']} | {$event['summary']}");
                     }
+
                     continue;
                 }
 
@@ -154,18 +159,20 @@ class SyncIcalFeeds extends Command
             if ($line === 'BEGIN:VEVENT') {
                 $inEvent = true;
                 $currentEvent = ['summary' => 'Reserved'];
+
                 continue;
             }
 
             if ($line === 'END:VEVENT') {
                 $inEvent = false;
-                if (!empty($currentEvent['start']) && !empty($currentEvent['end'])) {
+                if (! empty($currentEvent['start']) && ! empty($currentEvent['end'])) {
                     $events[] = $currentEvent;
                 }
+
                 continue;
             }
 
-            if (!$inEvent) {
+            if (! $inEvent) {
                 continue;
             }
 
@@ -255,6 +262,9 @@ class SyncIcalFeeds extends Command
                 if ($dateStr >= $today) {
                     $reason = "Booked via {$channelName}";
 
+                    // Find a fallback user to satisfy the foreign key constraint
+                    $userId = User::first()?->id ?? 1;
+
                     // Use firstOrCreate to avoid duplicates (villa_id + date is unique)
                     $created = BlockedDate::firstOrCreate(
                         [
@@ -263,7 +273,7 @@ class SyncIcalFeeds extends Command
                         ],
                         [
                             'reason' => $reason,
-                            'created_by' => 1, // System/admin user
+                            'created_by' => $userId,
                             'source' => $platformSource,
                         ]
                     );

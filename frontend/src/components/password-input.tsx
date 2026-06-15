@@ -6,16 +6,21 @@ import { cn } from '@/lib/utils';
 
 export default function PasswordInput({
     className,
+    inputClassName,
     ref,
     ...props
-}: Omit<ComponentProps<'input'>, 'type'> & { ref?: Ref<HTMLInputElement>; passwordrules?: string }) {
+}: Omit<ComponentProps<'input'>, 'type'> & {
+    ref?: Ref<HTMLInputElement>;
+    inputClassName?: string;
+    passwordrules?: string;
+}) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="relative">
+        <div className={cn('relative', className)}>
             <Input
                 type={showPassword ? 'text' : 'password'}
-                className={cn('pr-10', className)}
+                className={cn('pr-10', inputClassName)}
                 ref={ref}
                 {...props}
             />

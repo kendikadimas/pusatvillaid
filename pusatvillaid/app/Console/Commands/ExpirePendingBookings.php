@@ -39,6 +39,7 @@ class ExpirePendingBookings extends Command
 
         if ($count === 0) {
             $this->info('No pending bookings to expire.');
+
             return self::SUCCESS;
         }
 
@@ -48,11 +49,12 @@ class ExpirePendingBookings extends Command
                 ->each(function ($booking) {
                     $this->line("  - {$booking->booking_code} | Villa #{$booking->villa_id} | {$booking->check_in} → {$booking->check_out} | Created: {$booking->created_at}");
                 });
+
             return self::SUCCESS;
         }
 
         // Expire in bulk within a transaction
-        DB::transaction(function () use ($query, $cutoff) {
+        DB::transaction(function () use ($query) {
             $query->update([
                 'status' => 'cancelled',
                 'payment_status' => 'expired',

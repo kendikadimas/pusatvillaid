@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ReviewAdminController extends Controller
 {
@@ -34,7 +35,7 @@ class ReviewAdminController extends Controller
                 'last_page' => $reviews->lastPage(),
                 'per_page' => $reviews->perPage(),
                 'total' => $reviews->total(),
-            ]
+            ],
         ]);
     }
 
@@ -45,7 +46,7 @@ class ReviewAdminController extends Controller
     {
         $review = Review::find($id);
 
-        if (!$review) {
+        if (! $review) {
             return response()->json(['message' => 'Review tidak ditemukan.'], 404);
         }
 
@@ -56,7 +57,7 @@ class ReviewAdminController extends Controller
 
         return response()->json([
             'review' => $review,
-            'message' => 'Review berhasil disetujui dan sekarang tampil di halaman detail villa.'
+            'message' => 'Review berhasil disetujui dan sekarang tampil di halaman detail villa.',
         ]);
     }
 
@@ -67,14 +68,14 @@ class ReviewAdminController extends Controller
     {
         $review = Review::find($id);
 
-        if (!$review) {
+        if (! $review) {
             return response()->json(['message' => 'Review tidak ditemukan.'], 404);
         }
 
         $review->delete();
 
         return response()->json([
-            'message' => 'Review berhasil dihapus/ditolak.'
+            'message' => 'Review berhasil dihapus/ditolak.',
         ]);
     }
 
@@ -83,7 +84,7 @@ class ReviewAdminController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'villa_id' => 'required|exists:villas,id',
             'guest_name' => 'required|string|max:255',
             'rating' => 'required|integer|min:1|max:5',
@@ -91,13 +92,14 @@ class ReviewAdminController extends Controller
             'guest_avatar' => 'nullable|string|url|max:1000',
             'guest_subtitle' => 'nullable|string|max:255',
             'is_approved' => 'boolean',
+            'created_at' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $review = Review::create([
+        $review = new Review([
             'villa_id' => (int) $request->villa_id,
             'guest_name' => $request->guest_name,
             'rating' => (int) $request->rating,
@@ -105,13 +107,22 @@ class ReviewAdminController extends Controller
             'guest_avatar' => $request->guest_avatar,
             'guest_subtitle' => $request->guest_subtitle,
             'is_approved' => $request->input('is_approved', true),
-            'approved_at' => $request->input('is_approved', true) ? now() : null,
-            'approved_by' => $request->input('is_approved', true) ? $request->user()->id : null,
         ]);
+
+        if ($request->filled('created_at')) {
+            $review->created_at = $request->created_at;
+        }
+
+        if ($request->input('is_approved', true)) {
+            $review->approved_at = now();
+            $review->approved_by = $request->user()->id;
+        }
+
+        $review->save();
 
         return response()->json([
             'review' => $review,
-            'message' => 'Ulasan berhasil ditambahkan secara manual.'
+            'message' => 'Ulasan berhasil ditambahkan secara manual.',
         ], 201);
     }
 
@@ -122,17 +133,18 @@ class ReviewAdminController extends Controller
     {
         $review = Review::find($id);
 
-        if (!$review) {
+        if (! $review) {
             return response()->json(['message' => 'Review tidak ditemukan.'], 404);
         }
 
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'guest_name' => 'required|string|max:255',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|max:2000',
             'guest_avatar' => 'nullable|string|url|max:1000',
             'guest_subtitle' => 'nullable|string|max:255',
             'is_approved' => 'boolean',
+            'created_at' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -143,15 +155,15 @@ class ReviewAdminController extends Controller
         $approvedAt = $review->approved_at;
         $approvedBy = $review->approved_by;
 
-        if ($isApproved && !$review->is_approved) {
+        if ($isApproved && ! $review->is_approved) {
             $approvedAt = now();
             $approvedBy = $request->user()->id;
-        } elseif (!$isApproved && $review->is_approved) {
+        } elseif (! $isApproved && $review->is_approved) {
             $approvedAt = null;
             $approvedBy = null;
         }
 
-        $review->update([
+        $review->fill([
             'guest_name' => $request->guest_name,
             'rating' => (int) $request->rating,
             'comment' => $request->comment,
@@ -162,9 +174,41 @@ class ReviewAdminController extends Controller
             'approved_by' => $approvedBy,
         ]);
 
+        if ($request->filled('created_at')) {
+            $review->created_at = $request->created_at;
+        }
+
+        $review->save();
+
         return response()->json([
             'review' => $review,
-            'message' => 'Ulasan berhasil diperbarui.'
+            'message' => 'Ulasan berhasil diperbarui.',
         ]);
+    }
+
+    /**
+     * Upload avatar for a review guest.
+     */
+    public function uploadAvatar(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max 2MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $url = asset('storage/'.$path);
+
+            return response()->json([
+                'avatar_url' => $url,
+                'message' => 'Avatar berhasil diunggah.',
+            ]);
+        }
+
+        return response()->json(['message' => 'File avatar tidak ditemukan.'], 400);
     }
 }

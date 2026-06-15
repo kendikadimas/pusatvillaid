@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/villas/layout,_N_T_/admin/villas/page,_N_T_/admin/villas"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/admin/villas/__PAGE__",
+    "/admin/villas",
+    "/admin",
+    "/_index",
+    "/_head"
+  ]
+}

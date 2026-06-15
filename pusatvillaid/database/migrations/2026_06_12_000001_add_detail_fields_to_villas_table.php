@@ -33,7 +33,7 @@ return new class extends Migration
                 'host_avatar',
                 'highlights',
                 'bedrooms_info',
-                'accessibility_features'
+                'accessibility_features',
             ]);
         });
     }

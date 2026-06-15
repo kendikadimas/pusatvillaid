@@ -119,7 +119,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         let totalAmount = weekdayTotal + weekendTotal;
 
         if (isRefundable) {
-            totalAmount = Math.round(totalAmount * 1.11111);
+            const surchargeRate = selectedVilla.refundable_surcharge_rate ?? 0.1111;
+            totalAmount = Math.round(totalAmount * (1 + surchargeRate));
         }
 
         set({

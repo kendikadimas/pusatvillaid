@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Villa;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class VillaController extends Controller
 {
@@ -16,6 +16,7 @@ class VillaController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Villa::where('is_active', true)
+            ->with('destination')
             ->withAvg(['reviews' => function ($q) {
                 $q->where('is_approved', true);
             }], 'rating')
@@ -23,9 +24,22 @@ class VillaController extends Controller
                 $q->where('is_approved', true);
             }]);
 
-        // Filter by location
+        // Filter by location / destination
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $location = $request->location;
+            $query->where(function ($q) use ($location) {
+                $q->where('location', 'like', '%'.$location.'%')
+                    ->orWhereHas('destination', function ($dq) use ($location) {
+                        $dq->where('name', 'like', '%'.$location.'%')
+                            ->orWhere('city', 'like', '%'.$location.'%')
+                            ->orWhere('query', 'like', '%'.$location.'%');
+                    });
+            });
+        }
+
+        // Strict filter by destination_id
+        if ($request->filled('destination_id')) {
+            $query->where('destination_id', $request->destination_id);
         }
 
         // Filter by bedrooms
@@ -56,7 +70,8 @@ class VillaController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $villas = $query->paginate(9);
+        $perPage = $request->input('per_page', 9);
+        $villas = $query->paginate(min((int) $perPage, 50));
 
         // Format pagination metadata
         return response()->json([
@@ -66,7 +81,7 @@ class VillaController extends Controller
                 'last_page' => $villas->lastPage(),
                 'per_page' => $villas->perPage(),
                 'total' => $villas->total(),
-            ]
+            ],
         ]);
     }
 
@@ -77,9 +92,10 @@ class VillaController extends Controller
     {
         $villa = Villa::where('slug', $slug)
             ->where('is_active', true)
+            ->with('destination')
             ->first();
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -97,8 +113,8 @@ class VillaController extends Controller
             'reviews' => $reviews,
             'stats' => [
                 'rating_avg' => round($avgRating, 1),
-                'reviews_count' => $totalReviews
-            ]
+                'reviews_count' => $totalReviews,
+            ],
         ]);
     }
 
@@ -111,7 +127,7 @@ class VillaController extends Controller
             ->where('is_active', true)
             ->first();
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -127,7 +143,7 @@ class VillaController extends Controller
             // Loop from check_in to check_out - 1 (exclusive of checkout night)
             $checkIn = Carbon::parse($booking->check_in);
             $checkOut = Carbon::parse($booking->check_out);
-            
+
             if ($checkIn->equalTo($checkOut)) {
                 $disabledDates[] = $checkIn->toDateString();
             } else {
@@ -142,7 +158,7 @@ class VillaController extends Controller
         $blockedDates = $villa->blockedDates()
             ->where('date', '>=', now()->toDateString())
             ->pluck('date')
-            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
             ->toArray();
 
         // Merge and clean up
@@ -150,7 +166,7 @@ class VillaController extends Controller
         sort($allDisabledDates);
 
         return response()->json([
-            'disabled_dates' => $allDisabledDates
+            'disabled_dates' => $allDisabledDates,
         ]);
     }
 }

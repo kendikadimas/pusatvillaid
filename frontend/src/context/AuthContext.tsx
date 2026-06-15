@@ -8,6 +8,7 @@ export interface AdminUser {
     id: number;
     name: string;
     email: string;
+    role?: string;
 }
 
 interface AuthContextType {
@@ -15,7 +16,7 @@ interface AuthContextType {
     user: any | null;
     loading: boolean;
     error: any;
-    login: (credentials: { email: string; password: string; remember?: string }) => Promise<any>;
+    login: (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean) => Promise<any>;
     logout: () => Promise<void>;
     refreshAdmin: () => Promise<void>;
     forgotPassword: (email: string) => Promise<any>;
@@ -36,11 +37,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const pathname = usePathname();
 
     const refreshUser = async () => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+        if (!token) {
+            setUser(null);
+            return;
+        }
+
         try {
             const response = await axiosClient.get('/user');
             setUser(response.data);
         } catch (err) {
             setUser(null);
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('user_token');
+            }
         }
     };
 
@@ -55,8 +65,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const register = async (credentials: any) => {
-        const response = await axiosClient.post('/register', credentials);
-        return response.data;
+        setError(null);
+        try {
+            const response = await axiosClient.post('/register', credentials);
+            const { token, user: userData } = response.data;
+            
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('user_token', token);
+            }
+            
+            setUser(userData);
+            
+            // Check if there is a redirect path
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirect = searchParams.get('redirect');
+            if (redirect) {
+                router.push(redirect);
+            } else {
+                router.push('/profile');
+            }
+            
+            return response.data;
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Registrasi gagal.');
+            throw err;
+        }
     };
 
     const resendEmailVerification = async () => {
@@ -68,12 +101,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
         if (!token) {
             setAdmin(null);
-            setLoading(false);
             return;
         }
 
         try {
-            // Our Axios interceptor automatically attaches the token
             const response = await axiosClient.get('/admin/me');
             setAdmin(response.data);
             setError(null);
@@ -85,13 +116,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (err.response?.status !== 401) {
                 setError(err);
             }
-        } finally {
-            setLoading(false);
         }
     };
 
+    // Combined initial loading
     useEffect(() => {
-        refreshAdmin();
+        const initAuth = async () => {
+            setLoading(true);
+            await Promise.all([refreshAdmin(), refreshUser()]);
+            setLoading(false);
+        };
+        initAuth();
     }, []);
 
     // Handle Admin Route Protection
@@ -110,18 +145,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [admin, loading, pathname, router]);
 
-    const login = async (credentials: { email: string; password: string; remember?: string }) => {
+    const login = async (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean) => {
         setError(null);
         try {
-            const response = await axiosClient.post('/admin/login', credentials);
-            const { token, user } = response.data;
+            const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+            const targetIsAdmin = isAdmin !== undefined ? isAdmin : isCurrentPathAdmin;
+            
+            const endpoint = targetIsAdmin ? '/admin/login' : '/login';
+            const response = await axiosClient.post(endpoint, credentials);
+            const { token, user: userData } = response.data;
+            const isAdminUser = userData?.role === 'admin';
             
             if (typeof window !== 'undefined') {
-                localStorage.setItem('admin_token', token);
+                if (targetIsAdmin || isAdminUser) {
+                    localStorage.setItem('admin_token', token);
+                    setAdmin(userData);
+                } else {
+                    localStorage.setItem('user_token', token);
+                    setUser(userData);
+                }
             }
             
-            setAdmin(user);
-            router.push('/admin/dashboard');
+            if (targetIsAdmin || isAdminUser) {
+                router.push('/admin/dashboard');
+            } else {
+                const searchParams = new URLSearchParams(window.location.search);
+                const redirect = searchParams.get('redirect');
+                if (redirect) {
+                    router.push(redirect);
+                } else {
+                    router.push('/profile');
+                }
+            }
+            
             return response.data;
         } catch (err: any) {
             setError(err.response?.data?.message || 'Email atau password salah.');
@@ -130,17 +186,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = async () => {
+        const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+        const endpoint = isCurrentPathAdmin ? '/admin/logout' : '/logout';
+        
         try {
-            await axiosClient.post('/admin/logout');
+            await axiosClient.post(endpoint);
         } catch (err) {
-            // Ignore logout API failures and clear token locally
             console.error('Logout API failed:', err);
         } finally {
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('admin_token');
+                if (isCurrentPathAdmin) {
+                    localStorage.removeItem('admin_token');
+                    setAdmin(null);
+                    router.push('/admin/login');
+                } else {
+                    localStorage.removeItem('user_token');
+                    setUser(null);
+                    router.push('/login');
+                }
             }
-            setAdmin(null);
-            router.push('/admin/login');
         }
     };
 

@@ -6,15 +6,22 @@ import axiosClient from '@/lib/axios';
 import { Booking } from '@/types';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import EmptyState from '@/components/ui/EmptyState';
+import Pagination from '@/components/ui/Pagination';
+import StatusBadge from '@/components/ui/StatusBadge';
+import PageHeader from '@/components/ui/PageHeader';
+import { formatPrice } from '@/lib/format';
 import { 
     Search, 
     SlidersHorizontal, 
-    Download, 
-    Loader2, 
+    Download,
+    Loader2,
     ChevronRight,
     ArrowUpDown,
     Eye,
-    MessageSquare
+    MessageSquare,
+    BookOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -98,50 +105,57 @@ export default function AdminBookingsPage() {
         const to = checkInTo || format(new Date(), 'yyyy-MM-dd');
         const token = localStorage.getItem('admin_token');
         
-        // Open the streamed CSV download endpoint in a new window with bearer token auth query (we bypass custom headers by using direct link)
         window.open(`${axiosClient.defaults.baseURL}/admin/analytics/export?from=${from}&to=${to}&token=${token}`, '_blank');
         toast.info('Laporan booking sedang diunduh...');
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#dddddd] pb-5">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Manajemen Pemesanan</h1>
-                    <p className="text-slate-500 text-sm mt-1">Kelola status check-in, detail pembayaran, dan riwayat pesanan tamu.</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-[#222222] tracking-tight">Manajemen pemesanan</h1>
+                    <p className="text-[#6a6a6a] text-xs sm:text-sm mt-1.5 font-medium">Kelola status check-in, detail pembayaran, dan riwayat pesanan tamu.</p>
                 </div>
                 <button
                     onClick={handleExport}
-                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+                    className="w-full sm:w-auto bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#6a6a6a] font-extrabold py-2.5 px-4 rounded-[8px] hover:border-[#dddddd] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 >
-                    <Download className="w-4 h-4" />
-                    <span>Unduh Laporan (CSV)</span>
+                    <Download className="w-4 h-4 text-[#6a6a6a]" />
+                    <span>Unduh laporan (CSV)</span>
                 </button>
             </div>
 
             {/* Filter and Search Panel */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-                <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6">
+                <div className="flex items-center space-x-2 border-b border-[#dddddd] pb-3 mb-5">
+                    <SlidersHorizontal className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-bold text-[#222222] tracking-tight">Filter pencarian</span>
+                </div>
+                
+                <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                     <div className="md:col-span-2 relative">
-                        <label className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Cari Pesanan</label>
-                        <input 
-                            type="text" 
-                            placeholder="Cari kode booking, nama tamu, atau email..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 font-semibold"
-                        />
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3 bottom-3" />
+                        <label className="text-[11px] font-bold text-slate-500 block mb-1.5">Cari pesanan</label>
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Cari kode booking, nama tamu, atau email..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
+                            />
+                            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                        </div>
                     </div>
 
                     <div>
-                        <label className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Status Booking</label>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-1.5">Status booking</label>
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 font-semibold"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         >
-                            <option value="">Semua Status</option>
+                            <option value="">Semua status</option>
                             <option value="pending">Pending</option>
                             <option value="confirmed">Confirmed</option>
                             <option value="completed">Completed</option>
@@ -152,23 +166,23 @@ export default function AdminBookingsPage() {
                     <div>
                         <button
                             type="submit"
-                            className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 rounded-xl transition-colors cursor-pointer"
+                            className="w-full bg-blue-500 hover:bg-blue-650 active:scale-95 text-white font-extrabold text-xs py-2.5 rounded-[8px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
-                            Cari Data
+                            Cari data
                         </button>
                     </div>
                 </form>
 
-                {/* Extended filters drawer panel toggle */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 border-t border-slate-100 pt-4 text-xs font-semibold">
+                {/* Extended filters panel */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-t border-[#dddddd] pt-5 mt-5 text-xs font-semibold">
                     <div>
-                        <label className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Status Bayar</label>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-1.5">Status bayar</label>
                         <select
                             value={paymentStatus}
                             onChange={(e) => setPaymentStatus(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 font-semibold"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         >
-                            <option value="">Semua Pembayaran</option>
+                            <option value="">Semua pembayaran</option>
                             <option value="unpaid">Unpaid</option>
                             <option value="paid">Paid</option>
                             <option value="refunded">Refunded</option>
@@ -177,147 +191,126 @@ export default function AdminBookingsPage() {
                     </div>
 
                     <div>
-                        <label className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Check-in Mulai</label>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-1.5">Check-in mulai</label>
                         <input 
                             type="date"
                             value={checkInFrom}
                             onChange={(e) => setCheckInFrom(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 font-semibold"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         />
                     </div>
 
                     <div>
-                        <label className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">Check-in Sampai</label>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-1.5">Check-in sampai</label>
                         <input 
                             type="date"
                             value={checkInTo}
                             onChange={(e) => setCheckInTo(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 font-semibold"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         />
                     </div>
 
                     <div className="flex items-end">
                         <button
                             onClick={handleResetFilters}
-                            className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition-colors cursor-pointer text-center"
+                            className="w-full bg-slate-50 hover:bg-slate-100 active:scale-95 text-slate-500 font-extrabold text-xs py-2.5 rounded-[8px] border border-[#dddddd] transition-all duration-200 cursor-pointer text-center"
                         >
-                            Reset Filter
+                            Reset filter
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Bookings Table card */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[#dddddd]">
+                    <h3 className="font-bold text-[#222222] flex items-center space-x-2 text-sm tracking-tight">
+                        <BookOpen className="w-4 h-4 text-blue-500" />
+                        <span>Daftar pemesanan</span>
+                    </h3>
+                </div>
                 {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-                    </div>
+                    <LoadingSpinner fullPage={false} />
                 ) : bookings.length === 0 ? (
-                    <p className="text-slate-400 text-sm py-16 text-center">Tidak ada data pemesanan yang cocok dengan filter aktif.</p>
+                    <p className="text-[#6a6a6a] text-sm py-16 text-center font-medium">Tidak ada data pemesanan yang cocok dengan filter aktif.</p>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-xs text-left text-slate-500 border-collapse">
+                    <>
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-xs text-left text-[#6a6a6a] border-collapse">
                             <thead>
-                                <tr className="border-b border-slate-200 bg-slate-50 text-slate-400 uppercase font-bold text-[10px] tracking-wider">
-                                    <th onClick={() => toggleSort('booking_code')} className="py-3 px-4 cursor-pointer hover:bg-slate-100/50">
-                                        <div className="flex items-center space-x-1">
-                                            <span>Code</span>
-                                            <ArrowUpDown className="w-3 h-3" />
+                                <tr className="bg-[#f7f7f7] border-b border-[#dddddd] text-[#6a6a6a] font-bold text-[11px]">
+                                    <th onClick={() => toggleSort('booking_code')} className="py-4 px-6 cursor-pointer hover:bg-slate-50/20 transition-colors w-24">
+                                        <div className="flex items-center space-x-1 justify-between">
+                                            <span>Kode</span>
+                                            <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
                                         </div>
                                     </th>
-                                    <th className="py-3 px-4">Villa</th>
-                                    <th className="py-3 px-4">Nama Tamu</th>
-                                    <th onClick={() => toggleSort('check_in')} className="py-3 px-4 cursor-pointer hover:bg-slate-100/50">
-                                        <div className="flex items-center space-x-1">
+                                    <th className="py-4 px-4">Villa</th>
+                                    <th className="py-4 px-4">Nama tamu</th>
+                                    <th onClick={() => toggleSort('check_in')} className="py-4 px-4 cursor-pointer hover:bg-slate-50/20 transition-colors">
+                                        <div className="flex items-center space-x-1 justify-between">
                                             <span>Check-in</span>
-                                            <ArrowUpDown className="w-3 h-3" />
+                                            <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
                                         </div>
                                     </th>
-                                    <th onClick={() => toggleSort('check_out')} className="py-3 px-4 cursor-pointer hover:bg-slate-100/50">
-                                        <div className="flex items-center space-x-1">
+                                    <th onClick={() => toggleSort('check_out')} className="py-4 px-4 cursor-pointer hover:bg-slate-50/20 transition-colors">
+                                        <div className="flex items-center space-x-1 justify-between">
                                             <span>Check-out</span>
-                                            <ArrowUpDown className="w-3 h-3" />
+                                            <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
                                         </div>
                                     </th>
-                                    <th className="py-3 px-4 text-center">Status</th>
-                                    <th className="py-3 px-4 text-center">Bayar</th>
-                                    <th onClick={() => toggleSort('total_amount')} className="py-3 px-4 cursor-pointer hover:bg-slate-100/50">
-                                        <div className="flex items-center space-x-1">
+                                    <th className="py-4 px-4 text-center">Status</th>
+                                    <th className="py-4 px-4 text-center">Bayar</th>
+                                    <th onClick={() => toggleSort('total_amount')} className="py-4 px-4 cursor-pointer hover:bg-slate-50/20 transition-colors">
+                                        <div className="flex items-center space-x-1 justify-between">
                                             <span>Total</span>
-                                            <ArrowUpDown className="w-3 h-3" />
+                                            <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
                                         </div>
                                     </th>
-                                    <th className="py-3 px-4 text-right">Aksi</th>
+                                    <th className="py-4 px-6 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {bookings.map((b) => (
-                                    <tr key={b.id} className="border-b border-slate-150 hover:bg-slate-50/50">
-                                        <td className="py-4 px-4 font-bold text-slate-900">{b.booking_code}</td>
-                                        <td className="py-4 px-4 font-semibold text-slate-800 truncate max-w-[140px]">{b.villa?.name}</td>
-                                        <td className="py-4 px-4">
-                                            <p className="font-semibold text-slate-900">{b.guest_name}</p>
-                                            <p className="text-[10px] text-slate-400 truncate max-w-[140px]">{b.guest_email}</p>
+                                    <tr key={b.id} className="border-b border-[#dddddd] hover:bg-slate-50/40 transition-colors duration-200">
+                                        <td className="py-3.5 px-6 font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</td>
+                                        <td className="py-3.5 px-4 font-bold text-[#222222] truncate max-w-[140px]">{b.villa?.name}</td>
+                                        <td className="py-3.5 px-4">
+                                            <p className="font-semibold text-[#222222]">{b.guest_name}</p>
+                                            <p className="text-[10px] text-[#6a6a6a] mt-0.5 truncate max-w-[140px] font-medium">{b.guest_email}</p>
                                         </td>
-                                        <td className="py-4 px-4 font-medium">
+                                        <td className="py-3.5 px-4 font-mono tabular-nums text-[#222222] font-semibold">
                                             {format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}
                                         </td>
-                                        <td className="py-4 px-4 font-medium">
+                                        <td className="py-3.5 px-4 font-mono tabular-nums text-[#222222] font-semibold">
                                             {format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}
                                         </td>
-                                        <td className="py-4 px-4 text-center">
-                                            {b.status === 'confirmed' && (
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-green-50 text-green-700 text-[10px] border border-rose-100">
-                                                    Confirmed
-                                                </span>
-                                            )}
-                                            {b.status === 'pending' && (
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-amber-50 text-amber-700 text-[10px] border border-amber-100">
-                                                    Pending
-                                                </span>
-                                            )}
-                                            {b.status === 'cancelled' && (
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-red-50 text-red-700 text-[10px] border border-red-100">
-                                                    Cancelled
-                                                </span>
-                                            )}
-                                            {b.status === 'completed' && (
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 text-[10px] border border-slate-200">
-                                                    Completed
-                                                </span>
-                                            )}
+                                        <td className="py-3.5 px-4 text-center">
+                                            <StatusBadge variant={b.status as any} />
                                         </td>
-                                        <td className="py-4 px-4 text-center">
-                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-bold text-[10px] border ${
-                                                b.payment_status === 'paid' 
-                                                    ? 'bg-green-50 text-green-700 border-green-100' 
-                                                    : b.payment_status === 'expired' 
-                                                        ? 'bg-slate-100 text-slate-500 border-slate-200' 
-                                                        : 'bg-red-50 text-red-700 border-red-100'
-                                            }`}>
-                                                {b.payment_status}
-                                            </span>
+                                        <td className="py-3.5 px-4 text-center">
+                                            <StatusBadge variant={b.payment_status as any} />
                                         </td>
-                                        <td className="py-4 px-4 font-extrabold text-slate-900">
+                                        <td className="py-3.5 px-4 font-mono font-black tabular-nums text-[#222222]">
                                             Rp {Number(b.total_amount).toLocaleString('id-ID')}
                                         </td>
-                                        <td className="py-4 px-4 text-right space-x-2">
-                                            <div className="flex items-center justify-end space-x-2">
+                                        <td className="py-3.5 px-6 text-right">
+                                            <div className="flex items-center justify-end space-x-1.5">
                                                 <a 
                                                     href={`https://wa.me/${b.guest_phone.replace(/^0/, '62')}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-1.5 rounded-lg border border-slate-200 transition-colors"
+                                                    className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                                     title="Hubungi WhatsApp"
+                                                    aria-label="Hubungi via WhatsApp"
                                                 >
                                                     <MessageSquare className="w-3.5 h-3.5" />
                                                 </a>
                                                 <Link 
-                                                    href={`/admin/bookings/${b.id}`}
-                                                    className="inline-flex bg-rose-600 hover:bg-rose-700 text-white font-bold py-1.5 px-2.5 rounded-lg text-xs items-center space-x-1"
+                                                    href={`/admin/bookings/detail?id=${b.id}`}
+                                                    className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                                 >
-                                                    <Eye className="w-3.5 h-3.5" />
+                                                    <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
                                                     <span>Detail</span>
                                                 </Link>
                                             </div>
@@ -327,15 +320,72 @@ export default function AdminBookingsPage() {
                             </tbody>
                         </table>
                     </div>
+                    {/* Mobile card view */}
+                    <div className="block md:hidden space-y-3 px-6 pb-2">
+                        {bookings.map((b) => (
+                            <div key={b.id} className="bg-white border border-[#dddddd] rounded-[12px] p-4 space-y-3 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</span>
+                                    <StatusBadge variant={b.status as any} />
+                                </div>
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex justify-between">
+                                        <span className="text-[#6a6a6a] font-medium">Tamu</span>
+                                        <span className="font-semibold text-[#222222]">{b.guest_name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-[#6a6a6a] font-medium">Villa</span>
+                                        <span className="font-bold text-[#222222] truncate max-w-[180px]">{b.villa?.name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-[#6a6a6a] font-medium">Check-in</span>
+                                        <span className="font-mono tabular-nums text-[#222222] font-semibold">{format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-[#6a6a6a] font-medium">Check-out</span>
+                                        <span className="font-mono tabular-nums text-[#222222] font-semibold">{format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-[#6a6a6a] font-medium">Pembayaran</span>
+                                        <StatusBadge variant={b.payment_status as any} />
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-[#6a6a6a] font-medium">Total</span>
+                                        <span className="font-mono font-black tabular-nums text-[#222222]">Rp {Number(b.total_amount).toLocaleString('id-ID')}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">
+                                    <a 
+                                        href={`https://wa.me/${b.guest_phone.replace(/^0/, '62')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95"
+                                        title="Hubungi WhatsApp"
+                                        aria-label="Hubungi via WhatsApp"
+                                    >
+                                        <MessageSquare className="w-3.5 h-3.5" />
+                                    </a>
+                                    <Link 
+                                        href={`/admin/bookings/detail?id=${b.id}`}
+                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95"
+                                    >
+                                        <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
+                                        <span>Detail</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    </>
                 )}
 
                 {/* Pagination footer */}
                 {totalPages > 1 && !loading && (
-                    <div className="flex items-center justify-center space-x-2 py-5 border-t border-slate-200">
+                    <div className="flex items-center justify-center space-x-1.5 py-5 border-t border-[#dddddd] bg-slate-50/20">
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             Sebelumnya
                         </button>
@@ -343,10 +393,10 @@ export default function AdminBookingsPage() {
                             <button
                                 key={i}
                                 onClick={() => setCurrentPage(i + 1)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                                     currentPage === i + 1
-                                        ? 'bg-rose-600 text-white'
-                                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'border border-[#dddddd] text-[#6a6a6a] hover:bg-slate-50 bg-white'
                                 }`}
                             >
                                 {i + 1}
@@ -355,7 +405,7 @@ export default function AdminBookingsPage() {
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             Selanjutnya
                         </button>

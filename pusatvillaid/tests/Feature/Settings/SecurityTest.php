@@ -11,10 +11,6 @@ test('security page is displayed', function () {
         'confirm' => true,
         'confirmPassword' => true,
     ]);
-    Features::passkeys([
-        'confirmPassword' => true,
-    ]);
-
     $user = User::factory()->create();
 
     $this->actingAs($user)
@@ -22,8 +18,6 @@ test('security page is displayed', function () {
         ->get(route('security.edit'))
         ->assertOk()
         ->assertJson([
-            'canManagePasskeys' => true,
-            'passkeys' => [],
             'canManageTwoFactor' => true,
             'twoFactorEnabled' => false,
         ]);
@@ -57,8 +51,6 @@ test('security page renders without two factor when feature is disabled', functi
         ->get(route('security.edit'))
         ->assertOk()
         ->assertJson([
-            'canManagePasskeys' => false,
-            'passkeys' => [],
             'canManageTwoFactor' => false,
         ])
         ->assertJsonMissing(['twoFactorEnabled', 'requiresConfirmation']);
@@ -79,7 +71,7 @@ test('password can be updated', function () {
     $response
         ->assertOk()
         ->assertJsonFragment([
-            'message' => __('Password updated.')
+            'message' => __('Password updated.'),
         ]);
 
     expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();

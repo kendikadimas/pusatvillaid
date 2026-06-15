@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Villa } from '@/types';
 import Link from 'next/link';
+import { getMainPhoto } from '@/lib/villaUtils';
 
 // CartoDB Voyager tiles (clean, light, modern style matching Airbnb aesthetic)
 const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
@@ -227,9 +228,7 @@ export default function MapComponent({
                     {/* Image Area */}
                     <div className="relative w-full aspect-[4/3] overflow-hidden bg-slate-100 flex-none">
                         <img 
-                            src={selectedVilla.photos && selectedVilla.photos.length > 0 
-                                ? selectedVilla.photos[0] 
-                                : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80'} 
+                            src={getMainPhoto(selectedVilla)} 
                             alt={selectedVilla.name} 
                             className="w-full h-full object-cover"
                         />
@@ -283,15 +282,21 @@ export default function MapComponent({
                             {/* Line 1: Type/Location + Rating */}
                             <div className="flex items-center justify-between text-[14px] text-slate-800 font-bold leading-tight">
                                 <span className="truncate">
-                                    Rumah di {selectedVilla.location.split(',').pop()?.trim() || selectedVilla.location}
+                                    Villa di {selectedVilla.location.split(',').pop()?.trim() || selectedVilla.location}
                                 </span>
-                                <div className="flex items-center text-slate-800 shrink-0 font-normal">
-                                    <svg className="w-3.5 h-3.5 fill-slate-800 text-slate-800 mr-1" viewBox="0 0 24 24">
-                                        <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
-                                    </svg>
-                                    <span className="font-semibold text-sm">4,8</span>
-                                    <span className="text-slate-500 text-[12px] ml-0.5">(30)</span>
-                                </div>
+                                {selectedVilla.reviews_avg_rating && (
+                                    <div className="flex items-center text-slate-800 shrink-0 font-normal">
+                                        <svg className="w-3.5 h-3.5 fill-slate-800 text-slate-800 mr-1" viewBox="0 0 24 24">
+                                            <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+                                        </svg>
+                                        <span className="font-semibold text-sm">
+                                            {parseFloat(selectedVilla.reviews_avg_rating.toString()).toFixed(1).replace('.', ',')}
+                                        </span>
+                                        {selectedVilla.reviews_count && selectedVilla.reviews_count > 0 && (
+                                            <span className="text-slate-500 text-[12px] ml-0.5">({selectedVilla.reviews_count})</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             
                             {/* Line 2: Name/title */}
@@ -321,5 +326,5 @@ export default function MapComponent({
                 </div>
             )}
         </div>
-    );;
+    );
 }

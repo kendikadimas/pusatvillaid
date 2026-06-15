@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import AuthLayout from '@/components/auth-layout';
+import GoogleLoginButton from '@/components/google-login-button';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -51,13 +52,33 @@ export default function RegisterPage() {
 
     return (
         <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
+            title="Create your account"
+            description="Enter your details to get started with PusatVilla"
         >
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+            <div className="mb-6">
+                <GoogleLoginButton />
+            </div>
+
+            <div className="relative mb-6">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase tracking-wide">
+                    <span className="bg-white px-3 text-[#787774]">
+                        Or sign up with email
+                    </span>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <div className="grid gap-5">
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="name"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
+                            Full name
+                        </Label>
                         <Input
                             id="name"
                             type="text"
@@ -68,13 +89,19 @@ export default function RegisterPage() {
                             tabIndex={1}
                             autoComplete="name"
                             name="name"
-                            placeholder="Full name"
+                            placeholder="John Doe"
+                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
                         <InputError message={errors.name} />
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="email"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
+                            Email address
+                        </Label>
                         <Input
                             id="email"
                             type="email"
@@ -85,12 +112,18 @@ export default function RegisterPage() {
                             autoComplete="email"
                             name="email"
                             placeholder="email@example.com"
+                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
                         <InputError message={errors.email} />
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="password"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
+                            Password
+                        </Label>
                         <PasswordInput
                             id="password"
                             value={password}
@@ -99,13 +132,17 @@ export default function RegisterPage() {
                             tabIndex={3}
                             autoComplete="new-password"
                             name="password"
-                            placeholder="Password"
+                            placeholder="Create a password"
+                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
                         <InputError message={errors.password} />
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="password_confirmation"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
                             Confirm password
                         </Label>
                         <PasswordInput
@@ -116,25 +153,30 @@ export default function RegisterPage() {
                             tabIndex={4}
                             autoComplete="new-password"
                             name="password_confirmation"
-                            placeholder="Confirm password"
+                            placeholder="Repeat your password"
+                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
                         <InputError message={errors.password_confirmation} />
                     </div>
 
                     <Button
                         type="submit"
-                        className="mt-2 w-full cursor-pointer"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                         tabIndex={5}
                         disabled={processing}
                     >
-                        {processing && <Spinner />}
-                        Create account
+                        {processing && <Spinner className="mr-2" />}
+                        {processing ? 'Creating account...' : 'Create account'}
                     </Button>
                 </div>
 
-                <div className="text-center text-sm text-muted-foreground">
+                <div className="mt-2 text-center text-sm text-[#787774] dark:text-slate-400">
                     Already have an account?{' '}
-                    <TextLink href="/login" tabIndex={6}>
+                    <TextLink
+                        href="/login"
+                        tabIndex={6}
+                        className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
                         Log in
                     </TextLink>
                 </div>

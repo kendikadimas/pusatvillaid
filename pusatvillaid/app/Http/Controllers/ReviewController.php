@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Models\Review;
 use App\Models\ReviewToken;
 use App\Models\Villa;
@@ -20,7 +19,7 @@ class ReviewController extends Controller
     {
         $villa = Villa::where('slug', $villaSlug)->first();
 
-        if (!$villa) {
+        if (! $villa) {
             return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
         }
 
@@ -36,7 +35,7 @@ class ReviewController extends Controller
                 'last_page' => $reviews->lastPage(),
                 'per_page' => $reviews->perPage(),
                 'total' => $reviews->total(),
-            ]
+            ],
         ]);
     }
 
@@ -50,10 +49,10 @@ class ReviewController extends Controller
             ->where('expires_at', '>', now())
             ->first();
 
-        if (!$reviewToken) {
+        if (! $reviewToken) {
             return response()->json([
                 'valid' => false,
-                'message' => 'Token review tidak valid, sudah digunakan, atau telah kadaluarsa.'
+                'message' => 'Token review tidak valid, sudah digunakan, atau telah kadaluarsa.',
             ], 400);
         }
 
@@ -61,7 +60,7 @@ class ReviewController extends Controller
 
         return response()->json([
             'valid' => true,
-            'booking' => $booking
+            'booking' => $booking,
         ]);
     }
 
@@ -75,7 +74,7 @@ class ReviewController extends Controller
             ->where('expires_at', '>', now())
             ->first();
 
-        if (!$reviewToken) {
+        if (! $reviewToken) {
             return response()->json(['message' => 'Token review tidak valid atau telah kadaluarsa.'], 400);
         }
 
@@ -113,7 +112,7 @@ class ReviewController extends Controller
             });
 
             return response()->json([
-                'message' => 'Terima kasih atas ulasan Anda! Ulasan Anda telah diterima dan akan segera ditampilkan setelah diverifikasi admin.'
+                'message' => 'Terima kasih atas ulasan Anda! Ulasan Anda telah diterima dan akan segera ditampilkan setelah diverifikasi admin.',
             ], 201);
 
         } catch (\Exception $e) {

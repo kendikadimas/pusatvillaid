@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthLayout from '@/components/auth-layout';
 import InputError from '@/components/input-error';
-import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -46,46 +45,41 @@ export default function ConfirmPasswordPage() {
     return (
         <AuthLayout
             title="Confirm password"
-            description="This is a secure area of the application. Please confirm your password before continuing."
+            description="This is a secure area. Please confirm your password before continuing."
         >
-            <PasskeyVerify
-                routes={{
-                    options: { url: '/laravel-passkeys/confirm-options', method: 'GET' },
-                    submit: { url: '/laravel-passkeys/confirm', method: 'POST' },
-                }}
-                label="Confirm with passkey"
-                loadingLabel="Confirming..."
-                separator="Or confirm with password"
-            />
+            <div className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div className="grid gap-1.5">
+                        <Label
+                            htmlFor="password"
+                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
+                        >
+                            Password
+                        </Label>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            autoComplete="current-password"
+                            autoFocus
+                            required
+                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                        />
+                        <InputError message={errors.password} />
+                    </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
-                    <PasswordInput
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        autoComplete="current-password"
-                        autoFocus
-                        required
-                    />
-
-                    <InputError message={errors.password} />
-                </div>
-
-                <div className="flex items-center">
                     <Button
                         type="submit"
-                        className="w-full cursor-pointer"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                         disabled={processing}
                     >
-                        {processing && <Spinner />}
-                        Confirm password
+                        {processing && <Spinner className="mr-2" />}
+                        {processing ? 'Confirming...' : 'Confirm password'}
                     </Button>
-                </div>
-            </form>
+                </form>
+            </div>
         </AuthLayout>
     );
 }

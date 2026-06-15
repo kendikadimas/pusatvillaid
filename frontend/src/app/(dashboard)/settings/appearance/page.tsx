@@ -12,7 +12,7 @@ export default function AppearanceSettingsPage() {
                 <Heading
                     variant="small"
                     title="Appearance settings"
-                    description="Update the appearance settings for your account"
+                    description="This application always uses light mode"
                 />
                 <AppearanceToggleTab />
             </div>

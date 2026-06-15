@@ -17,10 +17,6 @@ const sidebarNavItems = [
         title: 'Security',
         href: '/settings/security',
     },
-    {
-        title: 'Appearance',
-        href: '/settings/appearance',
-    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

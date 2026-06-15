@@ -8,15 +8,12 @@ import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import ManageTwoFactor from '@/components/manage-two-factor';
-import ManagePasskeys from '@/components/manage-passkeys';
 import axiosClient from '@/lib/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 
 interface SecurityData {
     canManageTwoFactor: boolean;
-    canManagePasskeys: boolean;
-    passkeys: any[];
     passwordRules: string;
     twoFactorEnabled?: boolean;
     requiresConfirmation?: boolean;
@@ -181,11 +178,6 @@ export default function SecuritySettingsPage() {
                         canManageTwoFactor={securityData.canManageTwoFactor}
                         requiresConfirmation={securityData.requiresConfirmation}
                         twoFactorEnabled={securityData.twoFactorEnabled}
-                    />
-
-                    <ManagePasskeys
-                        canManagePasskeys={securityData.canManagePasskeys}
-                        passkeys={securityData.passkeys}
                     />
                 </>
             )}

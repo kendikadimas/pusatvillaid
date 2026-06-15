@@ -39,7 +39,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => __('Profile updated.'),
-            'user' => $request->user()
+            'user' => $request->user(),
         ]);
     }
 
@@ -58,7 +58,7 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json([
-            'message' => __('Account deleted.')
+            'message' => __('Account deleted.'),
         ]);
     }
 }

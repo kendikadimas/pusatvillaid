@@ -1,0 +1,182 @@
+{
+  "app": {
+    "[project]/src/app/(auth)/confirm-password/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/forgot-password/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/login/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/register/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/reset-password/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/two-factor-challenge/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(auth)/verify-email/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(dashboard)/dashboard/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(dashboard)/settings/appearance/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(dashboard)/settings/profile/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/(dashboard)/settings/security/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/_not-found/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/analytics/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/bookings/[id]/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/bookings/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/calendar/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/dashboard/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/destinations/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/login/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/reviews/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/settings/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/villas/[id]/edit/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/villas/new/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/admin/villas/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/auth/callback/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/booking/[code]/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/booking/[code]/payment/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/booking/confirm/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/booking/failed/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/booking/success/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/profile/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/review/[token]/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/villas/[slug]/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/src/app/villas/page": [
+      "static/media/Walheim-s.p.3hw3_rmjli9hn.ttf",
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

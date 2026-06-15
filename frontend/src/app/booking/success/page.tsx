@@ -5,19 +5,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import { Booking } from '@/types';
+import PublicHeader from '@/components/PublicHeader';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { formatPrice } from '@/lib/format';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { 
-    CheckCircle2, 
-    Calendar, 
-    MapPin, 
-    Loader2, 
-    Copy,
-    Printer, 
-    Home,
-    Phone,
-    Check
-} from 'lucide-react';
+import { CheckCircle2, MapPin, Copy, Printer, Home, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 function BookingSuccessContent() {
@@ -71,44 +64,34 @@ function BookingSuccessContent() {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center py-64 min-h-screen bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-            </div>
-        );
+        return <LoadingSpinner message="Memuat rincian booking..." />;
     }
 
     return (
         <div className="flex-1 flex flex-col bg-slate-50 text-slate-800 print:bg-white print:text-black">
             {/* Header (hidden on print) */}
-            <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-150/80 shadow-xs print:hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                    <Link href="/" className="flex items-center space-x-2">
-                        <span className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-rose-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
-                            PusatVilla.id
-                        </span>
-                    </Link>
-                </div>
-            </header>
+            <div className="print:hidden">
+                <PublicHeader />
+            </div>
 
             <main className="max-w-xl mx-auto px-4 py-16 w-full flex-1 flex flex-col justify-center">
                 <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6 print:border-0 print:shadow-none print:p-0">
                     
                     {/* Success Icon (hidden on print) */}
-                    <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto border border-emerald-100 print:hidden">
-                        <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto border border-blue-100 print:hidden">
+                        <CheckCircle2 className="w-8 h-8 text-blue-600" />
                     </div>
 
                     <div>
-                        <h1 className="font-serif text-2xl font-medium text-[#0d0d0d] tracking-tight">Pembayaran Sukses!</h1>
+                        <h1 className="font-serif text-xl sm:text-2xl font-medium text-[#0d0d0d] tracking-tight">Pembayaran Sukses!</h1>
                         <p className="text-slate-505 text-xs mt-1.5 print:hidden">
                             Pemesanan Anda telah dikonfirmasi dan jadwal sewa Anda telah aktif.
                         </p>
                     </div>
 
                     {/* Booking Code Board */}
-                    <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-4 flex flex-col items-center justify-center relative print:border-slate-300 print:bg-slate-50">
-                        <span className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider mb-1">KODE BOOKING</span>
+                    <div className="bg-blue-50/60 border border-blue-200/80 rounded-2xl p-4 flex flex-col items-center justify-center relative print:border-slate-300 print:bg-slate-50">
+                        <span className="text-[10px] text-blue-800 font-bold uppercase tracking-wider mb-1">KODE BOOKING</span>
                         <div className="flex items-center space-x-2">
                             <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">{code || 'VB-XXXX-XXXX'}</span>
                             <button 
@@ -116,7 +99,7 @@ function BookingSuccessContent() {
                                 className="bg-white hover:bg-slate-100 border border-slate-200 p-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-colors print:hidden"
                                 title="Salin Kode"
                             >
-                                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                                {copied ? <Check className="w-4 h-4 text-blue-600" /> : <Copy className="w-4 h-4" />}
                             </button>
                         </div>
                     </div>
@@ -139,13 +122,13 @@ function BookingSuccessContent() {
                             </div>
                             
                             {/* Dates */}
-                            <div className="grid grid-cols-2 gap-2 border-t border-b border-slate-150 py-3 text-[11px] font-semibold text-slate-700">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-b border-slate-150 py-3 text-[11px] font-semibold text-slate-700">
                                 <div className="space-y-0.5">
                                     <span className="text-[9px] text-slate-400 font-bold uppercase">CHECK-IN</span>
                                     <div>{format(parseISO(booking.check_in), 'dd MMMM yyyy', { locale: localeID })}</div>
                                     <span className="text-[10px] text-slate-400 font-normal">Setelah {booking.villa?.check_in_time.substring(0, 5) || '14:00'} WIB</span>
                                 </div>
-                                <div className="space-y-0.5 border-l border-slate-200 pl-4">
+                                <div className="space-y-0.5 border-l sm:border-l border-slate-200 sm:pl-4 pl-0">
                                     <span className="text-[9px] text-slate-400 font-bold uppercase">CHECK-OUT</span>
                                     <div>{format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID })}</div>
                                     <span className="text-[10px] text-slate-400 font-normal">Sebelum {booking.villa?.check_out_time.substring(0, 5) || '12:00'} WIB</span>
@@ -162,7 +145,7 @@ function BookingSuccessContent() {
                             </div>
                             <div className="flex justify-between font-bold text-slate-900 border-t border-slate-100 pt-3 text-sm">
                                 <span>Total Terbayar:</span>
-                                <span className="text-emerald-600">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
+                                <span className="text-blue-600">{formatPrice(booking.total_amount)}</span>
                             </div>
                         </div>
                     )}
@@ -188,7 +171,7 @@ function BookingSuccessContent() {
                         </button>
                         <Link
                             href="/"
-                            className="w-full sm:w-auto flex-1 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
+                            className="w-full sm:w-auto flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
                         >
                             <Home className="w-4 h-4" />
                             <span>Kembali ke Beranda</span>
@@ -202,11 +185,7 @@ function BookingSuccessContent() {
 
 export default function BookingSuccessPage() {
     return (
-        <Suspense fallback={
-            <div className="flex justify-center items-center py-64 min-h-screen bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-            </div>
-        }>
+        <Suspense fallback={<LoadingSpinner />}>
             <BookingSuccessContent />
         </Suspense>
     );

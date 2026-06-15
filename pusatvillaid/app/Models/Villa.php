@@ -42,6 +42,11 @@ class Villa extends Model
         'cancellation_policy',
         'safety_property',
         'neighborhood_desc',
+        'refundable_surcharge_rate',
+        'cancellation_free_days',
+        'beds',
+        'cleaning_fee',
+        'destination_id',
     ];
 
     protected $casts = [
@@ -62,7 +67,15 @@ class Villa extends Model
         'host_about' => 'array',
         'co_hosts' => 'array',
         'safety_property' => 'array',
+        'beds' => 'integer',
+        'cleaning_fee' => 'decimal:2',
+        'destination_id' => 'integer',
     ];
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class);
+    }
 
     public function bookings(): HasMany
     {
