@@ -26,6 +26,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "PusatVilla.id",
   description: "Temukan villa terbaik untuk liburan Anda",
+  other: {
+    // Prevent browser from offering PWA install / app-like behavior
+    "mobile-web-app-capable": "no",
+    "apple-mobile-web-app-capable": "no",
+  },
 };
 
 export default function RootLayout({
