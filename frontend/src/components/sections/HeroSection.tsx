@@ -80,7 +80,7 @@ export default function HeroSection({
     getGuestsLabel,
 }: HeroSectionProps) {
     return (
-        <section className="relative min-h-[280px] md:min-h-[320px] lg:min-h-[360px] flex items-center justify-center text-white px-8 sm:px-14 lg:px-24">
+        <section className="relative min-h-[280px] md:min-h-[320px] lg:min-h-[360px] flex items-center justify-center text-white px-4 sm:px-8 lg:px-24">
             <div className="absolute inset-0 z-0">
                 <img
                     src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80"
@@ -112,10 +112,10 @@ export default function HeroSection({
                             ? '-translate-y-24 scale-75 opacity-0 pointer-events-none invisible'
                             : 'translate-y-0 scale-100 opacity-100 bg-white border-white/30 hover:border-slate-200 shadow-md'
                 }`}>
-                    <form onSubmit={handleSearch} className="flex flex-row items-center w-full relative">
+                    <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-stretch md:items-center w-full relative gap-2 md:gap-0">
                         <div
                             onClick={() => setActiveTab('lokasi')}
-                            className={`flex-1 px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative min-w-0 ${
+                            className={`flex-1 px-4 sm:px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative min-w-0 ${
                                 activeTab === 'lokasi'
                                     ? 'bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:bg-white'
                                     : 'hover:bg-slate-200/50'
@@ -140,7 +140,7 @@ export default function HeroSection({
                             </div>
 
                             {activeTab === 'lokasi' && (
-                                <div className="absolute top-[120%] left-0 w-[420px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 text-left animate-fadeIn">
+                                <div className="absolute top-[120%] left-0 w-full sm:w-[420px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 text-left animate-fadeIn">
                                     {recentSearches.length > 0 && (
                                         <div className="mb-6">
                                             <h4 className="text-[10px] font-medium text-slate-400 mb-3">Pencarian terkini</h4>
@@ -198,7 +198,7 @@ export default function HeroSection({
 
                         <div
                             onClick={() => setActiveTab('kapan')}
-                            className={`flex-1 px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative ${
+                            className={`flex-1 px-4 sm:px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative ${
                                 activeTab === 'kapan'
                                     ? 'bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:bg-white'
                                     : 'hover:bg-slate-200/50'
@@ -214,7 +214,7 @@ export default function HeroSection({
                             {activeTab === 'kapan' && (
                                 <div
                                     onClick={(e) => e.stopPropagation()}
-                                    className="absolute top-[120%] left-1/2 -translate-x-1/2 w-[720px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 animate-fadeIn"
+                                    className="absolute top-[120%] left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] sm:w-[720px] max-w-[720px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 animate-fadeIn"
                                 >
                                     <div className="flex justify-center mb-6">
                                         <div className="bg-slate-100 p-1 rounded-full flex space-x-1">
@@ -233,7 +233,7 @@ export default function HeroSection({
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-8 relative">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative">
                                         {renderCalendarMonth(currentCalendarDate)}
                                         {renderCalendarMonth(getNextMonthDate(currentCalendarDate))}
 
@@ -288,7 +288,7 @@ export default function HeroSection({
 
                         <div
                             onClick={() => setActiveTab('tamu')}
-                            className={`flex-1 px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative ${
+                            className={`flex-1 px-4 sm:px-6 py-2.5 rounded-full cursor-pointer transition-all text-left flex flex-row items-center space-x-2.5 relative ${
                                 activeTab === 'tamu'
                                     ? 'bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:bg-white'
                                     : 'hover:bg-slate-200/50'
@@ -301,7 +301,7 @@ export default function HeroSection({
                                 </span>
                             </div>
                             {activeTab === 'tamu' && (
-                                <div onClick={(e) => e.stopPropagation()} className="absolute top-[120%] right-0 w-[300px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 animate-fadeIn">
+                                <div onClick={(e) => e.stopPropagation()} className="absolute top-[120%] right-0 w-full sm:w-[300px] bg-white rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] border border-slate-100/80 p-6 z-50 text-slate-800 animate-fadeIn">
                                     <div className="space-y-5">
                                         <div className="flex items-center justify-between">
                                             <div>

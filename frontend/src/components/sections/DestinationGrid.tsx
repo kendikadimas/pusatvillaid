@@ -30,7 +30,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
     };
 
     return (
-        <section data-reveal className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-16 w-full reveal">
+        <section data-reveal className="max-w-8xl mx-auto px-4 sm:px-8 lg:px-24 py-16 w-full reveal">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-10 gap-4">
                 <div className="text-left">
                     {/* <span className="inline-block text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Pilih Wilayah</span> */}

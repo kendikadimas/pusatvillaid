@@ -506,7 +506,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans antialiased">
             {/* Header */}
             <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-slate-100 shadow-sm transition-all duration-300">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <Link href="/villas" className="text-slate-600 hover:text-slate-900 transition-colors active:scale-95">
                             <ChevronLeft className="w-5 h-5" />
@@ -544,10 +544,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             </header>
 
             {/* Sticky Sub-Navbar on Scroll */}
-            <div className={`sticky top-20 z-40 bg-white border-b border-slate-200/80 shadow-xs hidden md:block transition-all duration-300 ${
+            <div className={`sticky top-16 md:top-20 z-40 bg-white border-b border-slate-200/80 shadow-xs hidden md:block transition-all duration-300 ${
                 showSearchPill ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
             }`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center space-x-8 text-[13px] font-bold text-slate-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center space-x-8 text-[13px] font-bold text-slate-500 overflow-x-auto scrollbar-none">
                     <button 
                         onClick={() => scrollToSection('foto')}
                         className={`h-full border-b-2 cursor-pointer transition-colors ${
@@ -632,7 +632,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         {/* Main Large Image */}
                         <div 
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
-                            className="md:col-span-2 aspect-[4/3] overflow-hidden rounded-l-2xl cursor-pointer relative group"
+                            className="md:col-span-2 aspect-[4/3] md:aspect-auto overflow-hidden rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none cursor-pointer relative group"
                         >
                             <img 
                                 src={getPhotoUrl(mainPhoto)} 
@@ -688,7 +688,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
 
                 {/* Grid Split Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 mt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 mt-8">
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Summary Details */}

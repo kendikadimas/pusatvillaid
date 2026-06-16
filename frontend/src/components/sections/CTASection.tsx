@@ -8,8 +8,8 @@ const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '628123456789
 
 export default function CTASection() {
     return (
-        <section data-reveal className=" mt-20 py-6 sm:py-6 px-8 sm:px-14 lg:px-24 reveal reveal-delay-1">
-            <div className='bg-black p-5 py-10 text-white max-w-4xl mx-auto rounded-2xl'>
+        <section data-reveal className="mt-20 py-6 px-4 sm:px-8 lg:px-24 reveal reveal-delay-1">
+            <div className='bg-black p-5 sm:p-10 text-white max-w-4xl mx-auto rounded-2xl'>
             <div className="max-w-4xl mx-auto text-center space-y-3">
                 <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-white tracking-[-0.02em] leading-[1.2]">
                     Butuh Rekomendasi atau Rencana Rombongan?

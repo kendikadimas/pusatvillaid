@@ -234,12 +234,12 @@ function VillasCatalogContent() {
 
 
             {/* Filter & Sort Bar */}
-            <div className="flex-none bg-white border-b border-slate-100 px-6 lg:px-8 py-2 z-30">
+            <div className="flex-none bg-white border-b border-slate-100 px-4 lg:px-8 py-2 z-30">
                 <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
+                            className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                                 showFilters || bedrooms || minPrice || maxPrice
                                     ? 'bg-slate-900 text-white border-slate-900'
                                     : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
@@ -258,7 +258,7 @@ function VillasCatalogContent() {
                         <select
                             value={`${sortBy}_${sortOrder}`}
                             onChange={(e) => handleSortChange(e.target.value)}
-                            className="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-[11px] font-bold text-slate-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 hover:border-slate-400 transition-colors"
+                            className="bg-white border border-slate-200 rounded-full px-3 py-2 sm:py-1.5 text-[11px] font-bold text-slate-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 hover:border-slate-400 transition-colors"
                         >
                             <option value="created_at_desc">Terbaru</option>
                             <option value="price_asc">Harga: Rendah ke Tinggi</option>
@@ -288,7 +288,7 @@ function VillasCatalogContent() {
                     <form onSubmit={handleApplyFilters} className="mt-3 pt-3 border-t border-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                             <div className="space-y-1">
-                                <label className="text-[9px] font-bold text-slate-400 uppercase block">Kamar Tidur</label>
+                                <label className="text-[10px] sm:text-[9px] font-bold text-slate-400 uppercase block">Kamar Tidur</label>
                                 <select
                                     value={bedrooms}
                                     onChange={(e) => setBedrooms(e.target.value)}
@@ -303,7 +303,7 @@ function VillasCatalogContent() {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[9px] font-bold text-slate-400 uppercase block">Tamu (Max)</label>
+                                <label className="text-[10px] sm:text-[9px] font-bold text-slate-400 uppercase block">Tamu (Max)</label>
                                 <select
                                     value={guests}
                                     onChange={(e) => setGuests(e.target.value)}
@@ -318,7 +318,7 @@ function VillasCatalogContent() {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[9px] font-bold text-slate-400 uppercase block">Harga Min (Rp)</label>
+                                <label className="text-[10px] sm:text-[9px] font-bold text-slate-400 uppercase block">Harga Min (Rp)</label>
                                 <input
                                     type="number"
                                     placeholder="0"
@@ -358,13 +358,13 @@ function VillasCatalogContent() {
             </div>
 
             {/* Main Split Screen Container */}
-            <div className={`flex-grow flex flex-row overflow-hidden relative w-full ${showFilters ? 'h-[calc(100vh-240px)]' : 'h-[calc(100vh-190px)]'}`}>
+            <div className={`flex-grow flex flex-row overflow-hidden relative w-full ${showFilters ? 'h-[calc(100vh-240px)]' : 'h-[calc(100vh-180px)]'}`}>
                 
                 {/* Left Side: Scrollable Listing */}
                 <div className={`w-full lg:w-[46%] xl:w-[46%] h-full overflow-y-auto bg-white flex flex-col border-r border-slate-100 ${
                     viewMode === 'map' ? 'hidden lg:flex' : 'flex'
                 }`}>
-                    <main className="flex-1 px-6 lg:px-8 py-6 w-full">
+                    <main className="flex-1 px-4 lg:px-8 py-6 w-full">
                         {/* Heading & Price Tag Banner resembling Airbnb */}
                         <div className="flex flex-col space-y-3 mb-6">
                             <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-tight">
@@ -391,7 +391,7 @@ function VillasCatalogContent() {
                                     action={{ label: 'Reset Pencarian', onClick: handleResetFilters }}
                                 />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-x-6 gap-y-10">
                                     {filteredVillas.map((villa) => (
                                         <VillaCard
                                             key={villa.id}

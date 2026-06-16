@@ -355,8 +355,8 @@ export default function BookingConfirmPage() {
                                     {paymentMethod === 'credit_card' && (
                                         <div className="space-y-4">
                                             <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">
-                                                Simulasi Kartu Kredit
-                                            </div>
+                                        Simulasi Kartu Kredit
+                                    </div>
                                             <div className="space-y-3">
                                                 <input 
                                                     type="text" 
@@ -403,7 +403,7 @@ export default function BookingConfirmPage() {
                                 
                                 <div className="space-y-6">
                                     <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
-                                        <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Nama Lengkap Sesuai KTP</label>
+                                        <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Nama Lengkap Sesuai KTP</label>
                                         <input 
                                             type="text" 
                                             placeholder="Nama lengkap Anda..."
@@ -418,7 +418,7 @@ export default function BookingConfirmPage() {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
-                                            <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Alamat Email</label>
+                                            <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Alamat Email</label>
                                             <input 
                                                 type="email" 
                                                 placeholder="Contoh: budi@example.com"
@@ -432,7 +432,7 @@ export default function BookingConfirmPage() {
                                         </div>
 
                                         <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
-                                            <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Nomor WhatsApp</label>
+                                            <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Nomor WhatsApp</label>
                                             <input 
                                                 type="tel" 
                                                 placeholder="Contoh: 081234567890"
@@ -447,7 +447,7 @@ export default function BookingConfirmPage() {
                                     </div>
 
                                     <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
-                                        <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Catatan Tambahan (Opsional)</label>
+                                        <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Catatan Tambahan (Opsional)</label>
                                         <textarea 
                                             rows={2}
                                             placeholder="Request floating breakfast, sewa extra bed, check-in jam 1 siang..."
@@ -554,25 +554,25 @@ export default function BookingConfirmPage() {
                                 <h4 className="text-[10px] font-black text-slate-955 uppercase tracking-widest">Perincian Harga</h4>
                                 
                                 <div className="space-y-3 text-xs font-semibold text-slate-550">
-                                    <div className="flex justify-between">
-                                        <span>{priceBreakdown.weekdays.count} malam x Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekday)</span>
-                                        <span className="text-slate-800 font-bold font-sans">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                                        <span className="break-words">{priceBreakdown.weekdays.count} malam x Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekday)</span>
+                                        <span className="text-slate-800 font-bold font-sans whitespace-nowrap">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
                                     </div>
                                     {priceBreakdown.weekends.count > 0 && (
-                                        <div className="flex justify-between">
-                                            <span>{priceBreakdown.weekends.count} malam x Rp {Number(selectedVilla.weekend_price || selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekend)</span>
-                                            <span className="text-slate-800 font-bold font-sans">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                                            <span className="break-words">{priceBreakdown.weekends.count} malam x Rp {Number(selectedVilla.weekend_price || selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekend)</span>
+                                            <span className="text-slate-800 font-bold font-sans whitespace-nowrap">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
                                         </div>
                                     )}
                                     {isRefundable && (
-                                        <div className="flex justify-between">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
                                             <span>Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                            <span className="text-blue-500 font-bold font-sans">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                            <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="border-t border-slate-150 pt-4 flex justify-between font-black text-slate-950 text-sm">
+                                <div className="border-t border-slate-150 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 font-black text-slate-950 text-sm">
                                     <span>Total Biaya</span>
                                     <span className="text-blue-500 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
                                 </div>
