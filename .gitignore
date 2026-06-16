@@ -1,0 +1,68 @@
+# ============================================================
+# SECRETS & CREDENTIALS
+# ============================================================
+opencode.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ============================================================
+# ENVIRONMENT FILES
+# ============================================================
+.env
+.env.*
+!.env.example
+
+# ============================================================
+# BUILD ARTIFACTS & RELEASE ZIPS
+# ============================================================
+frontend/release_standalone/
+frontend/*.zip
+frontend/out/
+frontend/.next/
+pusatvillaid/backend-core.zip
+pusatvillaid/*.zip
+*.zip
+
+# ============================================================
+# CERTIFICATES & LARGE BINARIES
+# ============================================================
+cacert.pem
+pusatvillaid/cacert.pem
+*.pem
+
+# ============================================================
+# DEPENDENCIES
+# ============================================================
+node_modules/
+vendor/
+
+# ============================================================
+# CACHE & GENERATED
+# ============================================================
+pusatvillaid/bootstrap/cache/*.php
+pusatvillaid/storage/framework/cache/
+pusatvillaid/storage/framework/sessions/
+pusatvillaid/storage/framework/views/
+pusatvillaid/storage/logs/
+pusatvillaid/.phpunit.result.cache
+pusatvillaid/database/database.sqlite
+
+# ============================================================
+# IDE & OS
+# ============================================================
+.idea/
+.vscode/
+.zed/
+.cursor/
+*.DS_Store
+Thumbs.db
+
+# ============================================================
+# AGENT/AI TOOL INTERNALS (optional - remove if you want to track skills)
+# ============================================================
+# .agents/
+# .agent/
+# .commandcode/
+# .opencode/

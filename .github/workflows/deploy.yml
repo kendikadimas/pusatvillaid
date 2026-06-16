@@ -99,7 +99,13 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: '2223'
           script: |
+            # Re-create API symlink (deleted by frontend deploy rm -rf)
+            rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+            ln -s /home/${{ secrets.SSH_USERNAME }}/backend-laravel/public ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+
+            # Laravel post-deploy
             cd ${{ secrets.CPANEL_BACKEND_PATH }}
             php artisan migrate --force
             php artisan storage:link
+            php artisan config:cache
             php artisan queue:restart || true
