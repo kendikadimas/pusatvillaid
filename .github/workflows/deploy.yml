@@ -39,7 +39,7 @@ jobs:
       - name: Build Backend
         working-directory: ./pusatvillaid
         run: |
-          cp .env.production .env
+          echo "${{ secrets.BACKEND_ENV }}" > .env
           composer install --no-dev --optimize-autoloader --no-interaction
           npm ci
           npm run build
