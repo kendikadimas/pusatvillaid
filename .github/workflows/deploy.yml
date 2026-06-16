@@ -78,7 +78,9 @@ jobs:
           echo "=== Total HTML files ==="
           find out -name "*.html" | wc -l
           echo "=== Villa detail pages ==="
-          ls -la out/villas/
+          ls -la out/villas/ 2>&1 || echo "No villas dir"
+          echo "=== Creating tar ==="
+          tar -czf /tmp/frontend.tar.gz -C out .
 
       - name: Deploy Frontend to cPanel (www.pusatvillaid.com)
         uses: appleboy/scp-action@v0.1.7
@@ -87,12 +89,10 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: '2223'
-          source: "./frontend/out/"
-          target: ${{ secrets.CPANEL_FRONTEND_PATH }}
-          rm: true
-          strip_components: 0
+          source: "/tmp/frontend.tar.gz"
+          target: "/tmp/"
 
-      - name: Verify Frontend Deployment
+      - name: Extract Frontend on Server
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -100,14 +100,13 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: '2223'
           script: |
-            echo "=== public_html contents ==="
+            rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}*
+            tar -xzf /tmp/frontend.tar.gz -C ${{ secrets.CPANEL_FRONTEND_PATH }}
+            rm /tmp/frontend.tar.gz
+            echo "=== Deployed files ==="
             ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}
-            echo "=== villas subdirs ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}villas/
-            echo "=== sample villa page ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}villas/parangtritis-coastal-resort-villa/ 2>&1 || echo "DIR NOT FOUND"
-            echo "=== .htaccess ==="
-            cat ${{ secrets.CPANEL_FRONTEND_PATH }}.htaccess 2>&1 || echo "NO HTACCESS"
+            echo "=== Villa pages ==="
+            ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1 || echo "No villas dir"
 
       # ============================================================
       # POST-DEPLOY — Run migrations (via SSH)
