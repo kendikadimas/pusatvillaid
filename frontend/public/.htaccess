@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Serve placeholder page for non-existent villa slug pages
+    # This keeps the URL intact so client-side React can read the slug
+    RewriteCond %{REQUEST_URI} ^/villas/([^/]+)/$
+    RewriteCond %{DOCUMENT_ROOT}/villas/%1 !-d
+    RewriteRule ^villas/([^/]+)/$ /villas/placeholder/ [L]
+
+    # Same for booking detail pages
+    RewriteCond %{REQUEST_URI} ^/booking/([^/]+)/$
+    RewriteCond %{DOCUMENT_ROOT}/booking/%1 !-d
+    RewriteRule ^booking/([^/]+)/$ /booking/ [L]
+
+    # SPA fallback - serve 404.html for missing routes
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /404.html [L]
+</IfModule>

@@ -100,7 +100,11 @@ const getHostAboutIcon = (text: string, index: number) => {
 };
 
 export default function VillaDetailPageClient({ params }: PageProps) {
-    const { slug } = use(params);
+    const { slug: paramSlug } = use(params);
+    // Read slug from URL for static export fallback (when .htaccess rewrites to placeholder page)
+    const slug = typeof window !== 'undefined'
+        ? window.location.pathname.split('/villas/')[1]?.replace(/\/$/, '') || paramSlug
+        : paramSlug;
     const router = useRouter();
     const searchParams = useSearchParams();
     const checkInQuery = searchParams.get('checkIn');
