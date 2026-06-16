@@ -15,7 +15,7 @@ function normalizePhone(phone: string): string {
 
 export default function WhatsAppButton({ phone, label, variant = 'icon', className = '' }: WhatsAppButtonProps) {
     const normalizedPhone = normalizePhone(phone);
-    const href = `https://wa.me/${normalizedPhone}`;
+    const href = `https://api.whatsapp.com/send?phone=${normalizedPhone}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`;
 
     if (variant === 'icon') {
         return (

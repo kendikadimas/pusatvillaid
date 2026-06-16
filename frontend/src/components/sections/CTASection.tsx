@@ -26,7 +26,7 @@ export default function CTASection() {
                         Jelajahi Villa Sekarang
                     </Link>
                     <a
-                        href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                        href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto border border-[#EAEAEA] text-[#2563EB] font-medium px-7 py-3.5 rounded-[8px] hover:bg-[#F7F6F3] active:scale-[0.98] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm flex items-center justify-center space-x-2 cursor-pointer"

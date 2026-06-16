@@ -33,8 +33,8 @@ export default function PublicFooter() {
                             <span>support@pusatvilla.id</span>
                         </li>
                         <li className="flex items-center space-x-2">
-                            <a 
-                                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                            <a
+                                href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-[#2563EB] transition-colors"

@@ -183,7 +183,7 @@ function AdminBookingDetailContent() {
                             <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-4">
                                 <span className="text-[10px] text-[#6a6a6a] font-bold block">Nomor WhatsApp</span>
                                 <a 
-                                    href={`https://wa.me/${booking.guest_phone.replace(/^0/, '62')}`}
+                                    href={`https://api.whatsapp.com/send?phone=${booking.guest_phone.replace(/^0/, '62')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="font-extrabold text-blue-600 text-sm hover:text-blue-700 transition-all active:scale-95 flex items-center space-x-1 w-fit group"

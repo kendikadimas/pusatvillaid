@@ -656,7 +656,7 @@ export default function AdminCalendarPage() {
                                         <div>
                                             <span className="text-[10px] text-slate-450 font-bold block uppercase">Kontak WhatsApp</span>
                                             <a 
-                                                href={`https://wa.me/${selectedSlot.data.guest_phone.replace(/^0/, '62')}`}
+                                                href={`https://api.whatsapp.com/send?phone=${selectedSlot.data.guest_phone.replace(/^0/, '62')}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="font-bold text-blue-600 hover:underline flex items-center space-x-1.5 mt-0.5 active:scale-[0.98] transition-all duration-300 w-fit"

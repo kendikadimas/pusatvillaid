@@ -297,7 +297,7 @@ export default function AdminBookingsPage() {
                                         <td className="py-3.5 px-6 text-right">
                                             <div className="flex items-center justify-end space-x-1.5">
                                                 <a 
-                                                    href={`https://wa.me/${b.guest_phone.replace(/^0/, '62')}`}
+                                                    href={`https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
@@ -356,7 +356,7 @@ export default function AdminBookingsPage() {
                                 </div>
                                 <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">
                                     <a 
-                                        href={`https://wa.me/${b.guest_phone.replace(/^0/, '62')}`}
+                                        href={`https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95"

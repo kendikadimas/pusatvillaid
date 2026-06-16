@@ -597,7 +597,7 @@ function BookingPaymentContent() {
 
                 <div className="text-center mt-6">
                     <a 
-                        href="https://wa.me/6281234567890" 
+                        href="https://api.whatsapp.com/send?phone=6281234567890" 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center text-slate-500 hover:text-slate-800 text-xs font-semibold space-x-1"

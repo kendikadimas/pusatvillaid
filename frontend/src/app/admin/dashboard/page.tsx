@@ -192,7 +192,7 @@ export default function AdminDashboardPage() {
                                                 </p>
                                             </div>
                                             <a 
-                                                href={`https://wa.me/${item.guest_phone.replace(/^0/, '62')}`}
+                                                href={`https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-[#dddddd] hover:border-blue-200 p-2.5 rounded-[8px] transition-all duration-200  active:scale-95 flex-shrink-0"
@@ -230,7 +230,7 @@ export default function AdminDashboardPage() {
                                                 </p>
                                             </div>
                                             <a 
-                                                href={`https://wa.me/${item.guest_phone.replace(/^0/, '62')}`}
+                                                href={`https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-[#dddddd] hover:border-blue-200 p-2.5 rounded-[8px] transition-all duration-200  active:scale-95 flex-shrink-0"
