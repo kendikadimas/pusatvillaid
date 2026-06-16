@@ -494,12 +494,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     };
 
     const getRefundableCancellationDateLabel = () => {
+        const freeDays = villa.cancellation_free_days || 5;
         if (storeCheckIn) {
             const checkInDate = parseISO(storeCheckIn);
-            const refundLimitDate = addDays(checkInDate, -5);
-            return `Pembatalan gratis sebelum ${format(refundLimitDate, 'd MMMM', { locale: localeID })}`;
+            const refundLimitDate = addDays(checkInDate, -freeDays);
+            return 'Pembatalan gratis sebelum ' + format(refundLimitDate, 'd MMMM', { locale: localeID });
         }
-        return 'Pembatalan gratis hingga 5 hari sebelum check-in';
+        return 'Pembatalan gratis hingga ' + freeDays + ' hari sebelum check-in';
     };
 
     return (
@@ -697,7 +698,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 Seluruh rumah di {villa.location.split(',')[0]}
                             </h2>
                             <p className="text-[15px] text-slate-800 font-normal leading-relaxed">
-                                {villa.max_guests} tamu · {villa.bedrooms} kamar tidur · {villa.bedrooms_info?.length || villa.bedrooms} tempat tidur · {villa.bathrooms} kamar mandi
+                                {villa.max_guests} tamu · {villa.bedrooms} kamar tidur · {villa.beds || villa.bedrooms_info?.length || villa.bedrooms} tempat tidur · {villa.bathrooms} kamar mandi
+                                {villa.min_nights > 1 && (
+                                    <span> · Min. {villa.min_nights} malam</span>
+                                )}
                             </p>
                             <div className="flex items-center text-[15px] font-bold text-slate-900 pt-1">
                                 <Star className="w-4 h-4 fill-slate-900 text-slate-900 mr-1 shrink-0" />
@@ -993,11 +997,11 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             <>
                                                 <div className="flex items-start space-x-2">
                                                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                                                    <span>Check-in setelah pukul 14.00</span>
+                                                    <span>Check-in setelah pukul {villa.check_in_time || '14:00'}</span>
                                                 </div>
                                                 <div className="flex items-start space-x-2">
                                                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                                                    <span>Check-out sebelum pukul 12.00</span>
+                                                    <span>Check-out sebelum pukul {villa.check_out_time || '12:00'}</span>
                                                 </div>
                                                 <div className="flex items-start space-x-2">
                                                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -1219,6 +1223,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
                             </div>
 
+                            {villa.min_nights > 1 && (
+                                <div className="text-[11px] text-slate-500 font-medium text-center -mt-1">
+                                    Minimum menginap {villa.min_nights} malam
+                                </div>
+                            )}
+
                             {/* Rate selection options (Airbnb style) */}
                             <div className="space-y-3 pt-1">
                                 <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest block">Harga</label>
@@ -1304,13 +1314,17 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     )}
                                     {isRefundable && (
                                         <div className="flex justify-between text-slate-500 font-semibold">
-                                            <span className="underline">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                            <span className="underline">Pilihan tarif (Bisa dikembalikan +{((villa.refundable_surcharge_rate || 0.1111) * 100).toFixed(1)}%)</span>
+                                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * (villa.refundable_surcharge_rate || 0.1111)).toLocaleString('id-ID')}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between text-slate-500 font-semibold">
                                         <span className="underline">Biaya Kebersihan</span>
-                                        <span className="text-emerald-600">Gratis</span>
+                                        {villa.cleaning_fee && villa.cleaning_fee > 0 ? (
+                                            <span className="font-sans">Rp {villa.cleaning_fee.toLocaleString('id-ID')}</span>
+                                        ) : (
+                                            <span className="text-emerald-600">Gratis</span>
+                                        )}
                                     </div>
                                     <div className="flex justify-between text-slate-500 font-semibold">
                                         <span className="underline">Biaya Pelayanan</span>
