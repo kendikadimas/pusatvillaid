@@ -15,10 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
-        $middleware->statefulApi();
+        // Disable stateful API - using Bearer token auth instead of session cookies
+        // $middleware->statefulApi();
 
         $middleware->validateCsrfTokens(except: [
             'auth/google/callback',
+            'api/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
