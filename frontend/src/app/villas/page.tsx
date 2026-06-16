@@ -328,7 +328,7 @@ function VillasCatalogContent() {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[9px] font-bold text-slate-400 uppercase block">Harga Max (Rp)</label>
+                                <label className="text-[10px] sm:text-[9px] font-bold text-slate-400 uppercase block">Harga Max (Rp)</label>
                                 <input
                                     type="number"
                                     placeholder="tak terbatas"
