@@ -1,13 +1,12 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || ((process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000') + '/api/v1'),
+    baseURL: process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_BACKEND_URL + '/api/v1'),
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
 });
 
 axiosClient.interceptors.request.use((config) => {
