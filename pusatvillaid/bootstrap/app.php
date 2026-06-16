@@ -21,6 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'auth/google/callback',
             'api/*',
+            'login',
+            'register',
+            'logout',
+            'forgot-password',
+            'reset-password',
+            'email/verification-notification',
+            'user/confirm-password',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
