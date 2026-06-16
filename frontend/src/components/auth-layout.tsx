@@ -11,16 +11,20 @@ export default function AuthLayout({
     description: string;
 }) {
     return (
-        <div className="flex min-h-dvh">
-            {/* Left Panel - Brand/Image */}
-            <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 p-12 lg:flex">
+        <div className="flex min-h-dvh font-sans bg-slate-50">
+            {/* Left Panel - Brand/Image with real luxury villa background */}
+            <div 
+                className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-12 lg:flex bg-cover bg-center"
+                style={{ backgroundImage: `url('https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80')` }}
+            >
+                {/* Dark glassmorphic backdrop for contrast */}
+                <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[1px]" />
                 <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
                 <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-400/5 blur-3xl" />
 
                 {/* Grid pattern overlay */}
                 <div
-                    className="absolute inset-0 opacity-[0.03]"
+                    className="absolute inset-0 opacity-[0.05]"
                     style={{
                         backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
                         backgroundSize: '60px 60px',
@@ -29,60 +33,67 @@ export default function AuthLayout({
 
                 <div className="relative z-10">
                     <Link href="/" className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm transition-transform active:scale-95">
                             <AppLogoIcon className="size-6 fill-current text-white" />
                         </div>
-                        <span className="text-lg font-semibold tracking-tight text-white">PusatVilla</span>
+                        <span className="text-xl font-sans font-black tracking-tight text-white">pusatvilla.id</span>
                     </Link>
                 </div>
 
                 <div className="relative z-10 space-y-6">
-                    <h2 className="text-4xl font-bold leading-tight tracking-tight text-white">
+                    <h2 className="font-serif text-4xl md:text-5xl font-medium leading-tight tracking-tight text-white">
                         Temukan villa
                         <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-sky-200">
                             impianmu
                         </span>
                     </h2>
-                    <p className="max-w-md text-base leading-relaxed text-blue-200/70">
+                    <p className="max-w-md text-base leading-relaxed text-slate-200/90 font-medium">
                         Nikmati pengalaman menginap terbaik dengan pilihan villa eksklusif di destinasi wisata favorit Indonesia.
                     </p>
                     <div className="flex items-center gap-6 pt-4">
-                        <div className="flex -space-x-2">
-                            {[1, 2, 3, 4].map((i) => (
+                        <div className="flex -space-x-2.5">
+                            {[
+                                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80',
+                                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80',
+                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80',
+                                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80'
+                            ].map((url, i) => (
                                 <div
                                     key={i}
-                                    className="size-8 rounded-full border-2 border-slate-800 bg-gradient-to-br from-blue-400 to-indigo-500"
+                                    className="size-8 rounded-full border-2 border-slate-900 bg-cover bg-center shadow-md"
+                                    style={{ backgroundImage: `url(${url})` }}
                                 />
                             ))}
                         </div>
-                        <div className="text-sm text-blue-200/60">
-                            <span className="font-semibold text-white">4.9</span> rating dari 2k+ tamu
+                        <div className="text-xs text-slate-200 font-semibold bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-xs">
+                            <span className="font-black text-amber-300">★ 4.9</span> rating dari 2k+ tamu
                         </div>
                     </div>
                 </div>
 
-                <div className="relative z-10 text-sm text-blue-200/40">
-                    &copy; {new Date().getFullYear()} PusatVilla. All rights reserved.
+                <div className="relative z-10 text-xs text-slate-400 font-medium">
+                    &copy; {new Date().getFullYear()} PusatVilla.id. All rights reserved.
                 </div>
             </div>
 
-            {/* Right Panel - Form */}
+            {/* Right Panel - Form with clean white minimalist design */}
             <div className="flex w-full items-center justify-center bg-white p-6 lg:w-1/2 lg:p-12">
-                <div className="w-full max-w-sm">
-                    <div className="mb-8 flex flex-col items-center gap-4 lg:hidden">
+                <div className="w-full max-w-sm space-y-8">
+                    <div className="flex flex-col items-center gap-4 lg:hidden">
                         <Link href="/" className="flex flex-col items-center gap-2 font-medium">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 shadow-sm">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-500/10">
                                 <AppLogoIcon className="size-7 fill-current text-white" />
                             </div>
+                            <span className="text-lg font-sans font-black tracking-tight text-blue-600 mt-1">pusatvilla.id</span>
                         </Link>
                     </div>
 
-                    <div className="mb-8 space-y-2">
-                        <h1 className="text-2xl font-semibold tracking-tight text-[#111111]">
+                    <div className="space-y-2.5">
+                        <h1 className="font-serif text-2xl md:text-3xl font-medium tracking-tight text-[#0d0d0d]">
                             {title}
                         </h1>
-                        <p className="text-balance text-sm text-[#787774]">
+                        <p className="text-sm text-slate-500 font-semibold leading-relaxed">
                             {description}
                         </p>
                     </div>

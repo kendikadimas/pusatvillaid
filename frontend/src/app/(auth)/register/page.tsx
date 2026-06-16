@@ -2,15 +2,13 @@
 
 import React, { useState } from 'react';
 import AuthLayout from '@/components/auth-layout';
-import GoogleLoginButton from '@/components/google-login-button';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/AuthContext';
+import { User, Mail, Lock, UserPlus } from 'lucide-react';
 
 export default function RegisterPage() {
     const { register } = useAuth();
@@ -43,7 +41,7 @@ export default function RegisterPage() {
             } else if (err.response?.data?.message) {
                 setErrors({ email: err.response.data.message });
             } else {
-                setErrors({ email: 'An unexpected error occurred. Please try again.' });
+                setErrors({ email: 'Terjadi kesalahan sistem. Silakan coba lagi.' });
             }
         } finally {
             setProcessing(false);
@@ -52,132 +50,125 @@ export default function RegisterPage() {
 
     return (
         <AuthLayout
-            title="Create your account"
-            description="Enter your details to get started with PusatVilla"
+            title="Daftar Akun Baru"
+            description="Silakan isi data Anda di bawah ini untuk mendaftar"
         >
-            <div className="mb-6">
-                <GoogleLoginButton />
-            </div>
-
-            <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wide">
-                    <span className="bg-white px-3 text-[#787774]">
-                        Or sign up with email
-                    </span>
-                </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <div className="grid gap-5">
-                    <div className="grid gap-1.5">
-                        <Label
-                            htmlFor="name"
-                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
-                        >
-                            Full name
+            <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-4">
+                    {/* Name Input */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="name" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Nama Lengkap
                         </Label>
-                        <Input
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            autoFocus
-                            tabIndex={1}
-                            autoComplete="name"
-                            name="name"
-                            placeholder="John Doe"
-                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
-                        />
+                        <div className="relative flex items-center">
+                            <User className="absolute left-3.5 w-4.5 h-4.5 text-slate-400" />
+                            <input
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                autoFocus
+                                tabIndex={1}
+                                autoComplete="name"
+                                name="name"
+                                placeholder="Nama Lengkap Anda"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                            />
+                        </div>
                         <InputError message={errors.name} />
                     </div>
 
-                    <div className="grid gap-1.5">
-                        <Label
-                            htmlFor="email"
-                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
-                        >
-                            Email address
+                    {/* Email Input */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="email" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Alamat Email
                         </Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            tabIndex={2}
-                            autoComplete="email"
-                            name="email"
-                            placeholder="email@example.com"
-                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
-                        />
+                        <div className="relative flex items-center">
+                            <Mail className="absolute left-3.5 w-4.5 h-4.5 text-slate-400" />
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                tabIndex={2}
+                                autoComplete="email"
+                                name="email"
+                                placeholder="nama@email.com"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                            />
+                        </div>
                         <InputError message={errors.email} />
                     </div>
 
-                    <div className="grid gap-1.5">
-                        <Label
-                            htmlFor="password"
-                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
-                        >
+                    {/* Password Input */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="password" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                             Password
                         </Label>
-                        <PasswordInput
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            tabIndex={3}
-                            autoComplete="new-password"
-                            name="password"
-                            placeholder="Create a password"
-                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
-                        />
+                        <div className="relative flex items-center">
+                            <Lock className="absolute left-3.5 w-4.5 h-4.5 text-slate-400 z-10" />
+                            <PasswordInput
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                tabIndex={3}
+                                autoComplete="new-password"
+                                name="password"
+                                placeholder="Minimal 8 karakter"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                            />
+                        </div>
                         <InputError message={errors.password} />
                     </div>
 
-                    <div className="grid gap-1.5">
-                        <Label
-                            htmlFor="password_confirmation"
-                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
-                        >
-                            Confirm password
+                    {/* Confirm Password Input */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="password_confirmation" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Konfirmasi Password
                         </Label>
-                        <PasswordInput
-                            id="password_confirmation"
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                            required
-                            tabIndex={4}
-                            autoComplete="new-password"
-                            name="password_confirmation"
-                            placeholder="Repeat your password"
-                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
-                        />
+                        <div className="relative flex items-center">
+                            <Lock className="absolute left-3.5 w-4.5 h-4.5 text-slate-400 z-10" />
+                            <PasswordInput
+                                id="password_confirmation"
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                required
+                                tabIndex={4}
+                                autoComplete="new-password"
+                                name="password_confirmation"
+                                placeholder="Ulangi password Anda"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                            />
+                        </div>
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button
+                    {/* Submit Button */}
+                    <button
                         type="submit"
-                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-2 cursor-pointer"
                         tabIndex={5}
                         disabled={processing}
                     >
-                        {processing && <Spinner className="mr-2" />}
-                        {processing ? 'Creating account...' : 'Create account'}
-                    </Button>
+                        {processing ? (
+                            <Spinner className="w-4 h-4 text-white" />
+                        ) : (
+                            <>
+                                <UserPlus className="w-4 h-4" />
+                                <span>Daftar</span>
+                            </>
+                        )}
+                    </button>
                 </div>
 
-                <div className="mt-2 text-center text-sm text-[#787774] dark:text-slate-400">
-                    Already have an account?{' '}
-                    <TextLink
-                        href="/login"
-                        tabIndex={6}
-                        className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                        Log in
+                {/* Footer link */}
+                <div className="text-center text-xs text-slate-500 font-semibold pt-2">
+                    Sudah memiliki akun?{' '}
+                    <TextLink href="/login" className="text-blue-500 hover:underline font-bold" tabIndex={6}>
+                        Masuk sekarang
                     </TextLink>
                 </div>
             </form>
