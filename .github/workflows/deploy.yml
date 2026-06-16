@@ -85,22 +85,8 @@ jobs:
 
       - name: Deploy Frontend to cPanel (www.pusatvillaid.com)
         run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' scp -o StrictHostKeyChecking=no -P '2223' -r frontend/out/. ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_FRONTEND_PATH }}
-
-      - name: Verify Frontend Deployment
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: '2223'
-          script: |
-            echo "=== Deployed files ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}
-            echo "=== Villa pages ==="
-            ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1 || echo "No villas dir"
-            echo "=== Sample page ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}villas/parangtritis-coastal-resort-villa/ 2>&1 || echo "NO VILLA PAGE"
+          cd frontend/out
+          tar -czf - . | sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p '2223' ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}* && tar -xzf - -C ${{ secrets.CPANEL_FRONTEND_PATH }} && echo '=== Files deployed ===' && ls -la ${{ secrets.CPANEL_FRONTEND_PATH }} && echo '=== Villa pages ===' && ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1"
 
       # ============================================================
       # POST-DEPLOY — Run migrations (via SSH)
