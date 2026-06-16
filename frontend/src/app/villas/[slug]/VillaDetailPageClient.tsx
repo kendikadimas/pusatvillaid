@@ -410,7 +410,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-64 min-h-screen bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
         );
     }
@@ -419,7 +419,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         return (
             <div className="text-center py-64 min-h-screen bg-slate-50 flex flex-col justify-center items-center">
                 <p className="text-slate-600 text-base mb-4 font-bold">Villa tidak ditemukan atau telah dinonaktifkan.</p>
-                <Link href="/villas" className="text-rose-500 font-bold hover:underline active:scale-95 transition-transform">
+                <Link href="/villas" className="text-blue-600 font-bold hover:underline active:scale-95 transition-transform">
                     Kembali ke Katalog Villa
                 </Link>
             </div>
@@ -511,7 +511,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <Link href="/villas" className="text-slate-600 hover:text-slate-900 transition-colors active:scale-95">
                             <ChevronLeft className="w-5 h-5" />
                         </Link>
-                        <Link href="/" className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-rose-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
+                        <Link href="/" className="text-2xl font-serif font-black tracking-tight text-blue-600 bg-clip-text text-transparent">
                             PusatVilla.id
                         </Link>
                     </div>
@@ -528,7 +528,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             <span className="px-4 border-r border-slate-200">Kapan saja</span>
                             <span className="pl-4 pr-1 flex items-center space-x-2 text-slate-400 font-normal">
                                 <span>Tambahkan tamu</span>
-                                <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center text-white shrink-0 ml-2 hover:bg-rose-600 transition-colors">
+                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 ml-2 hover:bg-blue-700 transition-colors">
                                     <Search className="w-4 h-4" strokeWidth={2.5} />
                                 </div>
                             </span>
@@ -536,7 +536,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     </div>
 
                     <nav className="flex items-center space-x-6">
-                        <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-rose-500 hover:text-rose-600 transition-colors">
+                        <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-blue-600 hover:text-blue-600 transition-colors">
                             Cari Villa
                         </Link>
                     </nav>
@@ -616,7 +616,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             >
                                 <Heart 
                                     className={`w-4 h-4 transition-colors ${
-                                        isSaved ? 'fill-rose-500 text-rose-500' : 'text-slate-800'
+                                        isSaved ? 'fill-blue-600 text-blue-600' : 'text-slate-800'
                                     }`} 
                                     strokeWidth={2} 
                                 />
@@ -703,7 +703,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 <Star className="w-4 h-4 fill-slate-900 text-slate-900 mr-1 shrink-0" />
                                 <span>{avgRating > 0 ? avgRating.toFixed(1).replace('.', ',') : '5,0'}</span>
                                 <span className="mx-1.5 text-slate-400 font-normal">·</span>
-                                <button onClick={() => scrollToSection('ulasan')} className="underline hover:text-rose-500 transition-colors">
+                                <button onClick={() => scrollToSection('ulasan')} className="underline hover:text-blue-600 transition-colors">
                                     {reviews.length} ulasan
                                 </button>
                             </div>
@@ -722,14 +722,14 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             className="w-24 h-24 rounded-full object-cover shadow-sm border border-slate-100"
                                         />
                                         {hostIsVerified && (
-                                            <div className="absolute bottom-0 right-0 bg-rose-500 text-white p-1.5 rounded-full border-2 border-white shadow-md flex items-center justify-center">
+                                            <div className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-md flex items-center justify-center">
                                                 <Check className="w-4 h-4 stroke-[3]" />
                                             </div>
                                         )}
                                     </div>
                                     <h4 className="text-2xl font-bold text-slate-900">{hostName}</h4>
                                     <div className="flex items-center space-x-1.5 text-slate-500 text-xs font-semibold mt-1">
-                                        <ShieldCheck className="w-4 h-4 text-rose-500" />
+                                        <ShieldCheck className="w-4 h-4 text-blue-600" />
                                         <span>Superhost</span>
                                     </div>
                                     
@@ -796,7 +796,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             Kirimkan pesan kepada tuan rumah
                                         </button>
                                         <div className="flex items-start space-x-2.5 max-w-lg">
-                                            <Shield className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                                            <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                                             <p className="text-[11px] text-slate-500 leading-normal">
                                                 Untuk melindungi pembayaran Anda, jangan pernah mentransfer uang atau berkomunikasi di luar situs web atau aplikasi PusatVilla.id.
                                             </p>
@@ -826,7 +826,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex items-start space-x-3.5">
                             <Globe className="w-5 h-5 text-slate-700 shrink-0 mt-0.5" strokeWidth={1.5} />
                             <div className="text-[13px] text-slate-800 font-normal leading-relaxed">
-                                Beberapa info diterjemahkan secara otomatis. <button className="underline font-bold text-slate-900 hover:text-rose-500 active:scale-95 transition-transform">Tampilkan bahasa asli</button>
+                                Beberapa info diterjemahkan secara otomatis. <button className="underline font-bold text-slate-900 hover:text-blue-600 active:scale-95 transition-transform">Tampilkan bahasa asli</button>
                             </div>
                         </div>
 
@@ -924,8 +924,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     locale={localeID}
                                     className="border-0 text-slate-800 max-w-full overflow-auto"
                                     classNames={{
-                                        selected: "bg-rose-500 text-white hover:bg-rose-600 rounded-full",
-                                        today: "text-rose-500 font-black border border-rose-200 rounded-full",
+                                        selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
+                                        today: "text-blue-600 font-black border border-blue-200 rounded-full",
                                     }}
                                 />
                             </div>
@@ -939,7 +939,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     {/* Left Column: Neighborhood Description & Details */}
                                     <div className="space-y-4">
                                         <h4 className="text-base font-bold text-slate-850 flex items-center gap-2">
-                                            <MapPin className="w-5 h-5 text-rose-500" />
+                                            <MapPin className="w-5 h-5 text-blue-600" />
                                             <span>{villa.location}</span>
                                         </h4>
                                         <div className="text-slate-600 text-sm font-medium leading-relaxed">
@@ -949,7 +949,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             {neighborhoodDesc.length > 180 && (
                                                 <button 
                                                     onClick={() => setIsNeighborhoodExpanded(!isNeighborhoodExpanded)}
-                                                    className="text-slate-900 hover:text-rose-500 font-bold underline mt-2 flex items-center gap-1 cursor-pointer active:scale-95 transition-all text-xs"
+                                                    className="text-slate-900 hover:text-blue-600 font-bold underline mt-2 flex items-center gap-1 cursor-pointer active:scale-95 transition-all text-xs"
                                                 >
                                                     <span>{isNeighborhoodExpanded ? 'Sembunyikan' : 'Baca selengkapnya'}</span>
                                                     <ArrowRight className={`w-3.5 h-3.5 transform transition-transform ${isNeighborhoodExpanded ? '-rotate-90' : ''}`} />
@@ -1017,7 +1017,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             return (
                                                 <div key={idx} className="flex items-start space-x-2">
                                                     {isNotReported ? (
-                                                        <X className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                                                        <X className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                                                     ) : (
                                                         <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                                                     )}
@@ -1066,7 +1066,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         <span className="text-slate-600 font-semibold">{item.label}</span>
                                         <div className="flex items-center space-x-3 w-1/2">
                                             <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${(item.score / 5) * 100}%` }} />
+                                                <div className="bg-blue-600 h-full rounded-full" style={{ width: `${(item.score / 5) * 100}%` }} />
                                             </div>
                                             <span className="text-slate-800 text-[11px] w-6 text-right font-sans">{item.score.toFixed(1)}</span>
                                         </div>
@@ -1114,7 +1114,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                                 className="w-10 h-10 rounded-full object-cover shadow-xs"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center font-bold text-rose-700 text-xs shadow-xs">
+                                                            <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-bold text-blue-700 text-xs shadow-xs">
                                                                 {review.guest_name.substring(0, 2).toUpperCase()}
                                                             </div>
                                                         )}
@@ -1167,7 +1167,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-36 space-y-5">
                             {/* Cost inclusion notice */}
                             <div className="flex items-center space-x-2 border border-slate-200 rounded-2xl px-4 py-3 bg-white text-slate-800 text-[13px] font-bold shadow-xs">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" className="w-4 h-4 fill-rose-500 shrink-0"><path d="M12.44 2.1a1 1 0 0 1 .86.5l.08.15 7.64 16.24a1 1 0 0 1-.22 1.15l-.12.09-8.17 6.13a1 1 0 0 1-1.12.06l-.13-.09-7.64-16.24a1 1 0 0 1 .22-1.15l.12-.09 8.17-6.13a1 1 0 0 1 .45-.16zm.18 2.37-6.9 5.17 6.64 14.1 6.9-5.17-6.64-14.1zm-2.12 3.03a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"></path></svg>
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" className="w-4 h-4 fill-blue-600 shrink-0"><path d="M12.44 2.1a1 1 0 0 1 .86.5l.08.15 7.64 16.24a1 1 0 0 1-.22 1.15l-.12.09-8.17 6.13a1 1 0 0 1-1.12.06l-.13-.09-7.64-16.24a1 1 0 0 1 .22-1.15l.12-.09 8.17-6.13a1 1 0 0 1 .45-.16zm.18 2.37-6.9 5.17 6.64 14.1 6.9-5.17-6.64-14.1zm-2.12 3.03a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"></path></svg>
                                 <span>Harga sudah mencakup semua biaya</span>
                             </div>
 
@@ -1235,7 +1235,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             name="rate_type" 
                                             checked={!isRefundable}
                                             onChange={() => setRefundable(false)}
-                                            className="mt-1 text-rose-600 focus:ring-rose-500 w-4 h-4 cursor-pointer"
+                                            className="mt-1 text-blue-600 focus:ring-blue-600 w-4 h-4 cursor-pointer"
                                         />
                                         <div className="text-xs leading-normal">
                                             <div className="font-bold text-slate-900">
@@ -1261,7 +1261,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             name="rate_type" 
                                             checked={isRefundable}
                                             onChange={() => setRefundable(true)}
-                                            className="mt-1 text-rose-600 focus:ring-rose-500 w-4 h-4 cursor-pointer"
+                                            className="mt-1 text-blue-600 focus:ring-blue-600 w-4 h-4 cursor-pointer"
                                         />
                                         <div className="text-xs leading-normal">
                                             <div className="font-bold text-slate-900">
@@ -1305,7 +1305,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     {isRefundable && (
                                         <div className="flex justify-between text-slate-500 font-semibold">
                                             <span className="underline">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                            <span className="font-sans text-rose-500">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between text-slate-500 font-semibold">
@@ -1318,7 +1318,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     </div>
                                     <div className="flex justify-between font-black text-slate-900 border-t border-slate-100 pt-4 text-sm">
                                         <span>Total sebelum pajak</span>
-                                        <span className="text-rose-500 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                        <span className="text-blue-600 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
                                     </div>
                                 </div>
                             )}
@@ -1330,7 +1330,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             </div>
 
                             <div className="text-center pt-2">
-                                <button className="text-xs text-slate-500 hover:text-rose-500 font-bold underline transition-colors cursor-pointer">
+                                <button className="text-xs text-slate-500 hover:text-blue-600 font-bold underline transition-colors cursor-pointer">
                                     Laporkan listing ini
                                 </button>
                             </div>
@@ -1347,7 +1347,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             Rp {totalAmount.toLocaleString('id-ID')}
                             <span className="text-[10px] text-slate-500 font-normal ml-1">total</span>
                         </span>
-                        <span className="text-[9px] text-rose-500 font-extrabold uppercase tracking-wider block mt-0.5">
+                        <span className="text-[9px] text-blue-600 font-extrabold uppercase tracking-wider block mt-0.5">
                             {isRefundable ? 'Bisa dikembalikan' : 'Tanpa pengembalian dana'}
                         </span>
                     </div>
@@ -1392,7 +1392,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 alt="Thumb"
                                 onClick={() => setCurrentImageIndex(idx)}
                                 className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${
-                                    idx === currentImageIndex ? 'border-rose-500 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'
+                                    idx === currentImageIndex ? 'border-blue-600 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'
                                 }`}
                             />
                         ))}
@@ -1467,7 +1467,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             placeholder="Cari kata kunci (misal: bersih, ac)"
                                             value={reviewSearchQuery}
                                             onChange={(e) => setReviewSearchQuery(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-rose-500 focus:border-rose-500 outline-none text-slate-800 bg-white"
+                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-blue-600 focus:border-blue-600 outline-none text-slate-800 bg-white"
                                         />
                                         {reviewSearchQuery && (
                                             <button 
@@ -1509,7 +1509,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     <select
                                         value={reviewSortOrder}
                                         onChange={(e) => setReviewSortOrder(e.target.value)}
-                                        className="w-full bg-white border border-slate-200 p-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:ring-1 focus:ring-rose-500 focus:outline-none cursor-pointer"
+                                        className="w-full bg-white border border-slate-200 p-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer"
                                     >
                                         <option value="relevance">Relevansi</option>
                                         <option value="newest">Terbaru</option>
@@ -1537,7 +1537,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                             className="w-10 h-10 rounded-full object-cover shadow-xs"
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center font-bold text-rose-700 text-xs shadow-xs">
+                                                        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-bold text-blue-700 text-xs shadow-xs">
                                                             {review.guest_name.substring(0, 2).toUpperCase()}
                                                         </div>
                                                     )}
