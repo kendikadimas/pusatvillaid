@@ -27,17 +27,19 @@ export default function PublicHeader({
     return (
         <header className={`${positionClass} z-50 transition-all duration-300 ${
             headerSolid 
-                ? 'bg-white border-b border-slate-200/80 shadow-xs py-4' 
+                ? 'bg-white shadow-sm border-b border-slate-200/60' 
                 : 'bg-gradient-to-b from-black/50 to-transparent py-6'
         }`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
+            <div className={`max-w-8xl mx-auto px-4 sm:px-14 lg:px-24 flex items-center justify-between transition-all duration-300 ${
+                headerSolid ? 'h-16 md:h-[72px]' : 'h-20'
+            }`}>
                 {/* Left: Brand Logo & Optional Back Button */}
                 <div className="flex items-center space-x-3 shrink-0">
                     {showBackButton && (
                         <button 
                             onClick={onBackClick} 
                             type="button"
-                            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-655 rounded-full transition-all cursor-pointer active:scale-90"
+                            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full transition-all cursor-pointer active:scale-90"
                             aria-label="Kembali"
                         >
                             <ChevronLeft className="w-4 h-4" />
@@ -62,7 +64,7 @@ export default function PublicHeader({
                     </Link>
                 </div>
  
-                {/* Middle slot */}
+                {/* Middle slot (e.g. search bar on villas page) */}
                 <div className="hidden md:block flex-1 max-w-md mx-4">
                     {children}
                 </div>

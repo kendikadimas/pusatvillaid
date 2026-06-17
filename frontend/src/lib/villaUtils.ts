@@ -1,11 +1,21 @@
 import type { Villa } from '@/types';
 
 const FALLBACK_PHOTO = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80';
+const PROD_STORAGE_URL = 'https://api.pusatvillaid.com/storage';
 
 export function getPhotoUrl(photo: any): string {
     if (!photo) return FALLBACK_PHOTO;
-    if (typeof photo === 'string') return photo;
-    return photo.url || FALLBACK_PHOTO;
+    let url: string;
+    if (typeof photo === 'string') {
+        url = photo;
+    } else {
+        url = photo.url || FALLBACK_PHOTO;
+    }
+    // Replace localhost URLs with production storage URL
+    if (url.includes('localhost:8000')) {
+        url = url.replace(/https?:\/\/localhost:8000\/storage\//, PROD_STORAGE_URL + '/');
+    }
+    return url;
 }
 
 export function getPhotoDesc(photo: any): string {
