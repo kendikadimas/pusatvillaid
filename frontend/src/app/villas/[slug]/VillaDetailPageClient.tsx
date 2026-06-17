@@ -45,6 +45,7 @@ import {
     Languages
 } from 'lucide-react';
 import { toast } from 'sonner';
+import PublicHeader from '@/components/PublicHeader';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -505,47 +506,14 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
     return (
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans antialiased">
-            {/* Header */}
-            <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-slate-100 shadow-sm transition-all duration-300">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <Link href="/villas" className="text-slate-600 hover:text-slate-900 transition-colors active:scale-95">
-                            <ChevronLeft className="w-5 h-5" />
-                        </Link>
-                        <Link href="/" className="text-2xl font-serif font-black tracking-tight text-blue-600 bg-clip-text text-transparent">
-                            PusatVilla.id
-                        </Link>
-                    </div>
-
-                    {/* Middle Search Pill visible on scroll */}
-                    <div className={`transition-all duration-300 transform ${
-                        showSearchPill ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
-                    }`}>
-                        <div 
-                            onClick={() => router.push('/')}
-                            className="hidden md:flex items-center border border-slate-200 rounded-full py-2 pl-5 pr-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white text-[13px] font-bold text-slate-800 animate-in fade-in duration-300"
-                        >
-                            <span className="pr-4 border-r border-slate-200">Ke mana saja</span>
-                            <span className="px-4 border-r border-slate-200">Kapan saja</span>
-                            <span className="pl-4 pr-1 flex items-center space-x-2 text-slate-400 font-normal">
-                                <span>Tambahkan tamu</span>
-                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 ml-2 hover:bg-blue-700 transition-colors">
-                                    <Search className="w-4 h-4" strokeWidth={2.5} />
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-
-                    <nav className="flex items-center space-x-6">
-                        <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-blue-600 hover:text-blue-600 transition-colors">
-                            Cari Villa
-                        </Link>
-                    </nav>
-                </div>
-            </header>
+            {/* Header (unified with homepage) */}
+            <PublicHeader
+                showBackButton
+                onBackClick={() => router.push('/villas')}
+            />
 
             {/* Sticky Sub-Navbar on Scroll */}
-            <div className={`sticky top-16 md:top-20 z-40 bg-white border-b border-slate-200/80 shadow-xs hidden md:block transition-all duration-300 ${
+            <div className={`sticky top-[108px] z-40 bg-white border-b border-slate-200/80 shadow-xs hidden md:block transition-all duration-300 ${
                 showSearchPill ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
             }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center space-x-8 text-[13px] font-bold text-slate-500 overflow-x-auto scrollbar-none">

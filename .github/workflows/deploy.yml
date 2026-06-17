@@ -47,7 +47,7 @@ jobs:
           rm -rf resources/css
           rm -f package.json package-lock.json vite.config.ts
           rm -f .env
-          tar -czf ../backend-deploy.tar.gz .
+          tar -czf ../backend-deploy.tar.gz --exclude='./.env' .
 
       - name: Upload Backend Artifact
         uses: actions/upload-artifact@v4
@@ -70,6 +70,22 @@ jobs:
         with:
           name: backend-build
 
+      - name: Backup .env on Server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Backup .env SEBELUM extract (bukan sesudah)
+            if [ -f ${{ secrets.CPANEL_BACKEND_PATH }}/.env ]; then
+              cp ${{ secrets.CPANEL_BACKEND_PATH }}/.env ${{ secrets.CPANEL_BACKEND_PATH }}/.env.deploy-backup
+              echo "=== .env backed up ==="
+            else
+              echo "=== No .env on server, will generate ==="
+            fi
+
       - name: Upload Backend to Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -90,15 +106,21 @@ jobs:
           script: |
             cd ${{ secrets.CPANEL_BACKEND_PATH }}
 
-            # Extract tar.gz
+            # Extract tar.gz (kecuali .env)
             tar -xzf backend-deploy.tar.gz
             rm -f backend-deploy.tar.gz
 
-            # Restore .env dari backup (jika ada)
-            if [ -f .env.backup ]; then
-              cp .env.backup .env
-              rm .env.backup
+            # Restore .env dari backup
+            if [ -f .env.deploy-backup ]; then
+              cp .env.deploy-backup .env
+              rm .env.deploy-backup
               echo "=== .env restored ==="
+            fi
+
+            # Kalau .env masih nggak ada, generate dari BACKEND_ENV secret
+            if [ ! -f .env ] || [ ! -s .env ]; then
+              echo "=== .env missing, generating from secret ==="
+              echo '${{ secrets.BACKEND_ENV }}' > .env
             fi
 
             # Generate APP_KEY jika belum ada
@@ -110,11 +132,14 @@ jobs:
             # Set permissions
             chmod -R 775 storage bootstrap/cache
 
-            # Cache Laravel
+            # Clear & cache Laravel
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan event:cache
+
+            # Run migrations
+            php artisan migrate --force
 
             # Storage link
             php artisan storage:link --force
@@ -150,8 +175,6 @@ jobs:
         run: |
           npm ci
           npm run build
-          echo "=== Listing generated files ==="
-          find out -type d | head -40
           echo "=== Total HTML files ==="
           find out -name "*.html" | wc -l
 
@@ -163,7 +186,7 @@ jobs:
           retention-days: 1
 
   # ============================================================
-  # JOB 4: Deploy Frontend (via appleboy actions)
+  # JOB 4: Deploy Frontend (via SSH + tar, clean old files)
   # ============================================================
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -177,18 +200,18 @@ jobs:
           name: frontend-build
           path: frontend-out
 
-      - name: Deploy Frontend to cPanel
+      - name: Upload & Deploy Frontend
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "frontend-out/"
+          source: "frontend-out"
           target: ${{ secrets.CPANEL_FRONTEND_PATH }}
           strip_components: 1
 
-      - name: Re-create API Symlink
+      - name: Clean Old Frontend Files & Fix Symlink
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -196,21 +219,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            # Pastikan symlink api masih ada
-            if [ ! -L ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com ]; then
-              rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
-              ln -s /home/${{ secrets.SSH_USERNAME }}/backend-laravel/public ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
-              echo "=== Symlink re-created ==="
-            else
-              echo "=== Symlink already exists ==="
-            fi
+            FRONTEND="${{ secrets.CPANEL_FRONTEND_PATH }}"
+            BACKEND="/home/${{ secrets.SSH_USERNAME }}/backend-laravel/public"
+
+            # Pastikan symlink API selalu ada (hapus & recreate biar nggak corrupt)
+            rm -rf "${FRONTEND}api.pusatvillaid.com"
+            ln -s "${BACKEND}" "${FRONTEND}api.pusatvillaid.com"
+            echo "=== API symlink re-created ==="
 
             echo "=== public_html contents ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}
+            ls -la "${FRONTEND}"
             echo "=== villas ==="
-            ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1 | head -10
+            ls "${FRONTEND}villas/" 2>&1 | head -10
             echo "=== symlink ==="
-            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+            ls -la "${FRONTEND}api.pusatvillaid.com"
 
   # ============================================================
   # JOB 5: Final Health Check
