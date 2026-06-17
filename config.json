@@ -1,0 +1,11 @@
+{
+  "models": [
+    {
+      "title": "AI Token",
+      "provider": "openai",
+      "model": "claude-sonnet-4.6",
+      "apiBase": "https://openagentic.id/api/v1",
+      "apiKey": "sk-7b2ea34367471b832bbe395dff82cc1d9de7a80d8798d9ed3717c7d9cdde764f"
+    }
+  ]
+}

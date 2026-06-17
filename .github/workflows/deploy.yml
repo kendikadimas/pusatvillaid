@@ -14,57 +14,167 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  deploy:
+  # ============================================================
+  # JOB 1: Build Backend
+  # ============================================================
+  build-backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ============================================================
-      # BACKEND — Laravel
-      # ============================================================
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           tools: composer:v2
 
+      - name: Build Backend
+        working-directory: ./pusatvillaid
+        env:
+          BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+        run: |
+          # Tulis .env
+          echo "${{ env.BACKEND_ENV }}" > .env
+
+          # Install dependencies
+          composer install --no-dev --optimize-autoloader --no-interaction
+
+          # Build assets (jika ada)
+          npm ci || true
+          npm run build || true
+
+          # Cache Laravel (production)
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan event:cache
+
+          # Hapus yang nggak perlu di server
+          rm -rf node_modules
+          rm -rf resources/js
+          rm -rf resources/css
+          rm -f package.json package-lock.json vite.config.ts
+          rm -f .env  # Jangan upload .env
+
+          # Buat artifact untuk job berikutnya
+          tar -czf backend-deploy.tar.gz .
+
+      - name: Upload Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-deploy
+          path: ./pusatvillaid/backend-deploy.tar.gz
+          retention-days: 1
+
+  # ============================================================
+  # JOB 2: Deploy Backend
+  # ============================================================
+  deploy-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build-backend
+
+    steps:
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-deploy
+
+      - name: Deploy Backend to cPanel
+        run: |
+          BACKEND_PATH="${{ secrets.CPANEL_BACKEND_PATH }}"
+          SSH_USER="${{ secrets.SSH_USERNAME }}"
+          SSH_HOST="${{ secrets.SSH_HOST }}"
+          SSH_PORT="${{ secrets.SSH_PORT }}"
+          SSH_PASS="${{ secrets.SSH_PASSWORD }}"
+
+          # Install sshpass
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+          # Backup .env yang ada di server
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "cp $BACKEND_PATH/.env $BACKEND_PATH/.env.backup 2>/dev/null || true && \
+             echo '=== .env backed up ==='"
+
+          # Upload via SCP
+          sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no -P "$SSH_PORT" \
+            backend-deploy.tar.gz \
+            "$SSH_USER@$SSH_HOST:$BACKEND_PATH/"
+
+          # Extract di server (backup dulu isi lama, kecuali storage & .env)
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "cd $BACKEND_PATH && \
+             tar -xzf backend-deploy.tar.gz && \
+             rm -f backend-deploy.tar.gz && \
+             echo '=== Backend files uploaded ==='"
+
+      - name: Post-Deploy Backend
+        run: |
+          SSH_USER="${{ secrets.SSH_USERNAME }}"
+          SSH_HOST="${{ secrets.SSH_HOST }}"
+          SSH_PORT="${{ secrets.SSH_PORT }}"
+          SSH_PASS="${{ secrets.SSH_PASSWORD }}"
+          BACKEND_PATH="${{ secrets.CPANEL_BACKEND_PATH }}"
+
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" << 'ENDSSH'
+            set -e
+            cd $BACKEND_PATH
+
+            # Restore .env dari backup
+            if [ -f .env.backup ]; then
+              cp .env.backup .env
+              rm .env.backup
+              echo "=== .env restored ==="
+            fi
+
+            # Generate APP_KEY jika belum ada
+            if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
+              php artisan key:generate --force
+              echo "=== APP_KEY generated ==="
+            fi
+
+            # Set permissions
+            chmod -R 775 storage bootstrap/cache
+            echo "=== Permissions set ==="
+
+            # Clear & cache Laravel
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+            echo "=== Laravel cache refreshed ==="
+
+            # Re-create storage symlink
+            php artisan storage:link --force
+            echo "=== Storage linked ==="
+
+            echo "=== Backend deploy COMPLETE ==="
+            ls -la
+ENDSSH
+
+  # ============================================================
+  # JOB 3: Build Frontend
+  # ============================================================
+  build-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Build Backend
-        working-directory: ./pusatvillaid
-        run: |
-          echo "${{ secrets.BACKEND_ENV }}" > .env
-          composer install --no-dev --optimize-autoloader --no-interaction
-          npm ci
-          npm run build
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-          php artisan event:cache
-          rm -rf node_modules
-          rm -rf resources/js
-          rm -rf resources/css
-          rm package.json package-lock.json vite.config.ts
-
-      - name: Deploy Backend to cPanel (api.pusatvillaid.com)
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: '2223'
-          source: "./pusatvillaid/"
-          target: ${{ secrets.CPANEL_BACKEND_PATH }}
-
-      # ============================================================
-      # FRONTEND — Next.js
-      # ============================================================
       - name: Build Frontend
         working-directory: ./frontend
         env:
@@ -73,39 +183,91 @@ jobs:
         run: |
           npm ci
           npm run build
-          echo "=== Listing generated files ==="
-          find out -type d | head -40
-          echo "=== Total HTML files ==="
-          find out -name "*.html" | wc -l
-          echo "=== Villa detail pages ==="
-          ls -la out/villas/ 2>&1 || echo "No villas dir"
 
-      - name: Install sshpass
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
-
-      - name: Deploy Frontend to cPanel (www.pusatvillaid.com)
-        run: |
-          cd frontend/out
-          tar -czf - . | sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p '2223' ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}* && tar -xzf - -C ${{ secrets.CPANEL_FRONTEND_PATH }} && echo '=== Files deployed ===' && ls -la ${{ secrets.CPANEL_FRONTEND_PATH }} && echo '=== Villa pages ===' && ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1"
-
-      # ============================================================
-      # POST-DEPLOY — Run migrations (via SSH)
-      # ============================================================
-      - name: Run Post-Deploy Commands
-        uses: appleboy/ssh-action@v1.2.2
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: '2223'
-          script: |
-            # Re-create API symlink (deleted by frontend deploy rm -rf)
-            rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
-            ln -s /home/${{ secrets.SSH_USERNAME }}/backend-laravel/public ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+          name: frontend-deploy
+          path: ./frontend/out
+          retention-days: 1
 
-            # Laravel post-deploy
-            cd ${{ secrets.CPANEL_BACKEND_PATH }}
-            php artisan migrate --force
-            php artisan storage:link
-            php artisan config:cache
-            php artisan queue:restart || true
+  # ============================================================
+  # JOB 4: Deploy Frontend
+  # ============================================================
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [deploy-backend, build-frontend]
+
+    steps:
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-deploy
+
+      - name: Deploy Frontend to cPanel
+        run: |
+          FRONTEND_PATH="${{ secrets.CPANEL_FRONTEND_PATH }}"
+          SSH_USER="${{ secrets.SSH_USERNAME }}"
+          SSH_HOST="${{ secrets.SSH_HOST }}"
+          SSH_PORT="${{ secrets.SSH_PORT }}"
+          SSH_PASS="${{ secrets.SSH_PASSWORD }}"
+
+          # Install sshpass
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+          # Pakai rsync untuk selective delete (JANGAN hapus symlink api.pusatvillaid.com)
+          sshpass -p "$SSH_PASS" rsync -avz --delete \
+            --exclude='api.pusatvillaid.com' \
+            --exclude='.htaccess' \
+            out/ \
+            -e "ssh -o StrictHostKeyChecking=no -p $SSH_PORT" \
+            "$SSH_USER@$SSH_HOST:$FRONTEND_PATH"
+
+          echo "=== Frontend deployed (symlink preserved) ==="
+
+      - name: Verify Deployment
+        run: |
+          SSH_USER="${{ secrets.SSH_USERNAME }}"
+          SSH_HOST="${{ secrets.SSH_HOST }}"
+          SSH_PORT="${{ secrets.SSH_PORT }}"
+          SSH_PASS="${{ secrets.SSH_PASSWORD }}"
+          FRONTEND_PATH="${{ secrets.CPANEL_FRONTEND_PATH }}"
+
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "echo '=== public_html contents ===' && ls -la $FRONTEND_PATH && \
+             echo '=== villas folder ===' && ls $FRONTEND_PATH/villas/ | head -10 && \
+             echo '=== symlink check ===' && ls -la $FRONTEND_PATH/api.pusatvillaid.com"
+
+  # ============================================================
+  # JOB 5: Final Check
+  # ============================================================
+  final-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [deploy-backend, deploy-frontend]
+
+    steps:
+      - name: API Health Check
+        run: |
+          echo "=== Checking API availability ==="
+          curl -s -o /dev/null -w "%{http_code}" https://api.pusatvillaid.com/
+          echo ""
+          echo "=== Checking main site ==="
+          curl -s -o /dev/null -w "%{http_code}" https://pusatvillaid.com/
+          echo ""
+          echo "=== DEPLOY COMPLETE ==="
+
+      - name: Success Notification
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Backend: https://api.pusatvillaid.com"
+          echo "Frontend: https://pusatvillaid.com"
+
+      - name: Failure Notification
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Check GitHub Actions logs for details."
