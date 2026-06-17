@@ -79,6 +79,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::get('/bookings', [BookingAdminController::class, 'index']);
         Route::get('/bookings/{id}', [BookingAdminController::class, 'show']);
         Route::patch('/bookings/{id}/status', [BookingAdminController::class, 'updateStatus']);
+        Route::post('/bookings/{id}/approve-manual-payment', [BookingAdminController::class, 'approveManualPayment']);
+        Route::post('/bookings/{id}/reject-manual-payment', [BookingAdminController::class, 'rejectManualPayment']);
         Route::post('/bookings/{id}/resend-email', [BookingAdminController::class, 'resendEmail']);
 
         // Villas Management

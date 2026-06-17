@@ -594,3 +594,143 @@ it('rejects unauthenticated admin requests', function () {
 
     $response->assertStatus(401);
 });
+
+// =====================================================
+// Manual Payment Verification API Tests
+// =====================================================
+
+it('lets a guest upload a manual payment proof', function () {
+    \Illuminate\Support\Facades\Storage::fake('public');
+
+    $booking = Booking::factory()->create([
+        'booking_code' => 'VB-2026-9001',
+        'payment_status' => 'unpaid',
+    ]);
+    $method = \App\Models\PaymentMethod::factory()->create(['is_active' => true]);
+
+    $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
+        'payment_method_id' => $method->id,
+        'payment_proof' => \Illuminate\Http\UploadedFile::fake()->image('proof.jpg'),
+    ]);
+
+    $response->assertOk()
+        ->assertJsonStructure(['payment', 'message']);
+
+    $this->assertDatabaseHas('payments', [
+        'booking_id' => $booking->id,
+        'status' => 'pending',
+    ]);
+});
+
+it('admin can approve a manual payment', function () {
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $booking = Booking::factory()->create([
+        'status' => 'pending',
+        'payment_status' => 'unpaid',
+    ]);
+    $payment = Payment::factory()->create([
+        'booking_id' => $booking->id,
+        'status' => 'pending',
+        'payment_proof' => 'https://example.test/storage/payment-proofs/proof.jpg',
+    ]);
+
+    $response = $this->postJson("/api/v1/admin/bookings/{$booking->id}/approve-manual-payment");
+
+    $response->assertOk()
+        ->assertJsonPath('booking.payment_status', 'paid');
+
+    expect($booking->fresh()->status)->toBe('confirmed');
+    expect($payment->fresh()->status)->toBe('success');
+    \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\BookingConfirmationMail::class);
+});
+
+it('admin cannot approve a manual payment without proof', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
+    Payment::factory()->create([
+        'booking_id' => $booking->id,
+        'status' => 'pending',
+        'payment_proof' => null,
+    ]);
+
+    $response = $this->postJson("/api/v1/admin/bookings/{$booking->id}/approve-manual-payment");
+
+    $response->assertStatus(422);
+});
+
+it('admin can reject a manual payment with a reason', function () {
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
+    $payment = Payment::factory()->create([
+        'booking_id' => $booking->id,
+        'status' => 'pending',
+        'payment_proof' => 'https://example.test/storage/payment-proofs/proof.jpg',
+    ]);
+
+    $response = $this->postJson("/api/v1/admin/bookings/{$booking->id}/reject-manual-payment", [
+        'rejection_reason' => 'Nominal transfer tidak sesuai dengan total tagihan.',
+    ]);
+
+    $response->assertOk();
+
+    $fresh = $payment->fresh();
+    expect($fresh->status)->toBe('failed');
+    expect($fresh->rejection_reason)->toBe('Nominal transfer tidak sesuai dengan total tagihan.');
+    expect($booking->fresh()->payment_status)->toBe('unpaid');
+    \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\ManualPaymentRejectedMail::class);
+});
+
+it('admin reject requires a rejection reason', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
+    Payment::factory()->create([
+        'booking_id' => $booking->id,
+        'status' => 'pending',
+        'payment_proof' => 'https://example.test/storage/payment-proofs/proof.jpg',
+    ]);
+
+    $response = $this->postJson("/api/v1/admin/bookings/{$booking->id}/reject-manual-payment", []);
+
+    $response->assertStatus(422)
+        ->assertJsonStructure(['errors']);
+});
+
+it('guest re-upload after rejection resets payment to pending', function () {
+    \Illuminate\Support\Facades\Storage::fake('public');
+
+    $booking = Booking::factory()->create([
+        'booking_code' => 'VB-2026-9002',
+        'payment_status' => 'unpaid',
+    ]);
+    $method = \App\Models\PaymentMethod::factory()->create(['is_active' => true]);
+    $payment = Payment::factory()->create([
+        'booking_id' => $booking->id,
+        'status' => 'failed',
+        'rejection_reason' => 'Bukti tidak jelas.',
+        'rejected_at' => now(),
+        'payment_proof' => 'https://example.test/storage/payment-proofs/old.jpg',
+    ]);
+
+    $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
+        'payment_method_id' => $method->id,
+        'payment_proof' => \Illuminate\Http\UploadedFile::fake()->image('new-proof.jpg'),
+    ]);
+
+    $response->assertOk();
+
+    $fresh = $payment->fresh();
+    expect($fresh->status)->toBe('pending');
+    expect($fresh->rejection_reason)->toBeNull();
+});

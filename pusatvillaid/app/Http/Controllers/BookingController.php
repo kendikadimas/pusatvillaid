@@ -278,6 +278,8 @@ class BookingController extends Controller
                 'payment_type' => 'manual_'.$paymentMethod->code,
                 'status' => 'pending',
                 'payment_proof' => $proofUrl,
+                'rejection_reason' => null,
+                'rejected_at' => null,
             ]);
         } else {
             $payment = Payment::create([

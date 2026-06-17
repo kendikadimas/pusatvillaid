@@ -36,11 +36,19 @@ function BookingPaymentContent() {
 
     // New states for manual payment
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-    const [paymentType, setPaymentType] = useState<'online' | 'manual'>('online');
+    const [paymentType, setPaymentType] = useState<'online' | 'manual'>('manual');
     const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [submittingProof, setSubmittingProof] = useState(false);
+
+    // Online payment (Midtrans) is only available when a real client key is configured.
+    const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+    const isOnlineEnabled = Boolean(
+        midtransClientKey &&
+        !midtransClientKey.includes('placeholder') &&
+        !midtransClientKey.includes('Mid-client-key-anda')
+    );
 
     useEffect(() => {
         // 1. Fetch booking details to verify unpaid status
@@ -90,9 +98,11 @@ function BookingPaymentContent() {
         fetchBooking();
     }, [code, snapTokenParam]);
 
-    // 2. Load Midtrans Snap.js script
+    // 2. Load Midtrans Snap.js script (only when online payment is enabled)
     useEffect(() => {
-        const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-placeholder';
+        if (!isOnlineEnabled) {
+            return;
+        }
         const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
         const snapSrc = isProduction 
             ? 'https://app.midtrans.com/snap/snap.js' 
@@ -107,7 +117,7 @@ function BookingPaymentContent() {
 
         const script = document.createElement('script');
         script.src = snapSrc;
-        script.setAttribute('data-client-key', midtransClientKey);
+        script.setAttribute('data-client-key', midtransClientKey as string);
         script.async = true;
         
         script.onload = () => {
@@ -352,8 +362,20 @@ function BookingPaymentContent() {
                         </p>
                     </div>
 
+                    {/* Rejected payment notice */}
+                    {booking.payment?.status === 'failed' && booking.payment?.rejection_reason && (
+                        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-left space-y-1.5">
+                            <div className="flex items-center space-x-1.5">
+                                <AlertCircle className="w-4 h-4 text-red-600" />
+                                <p className="text-xs font-bold text-red-800">Bukti transfer sebelumnya ditolak</p>
+                            </div>
+                            <p className="text-[11px] text-red-700/90 leading-relaxed">{booking.payment.rejection_reason}</p>
+                            <p className="text-[11px] text-red-600 font-semibold pt-0.5">Silakan periksa kembali dan unggah ulang bukti transfer Anda di bawah ini.</p>
+                        </div>
+                    )}
+
                     {/* Payment Type Tabs */}
-                    {paymentMethods.length > 0 && (
+                    {isOnlineEnabled && paymentMethods.length > 0 && (
                         <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-2xl border border-slate-200/50">
                             <button
                                 type="button"

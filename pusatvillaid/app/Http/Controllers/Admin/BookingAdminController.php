@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\BookingConfirmationMail;
+use App\Mail\ManualPaymentRejectedMail;
 use App\Models\Booking;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -170,6 +171,131 @@ class BookingAdminController extends Controller
         return response()->json([
             'booking' => $booking,
             'message' => 'Status booking berhasil diperbarui.',
+        ]);
+    }
+
+    /**
+     * Approve a manual transfer payment for a booking.
+     *
+     * Marks the linked payment as success, flips the booking to paid/confirmed,
+     * and notifies the guest with the standard booking confirmation email.
+     */
+    public function approveManualPayment(int $id): JsonResponse
+    {
+        $booking = Booking::with(['villa', 'payment'])->find($id);
+
+        if (! $booking) {
+            return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        $payment = $booking->payment;
+
+        if (! $payment || ! $payment->payment_proof) {
+            return response()->json(['message' => 'Belum ada bukti pembayaran manual untuk disetujui.'], 422);
+        }
+
+        if ($booking->payment_status === 'paid') {
+            return response()->json(['message' => 'Pembayaran booking ini sudah disetujui sebelumnya.'], 422);
+        }
+
+        // Overlap guard: don't confirm a booking that clashes with another active booking.
+        $overlapping = Booking::where('villa_id', $booking->villa_id)
+            ->where('id', '!=', $booking->id)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->where(function ($query) use ($booking) {
+                $query->where(function ($q) use ($booking) {
+                    $q->where('check_in', '>=', $booking->check_in)
+                        ->where('check_in', '<', $booking->check_out);
+                })->orWhere(function ($q) use ($booking) {
+                    $q->where('check_out', '>', $booking->check_in)
+                        ->where('check_out', '<=', $booking->check_out);
+                })->orWhere(function ($q) use ($booking) {
+                    $q->where('check_in', '<=', $booking->check_in)
+                        ->where('check_out', '>=', $booking->check_out);
+                });
+            })
+            ->exists();
+
+        if ($overlapping) {
+            return response()->json([
+                'message' => 'Tidak bisa menyetujui: tanggal bertabrakan dengan booking lain yang sudah dikonfirmasi.',
+            ], 422);
+        }
+
+        $booking->status = 'confirmed';
+        $booking->payment_status = 'paid';
+        $booking->save();
+
+        $payment->status = 'success';
+        $payment->paid_at = $payment->paid_at ?? now();
+        $payment->rejection_reason = null;
+        $payment->rejected_at = null;
+        $payment->save();
+
+        try {
+            Mail::to($booking->guest_email)->send(new BookingConfirmationMail($booking));
+        } catch (\Exception $e) {
+            Log::error("Gagal mengirim email konfirmasi (approve manual) untuk booking {$booking->booking_code}: ".$e->getMessage());
+        }
+
+        return response()->json([
+            'booking' => $booking->fresh(['villa', 'payment']),
+            'message' => 'Pembayaran manual disetujui & booking dikonfirmasi. Email konfirmasi telah dikirim ke tamu.',
+        ]);
+    }
+
+    /**
+     * Reject a manual transfer payment for a booking.
+     *
+     * Marks the linked payment as failed with a reason, keeps the booking unpaid
+     * so the guest can re-upload, and notifies the guest of the reason.
+     */
+    public function rejectManualPayment(Request $request, int $id): JsonResponse
+    {
+        $booking = Booking::with(['villa', 'payment'])->find($id);
+
+        if (! $booking) {
+            return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $payment = $booking->payment;
+
+        if (! $payment || ! $payment->payment_proof) {
+            return response()->json(['message' => 'Belum ada bukti pembayaran manual untuk ditolak.'], 422);
+        }
+
+        if ($booking->payment_status === 'paid') {
+            return response()->json(['message' => 'Pembayaran sudah disetujui, tidak bisa ditolak.'], 422);
+        }
+
+        $payment->status = 'failed';
+        $payment->rejection_reason = $request->rejection_reason;
+        $payment->rejected_at = now();
+        $payment->paid_at = null;
+        $payment->save();
+
+        // Keep booking unpaid so the guest can re-upload a new proof.
+        $booking->payment_status = 'unpaid';
+        $booking->save();
+
+        try {
+            Mail::to($booking->guest_email)
+                ->send(new ManualPaymentRejectedMail($booking, $request->rejection_reason));
+        } catch (\Exception $e) {
+            Log::error("Gagal mengirim email penolakan pembayaran untuk booking {$booking->booking_code}: ".$e->getMessage());
+        }
+
+        return response()->json([
+            'booking' => $booking->fresh(['villa', 'payment']),
+            'message' => 'Bukti pembayaran ditolak. Tamu telah diberitahu untuk mengunggah ulang.',
         ]);
     }
 

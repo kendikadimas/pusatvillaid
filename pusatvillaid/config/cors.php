@@ -25,7 +25,9 @@ return [
         'https://www.pusatvillaid.com',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https?://(?:.+\.)?pusatvillaid\.com$#',
+    ],
 
     'allowed_headers' => ['*'],
 

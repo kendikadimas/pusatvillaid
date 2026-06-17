@@ -27,7 +27,10 @@ import {
     Check,
     Loader2,
     FileText,
-    ExternalLink
+    ExternalLink,
+    X,
+    XCircle,
+    AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -46,6 +49,12 @@ function AdminBookingDetailContent() {
     const [updating, setUpdating] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
     const [copiedJson, setCopiedJson] = useState(false);
+
+    // Manual payment verification states
+    const [approvingPayment, setApprovingPayment] = useState(false);
+    const [rejectingPayment, setRejectingPayment] = useState(false);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectionReason, setRejectionReason] = useState('');
 
     const fetchBookingDetails = async () => {
         setLoading(true);
@@ -104,6 +113,47 @@ function AdminBookingDetailContent() {
             toast.error('Gagal mengirim ulang email konfirmasi.');
         } finally {
             setSendingEmail(false);
+        }
+    };
+
+    const handleApproveManualPayment = async () => {
+        setApprovingPayment(true);
+        try {
+            const response = await axiosClient.post(`/admin/bookings/${id}/approve-manual-payment`);
+            setBooking(response.data.booking);
+            setStatus('confirmed');
+            setPaymentStatus('paid');
+            toast.success(response.data.message || 'Pembayaran manual berhasil disetujui.');
+            fetchBookingDetails();
+        } catch (err: any) {
+            console.error('Failed to approve manual payment:', err);
+            toast.error(err.response?.data?.message || 'Gagal menyetujui pembayaran.');
+        } finally {
+            setApprovingPayment(false);
+        }
+    };
+
+    const handleRejectManualPayment = async () => {
+        if (!rejectionReason.trim()) {
+            toast.error('Silakan isi alasan penolakan.');
+            return;
+        }
+        setRejectingPayment(true);
+        try {
+            const response = await axiosClient.post(`/admin/bookings/${id}/reject-manual-payment`, {
+                rejection_reason: rejectionReason,
+            });
+            setBooking(response.data.booking);
+            setPaymentStatus('unpaid');
+            toast.success(response.data.message || 'Bukti pembayaran ditolak.');
+            setShowRejectModal(false);
+            setRejectionReason('');
+            fetchBookingDetails();
+        } catch (err: any) {
+            console.error('Failed to reject manual payment:', err);
+            toast.error(err.response?.data?.message || 'Gagal menolak pembayaran.');
+        } finally {
+            setRejectingPayment(false);
         }
     };
 
@@ -289,9 +339,27 @@ function AdminBookingDetailContent() {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Status Pembayaran:</span>
-                                        <span className="font-bold text-[#222222]">{booking.payment_status === 'paid' ? 'Lunas (Paid)' : 'Menunggu Konfirmasi (Pending)'}</span>
+                                        <span className="font-bold text-[#222222]">
+                                            {booking.payment_status === 'paid'
+                                                ? 'Lunas (Paid)'
+                                                : booking.payment?.status === 'failed'
+                                                    ? 'Ditolak (Rejected)'
+                                                    : 'Menunggu Konfirmasi (Pending)'}
+                                        </span>
                                     </div>
                                 </div>
+
+                                {/* Previous rejection note */}
+                                {booking.payment?.status === 'failed' && booking.payment?.rejection_reason && (
+                                    <div className="bg-red-50 border border-red-200 rounded-[14px] p-4">
+                                        <div className="flex items-center space-x-1.5 mb-1">
+                                            <AlertTriangle className="w-4 h-4 text-red-600" />
+                                            <p className="font-bold text-red-800 text-[10px] uppercase tracking-wider">Bukti sebelumnya ditolak</p>
+                                        </div>
+                                        <p className="text-xs text-red-900/80 font-medium leading-relaxed">{booking.payment.rejection_reason}</p>
+                                        <p className="text-[10px] text-red-500 mt-1.5">Menunggu tamu mengunggah ulang bukti transfer yang baru.</p>
+                                    </div>
+                                )}
 
                                 <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64 md:h-80 group">
                                     <img 
@@ -311,43 +379,35 @@ function AdminBookingDetailContent() {
                                 </div>
 
                                 {booking.payment_status !== 'paid' && (
-                                    <div className="bg-blue-50/50 border border-blue-100 rounded-[14px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="bg-blue-50/50 border border-blue-100 rounded-[14px] p-4 space-y-3">
                                         <div>
-                                            <p className="text-xs font-bold text-[#222222]">Apakah dana sudah masuk?</p>
-                                            <p className="text-[10px] text-[#6a6a6a] mt-0.5">Verifikasi mutasi rekening Anda terlebih dahulu sebelum menyetujui pembayaran.</p>
+                                            <p className="text-xs font-bold text-[#222222]">Verifikasi pembayaran manual</p>
+                                            <p className="text-[10px] text-[#6a6a6a] mt-0.5">Cek mutasi rekening Anda terlebih dahulu. Setujui jika dana sudah masuk, atau tolak dengan alasan agar tamu dapat mengunggah ulang.</p>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={async () => {
-                                                setUpdating(true);
-                                                try {
-                                                    const response = await axiosClient.patch(`/admin/bookings/${id}/status`, {
-                                                        status: 'confirmed',
-                                                        payment_status: 'paid',
-                                                        cancel_reason: null
-                                                    });
-                                                    setBooking(response.data.booking);
-                                                    setStatus('confirmed');
-                                                    setPaymentStatus('paid');
-                                                    toast.success('Pembayaran manual berhasil disetujui & booking dikonfirmasi!');
-                                                    fetchBookingDetails();
-                                                } catch (err: any) {
-                                                    console.error('Failed to quick approve payment:', err);
-                                                    toast.error(err.response?.data?.message || 'Gagal menyetujui pembayaran.');
-                                                } finally {
-                                                    setUpdating(false);
-                                                }
-                                            }}
-                                            disabled={updating}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-[8px] transition-all cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
-                                        >
-                                            {updating ? (
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                            ) : (
-                                                <Check className="w-3.5 h-3.5" />
-                                            )}
-                                            <span>Setujui Pembayaran</span>
-                                        </button>
+                                        <div className="flex flex-col sm:flex-row gap-2.5">
+                                            <button
+                                                type="button"
+                                                onClick={handleApproveManualPayment}
+                                                disabled={approvingPayment || rejectingPayment}
+                                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-[8px] transition-all cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50"
+                                            >
+                                                {approvingPayment ? (
+                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                ) : (
+                                                    <Check className="w-3.5 h-3.5" />
+                                                )}
+                                                <span>Setujui Pembayaran</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowRejectModal(true)}
+                                                disabled={approvingPayment || rejectingPayment}
+                                                className="flex-1 bg-white hover:bg-red-50 text-red-600 border border-red-200 hover:border-red-300 font-bold text-xs px-4 py-2.5 rounded-[8px] transition-all cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50"
+                                            >
+                                                <XCircle className="w-3.5 h-3.5" />
+                                                <span>Tolak Bukti</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -531,6 +591,69 @@ function AdminBookingDetailContent() {
                 </div>
 
             </div>
+
+            {/* Reject Manual Payment Modal */}
+            {showRejectModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[16px] shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center space-x-2.5">
+                                <div className="w-9 h-9 rounded-[8px] bg-red-50 flex items-center justify-center">
+                                    <XCircle className="w-5 h-5 text-red-600" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-[#222222] text-sm">Tolak Bukti Pembayaran</h3>
+                                    <p className="text-[10px] text-[#6a6a6a]">Booking {booking.booking_code}</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowRejectModal(false)}
+                                className="text-[#6a6a6a] hover:text-[#222222] transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <p className="text-xs text-[#6a6a6a] mb-3 leading-relaxed">
+                            Jelaskan alasan penolakan. Pesan ini akan dikirim ke email tamu agar mereka dapat mengunggah ulang bukti transfer yang benar.
+                        </p>
+
+                        <textarea
+                            rows={4}
+                            autoFocus
+                            placeholder="Contoh: Nominal transfer tidak sesuai dengan total tagihan, atau bukti transfer tidak terbaca dengan jelas..."
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium transition-all"
+                        />
+
+                        <div className="flex gap-2.5 mt-5">
+                            <button
+                                type="button"
+                                onClick={() => setShowRejectModal(false)}
+                                disabled={rejectingPayment}
+                                className="flex-1 bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-bold text-xs py-2.5 rounded-[8px] transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleRejectManualPayment}
+                                disabled={rejectingPayment || !rejectionReason.trim()}
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded-[8px] transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                            >
+                                {rejectingPayment ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                    <XCircle className="w-3.5 h-3.5" />
+                                )}
+                                <span>Tolak & Kirim Email</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

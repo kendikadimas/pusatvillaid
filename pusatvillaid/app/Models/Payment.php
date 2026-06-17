@@ -19,8 +19,10 @@ class Payment extends Model
         'status',
         'snap_token',
         'payment_proof',
+        'rejection_reason',
         'expired_at',
         'paid_at',
+        'rejected_at',
         'raw_response',
     ];
 
@@ -28,6 +30,7 @@ class Payment extends Model
         'amount' => 'decimal:2',
         'expired_at' => 'datetime',
         'paid_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'raw_response' => 'array',
     ];
 

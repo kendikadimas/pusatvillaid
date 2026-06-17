@@ -81,6 +81,8 @@ export interface Payment {
     status: 'pending' | 'success' | 'failed' | 'expire' | 'cancel';
     snap_token: string | null;
     payment_proof?: string | null;
+    rejection_reason?: string | null;
+    rejected_at?: string | null;
     expired_at: string | null;
     paid_at: string | null;
     raw_response: any | null;

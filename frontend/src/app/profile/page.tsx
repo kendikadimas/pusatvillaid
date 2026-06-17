@@ -7,6 +7,7 @@ import axiosClient from '@/lib/axios';
 import PublicHeader from '@/components/PublicHeader';
 import PublicFooter from '@/components/PublicFooter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { getPhotoUrl } from '@/lib/villaUtils';
 import { 
     User, 
     Mail, 
@@ -204,7 +205,7 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="space-y-6">
                                     {bookings.map((booking) => {
-                                        const mainPhoto = booking.villa.photos?.[0] || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';
+                                        const mainPhoto = booking.villa.photos?.[0] ? getPhotoUrl(booking.villa.photos[0]) : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';
                                         const isUnpaid = booking.payment_status === 'unpaid' && booking.status !== 'cancelled';
 
                                         return (
