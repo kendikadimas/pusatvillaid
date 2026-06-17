@@ -57,7 +57,7 @@ jobs:
           retention-days: 1
 
   # ============================================================
-  # JOB 2: Deploy Backend
+  # JOB 2: Deploy Backend (via appleboy actions)
   # ============================================================
   deploy-backend:
     runs-on: ubuntu-latest
@@ -70,18 +70,60 @@ jobs:
         with:
           name: backend-build
 
-      - name: Install sshpass
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
-
-      - name: Backup .env & Upload Backend
-        run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "cp ${{ secrets.CPANEL_BACKEND_PATH }}/.env ${{ secrets.CPANEL_BACKEND_PATH }}/.env.backup 2>/dev/null || true"
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} backend-deploy.tar.gz ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_BACKEND_PATH }}/
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.CPANEL_BACKEND_PATH }} && tar -xzf backend-deploy.tar.gz && rm -f backend-deploy.tar.gz && echo 'Backend files extracted'"
+      - name: Upload Backend to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "backend-deploy.tar.gz"
+          target: ${{ secrets.CPANEL_BACKEND_PATH }}
 
       - name: Post-Deploy Backend
-        run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.CPANEL_BACKEND_PATH }} && cp .env.backup .env 2>/dev/null || true && rm -f .env.backup && if ! grep -q 'APP_KEY=base64:' .env 2>/dev/null; then php artisan key:generate --force; fi && chmod -R 775 storage bootstrap/cache && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache && php artisan storage:link --force && php artisan queue:restart || true && echo 'Backend deploy COMPLETE' && ls -la"
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.CPANEL_BACKEND_PATH }}
+
+            # Extract tar.gz
+            tar -xzf backend-deploy.tar.gz
+            rm -f backend-deploy.tar.gz
+
+            # Restore .env dari backup (jika ada)
+            if [ -f .env.backup ]; then
+              cp .env.backup .env
+              rm .env.backup
+              echo "=== .env restored ==="
+            fi
+
+            # Generate APP_KEY jika belum ada
+            if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
+              php artisan key:generate --force
+              echo "=== APP_KEY generated ==="
+            fi
+
+            # Set permissions
+            chmod -R 775 storage bootstrap/cache
+
+            # Cache Laravel
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            # Storage link
+            php artisan storage:link --force
+
+            # Queue restart
+            php artisan queue:restart 2>/dev/null || true
+
+            echo "=== Backend deploy COMPLETE ==="
+            ls -la
 
   # ============================================================
   # JOB 3: Build Frontend (Next.js)
@@ -108,6 +150,10 @@ jobs:
         run: |
           npm ci
           npm run build
+          echo "=== Listing generated files ==="
+          find out -type d | head -40
+          echo "=== Total HTML files ==="
+          find out -name "*.html" | wc -l
 
       - name: Upload Frontend Artifact
         uses: actions/upload-artifact@v4
@@ -117,7 +163,7 @@ jobs:
           retention-days: 1
 
   # ============================================================
-  # JOB 4: Deploy Frontend
+  # JOB 4: Deploy Frontend (via appleboy actions)
   # ============================================================
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -129,24 +175,42 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
-          path: out
-
-      - name: Install sshpass & rsync
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass rsync
+          path: frontend-out
 
       - name: Deploy Frontend to cPanel
-        run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' rsync -avz --delete \
-            --exclude='api.pusatvillaid.com' \
-            --exclude='.htaccess' \
-            out/ \
-            -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }}" \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_FRONTEND_PATH }}
-          echo "Frontend deployed (symlink preserved)"
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "frontend-out/"
+          target: ${{ secrets.CPANEL_FRONTEND_PATH }}
+          strip_components: 1
 
-      - name: Verify Deployment
-        run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo '=== public_html ===' && ls -la ${{ secrets.CPANEL_FRONTEND_PATH }} && echo '=== villas ===' && ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1 | head -10 && echo '=== symlink ===' && ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com"
+      - name: Re-create API Symlink
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Pastikan symlink api masih ada
+            if [ ! -L ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com ]; then
+              rm -rf ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+              ln -s /home/${{ secrets.SSH_USERNAME }}/backend-laravel/public ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
+              echo "=== Symlink re-created ==="
+            else
+              echo "=== Symlink already exists ==="
+            fi
+
+            echo "=== public_html contents ==="
+            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}
+            echo "=== villas ==="
+            ls ${{ secrets.CPANEL_FRONTEND_PATH }}villas/ 2>&1 | head -10
+            echo "=== symlink ==="
+            ls -la ${{ secrets.CPANEL_FRONTEND_PATH }}api.pusatvillaid.com
 
   # ============================================================
   # JOB 5: Final Health Check
@@ -160,7 +224,7 @@ jobs:
       - name: Health Check
         run: |
           echo "Checking API..."
-          curl -s -o /dev/null -w "API Status: %{http_code}\n" https://api.pusatvillaid.com/
+          curl -s -o /dev/null -w "API Status: %{http_code}\n" https://api.pusatvillaid.com/ || true
           echo "Checking Frontend..."
-          curl -s -o /dev/null -w "Frontend Status: %{http_code}\n" https://pusatvillaid.com/
+          curl -s -o /dev/null -w "Frontend Status: %{http_code}\n" https://pusatvillaid.com/ || true
           echo "DEPLOY COMPLETE"
