@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Destination;
+use App\Models\PaymentMethod;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Villa;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -864,6 +867,66 @@ class DatabaseSeeder extends Seeder
                         'approved_by' => $admin->id,
                     ]
                 );
+            }
+        }
+
+        // 5. Seed Payment Methods
+        $paymentMethods = [
+            [
+                'name' => 'Bank Central Asia (BCA)',
+                'code' => 'bca',
+                'account_number' => '8019208392',
+                'account_name' => 'PT PUSAT VILLA INDONESIA',
+                'logo_url' => null,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Bank Mandiri',
+                'code' => 'mandiri',
+                'account_number' => '1230009876543',
+                'account_name' => 'PT PUSAT VILLA INDONESIA',
+                'logo_url' => null,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Bank Negara Indonesia (BNI)',
+                'code' => 'bni',
+                'account_number' => '0987654321',
+                'account_name' => 'PT PUSAT VILLA INDONESIA',
+                'logo_url' => null,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Bank Rakyat Indonesia (BRI)',
+                'code' => 'bri',
+                'account_number' => '5678912345',
+                'account_name' => 'PT PUSAT VILLA INDONESIA',
+                'logo_url' => null,
+                'is_active' => false,
+            ],
+        ];
+
+        foreach ($paymentMethods as $pm) {
+            PaymentMethod::firstOrCreate(['code' => $pm['code']], $pm);
+        }
+
+        // 6. Seed Blocked Dates for first villa (next 30 days, random weekends)
+        $firstVilla = Villa::first();
+        if ($firstVilla) {
+            $blockedCount = 0;
+            for ($i = 1; $i <= 30; $i++) {
+                $date = Carbon::now()->addDays($i);
+                if ($date->isWeekend() && $blockedCount < 4) {
+                    BlockedDate::firstOrCreate(
+                        ['villa_id' => $firstVilla->id, 'date' => $date->toDateString()],
+                        [
+                            'reason' => 'Sudah dibooking via Airbnb',
+                            'created_by' => $admin->id,
+                            'source' => 'external',
+                        ]
+                    );
+                    $blockedCount++;
+                }
             }
         }
     }
