@@ -4,11 +4,9 @@ import React, { useState } from 'react';
 import AuthLayout from '@/components/auth-layout';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/AuthContext';
+import { Mail } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
     const { forgotPassword } = useAuth();
@@ -50,21 +48,19 @@ export default function ForgotPasswordPage() {
             description="No worries — we'll send you a reset link"
         >
             {status && (
-                <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                <div className="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-center text-sm font-semibold text-green-700">
                     {status}
                 </div>
             )}
 
-            <div className="flex flex-col gap-5">
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    <div className="grid gap-1.5">
-                        <Label
-                            htmlFor="email"
-                            className="text-sm font-medium text-[#111111] dark:text-slate-200"
-                        >
-                            Email address
-                        </Label>
-                        <Input
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                    <label htmlFor="email" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Alamat Email
+                    </label>
+                    <div className="relative flex items-center">
+                        <Mail className="absolute left-3.5 w-4.5 h-4.5 text-slate-400" />
+                        <input
                             id="email"
                             type="email"
                             name="email"
@@ -72,33 +68,30 @@ export default function ForgotPasswordPage() {
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="off"
                             autoFocus
-                            placeholder="email@example.com"
+                            placeholder="nama@email.com"
                             required
-                            className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
                         />
-                        <InputError message={errors.email} />
                     </div>
+                    <InputError message={errors.email} />
+                </div>
 
-                    <Button
-                        type="submit"
-                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
-                        disabled={processing}
-                    >
-                        {processing && <Spinner className="mr-2" />}
-                        {processing ? 'Sending link...' : 'Send reset link'}
-                    </Button>
-                </form>
+                <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
+                    disabled={processing}
+                >
+                    {processing && <Spinner className="mr-2 w-4 h-4 text-white" />}
+                    <span>{processing ? 'Mengirim...' : 'Kirim Link Reset'}</span>
+                </button>
 
-                <div className="mt-2 text-center text-sm text-[#787774] dark:text-slate-400">
-                    Or, return to{' '}
-                    <TextLink
-                        href="/login"
-                        className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                        log in
+                <div className="text-center text-xs text-slate-500 font-semibold pt-2">
+                    Atau kembali ke{' '}
+                    <TextLink href="/login" className="text-blue-500 hover:underline font-bold">
+                        masuk
                     </TextLink>
                 </div>
-            </div>
+            </form>
         </AuthLayout>
     );
 }
