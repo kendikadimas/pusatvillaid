@@ -20,7 +20,9 @@ import {
     Edit,
     Upload,
     X,
-    Check
+    Check,
+    ToggleRight,
+    ToggleLeft
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axiosClient from '@/lib/axios';
@@ -160,6 +162,24 @@ export default function AdminSettingsPage() {
         } catch (err: any) {
             console.error('Failed to delete payment method:', err);
             toast.error(err.response?.data?.message || 'Gagal menghapus metode pembayaran.');
+        }
+    };
+
+    const handleToggleMethodStatus = async (method: PaymentMethod) => {
+        try {
+            await axiosClient.put(`/admin/payment-methods/${method.id}`, {
+                name: method.name,
+                code: method.code,
+                account_number: method.account_number,
+                account_name: method.account_name,
+                logo_url: method.logo_url || null,
+                is_active: !method.is_active,
+            });
+            toast.success(`Metode "${method.name}" sekarang ${method.is_active ? 'nonaktif' : 'aktif'}.`);
+            fetchPaymentMethods();
+        } catch (err: any) {
+            console.error('Failed to toggle method status:', err);
+            toast.error('Gagal mengubah status metode pembayaran.');
         }
     };
 
@@ -465,7 +485,7 @@ export default function AdminSettingsPage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {paymentMethods.map((method) => (
-                                        <div key={method.id} className="border border-slate-200 rounded-[14px] p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors flex items-start justify-between">
+                                        <div key={method.id} className="border border-slate-200 rounded-[14px] p-4 bg-white hover:shadow-sm transition-all flex items-start justify-between">
                                             <div className="flex items-start space-x-3.5">
                                                 <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0">
                                                     {method.logo_url ? (
@@ -474,35 +494,44 @@ export default function AdminSettingsPage() {
                                                         <Building className="w-6 h-6 text-slate-400" />
                                                     )}
                                                 </div>
-                                                <div className="text-xs space-y-0.5">
-                                                    <h4 className="font-extrabold text-[#222222] flex items-center space-x-2">
-                                                        <span>{method.name}</span>
-                                                        <span className={`text-[8px] font-black uppercase px-1 rounded-sm ${method.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400'}`}>
-                                                            {method.is_active ? 'Aktif' : 'Nonaktif'}
-                                                        </span>
-                                                    </h4>
+                                                <div className="text-xs space-y-1">
+                                                    <h4 className="font-extrabold text-[#222222]">{method.name}</h4>
                                                     <p className="text-slate-500 font-mono text-[11px] font-semibold">{method.account_number}</p>
                                                     <p className="text-slate-500 text-[10px] font-medium">a.n. <span className="font-bold text-slate-800">{method.account_name}</span></p>
                                                 </div>
                                             </div>
                                             
-                                            <div className="flex items-center space-x-1">
+                                            <div className="flex flex-col items-end gap-2">
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleEditMethod(method)}
-                                                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                                                    title="Edit Rekening"
+                                                    onClick={() => handleToggleMethodStatus(method)}
+                                                    className="focus:outline-none cursor-pointer active:scale-90 transition-transform duration-200"
+                                                    title={method.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
                                                 >
-                                                    <Edit className="w-4 h-4" />
+                                                    {method.is_active ? (
+                                                        <ToggleRight className="w-9 h-6 text-blue-600" />
+                                                    ) : (
+                                                        <ToggleLeft className="w-9 h-6 text-slate-300" />
+                                                    )}
                                                 </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDeleteMethod(method.id)}
-                                                    className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                                    title="Hapus Rekening"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleEditMethod(method)}
+                                                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                                        title="Edit Rekening"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeleteMethod(method.id)}
+                                                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                                        title="Hapus Rekening"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
