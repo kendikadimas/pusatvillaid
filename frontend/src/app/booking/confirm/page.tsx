@@ -17,14 +17,15 @@ import CountdownTimer from '@/components/ui/CountdownTimer';
 import { 
     ChevronRight,
     Loader2,
-    CreditCard,
     Smartphone,
-    Building2,
     ShieldCheck,
-    Clock
+    Clock,
+    Check,
+    Building,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { PaymentMethod } from '@/types';
 
 export default function BookingConfirmPage() {
     const router = useRouter();
@@ -45,9 +46,12 @@ export default function BookingConfirmPage() {
     } = useBookingStore();
 
     const [loading, setLoading] = useState(false);
+    const navigatingAway = useRef(false);
     
     // Payment Method selection
-    const [paymentMethod, setPaymentMethod] = useState<'qris' | 'bank_transfer' | 'credit_card'>('bank_transfer');
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
+    const [methodsLoading, setMethodsLoading] = useState(true);
 
     // Form States
     const [name, setName] = useState('');
@@ -55,12 +59,6 @@ export default function BookingConfirmPage() {
     const [phone, setPhone] = useState('');
     const [agree, setAgree] = useState(false);
     const [formErrors, setFormErrors] = useState<any>({});
-
-    // Simulated Card details for UI fidelity
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
-    const [cardCvv, setCardCvv] = useState('');
-    const [billingAddress, setBillingAddress] = useState('');
 
     // Layer 4: Hold timer (30 minutes countdown)
     const HOLD_DURATION_SECONDS = 30 * 60; // 30 minutes
@@ -86,6 +84,7 @@ export default function BookingConfirmPage() {
     }, [user]);
 
     useEffect(() => {
+        if (navigatingAway.current) return;
         // Guard check: redirect if booking details are missing
         if (!selectedVilla || !checkIn || !checkOut || totalNights <= 0) {
             toast.error('Data sewa tidak lengkap. Silakan pilih tanggal kembali.');
@@ -109,6 +108,24 @@ export default function BookingConfirmPage() {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
+    }, []);
+
+    // Fetch available payment methods
+    useEffect(() => {
+        const fetchMethods = async () => {
+            try {
+                const response = await axiosClient.get('/payment-methods');
+                setPaymentMethods(response.data);
+                if (response.data.length > 0) {
+                    setSelectedMethodId(response.data[0].id);
+                }
+            } catch (err) {
+                console.error('Failed to fetch payment methods:', err);
+            } finally {
+                setMethodsLoading(false);
+            }
+        };
+        fetchMethods();
     }, []);
 
     // Format seconds to MM:SS
@@ -152,8 +169,9 @@ export default function BookingConfirmPage() {
         // Layer 4: Check if hold timer has expired
         if (holdExpired) {
             toast.error('Waktu reservasi Anda telah habis. Silakan pilih tanggal kembali.');
-            resetStore();
+            navigatingAway.current = true;
             router.push(`/villas/${selectedVilla.slug}`);
+            resetStore();
             return;
         }
 
@@ -213,11 +231,13 @@ export default function BookingConfirmPage() {
 
             toast.success(response.data.message || 'Booking berhasil dibuat.');
 
+            navigatingAway.current = true;
+
+            // Redirect directly to payment checkout page before clearing store
+            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
+
             // Clear booking selection store
             resetStore();
-
-            // Redirect directly to payment checkout page
-            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
@@ -296,105 +316,111 @@ export default function BookingConfirmPage() {
                                     </span>
                                 </div>
 
-                                {/* Selection Grid */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMethod('bank_transfer')}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
-                                            paymentMethod === 'bank_transfer'
-                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
-                                                : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
-                                        }`}
-                                    >
-                                        <Building2 className="w-5 h-5 mb-2" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">Virtual Account</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMethod('qris')}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
-                                            paymentMethod === 'qris'
-                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
-                                                : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
-                                        }`}
-                                    >
-                                        <Smartphone className="w-5 h-5 mb-2" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">QRIS & E-Wallet</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMethod('credit_card')}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-center transition-all cursor-pointer active:scale-[0.98] ${
-                                            paymentMethod === 'credit_card'
-                                                ? 'bg-blue-50/50 border-blue-500 text-blue-500 shadow-xs ring-1 ring-blue-500/20'
-                                                : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
-                                        }`}
-                                    >
-                                        <CreditCard className="w-5 h-5 mb-2" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">Kartu Kredit</span>
-                                    </button>
-                                </div>
-
-                                {/* Simulated fields or notices based on method selection */}
-                                <div className="mt-4 p-5 bg-slate-50 border border-slate-200/80 rounded-2xl">
-                                    {paymentMethod === 'bank_transfer' && (
-                                        <div className="text-xs font-semibold text-slate-605 leading-relaxed">
-                                            <strong>Virtual Account:</strong> Mendukung transfer bank otomatis (BCA, Mandiri, BNI, BRI, Permata). Anda akan menerima kode bayar unik setelah menekan tombol konfirmasi.
-                                        </div>
-                                    )}
-
-                                    {paymentMethod === 'qris' && (
-                                        <div className="text-xs font-semibold text-slate-605 leading-relaxed">
-                                            <strong>QRIS & E-Wallet:</strong> Bayar instan menggunakan GoPay, OVO, ShopeePay, LinkAja, Dana, atau scan kode QRIS melalui aplikasi perbankan Anda.
-                                        </div>
-                                    )}
-
-                                    {paymentMethod === 'credit_card' && (
-                                        <div className="space-y-4">
-                                            <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">
-                                        Simulasi Kartu Kredit
+                                {/* Dynamic Payment Methods from Admin Panel */}
+                                {methodsLoading ? (
+                                    <div className="flex items-center justify-center py-8">
+                                        <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
                                     </div>
-                                            <div className="space-y-3">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Nomor Kartu (16 digit)"
-                                                    value={cardNumber}
-                                                    onChange={(e) => setCardNumber(e.target.value)}
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                                />
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Kedaluwarsa (MM/YY)"
-                                                        value={cardExpiry}
-                                                        onChange={(e) => setCardExpiry(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                                    />
-                                                    <input 
-                                                        type="password" 
-                                                        placeholder="CVV"
-                                                        value={cardCvv}
-                                                        onChange={(e) => setCardCvv(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                                    />
+                                ) : paymentMethods.length === 0 ? (
+                                    <p className="text-xs text-slate-500 text-center py-4">Belum ada metode pembayaran tersedia.</p>
+                                ) : (
+                                    <>
+                                        {(() => {
+                                            const qrisMethods = paymentMethods.filter(m => m.code === 'qris');
+                                            const bankMethods = paymentMethods.filter(m => m.code !== 'qris');
+                                            const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
+                                            return (
+                                                <div className="space-y-3">
+                                                    {qrisMethods.length > 0 && (
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-500 block mb-2 uppercase tracking-wider">QRIS</label>
+                                                            <div className="grid grid-cols-1 gap-2">
+                                                                {qrisMethods.map((method) => (
+                                                                    <button
+                                                                        key={method.id}
+                                                                        type="button"
+                                                                        onClick={() => setSelectedMethodId(method.id)}
+                                                                        className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                                                                            selectedMethodId === method.id
+                                                                                ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20'
+                                                                                : 'border-slate-200 bg-white hover:border-slate-300'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex items-center space-x-3">
+                                                                            <div className="w-10 h-7 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-150">
+                                                                                <Smartphone className="w-4 h-4 text-slate-400" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
+                                                                                <span className="text-[10px] text-slate-500">{method.account_name}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        {selectedMethodId === method.id && (
+                                                                            <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                                                                <Check className="w-3.5 h-3.5 text-white" />
+                                                                            </div>
+                                                                        )}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {bankMethods.length > 0 && (
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-500 block mb-2 uppercase tracking-wider">Bank Transfer</label>
+                                                            <div className="grid grid-cols-1 gap-2">
+                                                                {bankMethods.map((method) => (
+                                                                    <button
+                                                                        key={method.id}
+                                                                        type="button"
+                                                                        onClick={() => setSelectedMethodId(method.id)}
+                                                                        className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                                                                            selectedMethodId === method.id
+                                                                                ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20'
+                                                                                : 'border-slate-200 bg-white hover:border-slate-300'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex items-center space-x-3">
+                                                                            {method.logo_url ? (
+                                                                                <img src={method.logo_url} alt={method.name} className="w-10 h-7 object-contain rounded border border-slate-100 bg-white" />
+                                                                            ) : (
+                                                                                <div className="w-10 h-7 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-150">
+                                                                                    <Building className="w-4 h-4 text-slate-400" />
+                                                                                </div>
+                                                                            )}
+                                                                            <div>
+                                                                                <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
+                                                                                <span className="text-[10px] text-slate-500">a.n. {method.account_name}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        {selectedMethodId === method.id && (
+                                                                            <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                                                                <Check className="w-3.5 h-3.5 text-white" />
+                                                                            </div>
+                                                                        )}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {selectedMethod && (
+                                                        <div className="mt-3 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl">
+                                                            {selectedMethod.code === 'qris' ? (
+                                                                <p className="text-xs font-semibold text-slate-600 leading-relaxed">
+                                                                    <strong>QRIS:</strong> Scan kode QR yang akan ditampilkan di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking.
+                                                                </p>
+                                                            ) : (
+                                                                <p className="text-xs font-semibold text-slate-600 leading-relaxed">
+                                                                    <strong>{selectedMethod.name}:</strong> Transfer ke rekening <span className="font-mono font-bold">{selectedMethod.account_number}</span> a.n. {selectedMethod.account_name}. Upload bukti transfer di halaman berikutnya.
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Alamat Penagihan (Kota/Kode Pos)"
-                                                    value={billingAddress}
-                                                    onChange={(e) => setBillingAddress(e.target.value)}
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                                />
-                                            </div>
-                                            <div className="text-[10px] text-slate-450 font-semibold leading-relaxed mt-2 pt-2 border-t border-slate-200/50">
-                                                Informasi di atas hanya merupakan bagian dari tata letak visual. Transaksi kartu kredit yang sesungguhnya tetap akan diproses dengan aman pada portal pembayaran terenkripsi Midtrans Snap.
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                            );
+                                        })()}
+                                    </>
+                                )}
                             </div>
 
                             {/* Step 2: Guest Details (Elegant Minimal Input Panel) */}

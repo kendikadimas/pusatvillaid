@@ -57,7 +57,7 @@ export interface Booking {
     base_price: number;
     total_amount: number;
     status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-    payment_status: 'unpaid' | 'paid' | 'refunded' | 'expired';
+    payment_status: 'unpaid' | 'pending' | 'paid' | 'refunded' | 'expired';
     notes: string | null;
     utm_source: string | null;
     utm_medium: string | null;

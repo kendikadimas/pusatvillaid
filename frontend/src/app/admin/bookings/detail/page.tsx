@@ -209,7 +209,7 @@ function AdminBookingDetailContent() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
                 
                 {/* Left side: Detailed content cards (2 columns) */}
                 <div className="lg:col-span-2 space-y-6">
@@ -522,6 +522,7 @@ function AdminBookingDetailContent() {
                                     className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-[#dddddd] font-semibold cursor-pointer transition-all duration-205"
                                 >
                                     <option value="unpaid">Unpaid (belum lunas)</option>
+                                    <option value="pending">Pending (menunggu verifikasi)</option>
                                     <option value="paid">Paid (lunas)</option>
                                     <option value="refunded">Refunded (dikembalikan)</option>
                                     <option value="expired">Expired (kadaluarsa)</option>

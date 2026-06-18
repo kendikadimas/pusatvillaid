@@ -37,8 +37,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    if (!admin) {
-        return null;
+    if (!admin || admin.role !== 'admin') {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-[#f7f7f7]">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
+        );
     }
 
     const navigation = [

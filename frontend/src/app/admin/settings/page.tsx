@@ -14,6 +14,7 @@ import {
     Clock, 
     CreditCard,
     Building,
+    Smartphone,
     SlidersHorizontal,
     Plus,
     Trash2,
@@ -122,8 +123,13 @@ export default function AdminSettingsPage() {
     const handleSaveMethodSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!methodName.trim() || !methodCode.trim() || !accountNumber.trim() || !accountName.trim()) {
+        const isQris = methodCode.trim().toLowerCase() === 'qris';
+        if (!methodName.trim() || !methodCode.trim() || !accountName.trim()) {
             toast.error('Semua kolom wajib diisi.');
+            return;
+        }
+        if (!isQris && !accountNumber.trim()) {
+            toast.error('Nomor rekening wajib diisi.');
             return;
         }
 
@@ -256,11 +262,11 @@ export default function AdminSettingsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
                 
                 {/* Left Side: Navigation Tabs */}
                 <div className="md:col-span-1 overflow-x-auto md:overflow-visible scrollbar-hide">
-                    <div className="flex md:flex-col gap-1.5 md:space-y-1.5 w-max md:w-auto pb-1 md:pb-0">
+                    <div className="flex md:flex-col gap-1.5 md:space-y-1.5 w-max md:w-auto pb-1 md:pb-0 min-w-0">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isSelected = activeTab === tab.id;
@@ -269,7 +275,7 @@ export default function AdminSettingsPage() {
                                     key={tab.id}
                                     type="button"
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`w-auto md:w-full text-left px-4 py-3 rounded-[8px] transition-colors group relative flex flex-col cursor-pointer flex-shrink-0 ${
+                                    className={`w-auto md:w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-[8px] transition-colors group relative flex items-center md:flex-col md:items-start cursor-pointer flex-shrink-0 gap-2 md:gap-0 ${
                                         isSelected 
                                             ? 'bg-blue-50 text-blue-600 font-bold' 
                                             : 'text-slate-500 hover:bg-slate-50 hover:text-[#222222]'
@@ -279,7 +285,7 @@ export default function AdminSettingsPage() {
                                         <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isSelected ? 'text-blue-500' : 'text-slate-500 group-hover:text-[#222222]'}`} />
                                         <span className="text-xs font-semibold tracking-tight whitespace-nowrap">{tab.name}</span>
                                     </div>
-                                    <span className="text-[10px] text-slate-500 font-medium mt-1 leading-snug transition-colors hidden sm:block">{tab.desc}</span>
+                                    <span className="text-[10px] text-slate-500 font-medium mt-1 leading-snug transition-colors hidden md:block">{tab.desc}</span>
                                     {isSelected && (
                                         <span className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-lg bg-blue-500" />
                                     )}
@@ -490,14 +496,22 @@ export default function AdminSettingsPage() {
                                                 <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0">
                                                     {method.logo_url ? (
                                                         <img src={method.logo_url} alt={method.name} className="w-full h-full object-contain" />
+                                                    ) : method.code === 'qris' ? (
+                                                        <Smartphone className="w-6 h-6 text-slate-400" />
                                                     ) : (
                                                         <Building className="w-6 h-6 text-slate-400" />
                                                     )}
                                                 </div>
                                                 <div className="text-xs space-y-1">
                                                     <h4 className="font-extrabold text-[#222222]">{method.name}</h4>
-                                                    <p className="text-slate-500 font-mono text-[11px] font-semibold">{method.account_number}</p>
-                                                    <p className="text-slate-500 text-[10px] font-medium">a.n. <span className="font-bold text-slate-800">{method.account_name}</span></p>
+                                                    {method.code === 'qris' ? (
+                                                        <p className="text-slate-500 text-[11px] font-semibold">QRIS — {method.account_name}</p>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-slate-500 font-mono text-[11px] font-semibold">{method.account_number}</p>
+                                                            <p className="text-slate-500 text-[10px] font-medium">a.n. <span className="font-bold text-slate-800">{method.account_name}</span></p>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                             
@@ -549,7 +563,9 @@ export default function AdminSettingsPage() {
                             {/* Modal Header */}
                             <div className="px-4 sm:px-6 py-4 border-b border-[#dddddd] flex items-center justify-between">
                                 <h3 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
-                                    {editingMethod ? 'Ubah Rekening Pembayaran' : 'Tambah Rekening Pembayaran'}
+                                    {editingMethod 
+                                        ? `Ubah ${methodCode === 'qris' ? 'Metode' : 'Rekening'} Pembayaran`
+                                        : `Tambah ${methodCode === 'qris' ? 'Metode' : 'Rekening'} Pembayaran`}
                                 </h3>
                                 <button
                                     type="button"
@@ -588,37 +604,45 @@ export default function AdminSettingsPage() {
                                         />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nomor Rekening *</label>
-                                        <input 
-                                            type="text"
-                                            required
-                                            value={accountNumber}
-                                            onChange={(e) => setAccountNumber(e.target.value)}
-                                            placeholder="8019208392"
-                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
-                                        />
-                                    </div>
+                                    {methodCode.trim().toLowerCase() !== 'qris' && (
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nomor Rekening *</label>
+                                            <input 
+                                                type="text"
+                                                required
+                                                value={accountNumber}
+                                                onChange={(e) => setAccountNumber(e.target.value)}
+                                                placeholder="8019208392"
+                                                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
+                                            />
+                                        </div>
+                                    )}
 
                                     <div className="sm:col-span-2">
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Atas Nama (Account Holder) *</label>
+                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                                            {methodCode.trim().toLowerCase() === 'qris' ? 'Nama Merchant *' : 'Atas Nama (Account Holder) *'}
+                                        </label>
                                         <input 
                                             type="text"
                                             required
                                             value={accountName}
                                             onChange={(e) => setAccountName(e.target.value)}
-                                            placeholder="PT PUSAT VILLA INDONESIA"
+                                            placeholder={methodCode.trim().toLowerCase() === 'qris' ? 'MERCHANT NAMA' : 'PT PUSAT VILLA INDONESIA'}
                                             className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                         />
                                     </div>
 
                                     {/* Logo Upload */}
                                     <div className="sm:col-span-2">
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Logo Bank / Metode</label>
+                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                                            {methodCode.trim().toLowerCase() === 'qris' ? 'Upload QR Code' : 'Logo Bank / Metode'}
+                                        </label>
                                         <div className="flex items-center space-x-4">
                                             <div className="w-14 h-14 border border-slate-200 rounded-lg bg-slate-50 overflow-hidden flex items-center justify-center p-2 relative flex-shrink-0">
                                                 {logoUrl ? (
                                                     <img src={logoUrl} alt="Logo preview" className="w-full h-full object-contain" />
+                                                ) : methodCode.trim().toLowerCase() === 'qris' ? (
+                                                    <Smartphone className="w-6 h-6 text-slate-300" />
                                                 ) : (
                                                     <Building className="w-6 h-6 text-slate-300" />
                                                 )}
@@ -632,7 +656,7 @@ export default function AdminSettingsPage() {
                                             <div className="space-y-1.5 flex-1 font-semibold">
                                                 <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3 py-2 rounded-lg inline-flex items-center space-x-1 cursor-pointer transition-colors">
                                                     <Upload className="w-3.5 h-3.5" />
-                                                    <span>Unggah Logo</span>
+                                                    <span>{methodCode.trim().toLowerCase() === 'qris' ? 'Unggah QR Code' : 'Unggah Logo'}</span>
                                                     <input 
                                                         type="file"
                                                         accept="image/*"
@@ -650,7 +674,7 @@ export default function AdminSettingsPage() {
                                                         Hapus
                                                     </button>
                                                 )}
-                                                <p className="text-[9px] text-slate-400 font-normal">Rasio bebas, PNG/SVG transparan direkomendasikan.</p>
+                                                <p className="text-[9px] text-slate-400 font-normal">{methodCode.trim().toLowerCase() === 'qris' ? 'Upload gambar QR Code (PNG/JPG)' : 'Rasio bebas, PNG/SVG transparan direkomendasikan.'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -665,7 +689,7 @@ export default function AdminSettingsPage() {
                                             className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                                         />
                                         <label htmlFor="methodIsActive" className="text-xs font-semibold text-[#222222] select-none cursor-pointer">
-                                            Aktifkan Rekening (Tampilkan langsung sebagai opsi checkout tamu)
+                                            Aktifkan Metode (Tampilkan langsung sebagai opsi checkout tamu)
                                         </label>
                                     </div>
                                 </div>

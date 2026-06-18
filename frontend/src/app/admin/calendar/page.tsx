@@ -303,7 +303,7 @@ export default function AdminCalendarPage() {
             </div>
 
             {/* Main 3-Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start">
                 
                 {/* Column 1: Villa Search & List Sidebar (1/4 width) */}
                 <div className="lg:col-span-1 bg-white rounded-[14px] p-4 shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] border border-[#dddddd] space-y-4">

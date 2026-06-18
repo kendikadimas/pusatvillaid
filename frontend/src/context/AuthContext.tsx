@@ -43,15 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        try {
-            const response = await axiosClient.get('/user');
-            setUser(response.data);
-        } catch (err) {
-            setUser(null);
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('user_token');
-            }
-        }
+        const response = await axiosClient.get('/user');
+        setUser(response.data);
     };
 
     const forgotPassword = async (email: string) => {
@@ -123,11 +116,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             setLoading(true);
-            await Promise.all([refreshAdmin(), refreshUser()]);
+            try {
+                await Promise.all([refreshAdmin(), refreshUser()]);
+            } catch {
+                // Individual refresh functions handle their own errors
+            }
             setLoading(false);
         };
         initAuth();
     }, []);
+
+    // Safety net: re-fetch user if token exists but user is null
+    useEffect(() => {
+        if (loading) return;
+        const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+        if (token && !user) {
+            refreshUser().catch(() => {});
+        }
+    }, [user, loading]);
 
     // Handle Admin Route Protection
     useEffect(() => {
@@ -137,9 +143,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isLoginRoute = pathname === '/admin/login';
 
         if (isAdminRoute) {
-            if (!admin && !isLoginRoute) {
-                router.push('/admin/login');
-            } else if (admin && isLoginRoute) {
+            if (!admin || admin.role !== 'admin') {
+                if (!isLoginRoute) {
+                    router.push('/admin/login');
+                }
+            } else if (isLoginRoute) {
                 router.push('/admin/dashboard');
             }
         }

@@ -19,7 +19,8 @@ import {
     Upload,
     Check,
     ExternalLink,
-    AlertCircle
+    AlertCircle,
+    Smartphone
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -424,89 +425,175 @@ function BookingPaymentContent() {
                         </div>
                     </div>
 
-                    {paymentType === 'manual' && (
+                    {paymentType === 'manual' && (() => {
+                        const qrisMethods = paymentMethods.filter(m => m.code === 'qris');
+                        const bankMethods = paymentMethods.filter(m => m.code !== 'qris');
+                        return (
                         <div className="text-left space-y-4 animate-in fade-in duration-200">
-                            <div>
-                                <label className="text-[11px] font-bold text-slate-500 block mb-2 uppercase tracking-wider">
-                                    Pilih Bank Transfer
-                                </label>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {paymentMethods.map((method) => (
-                                        <button
-                                            key={method.id}
-                                            type="button"
-                                            onClick={() => setSelectedMethodId(method.id)}
-                                            className={`flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all ${
-                                                selectedMethodId === method.id
-                                                    ? 'border-blue-650 bg-blue-50/20 ring-1 ring-blue-600/30'
-                                                    : 'border-slate-200 bg-white hover:border-slate-300'
-                                            }`}
-                                        >
-                                            <div className="flex items-center space-x-3">
-                                                {method.logo_url ? (
-                                                    <img 
-                                                        src={method.logo_url} 
-                                                        alt={method.name} 
-                                                        className="w-10 h-6 object-contain rounded border border-slate-100 bg-white"
-                                                    />
-                                                ) : (
-                                                    <div className="w-10 h-6 bg-slate-100 rounded flex items-center justify-center border border-slate-150">
-                                                        <Building className="w-4 h-4 text-slate-400" />
+                            {qrisMethods.length > 0 && (
+                                <div>
+                                    <label className="text-[11px] font-bold text-slate-500 block mb-2 uppercase tracking-wider">
+                                        Pembayaran via QRIS
+                                    </label>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {qrisMethods.map((method) => (
+                                            <button
+                                                key={method.id}
+                                                type="button"
+                                                onClick={() => setSelectedMethodId(method.id)}
+                                                className={`flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all ${
+                                                    selectedMethodId === method.id
+                                                        ? 'border-blue-650 bg-blue-50/20 ring-1 ring-blue-600/30'
+                                                        : 'border-slate-200 bg-white hover:border-slate-300'
+                                                }`}
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    {method.logo_url ? (
+                                                        <img 
+                                                            src={method.logo_url} 
+                                                            alt={method.name} 
+                                                            className="w-10 h-6 object-contain rounded border border-slate-100 bg-white"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-10 h-6 bg-slate-100 rounded flex items-center justify-center border border-slate-150">
+                                                            <Smartphone className="w-4 h-4 text-slate-400" />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
+                                                        <span className="text-[10px] text-slate-500">Scan QRIS</span>
+                                                    </div>
+                                                </div>
+                                                {selectedMethodId === method.id && (
+                                                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                                        <Check className="w-3.5 h-3.5 text-white" />
                                                     </div>
                                                 )}
-                                                <div>
-                                                    <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
-                                                    <span className="text-[10px] text-slate-500">Manual Transfer</span>
-                                                </div>
-                                            </div>
-                                            {selectedMethodId === method.id && (
-                                                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                                                    <Check className="w-3.5 h-3.5 text-white" />
-                                                </div>
-                                            )}
-                                        </button>
-                                    ))}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            {bankMethods.length > 0 && (
+                                <div>
+                                    <label className="text-[11px] font-bold text-slate-500 block mb-2 uppercase tracking-wider">
+                                        Pilih Bank Transfer
+                                    </label>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {bankMethods.map((method) => (
+                                            <button
+                                                key={method.id}
+                                                type="button"
+                                                onClick={() => setSelectedMethodId(method.id)}
+                                                className={`flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all ${
+                                                    selectedMethodId === method.id
+                                                        ? 'border-blue-650 bg-blue-50/20 ring-1 ring-blue-600/30'
+                                                        : 'border-slate-200 bg-white hover:border-slate-300'
+                                                }`}
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    {method.logo_url ? (
+                                                        <img 
+                                                            src={method.logo_url} 
+                                                            alt={method.name} 
+                                                            className="w-10 h-6 object-contain rounded border border-slate-100 bg-white"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-10 h-6 bg-slate-100 rounded flex items-center justify-center border border-slate-150">
+                                                            <Building className="w-4 h-4 text-slate-400" />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
+                                                        <span className="text-[10px] text-slate-500">Manual Transfer</span>
+                                                    </div>
+                                                </div>
+                                                {selectedMethodId === method.id && (
+                                                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                                        <Check className="w-3.5 h-3.5 text-white" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                            {/* Show transfer details for selected bank */}
+                            {/* Show payment details for selected method */}
                             {(() => {
                                 const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
                                 if (!selectedMethod) return null;
+                                const isQris = selectedMethod.code === 'qris';
                                 return (
                                     <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500 font-medium">Bank Tujuan:</span>
-                                            <span className="font-bold text-slate-800">{selectedMethod.name}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500 font-medium">Nomor Rekening:</span>
-                                            <div className="flex items-center space-x-1.5">
-                                                <span className="font-mono font-bold text-slate-850 text-sm tracking-wider">
-                                                    {selectedMethod.account_number}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(selectedMethod.account_number);
-                                                        toast.success('Nomor rekening berhasil disalin!');
-                                                    }}
-                                                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100"
-                                                >
-                                                    Salin
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500 font-medium">Atas Nama:</span>
-                                            <span className="font-bold text-slate-800">{selectedMethod.account_name}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500 font-medium">Jumlah Transfer:</span>
-                                            <span className="font-extrabold text-blue-650 text-sm">
-                                                Rp {Number(booking.total_amount).toLocaleString('id-ID')}
-                                            </span>
-                                        </div>
+                                        {isQris ? (
+                                            <>
+                                                <div className="text-center space-y-3">
+                                                    <div className="w-fit mx-auto bg-white rounded-2xl border border-slate-200 p-4">
+                                                        {selectedMethod.logo_url ? (
+                                                            <img
+                                                                src={selectedMethod.logo_url}
+                                                                alt="QRIS QR Code"
+                                                                className="w-48 h-48 object-contain"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-48 h-48 bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                                                                <Smartphone className="w-12 h-12 mb-2" />
+                                                                <span className="text-[10px] font-bold">QRIS</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-slate-500 font-medium">
+                                                        Scan QR code di atas menggunakan aplikasi e-wallet atau mobile banking yang mendukung QRIS
+                                                    </p>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Merchant:</span>
+                                                    <span className="font-bold text-slate-800">{selectedMethod.account_name}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Total Pembayaran:</span>
+                                                    <span className="font-extrabold text-blue-650 text-sm">
+                                                        Rp {Number(booking.total_amount).toLocaleString('id-ID')}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Bank Tujuan:</span>
+                                                    <span className="font-bold text-slate-800">{selectedMethod.name}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Nomor Rekening:</span>
+                                                    <div className="flex items-center space-x-1.5">
+                                                        <span className="font-mono font-bold text-slate-850 text-sm tracking-wider">
+                                                            {selectedMethod.account_number}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(selectedMethod.account_number);
+                                                                toast.success('Nomor rekening berhasil disalin!');
+                                                            }}
+                                                            className="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100"
+                                                        >
+                                                            Salin
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Atas Nama:</span>
+                                                    <span className="font-bold text-slate-800">{selectedMethod.account_name}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-500 font-medium">Jumlah Transfer:</span>
+                                                    <span className="font-extrabold text-blue-650 text-sm">
+                                                        Rp {Number(booking.total_amount).toLocaleString('id-ID')}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 );
                             })()}
@@ -514,7 +601,7 @@ function BookingPaymentContent() {
                             {/* Proof Upload Input */}
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
-                                    Upload Bukti Transfer *
+                                    Upload Bukti {paymentMethods.find(m => m.id === selectedMethodId)?.code === 'qris' ? 'Pembayaran' : 'Transfer'} *
                                 </label>
                                 <div className="border-2 border-dashed border-slate-200 hover:border-blue-500 transition-colors rounded-2xl p-4 bg-white text-center cursor-pointer relative group">
                                     <input
@@ -564,7 +651,7 @@ function BookingPaymentContent() {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )})()}
 
                     {paymentType === 'online' && (
                         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 text-left font-medium leading-relaxed">

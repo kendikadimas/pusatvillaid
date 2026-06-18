@@ -158,19 +158,19 @@ export default function AdminNewVillaPage() {
     };
 
     return (
-        <div className="space-y-6 max-w-[1400px] mx-auto px-4">
+        <div className="space-y-6 max-w-[1400px] mx-auto px-4 sm:px-6">
             <div className="flex items-center space-x-3">
                 <Link href="/admin/villas" className="text-[#6a6a6a] hover:text-[#222222] transition-colors">
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-extrabold text-[#222222] tracking-tight">Tambah villa baru</h1>
+                    <h1 className="text-xl sm:text-2xl font-extrabold text-[#222222] tracking-tight">Tambah villa baru</h1>
                     <p className="text-[#6a6a6a] text-xs mt-0.5 font-medium">Definisikan spesifikasi, harga sewa, dan fasilitas properti baru Anda.</p>
                 </div>
             </div>
 
             {/* Tabs Selector segment */}
-            <div className="flex border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider space-x-6 overflow-x-auto">
+            <div className="flex border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider space-x-4 sm:space-x-6 overflow-x-auto scrollbar-hide">
                 <button 
                     type="button"
                     className="pb-3 border-b-2 border-blue-500 text-blue-600 cursor-pointer"

@@ -183,10 +183,11 @@ export default function AdminBookingsPage() {
                             className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         >
                             <option value="">Semua pembayaran</option>
-                            <option value="unpaid">Unpaid</option>
-                            <option value="paid">Paid</option>
-                            <option value="refunded">Refunded</option>
-                            <option value="expired">Expired</option>
+                            <option value="unpaid">Belum Bayar</option>
+                            <option value="pending">Menunggu Verifikasi</option>
+                            <option value="paid">Lunas</option>
+                            <option value="refunded">Refund</option>
+                            <option value="expired">Kadaluarsa</option>
                         </select>
                     </div>
 

@@ -3,11 +3,12 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
-import axiosClient from '@/lib/axios';
+import { useAuth } from '@/context/AuthContext';
 
 function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { refreshUser } = useAuth();
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -21,17 +22,16 @@ function CallbackContent() {
 
         if (token) {
             localStorage.setItem('user_token', token);
-            axiosClient.get('/user')
-                .then(() => {
-                    router.push('/profile');
-                })
-                .catch(() => {
-                    setError('Failed to verify session. Please try logging in again.');
+            refreshUser()
+                .then(() => router.replace('/profile'))
+                .catch((err) => {
+                    console.error('refreshUser failed:', err);
+                    router.replace('/profile');
                 });
         } else {
             setError('No authentication token received. Please try again.');
         }
-    }, [router, searchParams]);
+    }, []);
 
     return (
         <div className="text-center">

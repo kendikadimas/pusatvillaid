@@ -68,7 +68,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     // ==========================================
     // Protected Admin Endpoints (Sanctum Token Required)
     // ==========================================
-    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
 
         // Admin Profile Actions
         Route::post('/logout', [AuthController::class, 'logout']);

@@ -292,6 +292,11 @@ class BookingController extends Controller
             ]);
         }
 
+        // Update booking payment_status to indicate proof is awaiting verification
+        $booking->update([
+            'payment_status' => 'pending',
+        ]);
+
         return response()->json([
             'payment' => $payment,
             'message' => 'Bukti pembayaran transfer manual berhasil diunggah. Menunggu konfirmasi admin.',

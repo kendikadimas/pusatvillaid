@@ -27,8 +27,8 @@ class DashboardController extends Controller
             ->where('status', '!=', 'cancelled')
             ->count();
 
-        // Bookings confirmed/completed this month
-        $bookingsThisMonth = Booking::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+        // Bookings confirmed/completed with check-in this month
+        $bookingsThisMonth = Booking::whereBetween('check_in', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
 

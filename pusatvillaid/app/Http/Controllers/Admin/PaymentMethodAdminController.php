@@ -27,10 +27,12 @@ class PaymentMethodAdminController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $isQris = Str::slug($request->code) === 'qris';
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100|unique:payment_methods,code',
-            'account_number' => 'required|string|max:100',
+            'account_number' => $isQris ? 'nullable|string|max:100' : 'required|string|max:100',
             'account_name' => 'required|string|max:255',
             'logo_url' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
@@ -43,7 +45,7 @@ class PaymentMethodAdminController extends Controller
         $method = PaymentMethod::create([
             'name' => $request->name,
             'code' => Str::slug($request->code),
-            'account_number' => $request->account_number,
+            'account_number' => $isQris ? '' : $request->account_number,
             'account_name' => $request->account_name,
             'logo_url' => $request->logo_url,
             'is_active' => $request->input('is_active', true),
@@ -80,10 +82,12 @@ class PaymentMethodAdminController extends Controller
             return response()->json(['message' => 'Metode pembayaran tidak ditemukan.'], 404);
         }
 
+        $isQris = Str::slug($request->code) === 'qris';
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100|unique:payment_methods,code,'.$id,
-            'account_number' => 'required|string|max:100',
+            'account_number' => $isQris ? 'nullable|string|max:100' : 'required|string|max:100',
             'account_name' => 'required|string|max:255',
             'logo_url' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
@@ -96,7 +100,7 @@ class PaymentMethodAdminController extends Controller
         $method->update([
             'name' => $request->name,
             'code' => Str::slug($request->code),
-            'account_number' => $request->account_number,
+            'account_number' => $isQris ? '' : $request->account_number,
             'account_name' => $request->account_name,
             'logo_url' => $request->logo_url,
             'is_active' => $request->input('is_active', true),

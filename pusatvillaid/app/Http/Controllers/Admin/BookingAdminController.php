@@ -108,9 +108,15 @@ class BookingAdminController extends Controller
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
+        // Prevent admin from self-confirming their own booking
+        if (($request->status === 'confirmed' || $request->payment_status === 'paid')
+            && $request->user()->email === $booking->guest_email) {
+            return response()->json(['message' => 'Admin tidak dapat mengkonfirmasi booking milik sendiri.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:pending,confirmed,cancelled,completed',
-            'payment_status' => 'required|in:unpaid,paid,refunded,expired',
+            'payment_status' => 'required|in:unpaid,pending,paid,refunded,expired',
             'cancel_reason' => 'required_if:status,cancelled|nullable|string',
         ]);
 
@@ -180,12 +186,17 @@ class BookingAdminController extends Controller
      * Marks the linked payment as success, flips the booking to paid/confirmed,
      * and notifies the guest with the standard booking confirmation email.
      */
-    public function approveManualPayment(int $id): JsonResponse
+    public function approveManualPayment(Request $request, int $id): JsonResponse
     {
         $booking = Booking::with(['villa', 'payment'])->find($id);
 
         if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        // Prevent admin from self-approving their own booking
+        if ($request->user()->email === $booking->guest_email) {
+            return response()->json(['message' => 'Admin tidak dapat menyetujui pembayaran booking milik sendiri.'], 403);
         }
 
         $payment = $booking->payment;

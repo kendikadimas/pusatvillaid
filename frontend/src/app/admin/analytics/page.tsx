@@ -110,26 +110,26 @@ export default function AdminAnalyticsPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#dddddd] pb-5">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-[#222222] tracking-tight">Analisis & pendapatan</h1>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-[#222222] tracking-tight">Analisis & pendapatan</h1>
                     <p className="text-[#6a6a6a] text-xs sm:text-sm mt-1.5 font-medium">Pantau tren omset penyewaan, performa okupansi villa, dan demografi transaksi.</p>
                 </div>
 
                 {/* Filter and Export buttons */}
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                    <div className="flex items-center space-x-2 bg-white border border-[#dddddd] rounded-[8px] px-3 py-1.5 text-xs font-semibold text-[#222222]">
-                        <Calendar className="w-4 h-4 text-[#6a6a6a]" />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="flex items-center space-x-2 bg-white border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs font-semibold text-[#222222]">
+                        <Calendar className="w-4 h-4 text-[#6a6a6a] flex-shrink-0" />
                             <input 
                                 type="date" 
                                 value={from} 
                                 onChange={(e) => setFrom(e.target.value)} 
-                                className="bg-transparent border-0 focus:outline-none w-full sm:w-28 text-[#222222] font-bold"
+                                className="bg-transparent border-0 focus:outline-none w-full min-w-0 text-[#222222] font-bold text-xs"
                             />
                             <span className="text-[#6a6a6a] font-normal shrink-0">s/d</span>
                             <input 
                                 type="date" 
                                 value={to} 
                                 onChange={(e) => setTo(e.target.value)} 
-                                className="bg-transparent border-0 focus:outline-none w-full sm:w-28 text-[#222222] font-bold"
+                                className="bg-transparent border-0 focus:outline-none w-full min-w-0 text-[#222222] font-bold text-xs"
                             />
                     </div>
                     <button
@@ -204,10 +204,10 @@ export default function AdminAnalyticsPage() {
                                     <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data pendapatan.</div>
                                 ) : (
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={dailyRevenue} margin={{ left: -10, right: 10 }}>
+                                        <BarChart data={dailyRevenue} margin={{ left: 0, right: 10 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                             <XAxis dataKey="formattedDate" stroke="#94a3b8" />
-                                            <YAxis stroke="#94a3b8" />
+                                            <YAxis stroke="#94a3b8" tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}jt` : v >= 1000 ? `${(v / 1000).toFixed(0)}rb` : v.toLocaleString('id-ID')} />
                                             <Tooltip formatter={(value) => [`Rp ${Number(value).toLocaleString('id-ID')}`, 'Revenue']} />
                                             <Bar dataKey="revenueAmount" fill="#10b981" radius={[4, 4, 0, 0]} />
                                         </BarChart>
@@ -317,10 +317,10 @@ export default function AdminAnalyticsPage() {
                                     <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data konversi.</div>
                                 ) : (
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={funnelData} margin={{ left: -10, right: 10 }}>
+                                        <BarChart data={funnelData} margin={{ left: 0, right: 10 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                             <XAxis dataKey="step" stroke="#94a3b8" />
-                                            <YAxis stroke="#94a3b8" />
+                                            <YAxis stroke="#94a3b8" tickFormatter={(v: number) => v.toLocaleString('id-ID')} />
                                             <Tooltip formatter={(value) => [`${value} Booking`, 'Kuantitas']} />
                                             <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                         </BarChart>

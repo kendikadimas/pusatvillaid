@@ -194,7 +194,7 @@ function BookingStatusContent() {
                     {/* Left Columns (Booking receipt and details) */}
                     <div className="md:col-span-2 space-y-6">
                         {/* Pending Checkout Alert */}
-                        {booking.status === 'pending' && (
+                        {booking.status === 'pending' && booking.payment_status === 'unpaid' && (
                             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div className="flex items-start space-x-3 text-xs text-amber-800 font-medium">
                                     <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -211,6 +211,17 @@ function BookingStatusContent() {
                                     <span>Bayar Sekarang</span>
                                     <ArrowRight className="w-3 h-3" />
                                 </Link>
+                            </div>
+                        )}
+
+                        {/* Waiting for verification alert */}
+                        {booking.status === 'pending' && booking.payment_status === 'pending' && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start space-x-3 text-xs text-blue-800 font-medium">
+                                <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-bold text-sm text-slate-900 mb-0.5">Menunggu Verifikasi Pembayaran</p>
+                                    <p className="leading-relaxed">Bukti pembayaran Anda telah kami terima dan sedang diverifikasi oleh tim admin. Proses ini biasanya memakan waktu kurang dari 30 menit pada jam operasional.</p>
+                                </div>
                             </div>
                         )}
 
@@ -312,8 +323,18 @@ function BookingStatusContent() {
                                     <div className="flex justify-between text-slate-500">
                                         <span>Status Bayar:</span>
                                         <span className={`font-bold capitalize ${
-                                            booking.payment_status === 'paid' ? 'text-blue-600' : 'text-red-500'
-                                        }`}>{booking.payment_status}</span>
+                                            booking.payment_status === 'paid' ? 'text-emerald-600' :
+                                            booking.payment_status === 'pending' ? 'text-amber-600' :
+                                            booking.payment_status === 'unpaid' ? 'text-red-500' :
+                                            'text-slate-500'
+                                        }`}>
+                                            {booking.payment_status === 'paid' ? 'Lunas' :
+                                             booking.payment_status === 'pending' ? 'Menunggu Verifikasi' :
+                                             booking.payment_status === 'unpaid' ? 'Belum Bayar' :
+                                             booking.payment_status === 'refunded' ? 'Refund' :
+                                             booking.payment_status === 'expired' ? 'Kadaluarsa' :
+                                             booking.payment_status}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-slate-500">
                                         <span>Metode:</span>

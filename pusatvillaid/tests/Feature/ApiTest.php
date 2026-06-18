@@ -1,13 +1,19 @@
 <?php
 
+use App\Mail\BookingConfirmationMail;
+use App\Mail\ManualPaymentRejectedMail;
 use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Destination;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Review;
 use App\Models\ReviewToken;
 use App\Models\User;
 use App\Models\Villa;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 // =====================================================
@@ -600,17 +606,17 @@ it('rejects unauthenticated admin requests', function () {
 // =====================================================
 
 it('lets a guest upload a manual payment proof', function () {
-    \Illuminate\Support\Facades\Storage::fake('public');
+    Storage::fake('public');
 
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-9001',
         'payment_status' => 'unpaid',
     ]);
-    $method = \App\Models\PaymentMethod::factory()->create(['is_active' => true]);
+    $method = PaymentMethod::factory()->create(['is_active' => true]);
 
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
-        'payment_proof' => \Illuminate\Http\UploadedFile::fake()->image('proof.jpg'),
+        'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
     ]);
 
     $response->assertOk()
@@ -623,7 +629,7 @@ it('lets a guest upload a manual payment proof', function () {
 });
 
 it('admin can approve a manual payment', function () {
-    \Illuminate\Support\Facades\Mail::fake();
+    Mail::fake();
 
     $user = User::factory()->create();
     Sanctum::actingAs($user);
@@ -645,7 +651,7 @@ it('admin can approve a manual payment', function () {
 
     expect($booking->fresh()->status)->toBe('confirmed');
     expect($payment->fresh()->status)->toBe('success');
-    \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\BookingConfirmationMail::class);
+    Mail::assertSent(BookingConfirmationMail::class);
 });
 
 it('admin cannot approve a manual payment without proof', function () {
@@ -665,7 +671,7 @@ it('admin cannot approve a manual payment without proof', function () {
 });
 
 it('admin can reject a manual payment with a reason', function () {
-    \Illuminate\Support\Facades\Mail::fake();
+    Mail::fake();
 
     $user = User::factory()->create();
     Sanctum::actingAs($user);
@@ -687,7 +693,7 @@ it('admin can reject a manual payment with a reason', function () {
     expect($fresh->status)->toBe('failed');
     expect($fresh->rejection_reason)->toBe('Nominal transfer tidak sesuai dengan total tagihan.');
     expect($booking->fresh()->payment_status)->toBe('unpaid');
-    \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\ManualPaymentRejectedMail::class);
+    Mail::assertSent(ManualPaymentRejectedMail::class);
 });
 
 it('admin reject requires a rejection reason', function () {
@@ -708,13 +714,13 @@ it('admin reject requires a rejection reason', function () {
 });
 
 it('guest re-upload after rejection resets payment to pending', function () {
-    \Illuminate\Support\Facades\Storage::fake('public');
+    Storage::fake('public');
 
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-9002',
         'payment_status' => 'unpaid',
     ]);
-    $method = \App\Models\PaymentMethod::factory()->create(['is_active' => true]);
+    $method = PaymentMethod::factory()->create(['is_active' => true]);
     $payment = Payment::factory()->create([
         'booking_id' => $booking->id,
         'status' => 'failed',
@@ -725,7 +731,7 @@ it('guest re-upload after rejection resets payment to pending', function () {
 
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
-        'payment_proof' => \Illuminate\Http\UploadedFile::fake()->image('new-proof.jpg'),
+        'payment_proof' => UploadedFile::fake()->image('new-proof.jpg'),
     ]);
 
     $response->assertOk();

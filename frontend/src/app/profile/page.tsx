@@ -35,7 +35,7 @@ interface Booking {
     num_guests: number;
     total_amount: string;
     status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-    payment_status: 'unpaid' | 'paid' | 'refunded' | 'expired';
+    payment_status: 'unpaid' | 'pending' | 'paid' | 'refunded' | 'expired';
     villa: {
         id: number;
         name: string;
@@ -107,6 +107,8 @@ export default function ProfilePage() {
         switch (status) {
             case 'paid':
                 return <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Lunas</span>;
+            case 'pending':
+                return <span className="bg-amber-50 text-amber-600 border border-amber-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Menunggu Verifikasi</span>;
             case 'expired':
                 return <span className="bg-slate-100 text-slate-500 border border-slate-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Kedaluwarsa</span>;
             case 'refunded':

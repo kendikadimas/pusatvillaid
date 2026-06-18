@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Destination;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Review;
 use App\Models\User;
@@ -817,6 +818,19 @@ class DatabaseSeeder extends Seeder
                         ]
                     );
 
+                    if ($mockBooking->payment_status === 'paid') {
+                        Payment::firstOrCreate(
+                            ['booking_id' => $mockBooking->id],
+                            [
+                                'midtrans_order_id' => 'MID-'.$mockBooking->booking_code,
+                                'amount' => $mockBooking->total_amount,
+                                'status' => 'success',
+                                'paid_at' => $mockBooking->check_in,
+                                'payment_type' => 'bank_transfer',
+                            ]
+                        );
+                    }
+
                     Review::firstOrCreate(
                         ['booking_id' => $mockBooking->id],
                         [
@@ -855,6 +869,19 @@ class DatabaseSeeder extends Seeder
                     ]
                 );
 
+                if ($booking->payment_status === 'paid') {
+                    Payment::firstOrCreate(
+                        ['booking_id' => $booking->id],
+                        [
+                            'midtrans_order_id' => 'MID-'.$booking->booking_code,
+                            'amount' => $booking->total_amount,
+                            'status' => 'success',
+                            'paid_at' => $booking->check_in,
+                            'payment_type' => 'bank_transfer',
+                        ]
+                    );
+                }
+
                 Review::firstOrCreate(
                     ['booking_id' => $booking->id],
                     [
@@ -872,6 +899,14 @@ class DatabaseSeeder extends Seeder
 
         // 5. Seed Payment Methods
         $paymentMethods = [
+            [
+                'name' => 'QRIS',
+                'code' => 'qris',
+                'account_number' => '',
+                'account_name' => 'PT PUSAT VILLA INDONESIA',
+                'logo_url' => null,
+                'is_active' => true,
+            ],
             [
                 'name' => 'Bank Central Asia (BCA)',
                 'code' => 'bca',
