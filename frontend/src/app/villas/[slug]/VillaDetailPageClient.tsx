@@ -7,7 +7,7 @@ import axiosClient from '@/lib/axios';
 import { Villa, Review } from '@/types';
 import { useBookingStore } from '@/store/bookingStore';
 import { getPhotoUrl } from '@/lib/villaUtils';
-import { DayPicker, DateRange } from 'react-day-picker';
+import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
@@ -771,13 +771,51 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     disabled={[{ before: new Date() }, ...disabledDays]}
                                     numberOfMonths={isMobile ? 1 : 2}
                                     locale={localeID}
+                                    hideNavigation
                                     className="text-slate-800 max-w-full overflow-auto"
                                     classNames={{
                                         selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
                                         today: "text-blue-600 font-black border border-blue-200 rounded-full",
-                                        nav: "w-full flex items-center justify-between px-1",
-                                        button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm",
-                                        button_next: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm",
+                                        month_caption: "flex items-center w-full",
+                                        caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
+                                        button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm flex-shrink-0",
+                                        button_next: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm flex-shrink-0",
+                                    }}
+                                    components={{
+                                        MonthCaption: ({ calendarMonth, displayIndex, children, ...divProps }) => {
+                                            const { components: comps, classNames, labels: { labelPrevious, labelNext }, previousMonth, nextMonth, goToMonth, dayPickerProps } = useDayPicker();
+                                            const numMonths = dayPickerProps.numberOfMonths ?? 1;
+                                            const isSingle = numMonths === 1;
+                                            const showPrev = isSingle || displayIndex === 0;
+                                            const showNext = isSingle || displayIndex === numMonths - 1;
+                                            const handlePrev = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (previousMonth) goToMonth(previousMonth); };
+                                            const handleNext = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (nextMonth) goToMonth(nextMonth); };
+                                            return (
+                                                <div {...divProps} className="flex items-center w-full">
+                                                    {showPrev ? (
+                                                        <comps.PreviousMonthButton
+                                                            type="button"
+                                                            tabIndex={previousMonth ? undefined : -1}
+                                                            aria-disabled={previousMonth ? undefined : 'true' as any}
+                                                            aria-label={labelPrevious(previousMonth)}
+                                                            onClick={handlePrev}
+                                                        />
+                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                    <div className="flex-1 text-center text-sm font-bold text-slate-900">
+                                                        {children}
+                                                    </div>
+                                                    {showNext ? (
+                                                        <comps.NextMonthButton
+                                                            type="button"
+                                                            tabIndex={nextMonth ? undefined : -1}
+                                                            aria-disabled={nextMonth ? undefined : 'true' as any}
+                                                            aria-label={labelNext(nextMonth)}
+                                                            onClick={handleNext}
+                                                        />
+                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                </div>
+                                            );
+                                        },
                                     }}
                                 />
                             </div>
