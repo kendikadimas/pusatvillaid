@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import AuthLayout from '@/components/auth-layout';
 import InputError from '@/components/input-error';
-import PasskeyVerify from '@/components/passkey-verify';
+import GoogleLoginButton from '@/components/google-login-button';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -55,8 +55,16 @@ export default function LoginPage() {
             title="Masuk ke Akun Anda"
             description="Silakan masukkan email dan password Anda untuk masuk"
         >
-            <PasskeyVerify />
+            <GoogleLoginButton />
 
+            <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase tracking-wide">
+                    <span className="bg-white px-3 text-slate-400">Atau masuk dengan email</span>
+                </div>
+                </div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-5">
                     {/* Email Input */}
@@ -109,6 +117,7 @@ export default function LoginPage() {
                                 autoComplete="current-password"
                                 placeholder="Masukkan password"
                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
                         <InputError message={errors.password} />

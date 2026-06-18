@@ -119,6 +119,7 @@ export default function RegisterPage() {
                                 name="password"
                                 placeholder="Minimal 8 karakter"
                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
                         <InputError message={errors.password} />
@@ -141,6 +142,7 @@ export default function RegisterPage() {
                                 name="password_confirmation"
                                 placeholder="Ulangi password Anda"
                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
                         <InputError message={errors.password_confirmation} />
