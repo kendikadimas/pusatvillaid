@@ -53,10 +53,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     ];
 
     return (
-        <div className="min-h-screen flex bg-[#f7f7f7] text-[#222222] font-sans antialiased selection:bg-blue-100 selection:text-blue-700">
+        <div className="h-screen flex bg-[#f7f7f7] text-[#222222] font-sans antialiased selection:bg-blue-100 selection:text-blue-700">
             {/* Sidebar Desktop */}
-            <aside className="hidden md:flex md:w-64 md:flex-col bg-[#f7f7f7] text-[#222222] border-r border-[#dddddd]">
-                <div className="h-20 flex items-center px-6 border-b border-[#dddddd]">
+            <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-[#f7f7f7] text-[#222222] border-r border-[#dddddd]">
+                <div className="h-20 flex items-center px-6 border-b border-[#dddddd] shrink-0">
                     <Link href="/admin/dashboard" className="flex items-center space-x-1.5 group">
                         <svg className="w-8 h-8 text-blue-500 fill-current" viewBox="0 0 32 32">
                             <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
@@ -186,7 +186,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
  
             {/* Main Content Pane */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0 md:pl-64">
                 {/* Mobile Topbar */}
                 <header className="flex md:hidden h-16 bg-white border-b border-[#dddddd] px-4 items-center justify-between sticky top-0 z-30">
                     <button
@@ -208,7 +208,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div className="w-6" />
                 </header>
  
-                <div className="flex-1 overflow-y-auto focus:outline-none p-4 sm:p-8 bg-[#f7f7f7]">
+                <div className="flex-1 overflow-y-auto focus:outline-none p-4 sm:p-8 bg-[#f7f7f7] h-full">
                     {children}
                 </div>
             </div>
