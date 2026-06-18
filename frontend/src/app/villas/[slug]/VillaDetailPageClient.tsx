@@ -24,6 +24,7 @@ import {
     X,
     Check,
     ChevronLeft,
+    ChevronRight,
     Key,
     Waves,
     Trophy,
@@ -762,7 +763,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
                                 </p>
                             </div>
-                            <div className="bg-slate-50 border border-slate-200 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center">
+                            <div>
                                 <DayPicker
                                     mode="range"
                                     selected={dateRange}
@@ -770,10 +771,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     disabled={[{ before: new Date() }, ...disabledDays]}
                                     numberOfMonths={isMobile ? 1 : 2}
                                     locale={localeID}
-                                    className="border-0 text-slate-800 max-w-full overflow-auto"
+                                    className="text-slate-800 max-w-full overflow-auto"
                                     classNames={{
                                         selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
                                         today: "text-blue-600 font-black border border-blue-200 rounded-full",
+                                        nav: "w-full flex items-center justify-between px-1",
+                                        button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm",
+                                        button_next: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm",
                                     }}
                                 />
                             </div>
