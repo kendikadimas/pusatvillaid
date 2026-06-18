@@ -775,7 +775,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     className="text-slate-800 max-w-full overflow-auto"
                                     classNames={{
                                         selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
-                                        today: "text-blue-600 font-black border border-blue-200 rounded-full",
+                                        today: "text-blue-600 font-black rounded-full",
                                         month_caption: "flex items-center w-full",
                                         caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
                                         button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-sm flex-shrink-0",
@@ -799,7 +799,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                             aria-disabled={previousMonth ? undefined : 'true' as any}
                                                             aria-label={labelPrevious(previousMonth)}
                                                             onClick={handlePrev}
-                                                        />
+                                                        >
+                                                            <comps.Chevron orientation="left" />
+                                                        </comps.PreviousMonthButton>
                                                     ) : <div className="w-9 flex-shrink-0" />}
                                                     <div className="flex-1 text-center text-sm font-bold text-slate-900">
                                                         {children}
@@ -811,7 +813,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                             aria-disabled={nextMonth ? undefined : 'true' as any}
                                                             aria-label={labelNext(nextMonth)}
                                                             onClick={handleNext}
-                                                        />
+                                                        >
+                                                            <comps.Chevron orientation="right" />
+                                                        </comps.NextMonthButton>
                                                     ) : <div className="w-9 flex-shrink-0" />}
                                                 </div>
                                             );
