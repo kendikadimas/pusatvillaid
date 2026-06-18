@@ -448,7 +448,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const hostIsVerified = villa.host_is_verified !== false;
     const hostAboutList = villa.host_about || ['Lahir di tahun 80-an', 'Tempat saya bersekolah: RMIT University'];
     const coHosts = villa.co_hosts || [];
-    const cancellationPolicy = villa.cancellation_policy || 'Pembatalan gratis selama 24 jam. Setelahnya, biaya reservasi tidak dapat dikembalikan. Baca kebijakan lengkap tuan rumah untuk rincian selengkapnya.';
+    const cancellationPolicy = villa.cancellation_policy || 'Pembatalan gratis selama 24 jam. Setelahnya, biaya reservasi tidak dapat dikembalikan. Hubungi tuan rumah untuk rincian selengkapnya.';
     const safetyList = villa.safety_property || [
         'Alarm karbon monoksida tidak dilaporkan',
         'Alarm asap tidak dilaporkan',
@@ -757,7 +757,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
                         {/* Interactive Calendar Select */}
                         <div id="calendar-section" className="space-y-5 pb-6 border-b border-slate-200/80 scroll-mt-32">
-                            <div>
+                            <div className="space-y-2">
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Cek Ketersediaan Menginap</h3>
                                 <p className="text-slate-500 text-[13px] mt-1 font-semibold">
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
@@ -791,7 +791,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             const handlePrev = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (previousMonth) goToMonth(previousMonth); };
                                             const handleNext = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (nextMonth) goToMonth(nextMonth); };
                                             return (
-                                                <div {...divProps} className="flex items-center w-full">
+                                                <div {...divProps} className="flex items-center w-full mb-2">
                                                     {showPrev ? (
                                                         <comps.PreviousMonthButton
                                                             type="button"
@@ -1125,12 +1125,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             {totalNights > 0 && (
                                 <div className="border-t border-slate-100 pt-4 space-y-3 text-xs font-bold">
                                     <div className="flex justify-between text-slate-500 font-semibold">
-                                        <span className="underline">Weekday sewa (Rp {priceBreakdown.weekdays.price.toLocaleString('id-ID')} x {priceBreakdown.weekdays.count} malam)</span>
+                                        <span className="underline">Weekday <br></br> (Rp {priceBreakdown.weekdays.price.toLocaleString('id-ID')} x {priceBreakdown.weekdays.count} malam)</span>
                                         <span className="font-sans">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
                                     </div>
                                     {priceBreakdown.weekends.count > 0 && (
                                         <div className="flex justify-between text-slate-500 font-semibold">
-                                            <span className="underline">Weekend sewa (Rp {priceBreakdown.weekends.price.toLocaleString('id-ID')} x {priceBreakdown.weekends.count} malam)</span>
+                                            <span className="underline">Weekend <br></br> (Rp {priceBreakdown.weekends.price.toLocaleString('id-ID')} x {priceBreakdown.weekends.count} malam)</span>
                                             <span className="font-sans">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
                                         </div>
                                     )}

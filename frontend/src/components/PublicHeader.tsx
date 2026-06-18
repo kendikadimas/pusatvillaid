@@ -72,23 +72,23 @@ export default function PublicHeader({
                     </div>
 
                     {/* Middle: Custom children OR static search pill (matches HomeHeader solid) */}
-                    <div className="hidden md:flex flex-1 max-w-xs mx-6">
+                    <div className="hidden md:flex flex-1 max-w-md mx-6 px-2.5 py-1.5">
                         {children ? (
                             <div className="w-full">{children}</div>
                         ) : showSearchPill && headerSolid ? (
                             <button
                                 type="button"
-                                onClick={() => router.push('/')}
+                                                onClick={() => router.push('/villas')}
                                 className="w-full rounded-full border border-[#EAEAEA] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-1 flex items-center hover:shadow-md transition-shadow cursor-pointer"
                             >
-                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#111111] text-left">
-                                    Ke mana saja
+                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
+                                    Kemana aja?
                                 </span>
-                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#111111] text-left border-l border-r border-[#EAEAEA]">
-                                    Kapan saja
+                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left border-l border-r border-[#EAEAEA]">
+                                    Kapan aja?
                                 </span>
-                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#787774] text-left">
-                                    Tambahkan tamu
+                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
+                                    Banyak tamu
                                 </span>
                                 <span className="bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold rounded-full transition-all p-2.5 shrink-0 ml-2">
                                     <Search className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
