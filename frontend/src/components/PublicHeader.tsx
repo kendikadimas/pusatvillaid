@@ -37,7 +37,7 @@ export default function PublicHeader({
                 : 'bg-transparent'
         }`}>
             <div className={`max-w-8xl mx-auto px-4 sm:px-14 lg:px-24 flex flex-col justify-center transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                headerSolid ? 'h-[108px] py-4' : 'h-20'
+                headerSolid ? 'h-16 md:h-[72px]' : 'h-20'
             }`}>
                 <div className="flex items-center justify-between w-full">
                     {/* Left: Brand Logo & Optional Back Button */}
@@ -72,7 +72,7 @@ export default function PublicHeader({
                     </div>
 
                     {/* Middle: Custom children OR static search pill (matches HomeHeader solid) */}
-                    <div className="hidden md:flex flex-1 max-w-2xl mx-6">
+                    <div className="hidden md:flex flex-1 max-w-xs mx-6">
                         {children ? (
                             <div className="w-full">{children}</div>
                         ) : showSearchPill && headerSolid ? (
@@ -81,13 +81,13 @@ export default function PublicHeader({
                                 onClick={() => router.push('/')}
                                 className="w-full rounded-full border border-[#EAEAEA] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-1 flex items-center hover:shadow-md transition-shadow cursor-pointer"
                             >
-                                <span className="flex-1 px-5 py-2.5 text-xs font-medium text-[#111111] text-left">
+                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#111111] text-left">
                                     Ke mana saja
                                 </span>
-                                <span className="flex-1 px-5 py-2.5 text-xs font-medium text-[#111111] text-left border-l border-r border-[#EAEAEA]">
+                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#111111] text-left border-l border-r border-[#EAEAEA]">
                                     Kapan saja
                                 </span>
-                                <span className="flex-1 px-5 py-2.5 text-xs font-medium text-[#787774] text-left">
+                                <span className="flex-1 px-2 py-2.5 text-xs font-medium text-[#787774] text-left">
                                     Tambahkan tamu
                                 </span>
                                 <span className="bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold rounded-full transition-all p-2.5 shrink-0 ml-2">

@@ -60,7 +60,8 @@ const highlightIconMap: Record<string, React.ComponentType<any>> = {
     Waves: Waves,
     Trophy: Trophy,
     Coffee: Coffee,
-    Sparkles: Sparkles
+    Sparkles: Sparkles,
+    Wifi: Wifi
 };
 
 // Icon mappings for amenities
@@ -458,9 +459,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const highlights = villa.highlights && villa.highlights.length > 0
         ? villa.highlights
         : [
-            { icon: 'Wind', title: 'Dirancang agar tetap sejuk', description: 'Atasi hawa panas dengan AC dan kipas angin gantung.' },
-            { icon: 'Key', title: 'Pengalaman check-in luar biasa', description: 'Tamu terakhir memberikan nilai 5 bintang untuk proses check-in.' },
-            { icon: 'Car', title: 'Parkir gratis', description: 'Ini salah satu dari sedikit tempat di daerah ini yang menawarkan parkir gratis.' }
+            { icon: 'Wind', title: 'AC & kipas angin', description: 'Villa dilengkapi pendingin ruangan untuk kenyamanan Anda.' },
+            { icon: 'Key', title: 'Check-in mandiri', description: 'Check-in fleksibel dengan akses mandiri menggunakan smart lock atau kode pintu.' },
+            { icon: 'Car', title: 'Parkir gratis', description: 'Tersedia area parkir gratis untuk kendaraan Anda selama menginap.' },
+            { icon: 'Wifi', title: 'WiFi gratis', description: 'Nikmati akses internet WiFi berkecepatan tinggi selama menginap.' }
         ];
 
     // Dynamic Bedrooms Info Fallback
@@ -512,63 +514,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 onBackClick={() => router.push('/villas')}
             />
 
-            {/* Sticky Sub-Navbar on Scroll */}
-            <div className={`sticky top-[108px] z-40 bg-white border-b border-slate-200/80 shadow-xs hidden md:block transition-all duration-300 ${
-                showSearchPill ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-            }`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center space-x-8 text-[13px] font-bold text-slate-500 overflow-x-auto scrollbar-none">
-                    <button 
-                        onClick={() => scrollToSection('foto')}
-                        className={`h-full border-b-2 cursor-pointer transition-colors ${
-                            activeSection === 'foto' ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-900'
-                        }`}
-                    >
-                        Foto
-                    </button>
-                    <button 
-                        onClick={() => scrollToSection('fasilitas')}
-                        className={`h-full border-b-2 cursor-pointer transition-colors ${
-                            activeSection === 'fasilitas' ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-900'
-                        }`}
-                    >
-                        Fasilitas
-                    </button>
-                    <button 
-                        onClick={() => scrollToSection('ulasan')}
-                        className={`h-full border-b-2 cursor-pointer transition-colors ${
-                            activeSection === 'ulasan' ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-900'
-                        }`}
-                    >
-                        Ulasan
-                    </button>
-                    <button 
-                        onClick={() => scrollToSection('lokasi')}
-                        className={`h-full border-b-2 cursor-pointer transition-colors ${
-                            activeSection === 'lokasi' ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-900'
-                        }`}
-                    >
-                        Lokasi
-                    </button>
-                </div>
-            </div>
-
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 pb-24 lg:pb-16" id="foto-section">
-                {/* Back Link Breadcrumb */}
-                <div className="mb-6 flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    <div className="flex items-center space-x-1.5">
-                        <Link href="/" className="hover:underline">Beranda</Link>
-                        <span>/</span>
-                        <Link href="/villas" className="hover:underline">Katalog</Link>
-                        <span>/</span>
-                        <span className="text-slate-800 font-bold line-clamp-1">{villa.name}</span>
-                    </div>
-                </div>
-
+            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-24 lg:pb-16" id="foto-section">
                 {/* Villa Title, Share, Save */}
-                <div className="mb-6">
+                <div className="mb-4 mt-10">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <h1 className="font-serif text-2xl md:text-[32px] md:leading-[36px] font-semibold text-slate-900 tracking-tight leading-snug flex items-center gap-2.5">
-                            <Languages className="w-7 h-7 text-slate-800 shrink-0" strokeWidth={1.5} />
+                            {/* <Languages className="w-7 h-7 text-slate-800 shrink-0" strokeWidth={1.5} /> */}
                             <span>{villa.name}</span>
                         </h1>
                         <div className="flex items-center space-x-5 flex-shrink-0 text-[14px] font-bold text-slate-800">
@@ -596,8 +547,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
 
                 {/* Image Gallery Grid */}
-                <div className="relative mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-2xl overflow-hidden bg-white">
+                <div className="relative mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl overflow-hidden bg-white">
                         {/* Main Large Image */}
                         <div 
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
@@ -612,7 +563,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </div>
 
                         {/* Thumbnails grid */}
-                        <div className="md:col-span-2 grid grid-cols-2 gap-3">
+                        <div className="md:col-span-2 grid grid-cols-2 gap-1.5 md:gap-2">
                             {thumbPhotos.map((photo, i) => {
                                 // Determine round corner styling based on thumbnail position
                                 let cornerClass = "";
@@ -620,10 +571,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 if (i === 3) cornerClass = "md:rounded-br-2xl";
 
                                 return (
-                                    <div 
-                                        key={i}
-                                        onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }}
-                                        className={`aspect-[4/3] overflow-hidden cursor-pointer relative group ${cornerClass}`}
+                                        <div 
+                                            key={i}
+                                            onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }}
+                                            className={`aspect-[4/3] overflow-hidden cursor-pointer relative group ${cornerClass}`}
                                     >
                                         <img 
                                             src={getPhotoUrl(photo)} 
@@ -657,7 +608,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
 
                 {/* Grid Split Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 mt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 mt-4">
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Summary Details */}
@@ -682,99 +633,32 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </div>
 
                         {/* Host Profile Info */}
-                        <div className="border-t border-b border-slate-200/80 py-8 space-y-6">
-                            <h3 className="text-xl font-bold text-slate-900">Dipandu oleh {hostName}</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {/* Left Column: Host Profile Card */}
-                                <div className="md:col-span-1 bg-white border border-slate-200 rounded-3xl p-6 shadow-md flex flex-col items-center text-center relative max-w-sm mx-auto w-full">
-                                    <div className="relative mb-4">
+                        <div className="border-t border-slate-200/80 py-5">
+                            <h3 className="text-base font-bold text-slate-900 mb-3">Dipandu oleh {hostName}</h3>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="relative">
                                         <img 
                                             src={hostAvatar} 
                                             alt={hostName} 
-                                            className="w-24 h-24 rounded-full object-cover shadow-sm border border-slate-100"
+                                            className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
                                         />
                                         {hostIsVerified && (
-                                            <div className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-md flex items-center justify-center">
-                                                <Check className="w-4 h-4 stroke-[3]" />
+                                            <div className="absolute -bottom-0.5 -right-0.5 bg-blue-600 text-white p-0.5 rounded-full border border-white shadow-sm">
+                                                <Check className="w-2.5 h-2.5 stroke-[3]" />
                                             </div>
                                         )}
                                     </div>
-                                    <h4 className="text-2xl font-bold text-slate-900">{hostName}</h4>
-                                    <div className="flex items-center space-x-1.5 text-slate-500 text-xs font-semibold mt-1">
-                                        <ShieldCheck className="w-4 h-4 text-blue-600" />
-                                        <span>Superhost</span>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-3 gap-4 w-full mt-6 pt-6 border-t border-slate-100 text-center">
-                                        <div>
-                                            <span className="block text-lg font-bold text-slate-900">{reviews.length}</span>
-                                            <span className="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Ulasan</span>
+                                    <div>
+                                        <div className="flex items-center space-x-2">
+                                            <span className="text-sm font-bold text-slate-900">{hostName}</span>
                                         </div>
-                                        <div>
-                                            <span className="block text-lg font-bold text-slate-900">{avgRating > 0 ? avgRating.toFixed(1).replace('.', ',') : '4,9'}</span>
-                                            <span className="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Peringkat</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-lg font-bold text-slate-900">{hostYears}</span>
-                                            <span className="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Tahun</span>
-                                        </div>
+                                        <p className="text-xs text-slate-400">{hostJoinedLabel}</p>
                                     </div>
                                 </div>
-
-                                {/* Right Column: Host About & Co-Hosts */}
-                                <div className="md:col-span-2 flex flex-col justify-between space-y-6">
-                                    <div className="space-y-4">
-                                        {/* Host Details bullet points */}
-                                        <div className="space-y-3">
-                                            {hostAboutList.map((about, idx) => {
-                                                const IconComponent = getHostAboutIcon(about, idx);
-                                                return (
-                                                    <div key={idx} className="flex items-center space-x-3 text-slate-700 text-sm font-medium">
-                                                        <IconComponent className="w-5 h-5 text-slate-500 shrink-0" strokeWidth={1.5} />
-                                                        <span>{about}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                        
-                                        {/* Joined Year Label */}
-                                        <p className="text-xs text-slate-500">
-                                            {hostJoinedLabel}
-                                        </p>
-                                    </div>
-
-                                    {/* Co-Hosts List */}
-                                    {coHosts.length > 0 && (
-                                        <div className="pt-4 border-t border-slate-100">
-                                            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Rekan Tuan Rumah (Co-host)</h5>
-                                            <div className="flex flex-wrap gap-4">
-                                                {coHosts.map((co: any, idx: number) => (
-                                                    <div key={idx} className="flex items-center space-x-2 bg-slate-50 py-1.5 px-3 rounded-full border border-slate-150">
-                                                        <img 
-                                                            src={co.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'} 
-                                                            alt={co.name} 
-                                                            className="w-6 h-6 rounded-full object-cover border border-white"
-                                                        />
-                                                        <span className="text-xs font-semibold text-slate-700">{co.name}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Message button & protection alert */}
-                                    <div className="pt-4 space-y-3.5">
-                                        <button className="bg-slate-900 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 duration-150">
-                                            Kirimkan pesan kepada tuan rumah
-                                        </button>
-                                        <div className="flex items-start space-x-2.5 max-w-lg">
-                                            <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                                            <p className="text-[11px] text-slate-500 leading-normal">
-                                                Untuk melindungi pembayaran Anda, jangan pernah mentransfer uang atau berkomunikasi di luar situs web atau aplikasi PusatVilla.id.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors active:scale-95 duration-150 shrink-0">
+                                    Hubungi Tuan Rumah
+                                </button>
                             </div>
                         </div>
 
@@ -794,14 +678,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             })}
                         </div>
 
-                        {/* Translation Disclaimer */}
-                        <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex items-start space-x-3.5">
-                            <Globe className="w-5 h-5 text-slate-700 shrink-0 mt-0.5" strokeWidth={1.5} />
-                            <div className="text-[13px] text-slate-800 font-normal leading-relaxed">
-                                Beberapa info diterjemahkan secara otomatis. <button className="underline font-bold text-slate-900 hover:text-blue-600 active:scale-95 transition-transform">Tampilkan bahasa asli</button>
-                            </div>
-                        </div>
-
                         {/* About/Description Section */}
                         <div className="space-y-4 pb-6 border-b border-slate-200/80">
                             <p className="text-slate-800 leading-relaxed whitespace-pre-line text-[15px] font-normal">
@@ -815,7 +691,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Kamar Anda</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                     {bedroomsInfo.map((br, idx) => (
-                                        <div key={idx} className="border border-slate-200 rounded-2xl p-4 flex flex-col space-y-3 bg-white">
+                                        <div key={idx} className="rounded-2xl flex flex-col space-y-3">
                                             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
                                                 <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
                                             </div>
@@ -864,7 +740,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {accessibilityFeatures.map((ac, idx) => (
-                                        <div key={idx} className="border border-slate-200 rounded-2xl p-4 flex flex-col space-y-3 bg-white">
+                                        <div key={idx} className="rounded-2xl flex flex-col space-y-3">
                                             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
                                                 <img src={ac.image} alt={ac.title} className="w-full h-full object-cover" />
                                             </div>
@@ -882,7 +758,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <div id="calendar-section" className="space-y-5 pb-6 border-b border-slate-200/80 scroll-mt-32">
                             <div>
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Cek Ketersediaan Menginap</h3>
-                                <p className="text-slate-500 text-[13px] mt-1 font-semibold uppercase tracking-wider">
+                                <p className="text-slate-500 text-[13px] mt-1 font-semibold">
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
                                 </p>
                             </div>
@@ -1136,13 +1012,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     </div>
                     {/* Right Column (Sticky Booking Widget) */}
                     <aside className="lg:col-span-1">
-                        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-36 space-y-5">
-                            {/* Cost inclusion notice */}
-                            <div className="flex items-center space-x-2 border border-slate-200 rounded-2xl px-4 py-3 bg-white text-slate-800 text-[13px] font-bold shadow-xs">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" className="w-4 h-4 fill-blue-600 shrink-0"><path d="M12.44 2.1a1 1 0 0 1 .86.5l.08.15 7.64 16.24a1 1 0 0 1-.22 1.15l-.12.09-8.17 6.13a1 1 0 0 1-1.12.06l-.13-.09-7.64-16.24a1 1 0 0 1 .22-1.15l.12-.09 8.17-6.13a1 1 0 0 1 .45-.16zm.18 2.37-6.9 5.17 6.64 14.1 6.9-5.17-6.64-14.1zm-2.12 3.03a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"></path></svg>
-                                <span>Harga sudah mencakup semua biaya</span>
-                            </div>
-
+                        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-28 space-y-5">
                             {/* Pricing header details */}
                             <div>
                                 <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -1197,75 +1067,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
                             )}
 
-                            {/* Rate selection options (Airbnb style) */}
-                            <div className="space-y-3 pt-1">
-                                <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest block">Harga</label>
-                                <div className="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-150 shadow-xs">
-                                    {/* Option 1: Non-Refundable */}
-                                    <div 
-                                        onClick={() => setRefundable(false)}
-                                        className={`p-4 cursor-pointer transition-colors flex items-start space-x-3 ${
-                                            !isRefundable ? 'bg-slate-50/70' : 'hover:bg-slate-50/40'
-                                        }`}
-                                    >
-                                        <input 
-                                            type="radio" 
-                                            name="rate_type" 
-                                            checked={!isRefundable}
-                                            onChange={() => setRefundable(false)}
-                                            className="mt-1 text-blue-600 focus:ring-blue-600 w-4 h-4 cursor-pointer"
-                                        />
-                                        <div className="text-xs leading-normal">
-                                            <div className="font-bold text-slate-900">
-                                                Tanpa pengembalian dana <span className="font-normal text-slate-400">·</span> Rp {
-                                                    (isRefundable ? Math.round(totalAmount / 1.11111) : totalAmount).toLocaleString('id-ID')
-                                                } total
-                                            </div>
-                                            <div className="text-[11px] text-slate-500 font-medium mt-1">
-                                                Pembatalan gratis selama 24 jam. Setelahnya, biaya reservasi tidak dapat dikembalikan.
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Option 2: Refundable */}
-                                    <div 
-                                        onClick={() => setRefundable(true)}
-                                        className={`p-4 cursor-pointer transition-colors flex items-start space-x-3 ${
-                                            isRefundable ? 'bg-slate-50/70' : 'hover:bg-slate-50/40'
-                                        }`}
-                                    >
-                                        <input 
-                                            type="radio" 
-                                            name="rate_type" 
-                                            checked={isRefundable}
-                                            onChange={() => setRefundable(true)}
-                                            className="mt-1 text-blue-600 focus:ring-blue-600 w-4 h-4 cursor-pointer"
-                                        />
-                                        <div className="text-xs leading-normal">
-                                            <div className="font-bold text-slate-900">
-                                                Bisa dikembalikan <span className="font-normal text-slate-400">·</span> Rp {
-                                                    (isRefundable ? totalAmount : Math.round(totalAmount * 1.11111)).toLocaleString('id-ID')
-                                                } total
-                                            </div>
-                                            <div className="text-[11px] text-slate-500 font-medium mt-1">
-                                                {getRefundableCancellationDateLabel()}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             {/* Submit booking button */}
                             <button
                                 onClick={handleBookingSubmit}
-                                className="w-full bg-[#de1252] hover:bg-[#c90d46] active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer"
+                                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer"
                             >
                                 <span>Pesan</span>
                             </button>
-
-                            <div className="text-xs text-slate-400 font-semibold text-center mt-2">
-                                Anda belum dikenakan biaya
-                            </div>
 
                             {/* Price Breakdown Calculations */}
                             {totalNights > 0 && (
@@ -1304,18 +1112,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Trust Badge info */}
-                            <div className="flex items-center justify-center space-x-2 border-t border-slate-100 pt-4 text-[9px] text-slate-400 font-black uppercase tracking-widest">
-                                <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                <span>Pembayaran Instan via Midtrans</span>
-                            </div>
-
-                            <div className="text-center pt-2">
-                                <button className="text-xs text-slate-500 hover:text-blue-600 font-bold underline transition-colors cursor-pointer">
-                                    Laporkan listing ini
-                                </button>
-                            </div>
                         </div>
                     </aside>
                 </div>
@@ -1336,7 +1132,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
                 <button
                     onClick={handleBookingSubmit}
-                    className="bg-[#de1252] hover:bg-[#c90d46] active:scale-[0.98] active:translate-y-[1px] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer"
                 >
                     Pesan
                 </button>
