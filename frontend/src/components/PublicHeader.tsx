@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Menu, X, Search } from 'lucide-react';
+import { ChevronLeft, Menu, X, Search, MapPin, Calendar, Users } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PublicHeaderProps {
@@ -28,7 +28,35 @@ export default function PublicHeader({
     const { user, admin } = useAuth();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchLocation, setSearchLocation] = useState('');
+    const [searchCheckIn, setSearchCheckIn] = useState('');
+    const [searchCheckOut, setSearchCheckOut] = useState('');
+    const [searchGuests, setSearchGuests] = useState(1);
+    const searchRef = useRef<HTMLDivElement>(null);
     const positionClass = fixed ? 'fixed top-0 left-0 right-0' : 'sticky top-0';
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+                setSearchOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (searchLocation) params.set('location', searchLocation);
+        if (searchCheckIn) params.set('checkIn', searchCheckIn);
+        if (searchCheckOut) params.set('checkOut', searchCheckOut);
+        if (searchGuests > 0) params.set('guests', String(searchGuests));
+        const qs = params.toString();
+        router.push(qs ? `/villas?${qs}` : '/villas');
+        setSearchOpen(false);
+    };
 
     return (
         <header className={`${positionClass} z-50 ${
@@ -72,28 +100,99 @@ export default function PublicHeader({
                     </div>
 
                     {/* Middle: Custom children OR static search pill (matches HomeHeader solid) */}
-                    <div className="hidden md:flex flex-1 max-w-md mx-6 px-2.5 py-1.5">
+                    <div className="hidden md:flex flex-1 max-w-md mx-6 px-2.5 py-1.5 relative" ref={searchRef}>
                         {children ? (
                             <div className="w-full">{children}</div>
                         ) : showSearchPill && headerSolid ? (
-                            <button
-                                type="button"
-                                                onClick={() => router.push('/villas')}
-                                className="w-full rounded-full border border-[#EAEAEA] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-1 flex items-center hover:shadow-md transition-shadow cursor-pointer"
-                            >
-                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
-                                    Kemana aja?
-                                </span>
-                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left border-l border-r border-[#EAEAEA]">
-                                    Kapan aja?
-                                </span>
-                                <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
-                                    Banyak tamu
-                                </span>
-                                <span className="bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold rounded-full transition-all p-2.5 shrink-0 ml-2">
-                                    <Search className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
-                                </span>
-                            </button>
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchOpen(!searchOpen)}
+                                    className="w-full rounded-full border border-[#EAEAEA] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-1 flex items-center hover:shadow-md transition-shadow cursor-pointer"
+                                >
+                                    <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
+                                        Kemana aja?
+                                    </span>
+                                    <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left border-l border-r border-[#EAEAEA]">
+                                        Kapan aja?
+                                    </span>
+                                    <span className="flex-1 px-5 text-xs font-medium text-[#787774] text-left">
+                                        Banyak tamu
+                                    </span>
+                                    <span className="bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center font-bold rounded-full transition-all p-2.5 shrink-0 ml-2">
+                                        <Search className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
+                                    </span>
+                                </button>
+
+                                {searchOpen && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl p-5 z-50 animate-fadeIn">
+                                        <form onSubmit={handleSearchSubmit} className="space-y-4">
+                                            <div>
+                                                <label className="text-[11px] font-bold text-slate-500 mb-1.5 block">Lokasi</label>
+                                                <div className="relative">
+                                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                    <input
+                                                        type="text"
+                                                        value={searchLocation}
+                                                        onChange={(e) => setSearchLocation(e.target.value)}
+                                                        placeholder="Cari destinasi..."
+                                                        className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-[11px] font-bold text-slate-500 mb-1.5 block">Check-in</label>
+                                                    <input
+                                                        type="date"
+                                                        value={searchCheckIn}
+                                                        onChange={(e) => setSearchCheckIn(e.target.value)}
+                                                        className="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[11px] font-bold text-slate-500 mb-1.5 block">Check-out</label>
+                                                    <input
+                                                        type="date"
+                                                        value={searchCheckOut}
+                                                        onChange={(e) => setSearchCheckOut(e.target.value)}
+                                                        className="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[11px] font-bold text-slate-500 mb-1.5 block">Jumlah Tamu</label>
+                                                <div className="relative">
+                                                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                    <div className="flex items-center gap-3 pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setSearchGuests(Math.max(1, searchGuests - 1))}
+                                                            className="w-7 h-7 rounded-full border border-slate-300 text-slate-600 flex items-center justify-center text-sm font-bold hover:bg-slate-100 active:scale-90 transition-all cursor-pointer"
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <span className="flex-1 text-center text-sm font-medium text-slate-800">{searchGuests} tamu</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setSearchGuests(Math.min(20, searchGuests + 1))}
+                                                            className="w-7 h-7 rounded-full border border-slate-300 text-slate-600 flex items-center justify-center text-sm font-bold hover:bg-slate-100 active:scale-90 transition-all cursor-pointer"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm py-3 rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+                                            >
+                                                Cari Villa
+                                            </button>
+                                        </form>
+                                    </div>
+                                )}
+                            </>
                         ) : null}
                     </div>
 
