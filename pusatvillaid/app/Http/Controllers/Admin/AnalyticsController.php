@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnalyticsController extends Controller
@@ -118,64 +120,63 @@ class AnalyticsController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $response = new StreamedResponse(function () use ($bookings) {
-            $handle = fopen('php://output', 'w');
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Booking');
 
-            // Add UTF-8 BOM for Excel to open CSV correctly with special characters
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+        // Header row
+        $headers = [
+            'Kode Booking', 'Nama Villa', 'Nama Tamu', 'Email', 'Telepon',
+            'Check-in', 'Check-out', 'Total Malam', 'Jumlah Tamu',
+            'Base Price (IDR)', 'Total Bayar (IDR)',
+            'Status Booking', 'Status Pembayaran', 'Metode Pembayaran',
+            'Tanggal Dibuat', 'UTM Source', 'UTM Medium', 'UTM Campaign',
+        ];
 
-            // CSV Header
-            fputcsv($handle, [
-                'Kode Booking',
-                'Nama Villa',
-                'Nama Tamu',
-                'Email',
-                'Telepon',
-                'Check-in',
-                'Check-out',
-                'Total Malam',
-                'Jumlah Tamu',
-                'Base Price (IDR)',
-                'Total Bayar (IDR)',
-                'Status Booking',
-                'Status Pembayaran',
-                'Metode Pembayaran',
-                'Tanggal Dibuat',
-                'UTM Source',
-                'UTM Medium',
-                'UTM Campaign',
-            ]);
+        foreach (range('A', 'R') as $i => $col) {
+            $sheet->getStyle("{$col}1")->getFont()->setBold(true);
+        }
+        $sheet->fromArray($headers, null, 'A1');
 
-            // CSV Data
-            foreach ($bookings as $b) {
-                fputcsv($handle, [
-                    $b->booking_code,
-                    $b->villa->name ?? '-',
-                    $b->guest_name,
-                    $b->guest_email,
-                    $b->guest_phone,
-                    $b->check_in->toDateString(),
-                    $b->check_out->toDateString(),
-                    $b->total_nights,
-                    $b->num_guests,
-                    $b->base_price,
-                    $b->total_amount,
-                    $b->status,
-                    $b->payment_status,
-                    $b->payment->payment_type ?? '-',
-                    $b->created_at->toDateTimeString(),
-                    $b->utm_source ?? '-',
-                    $b->utm_medium ?? '-',
-                    $b->utm_campaign ?? '-',
-                ]);
-            }
+        // Data rows
+        $row = 2;
+        foreach ($bookings as $b) {
+            $sheet->fromArray([
+                $b->booking_code,
+                $b->villa->name ?? '-',
+                $b->guest_name,
+                $b->guest_email,
+                $b->guest_phone,
+                $b->check_in->toDateString(),
+                $b->check_out->toDateString(),
+                $b->total_nights,
+                $b->num_guests,
+                $b->base_price,
+                $b->total_amount,
+                $b->status,
+                $b->payment_status,
+                $b->payment->payment_type ?? '-',
+                $b->created_at->toDateTimeString(),
+                $b->utm_source ?? '-',
+                $b->utm_medium ?? '-',
+                $b->utm_campaign ?? '-',
+            ], null, "A{$row}");
+            $row++;
+        }
 
-            fclose($handle);
+        // Auto-size columns
+        foreach (range('A', 'R') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $response = new StreamedResponse(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
         });
 
-        $fileName = "laporan-booking-{$from}-ke-{$to}.csv";
+        $fileName = "laporan-booking-{$from}-ke-{$to}.xlsx";
 
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$fileName.'"');
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Expires', '0');
