@@ -54,6 +54,14 @@ export default function AdminReviewsPage() {
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [formCreatedAt, setFormCreatedAt] = useState('');
 
+    // Villa autocomplete state
+    const [villaSearch, setVillaSearch] = useState('');
+    const [showVillaSuggestions, setShowVillaSuggestions] = useState(false);
+
+    const filteredVillas = villaSearch.trim()
+        ? villas.filter(v => v.name.toLowerCase().includes(villaSearch.toLowerCase()))
+        : [];
+
     useEffect(() => {
         const fetchVillasList = async () => {
             try {
@@ -124,7 +132,9 @@ export default function AdminReviewsPage() {
         setFormComment('');
         setFormIsApproved(true);
         setFormCreatedAt(format(new Date(), 'yyyy-MM-dd'));
-        if (villas.length > 0) setFormVillaId(String(villas[0].id));
+        setFormVillaId('');
+        setVillaSearch('');
+        setShowVillaSuggestions(false);
         setModalOpen(true);
     };
 
@@ -136,7 +146,9 @@ export default function AdminReviewsPage() {
         setFormRating(String(r.rating));
         setFormComment(r.comment);
         setFormIsApproved(r.is_approved);
-        setFormVillaId(String(r.villa_id));
+        setFormVillaId(String(r.villa_id || ''));
+        setVillaSearch(r.villa?.name || '');
+        setShowVillaSuggestions(false);
         setFormCreatedAt(r.created_at ? format(parseISO(r.created_at), 'yyyy-MM-dd') : '');
         setModalOpen(true);
     };
@@ -421,19 +433,44 @@ export default function AdminReviewsPage() {
                                     {/* Left Column: Basic info */}
                                     <div className="md:col-span-2 space-y-3">
                                         {!editingReview && (
-                                            <div>
+                                            <div className="relative">
                                                 <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wider">Villa *</label>
-                                                <select
+                                                <input
+                                                    type="text"
                                                     required
-                                                    value={formVillaId}
-                                                    onChange={(e) => setFormVillaId(e.target.value)}
+                                                    placeholder="Ketik nama villa..."
+                                                    value={villaSearch}
+                                                    onChange={(e) => {
+                                                        setVillaSearch(e.target.value);
+                                                        setShowVillaSuggestions(true);
+                                                        setFormVillaId('');
+                                                    }}
+                                                    onFocus={() => setShowVillaSuggestions(true)}
+                                                    onBlur={() => setTimeout(() => setShowVillaSuggestions(false), 200)}
                                                     className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                                >
-                                                    <option value="">-- Pilih villa --</option>
-                                                    {villas.map(v => (
-                                                        <option key={v.id} value={v.id}>{v.name}</option>
-                                                    ))}
-                                                </select>
+                                                />
+                                                {showVillaSuggestions && villaSearch.trim() && filteredVillas.length > 0 && (
+                                                    <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-36 overflow-y-auto">
+                                                        {filteredVillas.map(v => (
+                                                            <button
+                                                                key={v.id}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setVillaSearch(v.name);
+                                                                    setFormVillaId(String(v.id));
+                                                                    setShowVillaSuggestions(false);
+                                                                }}
+                                                                className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 font-semibold text-slate-700 border-b border-slate-50 last:border-0"
+                                                            >
+                                                                {v.name}
+                                                                <span className="text-slate-400 ml-1 font-normal">({v.location})</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {villaSearch.trim() && filteredVillas.length === 0 && (
+                                                    <p className="text-[10px] text-amber-600 mt-1">Villa tidak ditemukan. Coba ketik nama lain.</p>
+                                                )}
                                             </div>
                                         )}
 
