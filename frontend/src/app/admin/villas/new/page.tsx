@@ -105,8 +105,6 @@ export default function AdminNewVillaPage() {
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
     const [iconSearch, setIconSearch] = useState('');
 
-    const [refundableRate, setRefundableRate] = useState('11.11');
-    const [cancellationFreeDays, setCancellationFreeDays] = useState('5');
     const [beds, setBeds] = useState('');
     const [cleaningFee, setCleaningFee] = useState('');
 
@@ -175,8 +173,6 @@ export default function AdminNewVillaPage() {
                 rules: rules || null,
                 amenities: selectedAmenities,
                 is_active: isActive,
-                refundable_surcharge_rate: Number(refundableRate) / 100,
-                cancellation_free_days: Number(cancellationFreeDays),
                 beds: beds ? Number(beds) : null,
                 cleaning_fee: cleaningFee ? Number(cleaningFee) : null,
             };
@@ -509,38 +505,6 @@ export default function AdminNewVillaPage() {
                                     className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                                 <p className="text-[9px] text-[#6a6a6a] mt-1">Biaya sekali bayar di samping harga sewa.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Business Config — refundable rate & cancellation */}
-                    <div className="space-y-5">
-                        <h3 className="text-sm font-semibold text-[#222222] border-b border-[#dddddd] pb-2">Konfigurasi Bisnis</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Surcharge refundable (%)</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    max="100"
-                                    value={refundableRate}
-                                    onChange={(e) => setRefundableRate(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
-                                />
-                                <p className="text-[9px] text-[#6a6a6a] mt-1">Persentase tambahan jika tamu memilih tarif &quot;Bisa dikembalikan&quot;.</p>
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Batal gratis (hari sebelum check-in)</label>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="60"
-                                    value={cancellationFreeDays}
-                                    onChange={(e) => setCancellationFreeDays(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
-                                />
-                                <p className="text-[9px] text-[#6a6a6a] mt-1">Jumlah hari sebelum check-in di mana pembatalan masih gratis.</p>
                             </div>
                         </div>
                     </div>
