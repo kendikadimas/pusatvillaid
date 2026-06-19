@@ -149,10 +149,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (loading) return;
 
         const isAdminRoute = pathname.startsWith('/admin');
-        const isLoginRoute = pathname === '/admin/login';
+        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+        const isLoginRoute = normalizedPathname === '/admin/login';
 
         console.log('[Auth Route Protection]', {
             pathname,
+            normalizedPathname,
             isAdminRoute,
             isLoginRoute,
             admin: admin ? { id: admin.id, role: admin.role } : null,
