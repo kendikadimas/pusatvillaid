@@ -76,9 +76,17 @@ export default function AdminAnalyticsPage() {
             // Calculate totals
             const totalRevenue = formattedRevenue.reduce((sum: number, item: any) => sum + item.revenueAmount, 0);
             const totalBookings = (data.conversion_funnel || [])
-                .filter((item: any) => item.step !== 'Cancelled')
-                .reduce((sum: number, item: any) => sum + item.value, 0);
+                .filter((item: any) => !item.step.includes('Cancelled'))
+                .reduce((sum: number, item: any) => sum + Number(item.value), 0);
             const avgOrderValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
+
+            console.log('Analytics data:', {
+                totalRevenue,
+                totalBookings,
+                avgOrderValue,
+                funnelData: data.conversion_funnel,
+                dailyRevenue: formattedRevenue
+            });
 
             setSummary({
                 totalRevenue,
@@ -98,10 +106,33 @@ export default function AdminAnalyticsPage() {
         fetchAnalytics();
     }, [from, to]);
 
-    const handleExport = () => {
+    const handleExport = async () => {
         const token = localStorage.getItem('admin_token');
-        window.open(`${axiosClient.defaults.baseURL}/admin/analytics/export?from=${from}&to=${to}&token=${token}`, '_blank');
-        toast.info('Laporan booking sedang diunduh...');
+        
+        try {
+            const response = await axiosClient.get('/admin/analytics/export', {
+                params: { from, to },
+                responseType: 'blob',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `laporan-booking-${from}-ke-${to}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            toast.success('Laporan booking berhasil diunduh!');
+        } catch (err) {
+            console.error('Export failed:', err);
+            toast.error('Gagal mengunduh laporan. Silakan coba lagi.');
+        }
     };
 
     const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#6b7280', '#ec4899', '#8b5cf6'];

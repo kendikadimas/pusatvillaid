@@ -100,13 +100,35 @@ export default function AdminBookingsPage() {
         setCurrentPage(1);
     };
 
-    const handleExport = () => {
+    const handleExport = async () => {
         const from = checkInFrom || format(new Date().setDate(new Date().getDate() - 30), 'yyyy-MM-dd');
         const to = checkInTo || format(new Date(), 'yyyy-MM-dd');
         const token = localStorage.getItem('admin_token');
         
-        window.open(`${axiosClient.defaults.baseURL}/admin/analytics/export?from=${from}&to=${to}&token=${token}`, '_blank');
-        toast.info('Laporan booking sedang diunduh...');
+        try {
+            const response = await axiosClient.get('/admin/analytics/export', {
+                params: { from, to },
+                responseType: 'blob',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `laporan-booking-${from}-ke-${to}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            toast.success('Laporan booking berhasil diunduh!');
+        } catch (err) {
+            console.error('Export failed:', err);
+            toast.error('Gagal mengunduh laporan. Silakan coba lagi.');
+        }
     };
 
     return (
