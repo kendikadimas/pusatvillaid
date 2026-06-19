@@ -67,7 +67,7 @@ function AdminEditVillaContent() {
         const fetchDestinations = async () => {
             try {
                 const response = await axiosClient.get('/admin/destinations');
-                setDestinations(response.data);
+                setDestinations(response.data.data || []);
             } catch (err) {
                 console.error('Failed to load destinations:', err);
             }
