@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import { Villa, BlockedDate } from '@/types';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subMonths, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfDay } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { 
     ArrowLeft, 
@@ -15,12 +15,14 @@ import {
     Image as ImageIcon,
     Upload,
     Trash2,
-    Calendar,
+    Calendar as CalendarIcon,
     Plus,
     X,
     Check,
     RefreshCw,
-    ChevronDown
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
@@ -458,7 +460,7 @@ function AdminEditVillaContent() {
         }
     };
 
-    // Block Date handler
+    // Block Date handler (single)
     const handleBlockDate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!blockDateInput) {
@@ -468,20 +470,48 @@ function AdminEditVillaContent() {
 
         setBlockingDate(true);
         try {
-            const response = await axiosClient.post('/admin/blocked-dates', {
+            await axiosClient.post('/admin/blocked-dates', {
                 villa_id: id,
                 date: blockDateInput,
                 reason: blockReasonInput || 'Maintenance / Pemeliharaan'
             });
 
-            toast.success(response.data.message || 'Tanggal berhasil diblokir.');
+            toast.success('Tanggal berhasil diblokir.');
             setBlockDateInput('');
             setBlockReasonInput('');
-            
-            // Refresh list
             fetchVillaDetails();
         } catch (err: any) {
             console.error('Failed to block date:', err);
+            toast.error(err.response?.data?.message || 'Gagal memblokir tanggal.');
+        } finally {
+            setBlockingDate(false);
+        }
+    };
+
+    // Bulk block handler
+    const handleBulkBlock = async (dates: string[], reason: string) => {
+        if (dates.length === 0) {
+            toast.error('Pilih minimal satu tanggal.');
+            return;
+        }
+
+        setBlockingDate(true);
+        try {
+            const promises = dates.map(date =>
+                axiosClient.post('/admin/blocked-dates', {
+                    villa_id: id,
+                    date,
+                    reason: reason || 'Maintenance / Pemeliharaan'
+                })
+            );
+            await Promise.all(promises);
+            toast.success(`${dates.length} tanggal berhasil diblokir.`);
+            setBulkSelectedDates([]);
+            setBulkReason('');
+            setIsBulkMode(false);
+            fetchVillaDetails();
+        } catch (err: any) {
+            console.error('Failed to bulk block dates:', err);
             toast.error(err.response?.data?.message || 'Gagal memblokir tanggal.');
         } finally {
             setBlockingDate(false);
@@ -493,14 +523,69 @@ function AdminEditVillaContent() {
         try {
             await axiosClient.delete(`/admin/blocked-dates/${blockedDateId}`);
             toast.success('Pemblokiran tanggal berhasil dibatalkan.');
-            
-            // Refresh list
             fetchVillaDetails();
         } catch (err: any) {
             console.error('Failed to unblock date:', err);
             toast.error(err.response?.data?.message || 'Gagal membatalkan pemblokiran.');
         }
     };
+
+    // Bulk unblock handler
+    const handleBulkUnblock = async (dates: string[]) => {
+        if (dates.length === 0) return;
+
+        setBlockingDate(true);
+        try {
+            const recordsToDelete = blockedDates.filter(bd => dates.includes(bd.date));
+            const promises = recordsToDelete.map(bd =>
+                axiosClient.delete(`/admin/blocked-dates/${bd.id}`)
+            );
+            await Promise.all(promises);
+            toast.success(`${recordsToDelete.length} tanggal berhasil dibuka.`);
+            setBulkSelectedDates([]);
+            setIsBulkMode(false);
+            fetchVillaDetails();
+        } catch (err: any) {
+            console.error('Failed to bulk unblock:', err);
+            toast.error('Gagal membuka kunci tanggal.');
+        } finally {
+            setBlockingDate(false);
+        }
+    };
+
+    // Calendar state
+    const [blockCalendarMonth, setBlockCalendarMonth] = useState(new Date());
+    const [isBulkMode, setIsBulkMode] = useState(false);
+    const [bulkSelectedDates, setBulkSelectedDates] = useState<string[]>([]);
+    const [bulkReason, setBulkReason] = useState('');
+
+    const goToPrevMonth = () => setBlockCalendarMonth(prev => subMonths(prev, 1));
+    const goToNextMonth = () => setBlockCalendarMonth(prev => addMonths(prev, 1));
+
+    // Single date block from calendar click
+    const handleBlockDateSingle = async (dateStr: string) => {
+        setBlockingDate(true);
+        try {
+            await axiosClient.post('/admin/blocked-dates', {
+                villa_id: id,
+                date: dateStr,
+                reason: 'Maintenance / Pemeliharaan'
+            });
+            toast.success('Tanggal berhasil diblokir.');
+            fetchVillaDetails();
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Gagal memblokir tanggal.');
+        } finally {
+            setBlockingDate(false);
+        }
+    };
+
+    const calendarStart = startOfMonth(blockCalendarMonth);
+    const calendarEnd = endOfMonth(blockCalendarMonth);
+    const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+    const startDayOfWeek = calendarStart.getDay();
+    const paddingDaysCount = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+    const paddingDays = Array(paddingDaysCount).fill(null);
 
     if (loading) {
         return (
@@ -1384,81 +1469,191 @@ function AdminEditVillaContent() {
 
             {/* TAB CONTENT: 3. BLOCKED DATES */}
             {activeTab === 'blocked_dates' && (
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
-                    {/* Block Date Form */}
-                    <div className="space-y-5">
-                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Blokir Tanggal Baru</h3>
-                        <form onSubmit={handleBlockDate} className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[11px] font-semibold text-[#6a6a6a] block mb-1.5">Tanggal *</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={blockDateInput}
-                                        onChange={(e) => setBlockDateInput(e.target.value)}
-                                        min={new Date().toISOString().split('T')[0]}
-                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[11px] font-semibold text-[#6a6a6a] block mb-1.5">Alasan (opsional)</label>
-                                    <input
-                                        type="text"
-                                        value={blockReasonInput}
-                                        onChange={(e) => setBlockReasonInput(e.target.value)}
-                                        placeholder="Contoh: Perbaikan AC"
-                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                                    />
-                                </div>
-                            </div>
+                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                    {/* Calendar Nav */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div className="flex items-center space-x-2">
+                            <CalendarIcon className="w-5 h-5 text-blue-600" />
+                            <h3 className="text-sm font-bold text-slate-900 capitalize">
+                                {format(blockCalendarMonth, 'MMMM yyyy', { locale: localeID })}
+                            </h3>
+                        </div>
+                        <div className="flex items-center space-x-2">
                             <button
-                                type="submit"
-                                disabled={blockingDate}
-                                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 active:scale-[0.98] cursor-pointer"
+                                type="button"
+                                onClick={() => {
+                                    setIsBulkMode(!isBulkMode);
+                                    setBulkSelectedDates([]);
+                                }}
+                                className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all active:scale-95 cursor-pointer ${
+                                    isBulkMode
+                                        ? 'bg-blue-600 border-blue-600 text-white'
+                                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                }`}
                             >
-                                {blockingDate ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        <span>Memblokir...</span>
-                                    </>
-                                ) : (
-                                    <span>Blokir Tanggal</span>
-                                )}
+                                {isBulkMode ? 'Batal Pilih' : 'Pilih Banyak'}
                             </button>
-                        </form>
+                            <button onClick={goToPrevMonth} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 active:scale-90 transition-all cursor-pointer">
+                                <ChevronLeft className="w-4 h-4 text-slate-500" />
+                            </button>
+                            <button onClick={() => setBlockCalendarMonth(new Date())} className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-600 active:scale-90 transition-all cursor-pointer">
+                                Hari Ini
+                            </button>
+                            <button onClick={goToNextMonth} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 active:scale-90 transition-all cursor-pointer">
+                                <ChevronRight className="w-4 h-4 text-slate-500" />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Blocked Dates List */}
-                    <div className="space-y-3">
-                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">
-                            Tanggal yang Diblokir ({blockedDates.length})
-                        </h3>
-                        {blockedDates.length === 0 ? (
-                            <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-xs text-slate-400">
-                                Belum ada tanggal yang diblokir.
+                    {/* Days header */}
+                    <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        <div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div><div>Min</div>
+                    </div>
+
+                    {/* Calendar grid */}
+                    <div className="grid grid-cols-7 gap-1">
+                        {[...paddingDays, ...calendarDays].map((day, idx) => {
+                            if (day === null) {
+                                return <div key={`pad-${idx}`} className="h-14 bg-slate-50/50 rounded-lg border border-slate-100" />;
+                            }
+                            const dateStr = format(day, 'yyyy-MM-dd');
+                            const dayNum = format(day, 'd');
+                            const isToday = isSameDay(day, new Date());
+                            const isPast = startOfDay(day) < startOfDay(new Date());
+                            const isBlocked = blockedDates.some(bd => isSameDay(parseISO(bd.date), day));
+                            const isSelected = bulkSelectedDates.includes(dateStr);
+
+                            let cellBg = 'bg-white hover:bg-slate-50 border-slate-200';
+                            let textColor = 'text-slate-800';
+                            if (isBlocked) {
+                                cellBg = 'bg-slate-800 border-slate-800';
+                                textColor = 'text-white';
+                            } else if (isPast) {
+                                cellBg = 'bg-slate-50/50 border-slate-100 cursor-not-allowed opacity-50';
+                                textColor = 'text-slate-300';
+                            }
+                            if (isSelected && !isBlocked) {
+                                cellBg = 'bg-blue-500 border-blue-500';
+                                textColor = 'text-white';
+                            }
+
+                            return (
+                                <button
+                                    key={dateStr}
+                                    type="button"
+                                    onClick={() => {
+                                        if (isPast && !isBlocked) return;
+                                        if (isBlocked && !isBulkMode) return;
+                                        if (isBlocked && isBulkMode) {
+                                            toast.info('Tanggal yang sudah diblokir tidak dapat dipilih.');
+                                            return;
+                                        }
+                                        if (isBulkMode) {
+                                            setBulkSelectedDates(prev =>
+                                                prev.includes(dateStr)
+                                                    ? prev.filter(d => d !== dateStr)
+                                                    : [...prev, dateStr]
+                                            );
+                                        } else {
+                                            handleBlockDateSingle(dateStr);
+                                        }
+                                    }}
+                                    className={`h-12 sm:h-14 rounded-lg border flex flex-col items-center justify-center transition-all active:scale-90 cursor-pointer relative ${cellBg} ${isToday && !isBlocked ? 'ring-2 ring-blue-400' : ''}`}
+                                >
+                                    <span className={`text-xs font-bold ${textColor}`}>{dayNum}</span>
+                                    {isBlocked && (
+                                        <span className="text-[8px] truncate max-w-full px-0.5 opacity-70 text-white">Blokir</span>
+                                    )}
+                                    {isBulkMode && !isBlocked && !isPast && (
+                                        <div className={`absolute top-1 right-1 w-3.5 h-3.5 rounded border flex items-center justify-center text-[8px] ${
+                                            isSelected ? 'bg-white border-white text-blue-600' : 'bg-white/50 border-slate-300'
+                                        }`}>
+                                            {isSelected && <Check className="w-2.5 h-2.5" />}
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Legend */}
+                    <div className="flex flex-wrap items-center gap-3 text-[9px] font-bold text-slate-500 border-t border-slate-100 pt-3">
+                        <div className="flex items-center space-x-1.5">
+                            <div className="w-3 h-3 rounded bg-slate-800" />
+                            <span>Diblokir</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5">
+                            <div className="w-3 h-3 rounded bg-blue-500" />
+                            <span>Dipilih</span>
+                        </div>
+                        <span className="text-slate-400">| Total: {blockedDates.length} tanggal diblokir</span>
+                    </div>
+
+                    {/* Bulk action bar */}
+                    {isBulkMode && bulkSelectedDates.length > 0 && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-blue-700">{bulkSelectedDates.length} tanggal dipilih</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setBulkSelectedDates([])}
+                                    className="text-[10px] font-bold text-slate-500 hover:text-slate-700"
+                                >
+                                    Hapus Semua
+                                </button>
                             </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Alasan pemblokiran massal..."
+                                    value={bulkReason}
+                                    onChange={(e) => setBulkReason(e.target.value)}
+                                    className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleBulkBlock(bulkSelectedDates, bulkReason)}
+                                    disabled={blockingDate}
+                                    className="bg-slate-900 hover:bg-slate-800 disabled:opacity-60 text-white font-bold text-xs px-4 py-2 rounded-lg active:scale-95 transition-all cursor-pointer flex items-center space-x-1.5"
+                                >
+                                    {blockingDate ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                    <span>Blokir</span>
+                                </button>
+                            </div>
+                            {blockedDates.some(bd => bulkSelectedDates.includes(bd.date)) && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleBulkUnblock(bulkSelectedDates)}
+                                    disabled={blockingDate}
+                                    className="w-full bg-white hover:bg-red-50 text-red-600 font-bold text-xs py-2 rounded-lg border border-slate-200 active:scale-95 transition-all cursor-pointer"
+                                >
+                                    Buka Kunci Tanggal Terpilih
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Blocked Dates List */}
+                    <div className="border-t border-slate-100 pt-4">
+                        <h3 className="text-sm font-bold text-slate-900 mb-3">Daftar Tanggal Diblokir ({blockedDates.length})</h3>
+                        {blockedDates.length === 0 ? (
+                            <p className="text-xs text-slate-400 text-center py-8 border border-dashed border-slate-200 rounded-xl">Belum ada tanggal yang diblokir.</p>
                         ) : (
-                            <div className="space-y-2">
-                                {blockedDates.map((bd) => (
-                                    <div
-                                        key={bd.id}
-                                        className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl"
-                                    >
+                            <div className="max-h-48 overflow-y-auto space-y-1.5">
+                                {blockedDates.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((bd) => (
+                                    <div key={bd.id} className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
                                         <div className="text-xs">
-                                            <p className="font-bold text-slate-800">
-                                                {new Date(bd.date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                                            </p>
-                                            {bd.reason && (
-                                                <p className="text-slate-500 mt-0.5">{bd.reason}</p>
-                                            )}
+                                            <span className="font-bold text-slate-800">
+                                                {format(parseISO(bd.date), 'EEEE, dd MMM yyyy', { locale: localeID })}
+                                            </span>
+                                            {bd.reason && <span className="text-slate-400 ml-2">— {bd.reason}</span>}
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => handleUnblockDate(bd.id)}
-                                            className="text-red-500 hover:text-red-700 text-[11px] font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors active:scale-90 cursor-pointer"
+                                            className="text-red-500 hover:text-red-700 text-[10px] font-bold hover:bg-red-50 px-2.5 py-1 rounded-lg transition-colors active:scale-90 cursor-pointer"
                                         >
-                                            Buka Kunci
+                                            Buka
                                         </button>
                                     </div>
                                 ))}
