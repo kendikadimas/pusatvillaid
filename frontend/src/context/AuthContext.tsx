@@ -236,11 +236,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .then(() => console.log('[Auth] Logout API success'))
             .catch(err => console.error('[Auth] Logout API error:', err));
         
-        // Force redirect with full page reload
+        // Redirect to home page
         if (typeof window !== 'undefined') {
-            const redirectUrl = isCurrentPathAdmin ? '/admin/login' : '/login';
-            console.log('[Auth] Redirecting to:', redirectUrl);
-            window.location.href = redirectUrl;
+            console.log('[Auth] Redirecting to: /');
+            window.location.href = '/';
         }
     };
 
