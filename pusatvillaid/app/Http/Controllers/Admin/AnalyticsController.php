@@ -34,28 +34,32 @@ class AnalyticsController extends Controller
             return response()->json(['message' => 'Rentang tanggal maksimal 365 hari.'], 422);
         }
 
-        // 1. Daily Revenue Chart - from payments AND bookings marked paid
-        $dailyRevenue = DB::table(
-            Payment::where('status', 'success')
-                ->whereBetween('paid_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
-                ->select(
-                    DB::raw('DATE(paid_at) as date'),
-                    DB::raw('amount as revenue')
-                )
-                ->unionAll(
-                    Booking::where('payment_status', 'paid')
-                        ->whereBetween('updated_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
-                        ->select(
-                            DB::raw('DATE(updated_at) as date'),
-                            DB::raw('total_amount as revenue')
-                        )
-                ),
-            'merged'
-        )
-            ->select(DB::raw('date'), DB::raw('SUM(revenue) as revenue'))
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->get();
+        // 1. Daily Revenue - merge payments + bookings marked paid
+        $paymentRevenue = Payment::where('status', 'success')
+            ->whereBetween('paid_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+            ->select(DB::raw('DATE(paid_at) as date'), DB::raw('amount as revenue'))
+            ->get()
+            ->keyBy('date');
+
+        $bookingRevenue = Booking::where('payment_status', 'paid')
+            ->whereBetween('updated_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+            ->select(DB::raw('DATE(updated_at) as date'), DB::raw('total_amount as revenue'))
+            ->get()
+            ->keyBy('date');
+
+        // Merge both sources, summing overlapping dates
+        $allDates = $paymentRevenue->keys()->merge($bookingRevenue->keys())->unique()->sort();
+        $dailyRevenue = $allDates->map(function ($date) use ($paymentRevenue, $bookingRevenue) {
+            $total = 0;
+            if (isset($paymentRevenue[$date])) {
+                $total += (float) $paymentRevenue[$date]->revenue;
+            }
+            if (isset($bookingRevenue[$date])) {
+                $total += (float) $bookingRevenue[$date]->revenue;
+            }
+
+            return (object) ['date' => $date, 'revenue' => (string) $total];
+        })->values();
 
         // 2. Bookings count per villa
         $bookingsPerVilla = Booking::whereIn('status', ['confirmed', 'completed'])
@@ -72,18 +76,35 @@ class AnalyticsController extends Controller
             'bookings_count' => $item->count,
         ]);
 
-        // 3. Payment Methods share + manual confirmations
-        $paymentMethods = Booking::where('payment_status', 'paid')
-            ->whereBetween('updated_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
-            ->leftJoin('payments', 'bookings.id', '=', 'payments.booking_id')
+        // 3. Payment Methods share
+        $paymentMethodsRaw = Payment::where('status', 'success')
+            ->whereBetween('paid_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+            ->select('payment_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('payment_type')
             ->get()
-            ->groupBy(fn ($b) => $b->payment->payment_type ?? 'manual_confirmation')
-            ->map(fn ($group) => (object) [
-                'method' => $group->first()->payment->payment_type ?? 'Konfirmasi Manual',
-                'count' => $group->count(),
-                'revenue' => (float) $group->sum('total_amount'),
-            ])
-            ->values();
+            ->map(fn ($item) => [
+                'method' => $item->payment_type ?? 'Lainnya',
+                'count' => $item->count,
+                'revenue' => (float) $item->total_amount,
+            ]);
+
+        // Also include bookings manually confirmed without payment type
+        $manualConfirmed = Booking::where('payment_status', 'paid')
+            ->whereBetween('updated_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+            ->whereDoesntHave('payment', fn ($q) => $q->whereNotNull('payment_type'))
+            ->count();
+
+        $paymentMethods = $paymentMethodsRaw->values();
+        if ($manualConfirmed > 0) {
+            $paymentMethods->push([
+                'method' => 'Konfirmasi Manual',
+                'count' => $manualConfirmed,
+                'revenue' => (float) Booking::where('payment_status', 'paid')
+                    ->whereBetween('updated_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+                    ->whereDoesntHave('payment', fn ($q) => $q->whereNotNull('payment_type'))
+                    ->sum('total_amount'),
+            ]);
+        }
 
         // 4. Lead Sources from all bookings
         $leadSources = Booking::whereBetween('created_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
