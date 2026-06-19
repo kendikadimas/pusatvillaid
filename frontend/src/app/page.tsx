@@ -463,6 +463,26 @@ export default function HomePage() {
                     handleGuestChange={handleGuestChange}
                     getGuestsLabel={getGuestsLabel}
                 />
+
+                <DestinationGrid
+                    destinations={destinations}
+                    groupedByLocation={groupedByLocation}
+                />
+
+                <VillaSection
+                    loading={loading}
+                    groupedByLocation={groupedByLocation}
+                    unmatchedVillas={unmatchedVillas}
+                    wishlist={wishlist}
+                    toggleWishlist={toggleWishlist}
+                    searchParams={searchParams}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                />
+
+                <CTASection />
+
+                <PublicFooter />
             </div>
 
             {/* ===== MOBILE LAYOUT ===== */}
@@ -536,102 +556,21 @@ export default function HomePage() {
                     <PriceBar />
                 </div>
 
-                {/* Destination grid (mobile) */}
-                <DestinationGrid
-                    destinations={destinations}
-                    groupedByLocation={groupedByLocation}
-                />
-
-                {/* Villa section (mobile) */}
-                <VillaSection
-                    loading={loading}
-                    groupedByLocation={groupedByLocation}
-                    unmatchedVillas={unmatchedVillas}
-                    wishlist={wishlist}
-                    toggleWishlist={toggleWishlist}
-                    searchParams={searchParams}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                />
-
-                <CTASection />
-            </div>
-
-            {/* ===== DESKTOP LAYOUT ===== */}
-            <div className="hidden lg:block">
-                <HomeHeader
-                    headerSolid={headerSolid}
-                    searchParams={searchParams}
-                    setSearchParams={setSearchParams}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                    handleSearch={handleSearch}
-                    recentSearches={recentSearches}
-                    selectRecentSearch={selectRecentSearch}
-                    destinations={destinations}
-                    selectDestination={selectDestination}
-                    formatDateRange={formatDateRange}
-                    renderCalendarMonth={renderCalendarMonth}
-                    currentCalendarDate={currentCalendarDate}
-                    getNextMonthDate={getNextMonthDate}
-                    prevCalendarMonth={prevCalendarMonth}
-                    nextCalendarMonth={nextCalendarMonth}
-                    selectedFlexibility={selectedFlexibility}
-                    setSelectedFlexibility={setSelectedFlexibility}
-                    adults={adults}
-                    childrenCount={childrenCount}
-                    infants={infants}
-                    pets={pets}
-                    handleGuestChange={handleGuestChange}
-                    getGuestsLabel={getGuestsLabel}
-                />
-
-                <HeroSection
-                    headerSolid={headerSolid}
-                    searchParams={searchParams}
-                    setSearchParams={setSearchParams}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                    handleSearch={handleSearch}
-                    recentSearches={recentSearches}
-                    selectRecentSearch={selectRecentSearch}
-                    destinations={destinations}
-                    selectDestination={selectDestination}
-                    formatDateRange={formatDateRange}
-                    renderCalendarMonth={renderCalendarMonth}
-                    currentCalendarDate={currentCalendarDate}
-                    getNextMonthDate={getNextMonthDate}
-                    prevCalendarMonth={prevCalendarMonth}
-                    nextCalendarMonth={nextCalendarMonth}
-                    selectedFlexibility={selectedFlexibility}
-                    setSelectedFlexibility={setSelectedFlexibility}
-                    adults={adults}
-                    childrenCount={childrenCount}
-                    infants={infants}
-                    pets={pets}
-                    handleGuestChange={handleGuestChange}
-                    getGuestsLabel={getGuestsLabel}
-                />
-
-                <DestinationGrid
-                    destinations={destinations}
-                    groupedByLocation={groupedByLocation}
-                />
-
-                <VillaSection
-                    loading={loading}
-                    groupedByLocation={groupedByLocation}
-                    unmatchedVillas={unmatchedVillas}
-                    wishlist={wishlist}
-                    toggleWishlist={toggleWishlist}
-                    searchParams={searchParams}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                />
-
-                <CTASection />
-
-                <PublicFooter />
+                {/* Mobile-specific villa grid */}
+                <div className="px-4 py-6">
+                    <h2 className="text-xl font-bold text-slate-900 mb-4">Villa Pilihan</h2>
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {villas.slice(0, 10).map((villa) => (
+                                <MobilePropertyCard key={villa.id} villa={villa} />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Mobile Bottom Navigation */}
