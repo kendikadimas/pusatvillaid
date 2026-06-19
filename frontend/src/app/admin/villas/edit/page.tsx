@@ -431,6 +431,7 @@ function AdminEditVillaContent() {
                 amenities: selectedAmenities,
                 is_active: isActive,
                 photos: normalizedPhotos,
+                destination_id: destinationId ? Number(destinationId) : null,
                 host_name: hostName,
                 host_years: Number(hostYears),
                 host_avatar: hostAvatar || null,
