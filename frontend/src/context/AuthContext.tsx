@@ -197,28 +197,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
         const endpoint = isCurrentPathAdmin ? '/admin/logout' : '/logout';
         
-        try {
-            // Call API first with timeout
-            await Promise.race([
-                axiosClient.post(endpoint),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
-            ]);
-        } catch (err) {
-            console.error('Logout API failed:', err);
-        } finally {
-            // Always clear state and redirect
-            if (typeof window !== 'undefined') {
-                if (isCurrentPathAdmin) {
-                    localStorage.removeItem('admin_token');
-                    setAdmin(null);
-                    router.push('/admin/login');
-                } else {
-                    localStorage.removeItem('user_token');
-                    setUser(null);
-                    router.push('/login');
-                }
-            }
+        // Clear state & redirect immediately
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('user_token');
+            setAdmin(null);
+            setUser(null);
+            router.push(isCurrentPathAdmin ? '/admin/login' : '/login');
         }
+        
+        // Fire API call in background (don't wait)
+        axiosClient.post(endpoint).catch(err => console.error('Logout API:', err));
     };
 
     return (
