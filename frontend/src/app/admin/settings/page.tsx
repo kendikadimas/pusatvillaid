@@ -632,19 +632,18 @@ export default function AdminSettingsPage() {
                                         />
                                     </div>
 
-                                    {/* Logo Upload */}
+                                    {/* Logo Upload — only for QRIS */}
+                                    {methodCode.trim().toLowerCase() === 'qris' && (
                                     <div className="sm:col-span-2">
                                         <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                                            {methodCode.trim().toLowerCase() === 'qris' ? 'Upload QR Code' : 'Logo Bank / Metode'}
+                                            Upload QR Code
                                         </label>
                                         <div className="flex items-center space-x-4">
                                             <div className="w-14 h-14 border border-slate-200 rounded-lg bg-slate-50 overflow-hidden flex items-center justify-center p-2 relative flex-shrink-0">
                                                 {logoUrl ? (
-                                                    <img src={logoUrl} alt="Logo preview" className="w-full h-full object-contain" />
-                                                ) : methodCode.trim().toLowerCase() === 'qris' ? (
-                                                    <Smartphone className="w-6 h-6 text-slate-300" />
+                                                    <img src={logoUrl} alt="QR Code" className="w-full h-full object-contain" />
                                                 ) : (
-                                                    <Building className="w-6 h-6 text-slate-300" />
+                                                    <Smartphone className="w-6 h-6 text-slate-300" />
                                                 )}
                                                 {uploadingLogo && (
                                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -656,7 +655,7 @@ export default function AdminSettingsPage() {
                                             <div className="space-y-1.5 flex-1 font-semibold">
                                                 <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3 py-2 rounded-lg inline-flex items-center space-x-1 cursor-pointer transition-colors">
                                                     <Upload className="w-3.5 h-3.5" />
-                                                    <span>{methodCode.trim().toLowerCase() === 'qris' ? 'Unggah QR Code' : 'Unggah Logo'}</span>
+                                                    <span>Unggah QR Code</span>
                                                     <input 
                                                         type="file"
                                                         accept="image/*"
@@ -674,10 +673,11 @@ export default function AdminSettingsPage() {
                                                         Hapus
                                                     </button>
                                                 )}
-                                                <p className="text-[9px] text-slate-400 font-normal">{methodCode.trim().toLowerCase() === 'qris' ? 'Upload gambar QR Code (PNG/JPG)' : 'Rasio bebas, PNG/SVG transparan direkomendasikan.'}</p>
+                                                <p className="text-[9px] text-slate-400 font-normal">Upload gambar QR Code (PNG/JPG).</p>
                                             </div>
                                         </div>
                                     </div>
+                                    )}
 
                                     {/* Is Active */}
                                     <div className="sm:col-span-2 flex items-center space-x-2 pt-2">
