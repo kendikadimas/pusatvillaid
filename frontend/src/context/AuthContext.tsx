@@ -194,21 +194,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = async () => {
+        console.log('[Auth] Logout called');
         const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
         const endpoint = isCurrentPathAdmin ? '/admin/logout' : '/logout';
+        
+        console.log('[Auth] Is admin path:', isCurrentPathAdmin);
+        console.log('[Auth] Endpoint:', endpoint);
         
         // Clear state immediately
         if (typeof window !== 'undefined') {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('user_token');
+            console.log('[Auth] Tokens cleared');
         }
         
         // Fire API call in background (don't wait)
-        axiosClient.post(endpoint).catch(err => console.error('Logout API:', err));
+        console.log('[Auth] Firing logout API call');
+        axiosClient.post(endpoint)
+            .then(() => console.log('[Auth] Logout API success'))
+            .catch(err => console.error('[Auth] Logout API error:', err));
         
         // Force redirect with full page reload
         if (typeof window !== 'undefined') {
-            window.location.href = isCurrentPathAdmin ? '/admin/login' : '/login';
+            const redirectUrl = isCurrentPathAdmin ? '/admin/login' : '/login';
+            console.log('[Auth] Redirecting to:', redirectUrl);
+            window.location.href = redirectUrl;
         }
     };
 
