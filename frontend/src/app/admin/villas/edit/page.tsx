@@ -773,10 +773,10 @@ function AdminEditVillaContent() {
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Deskripsi Lengkap Villa *</label>
                             <textarea 
-                                rows={5}
+                                rows={6}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
+                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-40 sm:max-h-none overflow-y-auto ${
                                     formErrors.description ? 'border-red-500' : 'border-slate-200'
                                 }`}
                             />
@@ -1035,7 +1035,7 @@ function AdminEditVillaContent() {
                                 rows={3}
                                 value={rules}
                                 onChange={(e) => setRules(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-32 sm:max-h-none overflow-y-auto"
                             />
                         </div>
 
@@ -1278,7 +1278,7 @@ function AdminEditVillaContent() {
                         <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Kebijakan & Lingkungan</h3>
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Kebijakan Pembatalan</label>
-                            <textarea rows={2} placeholder="Pembatalan gratis selama 24 jam..." value={cancellationPolicy} onChange={(e) => setCancellationPolicy(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                            <textarea rows={2} placeholder="Pembatalan gratis selama 24 jam..." value={cancellationPolicy} onChange={(e) => setCancellationPolicy(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
                         </div>
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Keselamatan & Properti</label>
@@ -1299,7 +1299,7 @@ function AdminEditVillaContent() {
                         </div>
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Deskripsi Lingkungan</label>
-                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
                         </div>
                     </div>
 

@@ -376,11 +376,11 @@ export default function AdminNewVillaPage() {
                         <div>
                             <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Deskripsi lengkap villa *</label>
                             <textarea 
-                                rows={5}
+                                rows={6}
                                 placeholder="Tulis deskripsi detail villa..."
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 max-h-40 overflow-y-auto ${
                                     formErrors.description ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                 }`}
                             />
@@ -663,7 +663,7 @@ export default function AdminNewVillaPage() {
                                 placeholder="Tulis aturan villa dipisahkan dengan baris baru..."
                                 value={rules}
                                 onChange={(e) => setRules(e.target.value)}
-                                className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200"
+                                className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 max-h-32 overflow-y-auto"
                             />
                         </div>
 
