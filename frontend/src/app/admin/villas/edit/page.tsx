@@ -1382,6 +1382,92 @@ function AdminEditVillaContent() {
                 </div>
             )}
 
+            {/* TAB CONTENT: 3. BLOCKED DATES */}
+            {activeTab === 'blocked_dates' && (
+                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
+                    {/* Block Date Form */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Blokir Tanggal Baru</h3>
+                        <form onSubmit={handleBlockDate} className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[11px] font-semibold text-[#6a6a6a] block mb-1.5">Tanggal *</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        value={blockDateInput}
+                                        onChange={(e) => setBlockDateInput(e.target.value)}
+                                        min={new Date().toISOString().split('T')[0]}
+                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[11px] font-semibold text-[#6a6a6a] block mb-1.5">Alasan (opsional)</label>
+                                    <input
+                                        type="text"
+                                        value={blockReasonInput}
+                                        onChange={(e) => setBlockReasonInput(e.target.value)}
+                                        placeholder="Contoh: Perbaikan AC"
+                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={blockingDate}
+                                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 active:scale-[0.98] cursor-pointer"
+                            >
+                                {blockingDate ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Memblokir...</span>
+                                    </>
+                                ) : (
+                                    <span>Blokir Tanggal</span>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Blocked Dates List */}
+                    <div className="space-y-3">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">
+                            Tanggal yang Diblokir ({blockedDates.length})
+                        </h3>
+                        {blockedDates.length === 0 ? (
+                            <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-xs text-slate-400">
+                                Belum ada tanggal yang diblokir.
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {blockedDates.map((bd) => (
+                                    <div
+                                        key={bd.id}
+                                        className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                                    >
+                                        <div className="text-xs">
+                                            <p className="font-bold text-slate-800">
+                                                {new Date(bd.date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                            </p>
+                                            {bd.reason && (
+                                                <p className="text-slate-500 mt-0.5">{bd.reason}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleUnblockDate(bd.id)}
+                                            className="text-red-500 hover:text-red-700 text-[11px] font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors active:scale-90 cursor-pointer"
+                                        >
+                                            Buka Kunci
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
