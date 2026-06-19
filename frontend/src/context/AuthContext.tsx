@@ -197,19 +197,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
         const endpoint = isCurrentPathAdmin ? '/admin/logout' : '/logout';
         
+        // Clear state and storage immediately
+        if (typeof window !== 'undefined') {
+            if (isCurrentPathAdmin) {
+                localStorage.removeItem('admin_token');
+                setAdmin(null);
+            } else {
+                localStorage.removeItem('user_token');
+                setUser(null);
+            }
+        }
+        
+        // Try to call API but don't wait for it
         try {
-            await axiosClient.post(endpoint);
+            await Promise.race([
+                axiosClient.post(endpoint),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+            ]);
         } catch (err) {
             console.error('Logout API failed:', err);
         } finally {
+            // Always redirect regardless of API result
             if (typeof window !== 'undefined') {
                 if (isCurrentPathAdmin) {
-                    localStorage.removeItem('admin_token');
-                    setAdmin(null);
                     router.push('/admin/login');
                 } else {
-                    localStorage.removeItem('user_token');
-                    setUser(null);
                     router.push('/login');
                 }
             }
