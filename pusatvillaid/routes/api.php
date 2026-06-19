@@ -117,24 +117,6 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         // Analytics & Exports
         Route::get('/analytics', [AnalyticsController::class, 'index']);
         Route::get('/analytics/export', [AnalyticsController::class, 'export']);
-        
-        // Export with token authentication (for direct browser access)
-        Route::get('/analytics/export-with-token', function (\Illuminate\Http\Request $request) {
-            $token = $request->query('token');
-            if (!$token) {
-                return response()->json(['message' => 'Token required'], 401);
-            }
-            
-            $user = \App\Models\User::whereHas('tokens', function ($query) use ($token) {
-                $query->where('id', $token);
-            })->first();
-            
-            if (!$user || $user->role !== 'admin') {
-                return response()->json(['message' => 'Unauthorized'], 403);
-            }
-            
-            return app(\App\Http\Controllers\Admin\AnalyticsController::class)->export($request);
-        });
 
         // iCal Links Management (per villa)
         Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks']);
