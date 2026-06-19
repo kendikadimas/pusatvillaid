@@ -81,62 +81,62 @@ export default function AdminDashboardPage() {
 
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {/* Stat 1 */}
-                <div className="group cursor-pointer bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-5 transition-all duration-300 active:scale-[0.98]">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[14px] bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 transition-transform duration-400 group-hover:scale-110">
-                            <TrendingUp className="w-6 h-6" />
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] text-slate-500 font-bold block mb-0.5 truncate uppercase tracking-wider">Pendapatan bulan ini</span>
-                            <span className="text-xl sm:text-2xl font-black text-[#222222] tracking-tight font-mono tabular-nums">
+                {/* Stat 1 - Revenue */}
+                <div className="group cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg shadow-blue-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                            <span className="text-[11px] text-blue-100 font-bold block mb-2 uppercase tracking-wider">Pendapatan bulan ini</span>
+                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
                                 Rp {stats.revenue_this_month.toLocaleString('id-ID')}
                             </span>
                         </div>
+                        <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                            <TrendingUp className="w-5 h-5 text-white" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Stat 2 */}
-                <div className="group cursor-pointer bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-5 transition-all duration-300 active:scale-[0.98]">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[14px] bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 transition-transform duration-400 group-hover:scale-110">
-                            <BookOpen className="w-6 h-6" />
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] text-slate-500 font-bold block mb-0.5 truncate uppercase tracking-wider">Pemesanan baru (MTD)</span>
-                            <span className="text-xl sm:text-2xl font-black text-[#222222] tracking-tight font-mono tabular-nums">
+                {/* Stat 2 - Bookings */}
+                <div className="group cursor-pointer bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-[14px] shadow-lg shadow-indigo-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                            <span className="text-[11px] text-indigo-100 font-bold block mb-2 uppercase tracking-wider">Pemesanan baru (MTD)</span>
+                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
                                 {stats.bookings_this_month}
                             </span>
                         </div>
+                        <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                            <BookOpen className="w-5 h-5 text-white" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Stat 3 */}
-                <div className="group cursor-pointer bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-5 transition-all duration-300 active:scale-[0.98]">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[14px] bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 transition-transform duration-400 group-hover:scale-110">
-                            <Percent className="w-6 h-6" />
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] text-slate-500 font-bold block mb-0.5 truncate uppercase tracking-wider">Tingkat hunian (occupancy)</span>
-                            <span className="text-xl sm:text-2xl font-black text-[#222222] tracking-tight font-mono tabular-nums">
+                {/* Stat 3 - Occupancy */}
+                <div className="group cursor-pointer bg-gradient-to-br from-sky-600 to-sky-700 rounded-[14px] shadow-lg shadow-sky-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-sky-500/30 hover:-translate-y-0.5">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                            <span className="text-[11px] text-sky-100 font-bold block mb-2 uppercase tracking-wider">Tingkat hunian</span>
+                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
                                 {stats.occupancy_rate}%
                             </span>
                         </div>
+                        <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                            <Percent className="w-5 h-5 text-white" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Stat 4 */}
-                <div className="group cursor-pointer bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-5 transition-all duration-300 active:scale-[0.98]">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[14px] bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 transition-transform duration-400 group-hover:scale-110">
-                            <Clock className="w-6 h-6" />
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] text-slate-500 font-bold block mb-0.5 truncate uppercase tracking-wider">Belum bayar (unpaid)</span>
-                            <span className="text-xl sm:text-2xl font-black text-[#222222] tracking-tight font-mono tabular-nums">
+                {/* Stat 4 - Unpaid */}
+                <div className="group cursor-pointer bg-gradient-to-br from-amber-500 to-amber-600 rounded-[14px] shadow-lg shadow-amber-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                            <span className="text-[11px] text-amber-100 font-bold block mb-2 uppercase tracking-wider">Belum bayar (unpaid)</span>
+                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
                                 {stats.pending_payments}
                             </span>
+                        </div>
+                        <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                            <Clock className="w-5 h-5 text-white" />
                         </div>
                     </div>
                 </div>
@@ -144,16 +144,16 @@ export default function AdminDashboardPage() {
 
             {/* Quick Action Alerts */}
             {stats.pending_reviews > 0 && (
-                <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                    <div className="flex items-center space-x-3 text-xs font-semibold text-[#222222]">
-                        <div className="p-2 rounded-[8px] bg-blue-50 text-blue-600">
-                            <Star className="w-4 h-4 fill-blue-500" />
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[14px] shadow-lg shadow-blue-500/20 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div className="flex items-center space-x-3 text-xs font-semibold text-white">
+                        <div className="p-2 rounded-[8px] bg-white/15">
+                            <Star className="w-4 h-4 fill-white" />
                         </div>
-                        <span>Ada <strong className="text-blue-600">{stats.pending_reviews} ulasan tamu baru</strong> yang memerlukan persetujuan moderasi sebelum tampil publik.</span>
+                        <span>Ada <strong className="text-white">{stats.pending_reviews} ulasan tamu baru</strong> yang memerlukan persetujuan moderasi sebelum tampil publik.</span>
                     </div>
                     <Link 
                         href="/admin/reviews"
-                        className="bg-blue-500 hover:bg-blue-600 active:scale-95 text-white text-xs font-bold py-2 px-4 rounded-[8px] flex items-center justify-center space-x-1.5  transition-all duration-200 self-start sm:self-auto"
+                        className="bg-white hover:bg-slate-100 active:scale-95 text-blue-600 text-xs font-bold py-2 px-4 rounded-[8px] flex items-center justify-center space-x-1.5 transition-all duration-200 self-start sm:self-auto"
                     >
                         <span>Moderasi</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />

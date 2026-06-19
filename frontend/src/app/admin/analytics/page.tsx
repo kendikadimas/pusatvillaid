@@ -182,41 +182,47 @@ export default function AdminAnalyticsPage() {
                 <div className="space-y-8">
                     
                     {/* Summary row */}
-                    <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6">
+                    <div className="rounded-[14px] p-6">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
-                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                                    <DollarSign className="w-6 h-6" />
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Total omset</span>
-                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
-                                        Rp {summary.totalRevenue.toLocaleString('id-ID')}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
-                                <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
-                                    <BookOpen className="w-6 h-6" />
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Total reservasi aktif</span>
-                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
-                                        {summary.totalBookings} <span className="font-sans text-sm font-bold text-[#6a6a6a] lowercase">booking</span>
-                                    </span>
+                            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg shadow-blue-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
+                                <div className="flex items-start justify-between">
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] text-blue-100 font-bold block uppercase tracking-wider mb-1.5">Total omset</span>
+                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
+                                            Rp {summary.totalRevenue.toLocaleString('id-ID')}
+                                        </span>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                                        <DollarSign className="w-5 h-5 text-white" />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 flex items-center space-x-4 transition-all duration-200 active:scale-[0.98]">
-                                <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
-                                    <TrendingUp className="w-6 h-6" />
+                            <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-[14px] shadow-lg shadow-indigo-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5">
+                                <div className="flex items-start justify-between">
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] text-indigo-100 font-bold block uppercase tracking-wider mb-1.5">Total reservasi aktif</span>
+                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
+                                            {summary.totalBookings} <span className="font-sans text-sm font-bold text-indigo-200 lowercase">booking</span>
+                                        </span>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                                        <BookOpen className="w-5 h-5 text-white" />
+                                    </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <span className="text-[10px] text-[#6a6a6a] font-bold block uppercase tracking-wider mb-0.5">Nilai rata-rata sewa</span>
-                                    <span className="text-2xl font-black font-mono tracking-tight text-[#222222] tabular-nums">
-                                        Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
-                                    </span>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-sky-600 to-sky-700 rounded-[14px] shadow-lg shadow-sky-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-sky-500/30 hover:-translate-y-0.5">
+                                <div className="flex items-start justify-between">
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] text-sky-100 font-bold block uppercase tracking-wider mb-1.5">Nilai rata-rata sewa</span>
+                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
+                                            Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
+                                        </span>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                                        <TrendingUp className="w-5 h-5 text-white" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
