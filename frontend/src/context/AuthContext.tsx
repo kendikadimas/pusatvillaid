@@ -92,16 +92,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshAdmin = async () => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+        console.log('[Auth] refreshAdmin called, token exists:', !!token);
+        
         if (!token) {
+            console.log('[Auth] No admin token, setting admin to null');
             setAdmin(null);
             return;
         }
 
         try {
+            console.log('[Auth] Fetching admin data from /admin/me');
             const response = await axiosClient.get('/admin/me');
+            console.log('[Auth] Admin data received:', response.data);
             setAdmin(response.data);
             setError(null);
         } catch (err: any) {
+            console.error('[Auth] refreshAdmin error:', err.response?.status, err.message);
             setAdmin(null);
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('admin_token');
@@ -115,13 +121,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Combined initial loading
     useEffect(() => {
         const initAuth = async () => {
+            console.log('[Auth] initAuth started');
             setLoading(true);
             try {
                 await Promise.all([refreshAdmin(), refreshUser()]);
-            } catch {
-                // Individual refresh functions handle their own errors
+                console.log('[Auth] initAuth completed');
+            } catch (err) {
+                console.error('[Auth] initAuth error:', err);
             }
             setLoading(false);
+            console.log('[Auth] Loading set to false');
         };
         initAuth();
     }, []);
@@ -142,12 +151,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isAdminRoute = pathname.startsWith('/admin');
         const isLoginRoute = pathname === '/admin/login';
 
+        console.log('[Auth Route Protection]', {
+            pathname,
+            isAdminRoute,
+            isLoginRoute,
+            admin: admin ? { id: admin.id, role: admin.role } : null,
+            loading
+        });
+
         if (isAdminRoute) {
             if (!admin || admin.role !== 'admin') {
+                console.log('[Auth Route Protection] Not admin, should redirect to login');
                 if (!isLoginRoute) {
+                    console.log('[Auth Route Protection] Redirecting to /admin/login');
                     router.push('/admin/login');
                 }
             } else if (isLoginRoute) {
+                console.log('[Auth Route Protection] Is admin on login page, redirecting to dashboard');
                 router.push('/admin/dashboard');
             }
         }
