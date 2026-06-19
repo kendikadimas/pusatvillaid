@@ -32,10 +32,17 @@ class DashboardController extends Controller
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
 
-        // Revenue this month (based on successful payments paid this month)
-        $revenueThisMonth = Payment::where('status', 'success')
+        // Revenue this month (from payments + bookings marked paid)
+        $paymentRevenue = Payment::where('status', 'success')
             ->whereBetween('paid_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->sum('amount');
+
+        // Also count bookings manually marked as paid (even without payment record)
+        $bookingRevenue = Booking::where('payment_status', 'paid')
+            ->whereBetween('updated_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->sum('total_amount');
+
+        $revenueThisMonth = max((float) $paymentRevenue, (float) $bookingRevenue);
 
         // Pending Payment Count
         $pendingPayments = Booking::where('status', 'pending')
