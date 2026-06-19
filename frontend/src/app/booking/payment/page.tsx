@@ -180,9 +180,7 @@ function BookingPaymentContent() {
                 }
             );
 
-            toast.success({
-                title: 'Bukti Pembayaran Terkirim!',
-                description: 'Pembayaran Anda sedang direview oleh admin. Silakan cek status booking secara berkala.',
+            toast.success('Bukti Pembayaran Terkirim! Pembayaran Anda sedang direview oleh admin. Silakan cek status booking secara berkala.', {
                 duration: 5000,
             });
             
