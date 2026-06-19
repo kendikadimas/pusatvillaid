@@ -42,7 +42,7 @@ export default function CountdownTimer({ totalSeconds, onExpired, warningThresho
     const isWarning = secondsLeft <= warningThreshold;
 
     return (
-        <div className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl border transition-colors ${
+        <div className={`flex items-center gap-3 px-5 py-3.5 mb-5 rounded-2xl border transition-colors ${
             isWarning ? 'bg-red-50 border-red-200 text-red-700' : 'bg-amber-50 border-amber-200 text-amber-700'
         } ${className}`}>
             <Clock className="w-4.5 h-4.5 flex-shrink-0" />

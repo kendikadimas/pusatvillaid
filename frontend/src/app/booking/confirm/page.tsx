@@ -304,16 +304,13 @@ export default function BookingConfirmPage() {
                     {/* Left Column (Checkout Form Groups) */}
                     <div className="lg:col-span-7 space-y-8">
                         {/* Smaller Headline: Poppins 40px, Medium, 44px line height on desktop */}
-                        <h1 className="font-serif text-2xl md:text-[40px] md:leading-[44px] font-medium text-[#0d0d0d] tracking-tight">Konfirmasikan dan bayar</h1>
+                        <h1 className="font-serif text-2xl md:text-[40px] md:leading-[44px] font-medium text-[#0d0d0d] tracking-tight">Konfirmasikan dan Bayar</h1>
 
                         <form onSubmit={handleSubmit} className="space-y-8">
                             {/* Step 1: Payment Method (Airbnb UI inspired but unique) */}
                             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                                     <h2 className="font-serif text-lg font-bold text-slate-905">1. Metode Pembayaran</h2>
-                                    <span className="text-[9px] text-blue-600 font-black uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
-                                        ⚡ Otomatis
-                                    </span>
                                 </div>
 
                                 {/* Dynamic Payment Methods from Admin Panel */}
@@ -517,7 +514,7 @@ export default function BookingConfirmPage() {
                                             </>
                                         ) : (
                                             <>
-                                                <span>Konfirmasi dan Bayar</span>
+                                                <span className="">Konfirmasi dan Bayar</span>
                                                 <ChevronRight className="w-4 h-4" />
                                             </>
                                         )}
@@ -537,14 +534,14 @@ export default function BookingConfirmPage() {
                             />
 
                             {/* Free Cancellation Banner (Semantically Styled Checkmark) */}
-                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start space-x-3 text-xs text-slate-655 leading-relaxed font-semibold">
+                            {/* <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start space-x-3 text-xs text-slate-655 leading-relaxed font-semibold">
                                 <div className="w-5 h-5 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5 border border-blue-500/20">
                                     ✓
                                 </div>
                                 <span>
                                     <strong>Kebijakan Fleksibel:</strong> Pembatalan gratis dan refund penuh (maksimal H-3 sebelum check-in) untuk ketenangan rencana liburan Anda.
                                 </span>
-                            </div>
+                            </div> */}
 
                             {/* Booking details dates (Airbnb UI style) */}
                             <div className="space-y-4 pt-2">
@@ -608,8 +605,8 @@ export default function BookingConfirmPage() {
                             <div className="bg-slate-955 text-white rounded-2xl p-4 flex items-center space-x-3 text-xs border border-slate-900 shadow-xs">
                                 <ShieldCheck className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                                 <div>
-                                    <span className="font-bold text-white block">Sistem Pembayaran Aman</span>
-                                    <span className="text-[10px] text-slate-400 font-semibold block mt-0.5 leading-normal">Pembayaran diproses and dilindungi langsung secara otomatis melalui gateway enkripsi Midtrans Snap.</span>
+                                    <span className="font-bold text-black block">Sistem Pembayaran Aman</span>
+                                    <span className="text-[10px] text-slate-400 font-semibold block mt-0.5 leading-normal">Pembayaran anda akan direview oleh Admin dan akan diproses setelah konfirmasi.</span>
                                 </div>
                             </div>
                         </div>

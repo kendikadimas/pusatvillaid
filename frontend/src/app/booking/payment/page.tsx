@@ -180,10 +180,16 @@ function BookingPaymentContent() {
                 }
             );
 
-            toast.success(response.data.message || 'Bukti pembayaran berhasil dikirim!');
+            toast.success({
+                title: 'Bukti Pembayaran Terkirim!',
+                description: 'Pembayaran Anda sedang direview oleh admin. Silakan cek status booking secara berkala.',
+                duration: 5000,
+            });
             
             // Re-fetch booking details or redirect to refresh status
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         } catch (err: any) {
             console.error('Failed to submit manual payment:', err);
             const errMsg = err.response?.data?.message || 'Gagal mengirim bukti pembayaran.';
@@ -682,16 +688,16 @@ function BookingPaymentContent() {
                         <button
                             onClick={handleManualPaymentSubmit}
                             disabled={submittingProof || !selectedMethodId || !proofFile}
-                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 text-white font-bold py-3 rounded-2xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm cursor-pointer"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                         >
                             {submittingProof ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Mengirim Bukti...</span>
+                                    <span>Mengirim Bukti Pembayaran...</span>
                                 </>
                             ) : (
                                 <>
-                                    <span>Konfirmasi Pembayaran Transfer</span>
+                                    <span>Konfirmasi Pembayaran</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </>
                             )}
