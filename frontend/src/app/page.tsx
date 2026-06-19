@@ -17,6 +17,16 @@ import VillaSection from '@/components/sections/VillaSection';
 import WhyUsSection from '@/components/sections/WhyUsSection';
 import CTASection from '@/components/sections/CTASection';
 
+// New mobile components
+import BottomNav from '@/components/BottomNav';
+import SearchOverlay from '@/components/SearchOverlay';
+import CategoryCards from '@/components/CategoryCards';
+import ContinueSearchCard from '@/components/ContinueSearchCard';
+import PriceBar from '@/components/PriceBar';
+import MobilePropertyCard from '@/components/MobilePropertyCard';
+import { Search, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+
 const DEFAULT_DESTINATIONS: Destination[] = [
     { id: 1, name: 'Puncak, Bogor', city: 'Puncak, Bogor', query: 'Bogor', image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80', count_fallback: '12+ Villa' },
     { id: 2, name: 'Ubud, Gianyar', city: 'Ubud, Gianyar', query: 'Ubud', image: 'https://images.unsplash.com/photo-1549638441-b787d2e11f14?auto=format&fit=crop&w=600&q=80', count_fallback: '8+ Villa' },
@@ -46,6 +56,10 @@ export default function HomePage() {
     const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
     const [recentSearches, setRecentSearches] = useState<{location: string, checkIn: string, checkOut: string, guestsLabel: string, datesLabel: string}[]>([]);
     const [headerSolid, setHeaderSolid] = useState(false);
+    
+    // Mobile search overlay state
+    const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
+    const [mobileCategory, setMobileCategory] = useState('homes');
 
     useEffect(() => {
         const saved = localStorage.getItem('pusatvilla_searches');
@@ -395,81 +409,243 @@ export default function HomePage() {
                 />
             )}
 
-            <HomeHeader
-                headerSolid={headerSolid}
-                searchParams={searchParams}
-                setSearchParams={setSearchParams}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                handleSearch={handleSearch}
-                recentSearches={recentSearches}
-                selectRecentSearch={selectRecentSearch}
-                destinations={destinations}
-                selectDestination={selectDestination}
-                formatDateRange={formatDateRange}
-                renderCalendarMonth={renderCalendarMonth}
-                currentCalendarDate={currentCalendarDate}
-                getNextMonthDate={getNextMonthDate}
-                prevCalendarMonth={prevCalendarMonth}
-                nextCalendarMonth={nextCalendarMonth}
-                selectedFlexibility={selectedFlexibility}
-                setSelectedFlexibility={setSelectedFlexibility}
-                adults={adults}
-                childrenCount={childrenCount}
-                infants={infants}
-                pets={pets}
-                handleGuestChange={handleGuestChange}
-                getGuestsLabel={getGuestsLabel}
+            <div className="hidden lg:block">
+                <HomeHeader
+                    headerSolid={headerSolid}
+                    searchParams={searchParams}
+                    setSearchParams={setSearchParams}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    handleSearch={handleSearch}
+                    recentSearches={recentSearches}
+                    selectRecentSearch={selectRecentSearch}
+                    destinations={destinations}
+                    selectDestination={selectDestination}
+                    formatDateRange={formatDateRange}
+                    renderCalendarMonth={renderCalendarMonth}
+                    currentCalendarDate={currentCalendarDate}
+                    getNextMonthDate={getNextMonthDate}
+                    prevCalendarMonth={prevCalendarMonth}
+                    nextCalendarMonth={nextCalendarMonth}
+                    selectedFlexibility={selectedFlexibility}
+                    setSelectedFlexibility={setSelectedFlexibility}
+                    adults={adults}
+                    childrenCount={childrenCount}
+                    infants={infants}
+                    pets={pets}
+                    handleGuestChange={handleGuestChange}
+                    getGuestsLabel={getGuestsLabel}
+                />
+
+                <HeroSection
+                    headerSolid={headerSolid}
+                    searchParams={searchParams}
+                    setSearchParams={setSearchParams}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    handleSearch={handleSearch}
+                    recentSearches={recentSearches}
+                    selectRecentSearch={selectRecentSearch}
+                    destinations={destinations}
+                    selectDestination={selectDestination}
+                    formatDateRange={formatDateRange}
+                    renderCalendarMonth={renderCalendarMonth}
+                    currentCalendarDate={currentCalendarDate}
+                    getNextMonthDate={getNextMonthDate}
+                    prevCalendarMonth={prevCalendarMonth}
+                    nextCalendarMonth={nextCalendarMonth}
+                    selectedFlexibility={selectedFlexibility}
+                    setSelectedFlexibility={setSelectedFlexibility}
+                    adults={adults}
+                    childrenCount={childrenCount}
+                    infants={infants}
+                    pets={pets}
+                    handleGuestChange={handleGuestChange}
+                    getGuestsLabel={getGuestsLabel}
+                />
+            </div>
+
+            {/* ===== MOBILE LAYOUT ===== */}
+            <div className="lg:hidden">
+                {/* Mobile Header */}
+                <div className={`sticky top-0 z-40 transition-all duration-300 ${headerSolid ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white'}`}>
+                    <div className="flex items-center gap-3 px-4 py-3">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-1.5 flex-shrink-0">
+                            <svg className="w-7 h-7 fill-current text-blue-500" viewBox="0 0 32 32">
+                                <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
+                                <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
+                            </svg>
+                        </Link>
+
+                        {/* Search pill */}
+                        <button
+                            onClick={() => setIsSearchOverlayOpen(true)}
+                            className="flex-1 flex items-center gap-3 bg-white border-2 border-slate-200 rounded-full py-2.5 px-4 shadow-sm hover:shadow-md transition-all"
+                        >
+                            <Search className="w-4 h-4 text-slate-400" />
+                            <span className="text-sm text-slate-400 font-medium">Mulai pencarian</span>
+                        </button>
+                    </div>
+
+                    {/* Category cards */}
+                    <CategoryCards
+                        activeCategory={mobileCategory}
+                        onCategoryChange={setMobileCategory}
+                    />
+                </div>
+
+                {/* Continue search card */}
+                {recentSearches.length > 0 && (
+                    <div className="px-4 py-4">
+                        <ContinueSearchCard
+                            location={recentSearches[0].location}
+                            checkIn={recentSearches[0].checkIn}
+                            checkOut={recentSearches[0].checkOut}
+                            guests={adults + childrenCount}
+                            onClick={() => setIsSearchOverlayOpen(true)}
+                        />
+                    </div>
+                )}
+
+                {/* Recommendations section */}
+                {recentSearches.length > 0 && (
+                    <div className="px-4 py-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-slate-900">
+                                Berdasarkan pencarian Anda di {recentSearches[0].location}
+                            </h2>
+                            <button className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                                <ArrowRight className="w-4 h-4 text-slate-600" />
+                            </button>
+                        </div>
+
+                        {/* Horizontal scroll property cards */}
+                        <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
+                            {villas.slice(0, 6).map((villa) => (
+                                <div key={villa.id} className="flex-shrink-0 w-[280px]">
+                                    <MobilePropertyCard villa={villa} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Price bar */}
+                <div className="px-4 py-4">
+                    <PriceBar />
+                </div>
+
+                {/* Destination grid (mobile) */}
+                <DestinationGrid
+                    destinations={destinations}
+                    groupedByLocation={groupedByLocation}
+                />
+
+                {/* Villa section (mobile) */}
+                <VillaSection
+                    loading={loading}
+                    groupedByLocation={groupedByLocation}
+                    unmatchedVillas={unmatchedVillas}
+                    wishlist={wishlist}
+                    toggleWishlist={toggleWishlist}
+                    searchParams={searchParams}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                />
+
+                <CTASection />
+            </div>
+
+            {/* ===== DESKTOP LAYOUT ===== */}
+            <div className="hidden lg:block">
+                <HomeHeader
+                    headerSolid={headerSolid}
+                    searchParams={searchParams}
+                    setSearchParams={setSearchParams}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    handleSearch={handleSearch}
+                    recentSearches={recentSearches}
+                    selectRecentSearch={selectRecentSearch}
+                    destinations={destinations}
+                    selectDestination={selectDestination}
+                    formatDateRange={formatDateRange}
+                    renderCalendarMonth={renderCalendarMonth}
+                    currentCalendarDate={currentCalendarDate}
+                    getNextMonthDate={getNextMonthDate}
+                    prevCalendarMonth={prevCalendarMonth}
+                    nextCalendarMonth={nextCalendarMonth}
+                    selectedFlexibility={selectedFlexibility}
+                    setSelectedFlexibility={setSelectedFlexibility}
+                    adults={adults}
+                    childrenCount={childrenCount}
+                    infants={infants}
+                    pets={pets}
+                    handleGuestChange={handleGuestChange}
+                    getGuestsLabel={getGuestsLabel}
+                />
+
+                <HeroSection
+                    headerSolid={headerSolid}
+                    searchParams={searchParams}
+                    setSearchParams={setSearchParams}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    handleSearch={handleSearch}
+                    recentSearches={recentSearches}
+                    selectRecentSearch={selectRecentSearch}
+                    destinations={destinations}
+                    selectDestination={selectDestination}
+                    formatDateRange={formatDateRange}
+                    renderCalendarMonth={renderCalendarMonth}
+                    currentCalendarDate={currentCalendarDate}
+                    getNextMonthDate={getNextMonthDate}
+                    prevCalendarMonth={prevCalendarMonth}
+                    nextCalendarMonth={nextCalendarMonth}
+                    selectedFlexibility={selectedFlexibility}
+                    setSelectedFlexibility={setSelectedFlexibility}
+                    adults={adults}
+                    childrenCount={childrenCount}
+                    infants={infants}
+                    pets={pets}
+                    handleGuestChange={handleGuestChange}
+                    getGuestsLabel={getGuestsLabel}
+                />
+
+                <DestinationGrid
+                    destinations={destinations}
+                    groupedByLocation={groupedByLocation}
+                />
+
+                <VillaSection
+                    loading={loading}
+                    groupedByLocation={groupedByLocation}
+                    unmatchedVillas={unmatchedVillas}
+                    wishlist={wishlist}
+                    toggleWishlist={toggleWishlist}
+                    searchParams={searchParams}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                />
+
+                <CTASection />
+
+                <PublicFooter />
+            </div>
+
+            {/* Mobile Bottom Navigation */}
+            <BottomNav />
+
+            {/* Mobile Search Overlay */}
+            <SearchOverlay
+                isOpen={isSearchOverlayOpen}
+                onClose={() => setIsSearchOverlayOpen(false)}
+                initialLocation={searchParams.location}
+                initialCheckIn={searchParams.checkIn}
+                initialCheckOut={searchParams.checkOut}
+                initialGuests={adults + childrenCount}
             />
-
-            <HeroSection
-                headerSolid={headerSolid}
-                searchParams={searchParams}
-                setSearchParams={setSearchParams}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                handleSearch={handleSearch}
-                recentSearches={recentSearches}
-                selectRecentSearch={selectRecentSearch}
-                destinations={destinations}
-                selectDestination={selectDestination}
-                formatDateRange={formatDateRange}
-                renderCalendarMonth={renderCalendarMonth}
-                currentCalendarDate={currentCalendarDate}
-                getNextMonthDate={getNextMonthDate}
-                prevCalendarMonth={prevCalendarMonth}
-                nextCalendarMonth={nextCalendarMonth}
-                selectedFlexibility={selectedFlexibility}
-                setSelectedFlexibility={setSelectedFlexibility}
-                adults={adults}
-                childrenCount={childrenCount}
-                infants={infants}
-                pets={pets}
-                handleGuestChange={handleGuestChange}
-                getGuestsLabel={getGuestsLabel}
-            />
-
-            <DestinationGrid
-                destinations={destinations}
-                groupedByLocation={groupedByLocation}
-            />
-
-            <VillaSection
-                loading={loading}
-                groupedByLocation={groupedByLocation}
-                unmatchedVillas={unmatchedVillas}
-                wishlist={wishlist}
-                toggleWishlist={toggleWishlist}
-                searchParams={searchParams}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-            />
-
-            {/* <WhyUsSection /> */}
-
-            <CTASection />
-
-            <PublicFooter />
         </div>
     );
 }

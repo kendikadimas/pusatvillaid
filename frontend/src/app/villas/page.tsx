@@ -21,6 +21,12 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 
+// New mobile components
+import BottomNav from '@/components/BottomNav';
+import SearchOverlay from '@/components/SearchOverlay';
+import MobileSearchPill from '@/components/MobileSearchPill';
+import MobilePropertyCard from '@/components/MobilePropertyCard';
+
 interface LatLng {
     lat: number;
     lng: number;
@@ -96,6 +102,9 @@ function VillasCatalogContent() {
     const [selectedVillaId, setSelectedVillaId] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
     const [showFilters, setShowFilters] = useState(false);
+    
+    // Mobile search overlay state
+    const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
 
     // Filter & Sort States
     const [locationInput, setLocationInput] = useState(locationParam);
@@ -210,8 +219,20 @@ function VillasCatalogContent() {
 
     return (
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans h-screen overflow-hidden">
-            {/* Airbnb Style Sticky Header */}
-            <PublicHeader>
+            {/* Mobile Search Pill Header */}
+            <MobileSearchPill
+                location={locationInput}
+                checkIn={checkInParam}
+                checkOut={checkOutParam}
+                guests={Number(guests) || 0}
+                onEditClick={() => setIsSearchOverlayOpen(true)}
+                showBackButton
+                onBackClick={() => window.history.back()}
+            />
+
+            {/* Airbnb Style Sticky Header (Desktop) */}
+            <div className="hidden lg:block">
+                <PublicHeader>
                 {/* Center: Airbnb Capsule Search Bar */}
                 <div className="hidden md:flex items-center border border-slate-200 rounded-full py-2 pl-6 pr-2 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer text-[13px] font-bold text-slate-800 bg-white">
                     <div className="pr-4 border-r border-slate-200 hover:text-blue-500 transition-colors">
@@ -230,6 +251,7 @@ function VillasCatalogContent() {
                     </button>
                 </div>
             </PublicHeader>
+            </div>
 
 
 
@@ -437,7 +459,7 @@ function VillasCatalogContent() {
             {/* Mobile View Floating Toggler Button */}
             <button
                 onClick={() => setViewMode(prev => prev === 'list' ? 'map' : 'list')}
-                className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 backdrop-blur-md hover:bg-slate-900 active:scale-[0.97] transition-all duration-200 text-white px-5 py-3 rounded-full shadow-xl flex items-center space-x-2 text-xs font-bold uppercase tracking-wider cursor-pointer border border-white/10"
+                className="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-md hover:bg-slate-900 active:scale-[0.97] transition-all duration-200 text-white px-5 py-3 rounded-full shadow-xl flex items-center space-x-2 text-xs font-bold uppercase tracking-wider cursor-pointer border border-white/10"
             >
                 {viewMode === 'list' ? (
                     <>
@@ -451,6 +473,49 @@ function VillasCatalogContent() {
                     </>
                 )}
             </button>
+
+            {/* Mobile Bottom Navigation */}
+            <BottomNav />
+
+            {/* Mobile Search Overlay */}
+            <SearchOverlay
+                isOpen={isSearchOverlayOpen}
+                onClose={() => setIsSearchOverlayOpen(false)}
+                initialLocation={locationInput}
+                initialCheckIn={checkInParam}
+                initialCheckOut={checkOutParam}
+                initialGuests={Number(guests) || 0}
+            />
+
+            {/* Mobile Property Cards (shown in list view on mobile) */}
+            {viewMode === 'list' && (
+                <div className="lg:hidden fixed inset-x-0 top-[104px] bottom-16 overflow-y-auto bg-white z-30">
+                    <div className="px-4 py-4 space-y-6">
+                        {loading ? (
+                            <LoadingSpinner fullPage={false} message="Memuat villa..." />
+                        ) : filteredVillas.length === 0 ? (
+                            <EmptyState
+                                title="Unit Villa Tidak Ditemukan"
+                                description="Coba sesuaikan lokasi pencarian Anda."
+                                action={{ label: 'Reset Pencarian', onClick: handleResetFilters }}
+                            />
+                        ) : (
+                            filteredVillas.map((villa) => (
+                                <MobilePropertyCard
+                                    key={villa.id}
+                                    villa={villa}
+                                    searchParams={{ checkIn: checkInParam, checkOut: checkOutParam }}
+                                />
+                            ))
+                        )}
+
+                        {/* Pagination */}
+                        {totalPages > 1 && !loading && (
+                            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
