@@ -46,17 +46,58 @@ export default function AdminNewVillaPage() {
     const [destinationId, setDestinationId] = useState('');
     const [destinations, setDestinations] = useState<any[]>([]);
 
+    // Inline new destination form
+    const [showNewDestination, setShowNewDestination] = useState(false);
+    const [newDestName, setNewDestName] = useState('');
+    const [newDestCity, setNewDestCity] = useState('');
+    const [newDestImage, setNewDestImage] = useState('');
+    const [savingDestination, setSavingDestination] = useState(false);
+
     useEffect(() => {
-        const fetchDestinations = async () => {
-            try {
-                const response = await axiosClient.get('/admin/destinations');
-                setDestinations(response.data.data || []);
-            } catch (err) {
-                console.error('Failed to load destinations:', err);
-            }
-        };
         fetchDestinations();
     }, []);
+
+    const fetchDestinations = async () => {
+        try {
+            const response = await axiosClient.get('/admin/destinations');
+            setDestinations(response.data.data || []);
+        } catch (err) {
+            console.error('Failed to load destinations:', err);
+        }
+    };
+
+    const handleCreateDestination = async () => {
+        if (!newDestName.trim() || !newDestCity.trim()) {
+            toast.error('Nama dan kota destinasi wajib diisi.');
+            return;
+        }
+
+        setSavingDestination(true);
+        try {
+            const response = await axiosClient.post('/admin/destinations', {
+                name: newDestName.trim(),
+                city: newDestCity.trim(),
+                query: newDestName.trim(),
+                image: newDestImage || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
+            });
+
+            toast.success('Destinasi baru berhasil ditambahkan.');
+            const newDest = response.data.data || response.data;
+            setDestinations(prev => [...prev, newDest]);
+            setDestinationId(String(newDest.id));
+
+            // Reset form
+            setNewDestName('');
+            setNewDestCity('');
+            setNewDestImage('');
+            setShowNewDestination(false);
+        } catch (err: any) {
+            console.error('Failed to create destination:', err);
+            toast.error(err.response?.data?.message || 'Gagal menambahkan destinasi.');
+        } finally {
+            setSavingDestination(false);
+        }
+    };
 
     const [selectedAmenities, setSelectedAmenities] = useState<Array<{ name: string; icon: string }>>([]);
     const [newAmenityName, setNewAmenityName] = useState('');
@@ -254,19 +295,74 @@ export default function AdminNewVillaPage() {
 
                             <div>
                                 <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Destinasi Wilayah *</label>
-                                <select 
-                                    value={destinationId}
-                                    onChange={(e) => setDestinationId(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
-                                        formErrors.destination_id ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
-                                    }`}
-                                >
-                                    <option value="">-- Pilih Destinasi --</option>
-                                    {destinations.map((dest) => (
-                                        <option key={dest.id} value={dest.id}>{dest.name} ({dest.city})</option>
-                                    ))}
-                                </select>
-                                {formErrors.destination_id && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.destination_id}</p>}
+                                {!showNewDestination ? (
+                                    <div className="space-y-2">
+                                        <div className="flex gap-2">
+                                            <select 
+                                                value={destinationId}
+                                                onChange={(e) => setDestinationId(e.target.value)}
+                                                className={`flex-1 bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                                    formErrors.destination_id ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
+                                                }`}
+                                            >
+                                                <option value="">-- Pilih Destinasi --</option>
+                                                {destinations.map((dest) => (
+                                                    <option key={dest.id} value={dest.id}>{dest.name} ({dest.city})</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewDestination(true)}
+                                            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 underline transition-colors"
+                                        >
+                                            + Tambah destinasi baru
+                                        </button>
+                                        {formErrors.destination_id && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.destination_id}</p>}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 p-3 border border-blue-200 bg-blue-50/30 rounded-lg">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[11px] font-bold text-blue-700">Tambah Destinasi Baru</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowNewDestination(false)}
+                                                className="text-[10px] text-slate-400 hover:text-slate-600"
+                                            >
+                                                Batal
+                                            </button>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="Nama destinasi *"
+                                            value={newDestName}
+                                            onChange={(e) => setNewDestName(e.target.value)}
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Kota/kabupaten *"
+                                            value={newDestCity}
+                                            onChange={(e) => setNewDestCity(e.target.value)}
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleCreateDestination}
+                                            disabled={savingDestination}
+                                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
+                                        >
+                                            {savingDestination ? (
+                                                <>
+                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    <span>Menyimpan...</span>
+                                                </>
+                                            ) : (
+                                                <span>Simpan Destinasi</span>
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             <div>
