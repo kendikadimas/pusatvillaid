@@ -148,7 +148,6 @@ function AdminEditVillaContent() {
     const [coHostNameInput, setCoHostNameInput] = useState('');
     const [coHostAvatarInput, setCoHostAvatarInput] = useState('');
 
-    const [cancellationPolicy, setCancellationPolicy] = useState('');
     const [safetyList, setSafetyList] = useState<string[]>([]);
     const [safetyInput, setSafetyInput] = useState('');
     const [neighborhoodDesc, setNeighborhoodDesc] = useState('');
@@ -167,6 +166,57 @@ function AdminEditVillaContent() {
     const [acImage, setAcImage] = useState('');
     const [acTitle, setAcTitle] = useState('');
     const [acSubtext, setAcSubtext] = useState('');
+
+    const [uploadingBrImage, setUploadingBrImage] = useState(false);
+    const [uploadingAcImage, setUploadingAcImage] = useState(false);
+
+    const handleBrImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingBrImage(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setBrImage(response.data.url);
+            toast.success('Foto kamar berhasil diunggah.');
+        } catch (err: any) {
+            console.error('Upload bedroom image failed:', err);
+            toast.error(err.response?.data?.message || 'Gagal mengunggah foto kamar.');
+        } finally {
+            setUploadingBrImage(false);
+        }
+    };
+
+    const handleAcImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingAcImage(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setAcImage(response.data.url);
+            toast.success('Foto fitur aksesibilitas berhasil diunggah.');
+        } catch (err: any) {
+            console.error('Upload accessibility image failed:', err);
+            toast.error(err.response?.data?.message || 'Gagal mengunggah foto fitur.');
+        } finally {
+            setUploadingAcImage(false);
+        }
+    };
 
     const [submitting, setSubmitting] = useState(false);
     const [formErrors, setFormErrors] = useState<any>({});
@@ -207,7 +257,6 @@ function AdminEditVillaContent() {
             setHostIsVerified(v.host_is_verified !== false);
             setHostAboutList(v.host_about || []);
             setCoHostsList(v.co_hosts || []);
-            setCancellationPolicy(v.cancellation_policy || '');
             setSafetyList(v.safety_property || []);
             setNeighborhoodDesc(v.neighborhood_desc || '');
             
@@ -299,7 +348,6 @@ function AdminEditVillaContent() {
                 host_is_verified: hostIsVerified,
                 host_about: hostAboutList,
                 co_hosts: coHostsList,
-                cancellation_policy: cancellationPolicy || null,
                 safety_property: safetyList,
                 neighborhood_desc: neighborhoodDesc || null,
                 highlights: highlightsList,
@@ -458,7 +506,6 @@ function AdminEditVillaContent() {
                 host_is_verified: hostIsVerified,
                 host_about: hostAboutList,
                 co_hosts: coHostsList,
-                cancellation_policy: cancellationPolicy || null,
                 safety_property: safetyList,
                 neighborhood_desc: neighborhoodDesc || null,
                 highlights: highlightsList,
@@ -1019,10 +1066,11 @@ function AdminEditVillaContent() {
                                 <button 
                                     type="button"
                                     onClick={addAmenity}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                                    title="Tambah Fasilitas"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    <span>Tambah</span>
+                                    <span className="hidden sm:inline">Tambah</span>
                                 </button>
                             </div>
 
@@ -1107,9 +1155,10 @@ function AdminEditVillaContent() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <div className="flex items-center space-x-2">
-                                            <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3.5 py-2 rounded-xl flex items-center space-x-1.5 cursor-pointer transition-colors">
+                                            <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2.5 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all" title="Unggah Avatar">
                                                 <Upload className="w-3.5 h-3.5" />
-                                                <span>Unggah Foto</span>
+                                                <span className="hidden sm:inline">{uploadingAvatar ? 'Mengunggah...' : 'Unggah Avatar'}</span>
+                                                <span className="sm:hidden">{uploadingAvatar ? '...' : 'Unggah'}</span>
                                                 <input 
                                                     type="file" 
                                                     accept="image/*" 
@@ -1148,7 +1197,7 @@ function AdminEditVillaContent() {
                             )}
                             <div className="flex space-x-2">
                                 <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
-                                <button type="button" onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center space-x-1 cursor-pointer shrink-0"><Plus className="w-3.5 h-3.5" /><span>Tambah</span></button>
+                                <button type="button" onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Tentang Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
 
@@ -1177,7 +1226,7 @@ function AdminEditVillaContent() {
                                     <input type="url" placeholder="https://..." value={coHostAvatarInput} onChange={(e) => setCoHostAvatarInput(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                                 </div>
                                 <div className="sm:col-span-3 flex justify-end">
-                                    <button type="button" onClick={() => { if (!coHostNameInput.trim() || !coHostAvatarInput.trim()) { toast.error('Nama dan Avatar URL wajib diisi.'); return; } setCoHostsList(prev => [...prev, { name: coHostNameInput.trim(), avatar: coHostAvatarInput.trim() }]); setCoHostNameInput(''); setCoHostAvatarInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3 py-1.5 rounded-xl flex items-center space-x-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /><span>Tambah Co-Host</span></button>
+                                        <button type="button" onClick={() => { if (!coHostNameInput.trim() || !coHostAvatarInput.trim()) { toast.error('Nama dan Avatar URL wajib diisi.'); return; } setCoHostsList(prev => [...prev, { name: coHostNameInput.trim(), avatar: coHostAvatarInput.trim() }]); setCoHostNameInput(''); setCoHostAvatarInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Co-Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah Co-Host</span><span className="sm:hidden">Tambah</span></button>
                                 </div>
                             </div>
                         </div>
@@ -1215,7 +1264,7 @@ function AdminEditVillaContent() {
                                 <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
-                                <button type="button" onClick={() => { if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); setHlTitle(''); setHlDesc(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] py-1.5 px-3 rounded-xl flex items-center space-x-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /><span>Tambah</span></button>
+                                <button type="button" onClick={() => { if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); setHlTitle(''); setHlDesc(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Sorotan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                     </div>
@@ -1238,8 +1287,15 @@ function AdminEditVillaContent() {
                         )}
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <div className="sm:col-span-3">
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">URL Foto Kamar</label>
-                                <input type="url" placeholder="https://..." value={brImage} onChange={(e) => setBrImage(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Kamar (Upload / URL)</label>
+                                <div className="flex gap-2">
+                                    <input type="url" placeholder="https://..." value={brImage} onChange={(e) => setBrImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
+                                        <Upload className="w-3.5 h-3.5 shrink-0" />
+                                        <span className="hidden sm:inline">{uploadingBrImage ? 'Uploading...' : 'Upload File'}</span>
+                                        <input type="file" accept="image/*" onChange={handleBrImageUpload} disabled={uploadingBrImage} className="hidden" />
+                                    </label>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Kamar</label>
@@ -1250,7 +1306,7 @@ function AdminEditVillaContent() {
                                 <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
-                                <button type="button" onClick={() => { if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field Kamar wajib diisi.'); return; } setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); setBrImage(''); setBrTitle(''); setBrSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] py-1.5 px-3 rounded-xl flex items-center space-x-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /><span>Tambah</span></button>
+                                <button type="button" onClick={() => { if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field Kamar wajib diisi.'); return; } setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); setBrImage(''); setBrTitle(''); setBrSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Kamar"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                     </div>
@@ -1273,8 +1329,15 @@ function AdminEditVillaContent() {
                         )}
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <div className="sm:col-span-3">
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">URL Foto Fitur</label>
-                                <input type="url" placeholder="https://..." value={acImage} onChange={(e) => setAcImage(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Fitur (Upload / URL)</label>
+                                <div className="flex gap-2">
+                                    <input type="url" placeholder="https://..." value={acImage} onChange={(e) => setAcImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
+                                        <Upload className="w-3.5 h-3.5 shrink-0" />
+                                        <span className="hidden sm:inline">{uploadingAcImage ? 'Uploading...' : 'Upload File'}</span>
+                                        <input type="file" accept="image/*" onChange={handleAcImageUpload} disabled={uploadingAcImage} className="hidden" />
+                                    </label>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Fitur</label>
@@ -1285,18 +1348,14 @@ function AdminEditVillaContent() {
                                 <input type="text" placeholder="Tempat parkir disabilitas" value={acSubtext} onChange={(e) => setAcSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
-                                <button type="button" onClick={() => { if (!acImage.trim() || !acTitle.trim() || !acSubtext.trim()) { toast.error('Semua field Fitur wajib diisi.'); return; } setAccessList(prev => [...prev, { image: acImage, title: acTitle, subtext: acSubtext }]); setAcImage(''); setAcTitle(''); setAcSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] py-1.5 px-3 rounded-xl flex items-center space-x-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /><span>Tambah</span></button>
+                                <button type="button" onClick={() => { if (!acImage.trim() || !acTitle.trim() || !acSubtext.trim()) { toast.error('Semua field Fitur wajib diisi.'); return; } setAccessList(prev => [...prev, { image: acImage, title: acTitle, subtext: acSubtext }]); setAcImage(''); setAcTitle(''); setAcSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Aksesibilitas"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                     </div>
 
-                    {/* Kebijakan & Lingkungan */}
+                     {/* Kebijakan & Lingkungan */}
                     <div className="space-y-5">
                         <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Kebijakan & Lingkungan</h3>
-                        <div>
-                            <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Kebijakan Pembatalan</label>
-                            <textarea rows={2} placeholder="Pembatalan gratis selama 24 jam..." value={cancellationPolicy} onChange={(e) => setCancellationPolicy(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
-                        </div>
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Keselamatan & Properti</label>
                             {safetyList.length > 0 && (
@@ -1311,7 +1370,7 @@ function AdminEditVillaContent() {
                             )}
                             <div className="flex space-x-2">
                                 <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
-                                <button type="button" onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center space-x-1 cursor-pointer shrink-0"><Plus className="w-3.5 h-3.5" /><span>Tambah</span></button>
+                                <button type="button" onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Keselamatan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                         <div>

@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Search, ArrowLeft, MapPin, Navigation, Calendar, Users, Minus, Plus } from 'lucide-react';
+import { X, Search, ArrowLeft, MapPin, Calendar, Users, Minus, Plus, Home } from 'lucide-react';
 import axiosClient from '@/lib/axios';
-import { Destination } from '@/types';
-import { DayPicker, DateRange } from 'react-day-picker';
+import { Destination, Villa } from '@/types';
+import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, addDays, isBefore, startOfDay } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
@@ -21,27 +21,6 @@ interface SearchOverlayProps {
 }
 
 type SearchStep = 'location' | 'dates' | 'guests';
-
-const SUGGESTED_DESTINATIONS = [
-    { name: 'Yogyakarta, Yogyakarta', desc: 'Jawa Tengah' },
-    { name: 'Semarang, Jawa Tengah', desc: 'Jawa Tengah' },
-    { name: 'Lembang, Jawa Barat', desc: 'Jawa Barat' },
-    { name: 'Batu, Jawa Timur', desc: 'Jawa Timur' },
-    { name: 'Malang, Jawa Timur', desc: 'Jawa Timur' },
-    { name: 'Bogor, Jawa Barat', desc: 'Jawa Barat' },
-    { name: 'Bandung, Jawa Barat', desc: 'Jawa Barat' },
-    { name: 'Ubud, Bali', desc: 'Bali' },
-    { name: 'Seminyak, Bali', desc: 'Bali' },
-    { name: 'Puncak, Bogor', desc: 'Jawa Barat' },
-];
-
-const FLEXIBILITY_PRESETS = [
-    { label: 'Tanggal pasti', value: 0 },
-    { label: '± 1 hari', value: 1 },
-    { label: '± 2 hari', value: 2 },
-    { label: '± 3 hari', value: 3 },
-    { label: '± 7 hari', value: 7 },
-];
 
 export default function SearchOverlay({
     isOpen,
@@ -60,9 +39,21 @@ export default function SearchOverlay({
     const [adults, setAdults] = useState(0);
     const [children, setChildren] = useState(0);
     const [infants, setInfants] = useState(0);
-    const [selectedFlexibility, setSelectedFlexibility] = useState(0);
     const [recentSearches, setRecentSearches] = useState<any[]>([]);
+    
+    // Loaded destinations and villas for selection
+    const [destinations, setDestinations] = useState<Destination[]>([]);
+    const [villas, setVillas] = useState<Villa[]>([]);
+    
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    // Scroll content container to top when step changes
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTop = 0;
+        }
+    }, [step]);
 
     // Load recent searches from localStorage
     useEffect(() => {
@@ -78,6 +69,27 @@ export default function SearchOverlay({
         }
     }, []);
 
+    // Load destinations and villas on mount
+    useEffect(() => {
+        const fetchSearchData = async () => {
+            try {
+                const [destRes, villaRes] = await Promise.all([
+                    axiosClient.get('/destinations'),
+                    axiosClient.get('/villas?per_page=100')
+                ]);
+                if (destRes.data && destRes.data.data) {
+                    setDestinations(destRes.data.data);
+                }
+                if (villaRes.data && villaRes.data.data) {
+                    setVillas(villaRes.data.data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch search overlay data:', err);
+            }
+        };
+        fetchSearchData();
+    }, []);
+
     // Initialize from props
     useEffect(() => {
         if (isOpen) {
@@ -88,8 +100,13 @@ export default function SearchOverlay({
                     from: new Date(initialCheckIn),
                     to: new Date(initialCheckOut),
                 });
+            } else {
+                setDateRange(undefined);
             }
             setAdults(initialGuests);
+            setChildren(0);
+            setInfants(0);
+            setSearchQuery('');
         }
     }, [isOpen, initialStep, initialLocation, initialCheckIn, initialCheckOut, initialGuests]);
 
@@ -150,7 +167,9 @@ export default function SearchOverlay({
         }
 
         const qs = params.toString();
-        router.push(qs ? `/villas?${qs}` : '/villas');
+        
+        // Use window.location to force dynamic reload/sync of search catalog state
+        window.location.href = qs ? `/villas?${qs}` : '/villas';
         onClose();
     };
 
@@ -165,7 +184,7 @@ export default function SearchOverlay({
         setStep('dates');
     };
 
-    const handleSelectDestination = (name: string) => {
+    const handleSelectLocationItem = (name: string) => {
         setLocation(name);
         setSearchQuery('');
         setStep('dates');
@@ -177,12 +196,10 @@ export default function SearchOverlay({
         setAdults(0);
         setChildren(0);
         setInfants(0);
-        setSelectedFlexibility(0);
     };
 
     const handleResetDates = () => {
         setDateRange(undefined);
-        setSelectedFlexibility(0);
     };
 
     // Date range selection handler
@@ -204,77 +221,90 @@ export default function SearchOverlay({
     };
 
     const handleNextFromDates = () => {
-        if (dateRange?.from) {
+        if (dateRange?.from && dateRange?.to) {
             setStep('guests');
         }
     };
 
-    // Filter destinations based on search query
-    const filteredDestinations = searchQuery.trim()
-        ? SUGGESTED_DESTINATIONS.filter(d =>
-            d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            d.desc.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        : [];
+    // Filter destinations and villas based on search query
+    const getFilteredResults = () => {
+        const query = searchQuery.trim().toLowerCase();
+        if (!query) {
+            return { filteredDests: destinations, filteredVillas: [] };
+        }
+        
+        const filteredDests = destinations.filter(d => 
+            d.name.toLowerCase().includes(query) || 
+            d.city.toLowerCase().includes(query) ||
+            d.query.toLowerCase().includes(query)
+        );
+        
+        const filteredVillas = villas.filter(v => 
+            v.name.toLowerCase().includes(query) || 
+            v.location.toLowerCase().includes(query)
+        );
 
-    const canProceedFromDates = dateRange?.from != null;
+        return { filteredDests, filteredVillas };
+    };
+
+    const { filteredDests, filteredVillas } = getFilteredResults();
+    const canProceedFromDates = dateRange?.from != null && dateRange?.to != null;
 
     return (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[1000] lg:hidden">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
 
             {/* Overlay Panel */}
-            <div className="absolute inset-x-0 top-0 bottom-0 bg-white overflow-y-auto animate-in slide-in-from-bottom duration-300">
+            <div className="absolute inset-0 bg-white flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300">
                 {/* Header */}
-                <div className="sticky top-0 bg-white z-10 border-b border-slate-100">
-                    <div className="flex items-center justify-between px-4 py-3">
+                <div className="bg-white border-b border-slate-100 flex-shrink-0">
+                    <div className="flex items-center justify-between px-4 py-4">
                         {step !== 'location' ? (
                             <button
                                 onClick={() => {
                                     if (step === 'guests') setStep('dates');
                                     else setStep('location');
                                 }}
-                                className="p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors"
+                                className="p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                                aria-label="Kembali"
                             >
-                                <ArrowLeft className="w-5 h-5" />
+                                <ArrowLeft className="w-5 h-5 text-slate-700" />
                             </button>
                         ) : (
                             <div className="w-9" />
                         )}
 
-                        {/* Summary pills (shown when not on location step) */}
-                        {step !== 'location' && (
-                            <div className="flex-1 mx-2 space-y-0.5">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="font-bold text-slate-900">Lokasi</span>
-                                    <span className="font-bold text-slate-900">{location || 'Mana saja'}</span>
-                                </div>
-                                {step === 'guests' && (
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="font-bold text-slate-900">Tanggal perjalanan</span>
-                                        <span className="font-bold text-slate-900">{formatDateRange(dateRange)}</span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        {/* Summary pills (shown sequentially to follow order) */}
+                        <div className="flex-1 mx-3 min-w-0 text-center">
+                            <span className="text-sm font-bold text-slate-900 block">
+                                {step === 'location' && 'Pilih Lokasi'}
+                                {step === 'dates' && 'Pilih Tanggal'}
+                                {step === 'guests' && 'Pilih Tamu'}
+                            </span>
+                            {location && step !== 'location' && (
+                                <span className="text-xs text-blue-600 font-semibold truncate block mt-0.5">
+                                    {location}
+                                    {dateRange?.from && ` · ${format(dateRange.from, 'd MMM')} - ${dateRange.to ? format(dateRange.to, 'd MMM') : ''}`}
+                                </span>
+                            )}
+                        </div>
 
                         <button
                             onClick={onClose}
-                            className="p-2 -mr-2 rounded-full hover:bg-slate-100 transition-colors"
+                            className="p-2 -mr-2 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                            aria-label="Tutup"
                         >
-                            <X className="w-5 h-5" />
+                            <X className="w-5 h-5 text-slate-700" />
                         </button>
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="px-4 pb-32">
+                {/* Content Area (Scrolls independently) */}
+                <div ref={contentRef} className="flex-1 overflow-y-auto px-5 py-5 scroll-smooth">
                     {/* ===== STEP: LOCATION ===== */}
                     {step === 'location' && (
-                        <div className="space-y-6 pt-4">
-                            <h2 className="text-2xl font-bold text-slate-900">Lokasi</h2>
-
+                        <div className="space-y-6">
                             {/* Search bar */}
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -283,8 +313,14 @@ export default function SearchOverlay({
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Cari destinasi"
-                                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && searchQuery.trim()) {
+                                            e.preventDefault();
+                                            handleSelectLocationItem(searchQuery.trim());
+                                        }
+                                    }}
+                                    placeholder="Cari destinasi atau nama villa..."
+                                    className="w-full pl-12 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder-slate-400"
                                 />
                                 {searchQuery && (
                                     <button
@@ -299,100 +335,74 @@ export default function SearchOverlay({
                             {/* Recent searches */}
                             {recentSearches.length > 0 && !searchQuery && (
                                 <div className="space-y-3">
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pencarian terkini</p>
-                                    {recentSearches.map((search, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => handleSelectRecentSearch(search)}
-                                            className="flex items-center gap-3 w-full p-3 rounded-2xl hover:bg-slate-50 transition-colors text-left"
-                                        >
-                                            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-                                                <MapPin className="w-5 h-5 text-slate-400" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-bold text-slate-900 text-sm">{search.location}</p>
-                                                <p className="text-xs text-slate-400 mt-0.5">{search.datesLabel} · {search.guestsLabel}</p>
-                                            </div>
-                                        </button>
-                                    ))}
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Pencarian Terkini</p>
+                                    <div className="space-y-1">
+                                        {recentSearches.map((search, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handleSelectRecentSearch(search)}
+                                                className="flex items-center gap-3 w-full p-2.5 rounded-2xl hover:bg-slate-50 transition-colors text-left cursor-pointer"
+                                            >
+                                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0 text-slate-500">
+                                                    <MapPin className="w-4.5 h-4.5" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-bold text-slate-800 text-sm truncate">{search.location}</p>
+                                                    <p className="text-[11px] text-slate-450 truncate mt-0.5">{search.datesLabel} · {search.guestsLabel}</p>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 
-                            {/* Suggested destinations */}
+                            {/* Suggested Destinations & Villa Results */}
                             <div className="space-y-3">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                    {searchQuery ? 'Hasil pencarian' : 'Destinasi yang disarankan'}
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">
+                                    {searchQuery ? 'Hasil Pencarian' : 'Destinasi yang Disarankan'}
                                 </p>
 
-                                {!searchQuery && (
-                                    <button
-                                        onClick={() => {
-                                            if (navigator.geolocation) {
-                                                navigator.geolocation.getCurrentPosition(
-                                                    () => setLocation('Di dekat lokasi Anda'),
-                                                    () => {}
-                                                );
-                                            }
-                                        }}
-                                        className="flex items-center gap-3 w-full p-3 rounded-2xl hover:bg-slate-50 transition-colors text-left"
-                                    >
-                                        <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
-                                            <Navigation className="w-5 h-5 text-rose-500" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-bold text-slate-900 text-sm">Di dekat lokasi Anda</p>
-                                        </div>
-                                    </button>
-                                )}
+                                <div className="space-y-1">
+                                    {/* Destination items */}
+                                    {filteredDests.map((dest, i) => (
+                                        <button
+                                            key={`dest-${i}`}
+                                            onClick={() => handleSelectLocationItem(dest.name)}
+                                            className="flex items-center gap-3 w-full p-2.5 rounded-2xl hover:bg-slate-50 transition-colors text-left cursor-pointer"
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                                <MapPin className="w-4.5 h-4.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-slate-850 text-sm truncate">{dest.name}</p>
+                                                <p className="text-[11px] text-slate-400 truncate mt-0.5">{dest.city || 'Destinasi Populer'}</p>
+                                            </div>
+                                        </button>
+                                    ))}
 
-                                {(searchQuery ? filteredDestinations : SUGGESTED_DESTINATIONS.slice(0, 6)).map((dest, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => handleSelectDestination(dest.name)}
-                                        className="flex items-center gap-3 w-full p-3 rounded-2xl hover:bg-slate-50 transition-colors text-left"
-                                    >
-                                        <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-                                            <MapPin className="w-5 h-5 text-slate-400" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-slate-900 text-sm">{dest.name}</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">{dest.desc}</p>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                    {/* Villa items (only show when searching) */}
+                                    {searchQuery && filteredVillas.map((villa, i) => (
+                                        <button
+                                            key={`villa-${i}`}
+                                            onClick={() => handleSelectLocationItem(villa.name)}
+                                            className="flex items-center gap-3 w-full p-2.5 rounded-2xl hover:bg-slate-50 transition-colors text-left cursor-pointer"
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                                                <Home className="w-4.5 h-4.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-slate-850 text-sm truncate">{villa.name}</p>
+                                                <p className="text-[11px] text-slate-400 truncate mt-0.5">{villa.location}</p>
+                                            </div>
+                                        </button>
+                                    ))}
 
-                            {/* Bottom filters & buttons */}
-                            <div className="space-y-3 pt-4 border-t border-slate-100">
-                                <button
-                                    onClick={() => setStep('dates')}
-                                    className="flex items-center justify-between w-full p-4 bg-slate-50 rounded-2xl border border-slate-200"
-                                >
-                                    <span className="font-bold text-sm text-slate-900">Tanggal perjalanan</span>
-                                    <span className="text-sm text-slate-400">{formatDateRange(dateRange)}</span>
-                                </button>
-                                <button
-                                    onClick={() => setStep('guests')}
-                                    className="flex items-center justify-between w-full p-4 bg-slate-50 rounded-2xl border border-slate-200"
-                                >
-                                    <span className="font-bold text-sm text-slate-900">Peserta</span>
-                                    <span className="text-sm text-slate-400">{getGuestsLabel()}</span>
-                                </button>
-
-                                <div className="flex items-center justify-between pt-4">
-                                    <button
-                                        onClick={handleClearAll}
-                                        className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                                    >
-                                        Hapus semua
-                                    </button>
-                                    <button
-                                        onClick={handleSearchSubmit}
-                                        className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-all active:scale-95"
-                                    >
-                                        <Search className="w-4 h-4" />
-                                        <span>Cari</span>
-                                    </button>
+                                    {/* Empty results */}
+                                    {searchQuery && filteredDests.length === 0 && filteredVillas.length === 0 && (
+                                        <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                                            Tidak ditemukan destinasi atau villa dengan nama "{searchQuery}"
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -400,11 +410,37 @@ export default function SearchOverlay({
 
                     {/* ===== STEP: DATES ===== */}
                     {step === 'dates' && (
-                        <div className="space-y-6 pt-4">
-                            <h2 className="text-2xl font-bold text-slate-900">Tanggal perjalanan</h2>
-
-                            {/* Calendar */}
-                            <div className="overflow-x-auto">
+                        <div className="space-y-5">
+                            {/* Centered styled DayPicker calendar */}
+                            <div className="w-full flex justify-center py-2 bg-slate-50/50 rounded-3xl border border-slate-100">
+                                <style dangerouslySetInnerHTML={{ __html: `
+                                    .rdp { --rdp-cell-size: min(44px, 11vw); margin: 0; width: 100%; }
+                                    .rdp-months { width: 100%; justify-content: center; }
+                                    .rdp-month { width: 100%; max-width: 100%; margin: 0 auto; }
+                                    .rdp-table { max-width: 100%; border-collapse: collapse; margin: 0 auto; }
+                                    .rdp-cell { text-align: center; padding: 1.5px; }
+                                    .rdp-head_cell { text-align: center; font-size: 13px; font-weight: 600; padding-bottom: 8px; }
+                                    .rdp-day { 
+                                        width: var(--rdp-cell-size) !important; 
+                                        height: var(--rdp-cell-size) !important; 
+                                        max-width: var(--rdp-cell-size) !important; 
+                                        margin: 0 auto; 
+                                        border-radius: 9999px;
+                                        font-size: 14px;
+                                    }
+                                    
+                                    @media (max-width: 768px) {
+                                        .rdp { --rdp-cell-size: min(48px, 13.5vw) !important; }
+                                        .rdp-cell { padding: 1.5px; }
+                                        .rdp-day { font-size: 14px !important; }
+                                    }
+                                    @media (max-width: 400px) {
+                                        .rdp-day { font-size: 13px !important; }
+                                    }
+                                    @media (max-width: 350px) {
+                                        .rdp-day { font-size: 12px !important; }
+                                    }
+                                `}} />
                                 <DayPicker
                                     mode="range"
                                     selected={dateRange}
@@ -412,83 +448,85 @@ export default function SearchOverlay({
                                     disabled={[{ before: new Date() }]}
                                     numberOfMonths={1}
                                     locale={localeID}
-                                    hideNavigation
-                                    className="text-slate-800 max-w-full"
+                                    className="text-slate-800 w-full flex justify-center"
                                     classNames={{
-                                        selected: "bg-slate-900 text-white hover:bg-slate-800 rounded-full",
-                                        today: "text-rose-500 font-black rounded-full",
-                                        month_caption: "flex items-center w-full",
+                                        selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
+                                        today: "text-blue-600 font-black rounded-full",
+                                        month_caption: "flex items-center w-full mb-4 px-3",
                                         caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
-                                        button_previous: "hidden",
-                                        button_next: "hidden",
-                                        day: "w-10 h-10 text-sm font-medium relative",
-                                        range_start: "bg-slate-900 text-white rounded-full",
-                                        range_end: "bg-slate-900 text-white rounded-full",
+                                        button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-xs flex-shrink-0",
+                                        button_next: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-xs flex-shrink-0",
+                                        range_start: "bg-blue-600 text-white rounded-full font-bold",
+                                        range_end: "bg-blue-600 text-white rounded-full font-bold",
+                                    }}
+                                    components={{
+                                        MonthCaption: ({ calendarMonth, displayIndex, children, ...divProps }) => {
+                                            const { components: comps, classNames, labels: { labelPrevious, labelNext }, previousMonth, nextMonth, goToMonth, dayPickerProps } = useDayPicker();
+                                            const numMonths = dayPickerProps.numberOfMonths ?? 1;
+                                            const isSingle = numMonths === 1;
+                                            const showPrev = isSingle || displayIndex === 0;
+                                            const showNext = isSingle || displayIndex === numMonths - 1;
+                                            const handlePrev = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (previousMonth) goToMonth(previousMonth); };
+                                            const handleNext = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (nextMonth) goToMonth(nextMonth); };
+                                            return (
+                                                <div {...divProps} className="flex items-center w-full mb-2">
+                                                    {showPrev ? (
+                                                        <comps.PreviousMonthButton
+                                                            type="button"
+                                                            tabIndex={previousMonth ? undefined : -1}
+                                                            aria-disabled={previousMonth ? undefined : 'true' as any}
+                                                            aria-label={labelPrevious(previousMonth)}
+                                                            onClick={handlePrev}
+                                                        >
+                                                            <comps.Chevron orientation="left" />
+                                                        </comps.PreviousMonthButton>
+                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                    <div className="flex-1 text-center text-sm font-bold text-slate-900">
+                                                        {children}
+                                                    </div>
+                                                    {showNext ? (
+                                                        <comps.NextMonthButton
+                                                            type="button"
+                                                            tabIndex={nextMonth ? undefined : -1}
+                                                            aria-disabled={nextMonth ? undefined : 'true' as any}
+                                                            aria-label={labelNext(nextMonth)}
+                                                            onClick={handleNext}
+                                                        >
+                                                            <comps.Chevron orientation="right" />
+                                                        </comps.NextMonthButton>
+                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                </div>
+                                            );
+                                        },
                                     }}
                                 />
-                            </div>
-
-                            {/* Flexibility presets */}
-                            <div className="flex flex-wrap gap-2">
-                                {FLEXIBILITY_PRESETS.map((preset) => (
-                                    <button
-                                        key={preset.value}
-                                        onClick={() => setSelectedFlexibility(preset.value)}
-                                        className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${
-                                            selectedFlexibility === preset.value
-                                                ? 'bg-slate-900 text-white border-slate-900'
-                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
-                                        }`}
-                                    >
-                                        {preset.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Bottom buttons */}
-                            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                <button
-                                    onClick={handleResetDates}
-                                    className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                                >
-                                    Atur ulang
-                                </button>
-                                <button
-                                    onClick={handleNextFromDates}
-                                    disabled={!canProceedFromDates}
-                                    className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white font-bold text-sm px-6 py-3 rounded-full transition-all active:scale-95"
-                                >
-                                    <span>Selanjutnya</span>
-                                </button>
                             </div>
                         </div>
                     )}
 
                     {/* ===== STEP: GUESTS ===== */}
                     {step === 'guests' && (
-                        <div className="space-y-6 pt-4">
-                            <h2 className="text-2xl font-bold text-slate-900">Peserta</h2>
-
+                        <div className="space-y-6">
                             {/* Guest categories */}
-                            <div className="space-y-0 divide-y divide-slate-100">
+                            <div className="space-y-0 divide-y divide-slate-100 bg-slate-50/50 border border-slate-100 rounded-3xl px-5">
                                 {/* Adults */}
                                 <div className="flex items-center justify-between py-5">
                                     <div>
                                         <p className="font-bold text-sm text-slate-900">Dewasa</p>
                                         <p className="text-xs text-slate-400 mt-0.5">Usia 13 tahun ke atas</p>
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3.5">
                                         <button
                                             onClick={() => setAdults(Math.max(0, adults - 1))}
                                             disabled={adults === 0}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                                         >
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="w-6 text-center font-bold text-sm">{adults}</span>
+                                        <span className="w-6 text-center font-bold text-sm text-slate-800">{adults}</span>
                                         <button
                                             onClick={() => setAdults(adults + 1)}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 transition-all cursor-pointer"
                                         >
                                             <Plus className="w-4 h-4" />
                                         </button>
@@ -499,20 +537,20 @@ export default function SearchOverlay({
                                 <div className="flex items-center justify-between py-5">
                                     <div>
                                         <p className="font-bold text-sm text-slate-900">Anak-anak</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">Usia 2–12</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">Usia 2–12 tahun</p>
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3.5">
                                         <button
                                             onClick={() => setChildren(Math.max(0, children - 1))}
                                             disabled={children === 0}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                                         >
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="w-6 text-center font-bold text-sm">{children}</span>
+                                        <span className="w-6 text-center font-bold text-sm text-slate-800">{children}</span>
                                         <button
                                             onClick={() => setChildren(children + 1)}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 transition-all cursor-pointer"
                                         >
                                             <Plus className="w-4 h-4" />
                                         </button>
@@ -525,44 +563,64 @@ export default function SearchOverlay({
                                         <p className="font-bold text-sm text-slate-900">Balita</p>
                                         <p className="text-xs text-slate-400 mt-0.5">Di bawah 2 tahun</p>
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3.5">
                                         <button
                                             onClick={() => setInfants(Math.max(0, infants - 1))}
                                             disabled={infants === 0}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                                         >
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="w-6 text-center font-bold text-sm">{infants}</span>
+                                        <span className="w-6 text-center font-bold text-sm text-slate-800">{infants}</span>
                                         <button
                                             onClick={() => setInfants(infants + 1)}
-                                            className="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-600 transition-all"
+                                            className="w-9 h-9 rounded-full border border-slate-350 flex items-center justify-center text-slate-650 hover:border-slate-500 hover:text-slate-700 transition-all cursor-pointer"
                                         >
                                             <Plus className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Bottom buttons */}
-                            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                <button
-                                    onClick={handleClearAll}
-                                    className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                                >
-                                    Hapus semua
-                                </button>
-                                <button
-                                    onClick={handleSearchSubmit}
-                                    className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-all active:scale-95"
-                                >
-                                    <Search className="w-4 h-4" />
-                                    <span>Cari</span>
-                                </button>
-                            </div>
                         </div>
                     )}
                 </div>
+
+                {/* Sticky Footer Area */}
+                {step === 'dates' && (
+                    <div className="bg-white border-t border-slate-100 px-5 py-4 flex items-center justify-between flex-shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                        <button
+                            onClick={handleResetDates}
+                            className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                        >
+                            Atur ulang
+                        </button>
+                        <button
+                            onClick={handleNextFromDates}
+                            disabled={!canProceedFromDates}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs py-3 px-6 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/10"
+                        >
+                            <span>Selanjutnya</span>
+                        </button>
+                    </div>
+                )}
+
+                {step === 'guests' && (
+                    <div className="bg-white border-t border-slate-100 px-5 py-4 flex items-center justify-between flex-shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                        <button
+                            onClick={handleClearAll}
+                            className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                        >
+                            Hapus semua
+                        </button>
+                        <button
+                            onClick={handleSearchSubmit}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-7 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/10"
+                        >
+                            <Search className="w-3.5 h-3.5" />
+                            <span>Cari Villa</span>
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

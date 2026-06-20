@@ -109,7 +109,7 @@ function VillasCatalogContent() {
     // Filter & Sort States
     const [locationInput, setLocationInput] = useState(locationParam);
     const [bedrooms, setBedrooms] = useState('');
-    const [guests, setGuests] = useState('');
+    const [guests, setGuests] = useState(searchParams.get('guests') || '');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [sortBy, setSortBy] = useState('created_at');
@@ -117,6 +117,15 @@ function VillasCatalogContent() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalVillas, setTotalVillas] = useState(0);
+
+    // Sync input states when query parameters change (overlay search submit)
+    useEffect(() => {
+        const loc = searchParams.get('location') || '';
+        const gst = searchParams.get('guests') || '';
+        setLocationInput(loc);
+        setGuests(gst);
+        setCurrentPage(1);
+    }, [searchParams]);
 
     useEffect(() => {
         const saved = localStorage.getItem('pusatvilla_wishlist');
@@ -173,7 +182,7 @@ function VillasCatalogContent() {
 
     useEffect(() => {
         fetchVillas();
-    }, [currentPage, sortBy, sortOrder]);
+    }, [currentPage, sortBy, sortOrder, locationInput, guests]);
 
     const handleApplyFilters = (e: React.FormEvent) => {
         e.preventDefault();

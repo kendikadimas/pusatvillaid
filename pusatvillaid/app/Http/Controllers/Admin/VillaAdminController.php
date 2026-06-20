@@ -613,5 +613,32 @@ class VillaAdminController extends Controller
             'host_avatar' => $villa->host_avatar,
             'message' => 'Avatar tuan rumah berhasil diunggah.',
         ]);
+     }
+
+    /**
+     * Upload a general image for bedrooms or accessibility features.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // Max 5MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($request->hasFile('image')) {
+            // Save to public storage disk (storage/app/public/villas/extras)
+            $path = $request->file('image')->store('villas/extras', 'public');
+            $url = asset('storage/'.$path);
+
+            return response()->json([
+                'url' => $url,
+                'message' => 'Gambar berhasil diunggah.',
+            ]);
+        }
+
+        return response()->json(['message' => 'File tidak ditemukan.'], 400);
     }
 }

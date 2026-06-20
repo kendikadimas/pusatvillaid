@@ -141,10 +141,11 @@ export default function AdminBookingsPage() {
                 </div>
                 <button
                     onClick={handleExport}
-                    className="w-full sm:w-auto bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#6a6a6a] font-extrabold py-2.5 px-4 rounded-[8px] hover:border-[#dddddd] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#6a6a6a] font-extrabold p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] hover:border-[#dddddd] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
+                    title="Unduh laporan (CSV)"
                 >
                     <Download className="w-4 h-4 text-[#6a6a6a]" />
-                    <span>Unduh laporan (CSV)</span>
+                    <span className="hidden sm:inline">Unduh laporan (CSV)</span>
                 </button>
             </div>
 
@@ -331,10 +332,11 @@ export default function AdminBookingsPage() {
                                                 </a>
                                                 <Link 
                                                     href={`/admin/bookings/detail?id=${b.id}`}
-                                                    className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                                    className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
+                                                    title="Detail Pesanan"
                                                 >
                                                     <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
-                                                    <span>Detail</span>
+                                                    <span className="hidden sm:inline">Detail</span>
                                                 </Link>
                                             </div>
                                         </td>
@@ -390,10 +392,11 @@ export default function AdminBookingsPage() {
                                     </a>
                                     <Link 
                                         href={`/admin/bookings/detail?id=${b.id}`}
-                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95"
+                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 shrink-0"
+                                        title="Detail Pesanan"
                                     >
                                         <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
-                                        <span>Detail</span>
+                                        <span className="hidden sm:inline">Detail</span>
                                     </Link>
                                 </div>
                             </div>

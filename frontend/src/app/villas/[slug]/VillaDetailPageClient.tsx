@@ -146,6 +146,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     // Mobile & Mount State
     const [isMobile, setIsMobile] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isMobileDetailsOpen, setIsMobileDetailsOpen] = useState(false);
 
     // Zustand Booking Store Actions
     const { 
@@ -467,7 +468,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         : [
             { icon: 'Wind', title: 'AC & kipas angin', description: 'Villa dilengkapi pendingin ruangan untuk kenyamanan Anda.' },
             { icon: 'Key', title: 'Check-in mandiri', description: 'Check-in fleksibel dengan akses mandiri menggunakan smart lock atau kode pintu.' },
-            { icon: 'Car', title: 'Parkir gratis', description: 'Tersedia area parkir gratis untuk kendaraan Anda selama menginap.' },
             { icon: 'Wifi', title: 'WiFi gratis', description: 'Nikmati akses internet WiFi berkecepatan tinggi selama menginap.' }
         ];
 
@@ -671,7 +671,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
             </div>
 
-            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-24 lg:pb-16 relative bg-white rounded-t-3xl -mt-6 lg:mt-0 pt-8 lg:pt-0 z-10" id="foto-section">
+            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-36 sm:pb-40 lg:pb-16 relative bg-white rounded-t-3xl -mt-6 lg:mt-0 pt-8 lg:pt-0 z-10" id="foto-section">
                 {/* Desktop Title, Share, Save (Hidden on Mobile) */}
                 <div className="hidden lg:block mb-4 mt-10">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -956,7 +956,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     }
                                     
                                     @media (max-width: 768px) {
-                                        .rdp-cell { padding: 1px; }
+                                        .rdp { --rdp-cell-size: min(48px, 13.5vw) !important; }
+                                        .rdp-cell { padding: 1.5px; }
+                                        .rdp-day { font-size: 14px !important; }
                                     }
                                     @media (max-width: 400px) {
                                         .rdp-day { font-size: 13px !important; }
@@ -1072,7 +1074,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         {/* Things to Know */}
                         <div className="space-y-6 py-8 border-b border-slate-200/80">
                             <h3 className="text-xl font-bold text-slate-900">Hal yang perlu diketahui</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-[14px]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-[14px]">
                                 {/* Column 1: Aturan Rumah */}
                                 <div className="space-y-3">
                                     <h4 className="font-bold text-slate-900">Aturan rumah</h4>
@@ -1121,14 +1123,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             );
                                         })}
                                     </div>
-                                </div>
-
-                                {/* Column 3: Kebijakan Pembatalan */}
-                                <div className="space-y-3">
-                                    <h4 className="font-bold text-slate-900">Kebijakan pembatalan</h4>
-                                    <p className="text-slate-600 font-medium leading-relaxed">
-                                        {cancellationPolicy}
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1280,11 +1274,73 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
             {/* Mobile Fixed Booking Widget (Portaled to body to bypass CSS transform bugs) */}
             {isMounted && typeof document !== 'undefined' && createPortal(
-                <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[85vh] overflow-y-auto rounded-t-3xl overscroll-contain transition-transform lg:hidden">
-                    <div className="space-y-4">
-                        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2"></div>
-                        {bookingWidgetContent}
+                <div className="lg:hidden">
+                    {/* Collapsed Sticky Bar */}
+                    <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 px-5 py-4 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] flex items-center justify-between pb-[calc(1rem+env(safe-area-inset-bottom))]">
+                        {/* Left Side: Clickable to show details */}
+                        <div 
+                            onClick={() => setIsMobileDetailsOpen(true)}
+                            className="flex-1 pr-4 cursor-pointer text-left"
+                        >
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-[15px] font-extrabold text-slate-900">
+                                    Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                                </span>
+                                <span className="text-[11px] text-slate-500 font-semibold">
+                                    {totalNights > 0 ? `total (${totalNights} mlm)` : '/ malam'}
+                                </span>
+                            </div>
+                            <div className="text-[11px] text-blue-600 font-bold underline flex items-center mt-0.5">
+                                {storeCheckIn && storeCheckOut ? (
+                                    <span>
+                                        {format(parseISO(storeCheckIn), 'd MMM', { locale: localeID })} - {format(parseISO(storeCheckOut), 'd MMM', { locale: localeID })}
+                                    </span>
+                                ) : (
+                                    <span>Pilih tanggal</span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right Side: Action Button */}
+                        <button
+                            onClick={storeCheckIn && storeCheckOut ? handleBookingSubmit : () => setIsMobileDetailsOpen(true)}
+                            className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs py-3 px-6 rounded-xl shadow-md transition-all flex items-center justify-center cursor-pointer shrink-0"
+                        >
+                            {storeCheckIn && storeCheckOut ? 'Pesan' : 'Pilih Tanggal'}
+                        </button>
                     </div>
+
+                    {/* Expanded Bottom Sheet Details */}
+                    {isMobileDetailsOpen && (
+                        <>
+                            {/* Backdrop */}
+                            <div 
+                                className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+                                onClick={() => setIsMobileDetailsOpen(false)}
+                            />
+                            
+                            {/* Bottom Sheet Container */}
+                            <div className="fixed bottom-0 left-0 right-0 z-[120] bg-white rounded-t-3xl shadow-[0_-15px_40px_rgba(0,0,0,0.15)] max-h-[85vh] overflow-y-auto overscroll-contain transition-transform duration-300 animate-slideUp pb-[calc(1.5rem+env(safe-area-inset-bottom))] p-6 space-y-5">
+                                {/* Header with drag indicator and close */}
+                                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                                        <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Rincian Reservasi</h3>
+                                    </div>
+                                    <button 
+                                        onClick={() => setIsMobileDetailsOpen(false)}
+                                        className="text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-100 py-1.5 px-3 rounded-lg"
+                                    >
+                                        Tutup
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {bookingWidgetContent}
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>,
                 document.body
             )}

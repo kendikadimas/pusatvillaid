@@ -176,10 +176,11 @@ export default function AdminDestinationsPage() {
                 </div>
                 <button
                     onClick={handleOpenCreate}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-5 rounded-[8px]   hover: transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-5 sm:py-3 rounded-[8px] transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
+                    title="Tambah Destinasi"
                 >
                     <Plus className="w-4.5 h-4.5" />
-                    <span>Tambah destinasi</span>
+                    <span className="hidden sm:inline">Tambah destinasi</span>
                 </button>
             </div>
 
@@ -280,19 +281,19 @@ export default function AdminDestinationsPage() {
                                         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#dddddd]">
                                             <button 
                                                 onClick={() => handleOpenEdit(dest)}
-                                                className="inline-flex justify-center bg-white hover:bg-slate-50 text-[#222222] font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1 cursor-pointer border border-[#dddddd] active:scale-95 transition-all"
+                                                className="inline-flex justify-center bg-white hover:bg-slate-50 text-[#222222] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1 cursor-pointer border border-[#dddddd] active:scale-95 transition-all"
                                                 title="Edit Destinasi"
                                             >
                                                 <Edit className="w-3.5 h-3.5" />
-                                                <span>Edit</span>
+                                                <span className="hidden sm:inline">Edit</span>
                                             </button>
                                             <button 
                                                 onClick={() => handleDelete(dest.id, dest.name)}
-                                                className="inline-flex justify-center bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-extrabold py-2 px-3 rounded-[8px] text-xs items-center space-x-1 cursor-pointer border border-blue-100/60 active:scale-95 transition-all"
+                                                className="inline-flex justify-center bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1 cursor-pointer border border-blue-100/60 active:scale-95 transition-all"
                                                 title="Hapus Destinasi"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
-                                                <span>Hapus</span>
+                                                <span className="hidden sm:inline">Hapus</span>
                                             </button>
                                         </div>
                                     </div>

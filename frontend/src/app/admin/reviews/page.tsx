@@ -232,10 +232,11 @@ export default function AdminReviewsPage() {
                 </div>
                 <button
                     onClick={openCreateModal}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-2.5 px-4 rounded-[8px] transition-all duration-300 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-all duration-300 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
+                    title="Tambah Ulasan Manual"
                 >
                     <Plus className="w-4 h-4" />
-                    <span>Tambah ulasan manual</span>
+                    <span className="hidden sm:inline">Tambah ulasan manual</span>
                 </button>
             </div>
 
@@ -336,29 +337,29 @@ export default function AdminReviewsPage() {
                             <div className="flex items-center justify-end md:flex-col md:items-end gap-2.5 flex-wrap border-t md:border-t-0 border-[#dddddd] pt-4 md:pt-0">
                                 <button
                                     onClick={() => openEditModal(r)}
-                                    className="bg-white hover:bg-[#f7f7f7] border border-[#dddddd] text-[#222222] font-extrabold text-[11px] py-2 px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    className="bg-white hover:bg-[#f7f7f7] border border-[#dddddd] text-[#222222] font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                     aria-label="Edit ulasan"
                                 >
                                     <Eye className="w-3.5 h-3.5 text-slate-500" />
-                                    <span>Edit</span>
+                                    <span className="hidden sm:inline">Edit</span>
                                 </button>
                                 {!r.is_approved && (
                                     <button
                                         onClick={() => handleApprove(r.id)}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-[11px] py-2 px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        className="bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                         aria-label="Setujui ulasan"
                                     >
                                         <ThumbsUp className="w-3.5 h-3.5" />
-                                        <span>Setujui</span>
+                                        <span className="hidden sm:inline">Setujui</span>
                                     </button>
                                 )}
                                 <button
                                     onClick={() => handleDelete(r.id)}
-                                    className="bg-white hover:bg-blue-50 border border-[#dddddd] hover:border-blue-200 text-blue-600 hover:text-blue-700 font-extrabold text-[11px] py-2 px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    className="bg-white hover:bg-blue-50 border border-[#dddddd] hover:border-blue-200 text-blue-600 hover:text-blue-700 font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                     aria-label={r.is_approved ? 'Hapus ulasan' : 'Tolak ulasan'}
                                 >
                                     <Trash className="w-3.5 h-3.5" />
-                                    <span>{r.is_approved ? 'Hapus' : 'Tolak'}</span>
+                                    <span className="hidden sm:inline">{r.is_approved ? 'Hapus' : 'Tolak'}</span>
                                 </button>
                             </div>
                         </div>

@@ -568,7 +568,6 @@ export default function HomePage() {
                                 <h2 className="text-lg font-bold text-slate-900">
                                     Villa di {group.city}
                                 </h2>
-                                <p className="text-xs text-slate-400 mt-0.5">{group.villas.length} villa</p>
                             </div>
                             <Link
                                 href={`/villas?location=${group.query}`}

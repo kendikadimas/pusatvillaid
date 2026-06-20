@@ -472,10 +472,11 @@ export default function AdminSettingsPage() {
                                 <button
                                     type="button"
                                     onClick={handleAddMethod}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-1.5 px-3 rounded-lg flex items-center space-x-1 transition-colors cursor-pointer"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2 sm:px-3 sm:py-1.5 rounded-lg flex items-center space-x-1 transition-colors cursor-pointer shrink-0"
+                                    title="Tambah Rekening"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
-                                    <span>Tambah Rekening</span>
+                                    <span className="hidden sm:inline">Tambah Rekening</span>
                                 </button>
                             </div>
 

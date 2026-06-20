@@ -120,10 +120,11 @@ export default function AdminVillasPage() {
                 </div>
                 <Link
                     href="/admin/villas/new"
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-[8px]  transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-colors flex items-center justify-center space-x-1.5 cursor-pointer shrink-0"
+                    title="Tambah Villa Baru"
                 >
                     <Plus className="w-4.5 h-4.5" />
-                    <span>Tambah Villa Baru</span>
+                    <span className="hidden sm:inline">Tambah Villa Baru</span>
                 </Link>
             </div>
 
@@ -210,10 +211,11 @@ export default function AdminVillasPage() {
                                                 </a>
                                                 <Link 
                                                     href={`/admin/villas/edit?id=${villa.id}`}
-                                                    className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-1.5 px-2.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200"
+                                                    className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold p-2 sm:px-2.5 sm:py-1.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200 shrink-0"
+                                                    title="Edit Villa"
                                                 >
                                                     <Edit className="w-3.5 h-3.5" />
-                                                    <span>Edit</span>
+                                                    <span className="hidden sm:inline">Edit</span>
                                                 </Link>
                                             </div>
                                         </div>

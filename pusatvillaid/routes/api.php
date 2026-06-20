@@ -86,6 +86,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         // Villas Management
         Route::get('/villas', [VillaAdminController::class, 'index']);
         Route::post('/villas', [VillaAdminController::class, 'store']);
+        Route::post('/villas/upload-image', [VillaAdminController::class, 'uploadImage']);
         Route::get('/villas/{id}', [VillaAdminController::class, 'show']);
         Route::put('/villas/{id}', [VillaAdminController::class, 'update']);
         Route::delete('/villas/{id}', [VillaAdminController::class, 'destroy']);

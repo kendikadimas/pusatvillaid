@@ -16,7 +16,8 @@ import {
     ChevronDown,
     Star,
     Heart,
-    Eye
+    Eye,
+    Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
@@ -108,6 +109,118 @@ export default function AdminNewVillaPage() {
     const [beds, setBeds] = useState('');
     const [cleaningFee, setCleaningFee] = useState('');
 
+    // Highlights states
+    const [highlightsList, setHighlightsList] = useState<Array<{ icon: string; title: string; description: string }>>([]);
+    const [hlIcon, setHlIcon] = useState('Wind');
+    const [hlTitle, setHlTitle] = useState('');
+    const [hlDesc, setHlDesc] = useState('');
+
+    // Bedrooms states
+    const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>([]);
+    const [brImage, setBrImage] = useState('');
+    const [brTitle, setBrTitle] = useState('');
+    const [brSubtext, setBrSubtext] = useState('');
+    const [uploadingBrImage, setUploadingBrImage] = useState(false);
+
+    // Accessibility states
+    const [accessList, setAccessList] = useState<Array<{ image: string; title: string; subtext: string }>>([]);
+    const [acImage, setAcImage] = useState('');
+    const [acTitle, setAcTitle] = useState('');
+    const [acSubtext, setAcSubtext] = useState('');
+    const [uploadingAcImage, setUploadingAcImage] = useState(false);
+
+    // Host details
+    const [hostName, setHostName] = useState('Admin');
+    const [hostYears, setHostYears] = useState(1);
+    const [hostAvatar, setHostAvatar] = useState('');
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [hostJoinedLabel, setHostJoinedLabel] = useState('');
+    const [hostIsVerified, setHostIsVerified] = useState(true);
+    const [hostAboutList, setHostAboutList] = useState<string[]>([]);
+    const [hostAboutInput, setHostAboutInput] = useState('');
+
+    // Co-Hosts
+    const [coHostsList, setCoHostsList] = useState<Array<{ name: string; avatar: string }>>([]);
+    const [coHostNameInput, setCoHostNameInput] = useState('');
+    const [coHostAvatarInput, setCoHostAvatarInput] = useState('');
+
+    // Safety and Neighborhood
+    const [safetyList, setSafetyList] = useState<string[]>([]);
+    const [safetyInput, setSafetyInput] = useState('');
+    const [neighborhoodDesc, setNeighborhoodDesc] = useState('');
+
+    const handleBrImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingBrImage(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setBrImage(response.data.url);
+            toast.success('Foto kamar berhasil diunggah.');
+        } catch (err: any) {
+            console.error('Upload bedroom image failed:', err);
+            toast.error(err.response?.data?.message || 'Gagal mengunggah foto kamar.');
+        } finally {
+            setUploadingBrImage(false);
+        }
+    };
+
+    const handleAcImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingAcImage(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setAcImage(response.data.url);
+            toast.success('Foto fitur aksesibilitas berhasil diunggah.');
+        } catch (err: any) {
+            console.error('Upload accessibility image failed:', err);
+            toast.error(err.response?.data?.message || 'Gagal mengunggah foto fitur.');
+        } finally {
+            setUploadingAcImage(false);
+        }
+    };
+
+    const handleHostAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingAvatar(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setHostAvatar(response.data.url);
+            toast.success('Avatar tuan rumah berhasil diunggah.');
+        } catch (err: any) {
+            console.error('Upload host avatar failed:', err);
+            toast.error(err.response?.data?.message || 'Gagal mengunggah avatar.');
+        } finally {
+            setUploadingAvatar(false);
+        }
+    };
+
     const addAmenity = () => {
         if (!newAmenityName.trim()) {
             toast.error('Nama fasilitas tidak boleh kosong');
@@ -175,6 +288,19 @@ export default function AdminNewVillaPage() {
                 is_active: isActive,
                 beds: beds ? Number(beds) : null,
                 cleaning_fee: cleaningFee ? Number(cleaningFee) : null,
+                // Advanced Layout Details
+                host_name: hostName,
+                host_years: Number(hostYears),
+                host_avatar: hostAvatar || null,
+                host_joined_label: hostJoinedLabel || null,
+                host_is_verified: hostIsVerified,
+                host_about: hostAboutList,
+                co_hosts: coHostsList,
+                safety_property: safetyList,
+                neighborhood_desc: neighborhoodDesc || null,
+                highlights: highlightsList,
+                bedrooms_info: bedroomsList,
+                accessibility_features: accessList
             };
 
             const response = await axiosClient.post('/admin/villas', payload);
@@ -629,10 +755,11 @@ export default function AdminNewVillaPage() {
                                 <button 
                                     type="button"
                                     onClick={addAmenity}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                                    title="Tambah Fasilitas"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    <span>Tambah</span>
+                                    <span className="hidden sm:inline">Tambah</span>
                                 </button>
                             </div>
 
@@ -649,6 +776,252 @@ export default function AdminNewVillaPage() {
                                     );
                                 })()}
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Tuan Rumah */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Tuan Rumah</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Nama Host</label>
+                                <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Tahun Jadi Host</label>
+                                <input type="number" min="0" value={hostYears} onChange={(e) => setHostYears(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Joined Label</label>
+                                <input type="text" value={hostJoinedLabel} placeholder="Mulai menerima tamu 2024" onChange={(e) => setHostJoinedLabel(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="flex items-center space-x-2 pt-6">
+                                <input type="checkbox" id="hostIsVerified" checked={hostIsVerified} onChange={(e) => setHostIsVerified(e.target.checked)} className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" />
+                                <label htmlFor="hostIsVerified" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer">Host Terverifikasi</label>
+                            </div>
+                            <div className="sm:col-span-4 space-y-2">
+                                <label className="text-[10px] font-bold text-slate-600 block uppercase tracking-wider">Avatar Tuan Rumah</label>
+                                <div className="flex items-center space-x-4">
+                                    <div className="relative w-16 h-16 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                        {hostAvatar ? (
+                                            <img src={hostAvatar} alt="Host Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider text-center p-1">Kosong</span>
+                                        )}
+                                        {uploadingAvatar && (
+                                            <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
+                                                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2.5 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all" title="Unggah Avatar">
+                                        <Upload className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">{uploadingAvatar ? 'Mengunggah...' : 'Unggah Avatar'}</span>
+                                        <span className="sm:hidden">{uploadingAvatar ? '...' : 'Unggah'}</span>
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleHostAvatarUpload} 
+                                            className="hidden" 
+                                            disabled={uploadingAvatar} 
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="sm:col-span-4">
+                                <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Tentang Tuan Rumah</label>
+                                {hostAboutList.length > 0 && (
+                                    <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 font-semibold mb-3">
+                                        {hostAboutList.map((item, idx) => (
+                                            <li key={idx} className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                                                <span>{item}</span>
+                                                <button type="button" onClick={() => setHostAboutList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 cursor-pointer p-1"><X className="w-3.5 h-3.5" /></button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                <div className="flex space-x-2">
+                                    <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                                    <button type="button" onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Tentang Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
+                                </div>
+                            </div>
+
+                            <div className="sm:col-span-4 pt-3 border-t border-slate-100">
+                                <label className="text-[10px] font-bold text-slate-600 block uppercase tracking-wider mb-3">Co-Hosts</label>
+                                {coHostsList.length > 0 && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                        {coHostsList.map((item, idx) => (
+                                            <div key={idx} className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                                                <div className="flex items-center space-x-2.5">
+                                                    <img src={item.avatar} alt={item.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                                                    <span className="text-xs font-bold text-slate-800">{item.name}</span>
+                                                </div>
+                                                <button type="button" onClick={() => setCoHostsList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 cursor-pointer p-1"><X className="w-3.5 h-3.5" /></button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end bg-slate-50 p-4 border border-slate-200 rounded-xl">
+                                    <div>
+                                        <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama</label>
+                                        <input type="text" placeholder="Lita" value={coHostNameInput} onChange={(e) => setCoHostNameInput(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Avatar URL</label>
+                                        <input type="url" placeholder="https://..." value={coHostAvatarInput} onChange={(e) => setCoHostAvatarInput(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    </div>
+                                    <div className="sm:col-span-3 flex justify-end">
+                                        <button type="button" onClick={() => { if (!coHostNameInput.trim() || !coHostAvatarInput.trim()) { toast.error('Nama dan Avatar URL wajib diisi.'); return; } setCoHostsList(prev => [...prev, { name: coHostNameInput.trim(), avatar: coHostAvatarInput.trim() }]); setCoHostNameInput(''); setCoHostAvatarInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Co-Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah Co-Host</span><span className="sm:hidden">Tambah</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Highlights */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Sorotan Villa</h3>
+                        {highlightsList.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {highlightsList.map((hl, idx) => (
+                                    <div key={idx} className="flex items-start justify-between border border-slate-200 rounded-xl p-3 bg-slate-50">
+                                        <div className="flex items-start space-x-3 text-xs">
+                                            <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-blue-500 font-bold shrink-0">{hl.icon}</span>
+                                            <div><h5 className="font-bold text-slate-800">{hl.title}</h5><p className="text-[11px] text-slate-500 mt-0.5">{hl.description}</p></div>
+                                        </div>
+                                        <button type="button" onClick={() => setHighlightsList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 p-1 cursor-pointer shrink-0"><X className="w-4 h-4" /></button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                            <div>
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Ikon</label>
+                                <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
+                                    <option value="Wind">Kipas/AC</option><option value="Key">Check-in</option><option value="Car">Parkir</option><option value="Shield">Keamanan</option><option value="Waves">Kolam</option><option value="Trophy">Favorit</option><option value="Coffee">Sarapan</option><option value="Sparkles">Estetik</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Judul</label>
+                                <input type="text" placeholder="Dirancang agar sejuk" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div>
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Deskripsi</label>
+                                <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="sm:col-span-3 flex justify-end">
+                                <button type="button" onClick={() => { if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); setHlTitle(''); setHlDesc(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Sorotan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Kamar Tidur */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Kamar Tidur</h3>
+                        {bedroomsList.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {bedroomsList.map((br, idx) => (
+                                    <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                                        <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
+                                            <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
+                                            <button type="button" onClick={() => setBedroomsList(prev => prev.filter((_, i) => i !== idx))} className="absolute top-2 right-2 bg-red-600 text-white hover:bg-red-700 p-1.5 rounded-lg cursor-pointer"><X className="w-3.5 h-3.5" /></button>
+                                        </div>
+                                        <div className="p-3 text-xs"><h5 className="font-bold text-slate-800">{br.title}</h5><p className="text-[10px] text-slate-500 mt-0.5">{br.subtext}</p></div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                            <div className="sm:col-span-3">
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Kamar (Upload / URL)</label>
+                                <div className="flex gap-2">
+                                    <input type="url" placeholder="https://..." value={brImage} onChange={(e) => setBrImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
+                                        <Upload className="w-3.5 h-3.5 shrink-0" />
+                                        <span className="hidden sm:inline">{uploadingBrImage ? 'Uploading...' : 'Upload File'}</span>
+                                        <input type="file" accept="image/*" onChange={handleBrImageUpload} disabled={uploadingBrImage} className="hidden" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Kamar</label>
+                                <input type="text" placeholder="Kamar tidur 1" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Keterangan Tempat Tidur</label>
+                                <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="sm:col-span-3 flex justify-end">
+                                <button type="button" onClick={() => { if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field Kamar wajib diisi.'); return; } setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); setBrImage(''); setBrTitle(''); setBrSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Kamar"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Fitur Aksesibilitas */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Fitur Aksesibilitas</h3>
+                        {accessList.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {accessList.map((ac, idx) => (
+                                    <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                                        <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
+                                            <img src={ac.image} alt={ac.title} className="w-full h-full object-cover" />
+                                            <button type="button" onClick={() => setAccessList(prev => prev.filter((_, i) => i !== idx))} className="absolute top-2 right-2 bg-red-600 text-white hover:bg-red-700 p-1.5 rounded-lg cursor-pointer"><X className="w-3.5 h-3.5" /></button>
+                                        </div>
+                                        <div className="p-3 text-xs"><h5 className="font-bold text-slate-800">{ac.title}</h5><p className="text-[10px] text-slate-500 mt-0.5">{ac.subtext}</p></div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                            <div className="sm:col-span-3">
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Fitur (Upload / URL)</label>
+                                <div className="flex gap-2">
+                                    <input type="url" placeholder="https://..." value={acImage} onChange={(e) => setAcImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
+                                        <Upload className="w-3.5 h-3.5 shrink-0" />
+                                        <span className="hidden sm:inline">{uploadingAcImage ? 'Uploading...' : 'Upload File'}</span>
+                                        <input type="file" accept="image/*" onChange={handleAcImageUpload} disabled={uploadingAcImage} className="hidden" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Fitur</label>
+                                <input type="text" placeholder="Pintu masuk" value={acTitle} onChange={(e) => setAcTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Deskripsi</label>
+                                <input type="text" placeholder="Tempat parkir disabilitas" value={acSubtext} onChange={(e) => setAcSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                            </div>
+                            <div className="sm:col-span-3 flex justify-end">
+                                <button type="button" onClick={() => { if (!acImage.trim() || !acTitle.trim() || !acSubtext.trim()) { toast.error('Semua field Fitur wajib diisi.'); return; } setAccessList(prev => [...prev, { image: acImage, title: acTitle, subtext: acSubtext }]); setAcImage(''); setAcTitle(''); setAcSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Aksesibilitas"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Kebijakan & Lingkungan */}
+                    <div className="space-y-5">
+                        <h3 className="text-sm font-semibold text-[#222222] border-b border-[#dddddd] pb-2 uppercase tracking-wider">Kebijakan &amp; Lingkungan</h3>
+                        <div>
+                            <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Keselamatan &amp; Properti</label>
+                            {safetyList.length > 0 && (
+                                <ul className="space-y-1.5 mb-3">
+                                    {safetyList.map((item, idx) => (
+                                        <li key={idx} className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-semibold">
+                                            <span>{item}</span>
+                                            <button type="button" onClick={() => setSafetyList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 cursor-pointer p-1"><X className="w-3.5 h-3.5" /></button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            <div className="flex space-x-2">
+                                <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
+                                <button type="button" onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Keselamatan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Deskripsi Lingkungan</label>
+                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
                         </div>
                     </div>
 
