@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Search, ArrowLeft, MapPin, Calendar, Users, Minus, Plus, Home } from 'lucide-react';
+import { X, Search, ArrowLeft, MapPin, Calendar, Users, Minus, Plus, Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import axiosClient from '@/lib/axios';
 import { Destination, Villa } from '@/types';
 import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
@@ -448,20 +448,19 @@ export default function SearchOverlay({
                                     disabled={[{ before: new Date() }]}
                                     numberOfMonths={1}
                                     locale={localeID}
+                                    hideNavigation
                                     className="text-slate-800 w-full flex justify-center"
                                     classNames={{
                                         selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
                                         today: "text-blue-600 font-black rounded-full",
                                         month_caption: "flex items-center w-full mb-4 px-3",
                                         caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
-                                        button_previous: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-xs flex-shrink-0",
-                                        button_next: "p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 cursor-pointer active:scale-95 transition-all shadow-xs flex-shrink-0",
                                         range_start: "bg-blue-600 text-white rounded-full font-bold",
                                         range_end: "bg-blue-600 text-white rounded-full font-bold",
                                     }}
                                     components={{
                                         MonthCaption: ({ calendarMonth, displayIndex, children, ...divProps }) => {
-                                            const { components: comps, classNames, labels: { labelPrevious, labelNext }, previousMonth, nextMonth, goToMonth, dayPickerProps } = useDayPicker();
+                                            const { previousMonth, nextMonth, goToMonth, dayPickerProps } = useDayPicker();
                                             const numMonths = dayPickerProps.numberOfMonths ?? 1;
                                             const isSingle = numMonths === 1;
                                             const showPrev = isSingle || displayIndex === 0;
@@ -471,30 +470,30 @@ export default function SearchOverlay({
                                             return (
                                                 <div {...divProps} className="flex items-center w-full mb-2">
                                                     {showPrev ? (
-                                                        <comps.PreviousMonthButton
+                                                        <button
                                                             type="button"
-                                                            tabIndex={previousMonth ? undefined : -1}
-                                                            aria-disabled={previousMonth ? undefined : 'true' as any}
-                                                            aria-label={labelPrevious(previousMonth)}
                                                             onClick={handlePrev}
+                                                            disabled={!previousMonth}
+                                                            className="p-1 hover:bg-slate-100 rounded-full text-slate-900 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-20 flex-shrink-0"
+                                                            aria-label="Bulan sebelumnya"
                                                         >
-                                                            <comps.Chevron orientation="left" />
-                                                        </comps.PreviousMonthButton>
-                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                            <ChevronLeft className="w-5 h-5 text-slate-900" strokeWidth={2.5} />
+                                                        </button>
+                                                    ) : <div className="w-7" />}
                                                     <div className="flex-1 text-center text-sm font-bold text-slate-900">
                                                         {children}
                                                     </div>
                                                     {showNext ? (
-                                                        <comps.NextMonthButton
+                                                        <button
                                                             type="button"
-                                                            tabIndex={nextMonth ? undefined : -1}
-                                                            aria-disabled={nextMonth ? undefined : 'true' as any}
-                                                            aria-label={labelNext(nextMonth)}
                                                             onClick={handleNext}
+                                                            disabled={!nextMonth}
+                                                            className="p-1 hover:bg-slate-100 rounded-full text-slate-900 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-20 flex-shrink-0"
+                                                            aria-label="Bulan berikutnya"
                                                         >
-                                                            <comps.Chevron orientation="right" />
-                                                        </comps.NextMonthButton>
-                                                    ) : <div className="w-9 flex-shrink-0" />}
+                                                            <ChevronRight className="w-5 h-5 text-slate-900" strokeWidth={2.5} />
+                                                        </button>
+                                                    ) : <div className="w-7" />}
                                                 </div>
                                             );
                                         },
