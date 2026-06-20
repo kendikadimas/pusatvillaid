@@ -15,17 +15,17 @@ export default function PublicFooter() {
     const whatsappDisplay = formatWhatsAppDisplay(WHATSAPP_NUMBER);
     
     return (
-        <footer className="bg-[#FBFBFA] border-t border-[#EAEAEA] py-16 sm:py-20">
+        <footer className="bg-gradient-to-b from-blue-800 to-blue-950 text-white py-16 sm:py-20">
             <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
                 <div className="space-y-3">
-                    <h3 className="text-base font-medium text-[#2563EB] tracking-tight">pusatvilla.id</h3>
-                    <p className="text-sm leading-relaxed text-[#787774] max-w-xs">
+                    <h3 className="text-base font-medium text-blue-300 tracking-tight">pusatvilla.id</h3>
+                    <p className="text-sm leading-relaxed text-blue-200/80 max-w-xs">
                         Platform persewaan villa premium terbaik di Indonesia. Akomodasi berkualitas tinggi dengan reservasi modern, instan, dan aman.
                     </p>
                 </div>
                 <div className="space-y-3">
-                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#787774]">Hubungi Kami</h3>
-                    <ul className="text-sm space-y-2 text-[#787774]">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-blue-300">Hubungi Kami</h3>
+                    <ul className="text-sm space-y-2 text-blue-200/80">
                         <li className="flex items-center space-x-2">
                             <span>Yogyakarta, Indonesia</span>
                         </li>
@@ -37,7 +37,7 @@ export default function PublicFooter() {
                                 href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:text-[#2563EB] transition-colors"
+                                className="hover:text-white transition-colors"
                             >
                                 {whatsappDisplay}
                             </a>
@@ -45,13 +45,13 @@ export default function PublicFooter() {
                     </ul>
                 </div>
                 <div className="space-y-3">
-                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#787774]">Navigasi</h3>
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-blue-300">Navigasi</h3>
                     <ul className="text-sm space-y-2">
-                        <li><Link href="/villas" className="text-[#787774] hover:text-[#2563EB] transition-colors duration-200">Cari Katalog Villa</Link></li>
+                        <li><Link href="/villas" className="text-blue-200/80 hover:text-white transition-colors duration-200">Cari Katalog Villa</Link></li>
                     </ul>
                 </div>
             </div>
-            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#EAEAEA] mt-12 pt-6 text-center text-xs text-[#787774]">
+            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-blue-700/50 mt-12 pt-6 text-center text-xs text-blue-300">
                 <p>&copy; {new Date().getFullYear()} pusatvilla.id &mdash; Dibuat oleh KalanaLabs.</p>
             </div>
         </footer>
