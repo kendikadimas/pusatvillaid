@@ -70,7 +70,7 @@ class VillaController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = $request->input('per_page', 9);
+        $perPage = $request->input('per_page', 50);
         $villas = $query->paginate(min((int) $perPage, 50));
 
         // Format pagination metadata
