@@ -242,6 +242,7 @@ class VillaAdminController extends Controller
                 $uploadedPhotos[] = [
                     'url' => asset('storage/'.$path),
                     'description' => '',
+                    'category' => 'Lainnya',
                 ];
             }
         }

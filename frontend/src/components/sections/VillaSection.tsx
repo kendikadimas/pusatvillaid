@@ -42,7 +42,7 @@ export default function VillaSection({
                     <Loader2 className="w-8 h-8 animate-spin text-[#787774]" />
                 </section>
             ) : (
-                <div className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-2 w-full space-y-10">
+                <div className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-2 w-full space-y-8">
                     {/* <div className="border-b border-[#EAEAEA] pb-10 text-left"> */}
                         {/* <span className="inline-block text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Unit Properti Tersedia</span> */}
                         {/* <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-black text-[#111111] tracking-[-0.02em] leading-[1.2]">

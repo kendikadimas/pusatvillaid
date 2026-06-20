@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
-import { getPhotoUrl, getPhotoDesc } from '@/lib/villaUtils';
+import { getPhotoUrl, getPhotoDesc, getPhotoCategory } from '@/lib/villaUtils';
 
 function AdminEditVillaContent() {
     const searchParams = useSearchParams();
@@ -124,7 +124,7 @@ function AdminEditVillaContent() {
     const [iconSearch, setIconSearch] = useState('');
     
     // Photo states
-    const [photos, setPhotos] = useState<Array<string | { url: string; description: string }>>([]);
+    const [photos, setPhotos] = useState<Array<string | { url: string; description: string; category?: string }>>([]);
     const [uploadingPhotos, setUploadingPhotos] = useState(false);
     
     // Blocked Dates states
@@ -397,9 +397,22 @@ function AdminEditVillaContent() {
             const updated = [...prev];
             const item = updated[index];
             if (typeof item === 'string') {
-                updated[index] = { url: item, description: newDesc };
+                updated[index] = { url: item, description: newDesc, category: 'Lainnya' };
             } else {
                 updated[index] = { ...item, description: newDesc };
+            }
+            return updated;
+        });
+    };
+
+    const handlePhotoCategoryChange = (index: number, newCategory: string) => {
+        setPhotos(prev => {
+            const updated = [...prev];
+            const item = updated[index];
+            if (typeof item === 'string') {
+                updated[index] = { url: item, description: '', category: newCategory };
+            } else {
+                updated[index] = { ...item, category: newCategory };
             }
             return updated;
         });
@@ -410,9 +423,13 @@ function AdminEditVillaContent() {
         try {
             const normalizedPhotos = photos.map(photo => {
                 if (typeof photo === 'string') {
-                    return { url: photo, description: '' };
+                    return { url: photo, description: '', category: 'Lainnya' };
                 }
-                return { url: photo.url, description: photo.description || '' };
+                return { 
+                    url: photo.url, 
+                    description: photo.description || '', 
+                    category: photo.category || 'Lainnya' 
+                };
             });
 
             const payload = {
@@ -1424,16 +1441,34 @@ function AdminEditVillaContent() {
                                                 </button>
                                             </div>
                                             
-                                            {/* Photo Caption Field */}
-                                            <div className="p-3.5 bg-slate-50 border-t border-slate-100 flex flex-col space-y-1.5">
-                                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Deskripsi / Caption Foto</label>
-                                                <input 
-                                                    type="text"
-                                                    value={getPhotoDesc(photo)}
-                                                    onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)}
-                                                    placeholder="Contoh: Kamar tidur utama dengan kasur king size..."
-                                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
-                                                />
+                                            {/* Photo Caption & Category Fields */}
+                                            <div className="p-3.5 bg-slate-50 border-t border-slate-100 flex flex-col space-y-3">
+                                                <div className="flex flex-col space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Deskripsi / Caption Foto</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={getPhotoDesc(photo)}
+                                                        onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)}
+                                                        placeholder="Contoh: Kamar tidur utama dengan kasur king size..."
+                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kategori Foto</label>
+                                                    <select 
+                                                        value={getPhotoCategory(photo)}
+                                                        onChange={(e) => handlePhotoCategoryChange(index, e.target.value)}
+                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none transition-all cursor-pointer"
+                                                    >
+                                                        <option value="Ruang tamu">Ruang tamu</option>
+                                                        <option value="Kamar tidur">Kamar tidur</option>
+                                                        <option value="Dapur">Dapur</option>
+                                                        <option value="Kamar mandi">Kamar mandi</option>
+                                                        <option value="Kolam renang">Kolam renang</option>
+                                                        <option value="Luar ruangan">Luar ruangan</option>
+                                                        <option value="Lainnya">Lainnya</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     );

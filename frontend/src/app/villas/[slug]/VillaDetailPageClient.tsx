@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, use } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import { Villa, Review } from '@/types';
 import { useBookingStore } from '@/store/bookingStore';
-import { getPhotoUrl } from '@/lib/villaUtils';
+import { getPhotoUrl, getPhotoCategory } from '@/lib/villaUtils';
 import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns';
@@ -43,7 +44,9 @@ import {
     Briefcase,
     Thermometer,
     ShieldCheck,
-    Languages
+    Languages,
+    ArrowLeft,
+    MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import PublicHeader from '@/components/PublicHeader';
@@ -140,8 +143,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     // Wishlist state
     const [wishlist, setWishlist] = useState<number[]>([]);
 
-    // Responsive calendar state
+    // Mobile & Mount State
     const [isMobile, setIsMobile] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
     // Zustand Booking Store Actions
     const { 
@@ -227,6 +231,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     };
 
     useEffect(() => {
+        setIsMounted(true);
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
@@ -485,6 +490,20 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             { image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80', title: 'Kamar mandi lengkap', subtext: 'Pegangan tetap untuk shower' }
         ];
 
+    // Dynamic Amenities Fallback
+    const amenities = villa.amenities && villa.amenities.length > 0
+        ? villa.amenities
+        : [
+            { name: 'Kolam Renang' },
+            { name: 'WiFi' },
+            { name: 'AC' },
+            { name: 'Dapur Lengkap' },
+            { name: 'Smart TV' },
+            { name: 'Water Heater' },
+            { name: 'BBQ Area' },
+            { name: 'Private Jacuzzi' }
+        ];
+
     const isSaved = wishlist.includes(villa.id);
 
     // Cancel Date computation (Check-in date minus 1 day)
@@ -507,20 +526,156 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         return 'Pembatalan gratis hingga ' + freeDays + ' hari sebelum check-in';
     };
 
+    const bookingWidgetContent = (
+        <>
+            {/* Pricing header details */}
+            <div>
+                <div className="flex items-baseline gap-1.5 flex-wrap">
+                    <span className="text-xl lg:text-[22px] font-bold text-slate-900 font-sans tracking-tight">
+                        Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                    </span>
+                    <span className="text-sm text-slate-500 font-normal">
+                        {totalNights > 0 ? `untuk ${totalNights} malam` : 'untuk 1 malam'}
+                    </span>
+                </div>
+            </div>
+
+            {/* Date & Guest Input Form Box */}
+            <div className="border border-slate-300 rounded-xl lg:rounded-2xl overflow-hidden divide-y divide-slate-200">
+                <div className="grid grid-cols-2 divide-x divide-slate-200">
+                    <div 
+                        onClick={() => scrollToSection('calendar')}
+                        className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                        <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-IN</label>
+                        <span className="text-xs font-semibold text-slate-900">
+                            {storeCheckIn ? format(parseISO(storeCheckIn), 'd/M/yyyy') : 'Tambah tanggal'}
+                        </span>
+                    </div>
+                    <div 
+                        onClick={() => scrollToSection('calendar')}
+                        className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                        <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-OUT</label>
+                        <span className="text-xs font-semibold text-slate-900">
+                            {storeCheckOut ? format(parseISO(storeCheckOut), 'd/M/yyyy') : 'Tambah tanggal'}
+                        </span>
+                    </div>
+                </div>
+                <div className="p-2 lg:p-3 hover:bg-slate-50 transition-colors">
+                    <label className="text-[9px] font-black text-slate-700 block tracking-wider">TAMU</label>
+                    <select 
+                        value={storeNumGuests}
+                        onChange={(e) => setNumGuests(Number(e.target.value))}
+                        className="w-full bg-transparent border-0 p-0 text-xs font-bold text-slate-800 focus:ring-0 focus:outline-none mt-0.5 cursor-pointer"
+                    >
+                        {[...Array(villa.max_guests)].map((_, i) => (
+                            <option key={i} value={i + 1}>{i + 1} tamu</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {villa.min_nights > 1 && (
+                <div className="text-[11px] text-slate-500 font-medium text-center -mt-1 hidden lg:block">
+                    Minimum menginap {villa.min_nights} malam
+                </div>
+            )}
+
+            {/* Submit booking button */}
+            <button
+                onClick={handleBookingSubmit}
+                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3 lg:py-3.5 rounded-xl lg:rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer"
+            >
+                <span>Pesan</span>
+            </button>
+
+            {/* Price Breakdown Calculations */}
+            {totalNights > 0 && (
+                <div className="border-t border-slate-100 pt-3 lg:pt-4 space-y-2 lg:space-y-3 text-xs font-bold">
+                    <div className="flex justify-between text-slate-500 font-semibold">
+                        <span className="underline">Weekday <br className="lg:hidden" /> (Rp {priceBreakdown.weekdays.price.toLocaleString('id-ID')} x {priceBreakdown.weekdays.count} malam)</span>
+                        <span className="font-sans">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                    </div>
+                    {priceBreakdown.weekends.count > 0 && (
+                        <div className="flex justify-between text-slate-500 font-semibold">
+                            <span className="underline">Weekend <br className="lg:hidden" /> (Rp {priceBreakdown.weekends.price.toLocaleString('id-ID')} x {priceBreakdown.weekends.count} malam)</span>
+                            <span className="font-sans">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                        </div>
+                    )}
+                    {isRefundable && (
+                        <div className="flex justify-between text-slate-500 font-semibold">
+                            <span className="underline">Pilihan tarif (Bisa dikembalikan +{((villa.refundable_surcharge_rate || 0.1111) * 100).toFixed(1)}%)</span>
+                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * (villa.refundable_surcharge_rate || 0.1111)).toLocaleString('id-ID')}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between text-slate-500 font-semibold">
+                        <span className="underline">Biaya Kebersihan</span>
+                        {villa.cleaning_fee && villa.cleaning_fee > 0 ? (
+                            <span className="font-sans">Rp {villa.cleaning_fee.toLocaleString('id-ID')}</span>
+                        ) : (
+                            <span className="text-emerald-600">Gratis</span>
+                        )}
+                    </div>
+                    <div className="flex justify-between text-slate-500 font-semibold">
+                        <span className="underline">Biaya Pelayanan</span>
+                        <span className="text-emerald-600">Gratis</span>
+                    </div>
+                    <div className="flex justify-between font-black text-slate-900 border-t border-slate-100 pt-3 lg:pt-4 text-sm">
+                        <span>Total sebelum pajak</span>
+                        <span className="text-blue-600 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+
     return (
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans antialiased">
-            {/* Header (unified with homepage) */}
-            <PublicHeader
-                showBackButton
-                onBackClick={() => router.push('/villas')}
-            />
+            {/* Header (unified with homepage) - Hidden on Mobile */}
+            <div className="hidden lg:block">
+                <PublicHeader
+                    showBackButton
+                    onBackClick={() => router.push('/villas')}
+                />
+            </div>
 
-            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-24 lg:pb-16" id="foto-section">
-                {/* Villa Title, Share, Save */}
-                <div className="mb-4 mt-10">
+            {/* Mobile Hero Image (Hidden on lg) */}
+            <div className="lg:hidden relative w-full aspect-[4/3] bg-slate-200">
+                <img 
+                    src={getPhotoUrl(mainPhoto)} 
+                    alt={villa.name} 
+                    className="w-full h-full object-cover"
+                    onClick={() => setIsLightboxOpen(true)}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Overlay actions */}
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+                    <button onClick={() => router.push('/villas')} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <div className="flex space-x-3">
+                        <button onClick={handleShare} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
+                            <Share2 className="w-5 h-5" />
+                        </button>
+                        <button onClick={(e) => toggleWishlist(villa.id, e)} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
+                            <Heart className={`w-5 h-5 ${isSaved ? 'fill-rose-500 text-rose-500' : ''}`} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Photo Counter */}
+                <div className="absolute bottom-10 right-4 bg-black/60 backdrop-blur text-white text-[11px] font-bold px-3 py-1.5 rounded-lg tracking-wider">
+                    1 / {photos.length}
+                </div>
+            </div>
+
+            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-24 lg:pb-16 relative bg-white rounded-t-3xl -mt-6 lg:mt-0 pt-8 lg:pt-0 z-10" id="foto-section">
+                {/* Desktop Title, Share, Save (Hidden on Mobile) */}
+                <div className="hidden lg:block mb-4 mt-10">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <h1 className="font-serif text-2xl md:text-[32px] md:leading-[36px] font-semibold text-slate-900 tracking-tight leading-snug flex items-center gap-2.5">
-                            {/* <Languages className="w-7 h-7 text-slate-800 shrink-0" strokeWidth={1.5} /> */}
                             <span>{villa.name}</span>
                         </h1>
                         <div className="flex items-center space-x-5 flex-shrink-0 text-[14px] font-bold text-slate-800">
@@ -547,8 +702,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     </div>
                 </div>
 
-                {/* Image Gallery Grid */}
-                <div className="relative mb-6">
+                {/* Image Gallery Grid (Hidden on Mobile) */}
+                <div className="hidden lg:block relative mb-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl overflow-hidden bg-white">
                         {/* Main Large Image */}
                         <div 
@@ -613,19 +768,20 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Summary Details */}
-                        <div className="space-y-1">
-                            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight leading-snug">
-                                Seluruh rumah di {villa.location.split(',')[0]}
+                        <div className="space-y-1 lg:space-y-2 lg:text-left text-center flex flex-col items-center lg:items-start">
+                            {/* Mobile Title (Hidden on lg) */}
+                            <h1 className="lg:hidden font-serif text-[28px] font-semibold text-slate-900 tracking-tight leading-snug mb-1">
+                                {villa.name}
+                            </h1>
+                            <h2 className="text-base lg:text-2xl font-normal lg:font-semibold text-slate-700 lg:text-slate-900 tracking-tight leading-snug">
+                                Seluruh vila di {villa.location}
                             </h2>
-                            <p className="text-[15px] text-slate-800 font-normal leading-relaxed">
+                            <p className="text-[15px] text-slate-600 lg:text-slate-800 font-normal leading-relaxed">
                                 {villa.max_guests} tamu · {villa.bedrooms} kamar tidur · {villa.beds || villa.bedrooms_info?.length || villa.bedrooms} tempat tidur · {villa.bathrooms} kamar mandi
-                                {villa.min_nights > 1 && (
-                                    <span> · Min. {villa.min_nights} malam</span>
-                                )}
                             </p>
-                            <div className="flex items-center text-[15px] font-bold text-slate-900 pt-1">
-                                <Star className="w-4 h-4 fill-slate-900 text-slate-900 mr-1 shrink-0" />
-                                <span>{avgRating > 0 ? avgRating.toFixed(1).replace('.', ',') : '5,0'}</span>
+                            <div className="flex items-center text-[15px] font-normal lg:font-bold text-slate-900 pt-1 lg:pt-0">
+                                <Star className="w-3.5 h-3.5 fill-slate-900 text-slate-900 mr-1 shrink-0" />
+                                <span>{avgRating > 0 ? avgRating.toFixed(2).replace('.', ',') : '5,00'}</span>
                                 <span className="mx-1.5 text-slate-400 font-normal">·</span>
                                 <button onClick={() => scrollToSection('ulasan')} className="underline hover:text-blue-600 transition-colors">
                                     {reviews.length} ulasan
@@ -657,8 +813,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         <p className="text-xs text-slate-400">{hostJoinedLabel}</p>
                                     </div>
                                 </div>
-                                <button className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors active:scale-95 duration-150 shrink-0">
-                                    Hubungi Tuan Rumah
+                                <button className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-3 py-2 sm:px-4 rounded-lg transition-colors active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2">
+                                    <MessageCircle className="w-4 h-4 sm:hidden" />
+                                    <span className="hidden sm:inline">Hubungi Tuan Rumah</span>
                                 </button>
                             </div>
                         </div>
@@ -690,7 +847,24 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <div className="pb-6 border-b border-slate-200/80">
                             <div className="space-y-5">
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Kamar Anda</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                
+                                {/* Mobile View: Horizontal scrolling carousel */}
+                                <div className="flex sm:hidden overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-none pb-4 -mx-6 px-6 scroll-px-6 after:content-[''] after:w-[1px] after:flex-shrink-0">
+                                    {bedroomsInfo.map((br, idx) => (
+                                        <div key={idx} className="w-[70vw] max-w-[240px] shrink-0 snap-start flex flex-col space-y-3">
+                                            <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-slate-100">
+                                                <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[14px] font-bold text-slate-900">{br.title}</h4>
+                                                <p className="text-[12px] text-slate-500 mt-0.5 font-normal">{br.subtext}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Desktop/Tablet View: Standard grid layout */}
+                                <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {bedroomsInfo.map((br, idx) => (
                                         <div key={idx} className="rounded-2xl flex flex-col space-y-3">
                                             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
@@ -711,22 +885,23 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             <div className="space-y-5">
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Fasilitas yang ditawarkan</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {(villa.amenities || []).slice(0, 8).map((amenity, idx) => {
-                                        const IconComponent = amenityIconMap[amenity.name] || Check;
+                                    {amenities.slice(0, 8).map((amenity, idx) => {
+                                        const amenityName = typeof amenity === 'string' ? amenity : amenity.name;
+                                        const IconComponent = amenityIconMap[amenityName] || Check;
                                         return (
                                             <div key={idx} className="flex items-center space-x-3 text-[15px] text-slate-800 font-normal">
                                                 <IconComponent className="w-5 h-5 text-slate-700 shrink-0" strokeWidth={1.5} />
-                                                <span>{amenity.name}</span>
+                                                <span>{amenityName}</span>
                                             </div>
                                         );
                                     })}
                                 </div>
-                                {villa.amenities && villa.amenities.length > 8 && (
+                                {amenities.length > 8 && (
                                     <button 
                                         onClick={() => setIsAmenitiesModalOpen(true)}
                                         className="border border-slate-900 hover:bg-slate-50 text-slate-900 text-[15px] font-bold px-5 py-3 rounded-xl transition-all cursor-pointer inline-block mt-4"
                                     >
-                                        Tampilkan ke-{villa.amenities.length} fasilitas
+                                        Tampilkan ke-{amenities.length} fasilitas
                                     </button>
                                 )}
                             </div>
@@ -763,7 +938,33 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
                                 </p>
                             </div>
-                            <div>
+                            <div className="w-full flex justify-center overflow-x-auto pb-4">
+                                <style dangerouslySetInnerHTML={{ __html: `
+                                    .rdp { --rdp-cell-size: min(40px, 11vw); margin: 0; width: 100%; }
+                                    .rdp-months { width: 100%; justify-content: center; }
+                                    .rdp-month { width: 100%; max-width: 100%; margin: 0 auto; }
+                                    .rdp-table { max-width: 100%; border-collapse: collapse; margin: 0 auto; }
+                                    .rdp-cell { text-align: center; padding: 2px; }
+                                    .rdp-head_cell { text-align: center; font-size: 13px; font-weight: 600; padding-bottom: 8px; }
+                                    .rdp-day { 
+                                        width: var(--rdp-cell-size) !important; 
+                                        height: var(--rdp-cell-size) !important; 
+                                        max-width: var(--rdp-cell-size) !important; 
+                                        margin: 0 auto; 
+                                        border-radius: 9999px;
+                                        font-size: 14px;
+                                    }
+                                    
+                                    @media (max-width: 768px) {
+                                        .rdp-cell { padding: 1px; }
+                                    }
+                                    @media (max-width: 400px) {
+                                        .rdp-day { font-size: 13px !important; }
+                                    }
+                                    @media (max-width: 350px) {
+                                        .rdp-day { font-size: 12px !important; }
+                                    }
+                                `}} />
                                 <DayPicker
                                     mode="range"
                                     selected={dateRange}
@@ -772,7 +973,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     numberOfMonths={isMobile ? 1 : 2}
                                     locale={localeID}
                                     hideNavigation
-                                    className="text-slate-800 max-w-full overflow-auto"
+                                    className="text-slate-800 w-full"
                                     classNames={{
                                         selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
                                         today: "text-blue-600 font-black rounded-full",
@@ -1068,170 +1269,85 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             )}
                         </div>
                     </div>
-                    {/* Right Column (Sticky Booking Widget) */}
-                    <aside className="lg:col-span-1">
+                    {/* Right Column (Sticky Booking Widget - Desktop Only) */}
+                    <aside className="hidden lg:block lg:col-span-1">
                         <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-28 space-y-5">
-                            {/* Pricing header details */}
-                            <div>
-                                <div className="flex items-baseline gap-1.5 flex-wrap">
-                                    <span className="text-[22px] font-bold text-slate-900 font-sans tracking-tight">
-                                        Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
-                                    </span>
-                                    <span className="text-sm text-slate-500 font-normal">
-                                        {totalNights > 0 ? `untuk ${totalNights} malam` : 'untuk 1 malam'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Date & Guest Input Form Box */}
-                            <div className="border border-slate-300 rounded-2xl overflow-hidden divide-y divide-slate-200">
-                                <div className="grid grid-cols-2 divide-x divide-slate-200">
-                                    <div 
-                                        onClick={() => scrollToSection('calendar')}
-                                        className="p-3 hover:bg-slate-50 transition-colors cursor-pointer"
-                                    >
-                                        <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-IN</label>
-                                        <span className="text-xs font-semibold text-slate-900">
-                                            {storeCheckIn ? format(parseISO(storeCheckIn), 'd/M/yyyy') : 'Tambah tanggal'}
-                                        </span>
-                                    </div>
-                                    <div 
-                                        onClick={() => scrollToSection('calendar')}
-                                        className="p-3 hover:bg-slate-50 transition-colors cursor-pointer"
-                                    >
-                                        <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-OUT</label>
-                                        <span className="text-xs font-semibold text-slate-900">
-                                            {storeCheckOut ? format(parseISO(storeCheckOut), 'd/M/yyyy') : 'Tambah tanggal'}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="p-3 hover:bg-slate-50 transition-colors">
-                                    <label className="text-[9px] font-black text-slate-700 block tracking-wider">TAMU</label>
-                                    <select 
-                                        value={storeNumGuests}
-                                        onChange={(e) => setNumGuests(Number(e.target.value))}
-                                        className="w-full bg-transparent border-0 p-0 text-xs font-bold text-slate-800 focus:ring-0 focus:outline-none mt-0.5 cursor-pointer"
-                                    >
-                                        {[...Array(villa.max_guests)].map((_, i) => (
-                                            <option key={i} value={i + 1}>{i + 1} tamu</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            {villa.min_nights > 1 && (
-                                <div className="text-[11px] text-slate-500 font-medium text-center -mt-1">
-                                    Minimum menginap {villa.min_nights} malam
-                                </div>
-                            )}
-
-                            {/* Submit booking button */}
-                            <button
-                                onClick={handleBookingSubmit}
-                                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer"
-                            >
-                                <span>Pesan</span>
-                            </button>
-
-                            {/* Price Breakdown Calculations */}
-                            {totalNights > 0 && (
-                                <div className="border-t border-slate-100 pt-4 space-y-3 text-xs font-bold">
-                                    <div className="flex justify-between text-slate-500 font-semibold">
-                                        <span className="underline">Weekday <br></br> (Rp {priceBreakdown.weekdays.price.toLocaleString('id-ID')} x {priceBreakdown.weekdays.count} malam)</span>
-                                        <span className="font-sans">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
-                                    </div>
-                                    {priceBreakdown.weekends.count > 0 && (
-                                        <div className="flex justify-between text-slate-500 font-semibold">
-                                            <span className="underline">Weekend <br></br> (Rp {priceBreakdown.weekends.price.toLocaleString('id-ID')} x {priceBreakdown.weekends.count} malam)</span>
-                                            <span className="font-sans">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
-                                        </div>
-                                    )}
-                                    {isRefundable && (
-                                        <div className="flex justify-between text-slate-500 font-semibold">
-                                            <span className="underline">Pilihan tarif (Bisa dikembalikan +{((villa.refundable_surcharge_rate || 0.1111) * 100).toFixed(1)}%)</span>
-                                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * (villa.refundable_surcharge_rate || 0.1111)).toLocaleString('id-ID')}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-slate-500 font-semibold">
-                                        <span className="underline">Biaya Kebersihan</span>
-                                        {villa.cleaning_fee && villa.cleaning_fee > 0 ? (
-                                            <span className="font-sans">Rp {villa.cleaning_fee.toLocaleString('id-ID')}</span>
-                                        ) : (
-                                            <span className="text-emerald-600">Gratis</span>
-                                        )}
-                                    </div>
-                                    <div className="flex justify-between text-slate-500 font-semibold">
-                                        <span className="underline">Biaya Pelayanan</span>
-                                        <span className="text-emerald-600">Gratis</span>
-                                    </div>
-                                    <div className="flex justify-between font-black text-slate-900 border-t border-slate-100 pt-4 text-sm">
-                                        <span>Total sebelum pajak</span>
-                                        <span className="text-blue-600 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
-                                    </div>
-                                </div>
-                            )}
+                            {bookingWidgetContent}
                         </div>
                     </aside>
                 </div>
             </main>
 
-            {/* Sticky Mobile Booking Bottom Bar */}
-            <div className="fixed bottom-0 left-0 right-0 z-45 bg-white/95 backdrop-blur-md border-t border-slate-200 p-4 flex items-center justify-between lg:hidden shadow-2xl">
-                <div>
-                    <div className="text-xs font-black text-slate-900 font-sans">
-                        <span className="text-base text-slate-900 font-black block">
-                            Rp {totalAmount.toLocaleString('id-ID')}
-                            <span className="text-[10px] text-slate-500 font-normal ml-1">total</span>
-                        </span>
-                        <span className="text-[9px] text-blue-600 font-extrabold uppercase tracking-wider block mt-0.5">
-                            {isRefundable ? 'Bisa dikembalikan' : 'Tanpa pengembalian dana'}
-                        </span>
+            {/* Mobile Fixed Booking Widget (Portaled to body to bypass CSS transform bugs) */}
+            {isMounted && typeof document !== 'undefined' && createPortal(
+                <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[85vh] overflow-y-auto rounded-t-3xl overscroll-contain transition-transform lg:hidden">
+                    <div className="space-y-4">
+                        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2"></div>
+                        {bookingWidgetContent}
                     </div>
-                </div>
-                <button
-                    onClick={handleBookingSubmit}
-                    className="bg-blue-600 hover:bg-blue-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer"
-                >
-                    Pesan
-                </button>
-            </div>
+                </div>,
+                document.body
+            )}
 
-            {/* Photo Lightbox Modal */}
+            {/* Photo Tour Modal (Tur foto) */}
             {isLightboxOpen && (
-                <div className="fixed inset-0 z-55 bg-black/95 flex flex-col justify-between p-4 sm:p-8 animate-fadeIn">
-                    <div className="flex items-center justify-between text-white">
-                        <span className="text-xs font-bold uppercase tracking-wider">
-                            Foto {currentImageIndex + 1} dari {photos.length}
-                        </span>
+                <div className="fixed inset-0 z-55 bg-white overflow-y-auto animate-fadeIn pb-10">
+                    <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-100">
                         <button 
                             onClick={() => setIsLightboxOpen(false)}
-                            className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors text-white cursor-pointer active:scale-90"
+                            className="p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors text-slate-900 cursor-pointer active:scale-95"
                         >
-                            <X className="w-6 h-6" />
+                            <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <button 
+                            onClick={handleShare}
+                            className="p-2 -mr-2 rounded-full hover:bg-slate-100 transition-colors text-slate-900 cursor-pointer active:scale-95"
+                        >
+                            <Share2 className="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div className="flex-1 flex items-center justify-center py-4">
-                        <img 
-                            src={getPhotoUrl(photos[currentImageIndex])} 
-                            alt="Lightbox view" 
-                            className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl"
-                        />
-                    </div>
+                    <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-4 pb-20">
+                        <h2 className="text-[28px] sm:text-3xl font-bold text-slate-900 tracking-tight mb-8">Tur foto</h2>
 
-                    {/* Lightbox thumbnails */}
-                    <div className="flex justify-center space-x-2 overflow-x-auto max-w-2xl mx-auto pb-4 scrollbar-none">
-                        {photos.map((ph, idx) => (
-                            <img 
-                                key={idx}
-                                src={getPhotoUrl(ph)}
-                                alt="Thumb"
-                                onClick={() => setCurrentImageIndex(idx)}
-                                className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${
-                                    idx === currentImageIndex ? 'border-blue-600 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'
-                                }`}
-                            />
-                        ))}
+                        {/* Dynamic categories rendering */}
+                        {(() => {
+                            const groups: { [key: string]: typeof photos } = {};
+                            photos.forEach(ph => {
+                                const cat = getPhotoCategory(ph);
+                                if (!groups[cat]) {
+                                    groups[cat] = [];
+                                }
+                                groups[cat].push(ph);
+                            });
+
+                            return Object.entries(groups).map(([category, catPhotos]) => {
+                                // Assign premium layouts depending on category for nice visual rhythm
+                                let gridCols = "grid-cols-1 sm:grid-cols-2";
+                                let aspectClass = "aspect-[4/3]";
+                                
+                                if (category.toLowerCase() === 'kamar tidur') {
+                                    gridCols = "grid-cols-1";
+                                    aspectClass = "aspect-video sm:aspect-[21/9]";
+                                } else if (category.toLowerCase() === 'dapur') {
+                                    gridCols = "grid-cols-1 sm:grid-cols-2";
+                                    aspectClass = "aspect-[4/3] sm:aspect-square";
+                                }
+
+                                return (
+                                    <div key={category} className="mb-10">
+                                        <h3 className="text-lg font-bold text-slate-900 mb-4 capitalize">{category}</h3>
+                                        <div className={`grid ${gridCols} gap-2 sm:gap-4`}>
+                                            {catPhotos.map((ph, idx) => (
+                                                <div key={`${category}-${idx}`} className={`w-full ${aspectClass} rounded-xl overflow-hidden bg-slate-100 relative group`}>
+                                                    <img src={getPhotoUrl(ph)} alt={category} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            });
+                        })()}
                     </div>
                 </div>
             )}
@@ -1250,12 +1366,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             </button>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 py-2">
-                            {(villa.amenities || []).map((amenity, idx) => {
-                                const IconComponent = amenityIconMap[amenity.name] || Check;
+                            {amenities.map((amenity, idx) => {
+                                const amenityName = typeof amenity === 'string' ? amenity : amenity.name;
+                                const IconComponent = amenityIconMap[amenityName] || Check;
                                 return (
                                     <div key={idx} className="flex items-center space-x-3.5 text-[15px] text-slate-800 font-normal border-b border-slate-100 pb-3">
                                         <IconComponent className="w-5 h-5 text-slate-700 shrink-0" strokeWidth={1.5} />
-                                        <span>{amenity.name}</span>
+                                        <span>{amenityName}</span>
                                     </div>
                                 );
                             })}

@@ -105,7 +105,7 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
                 </div>
 
                 {/* Property info */}
-                <div className="space-y-1 px-1">
+                <div className="space-y-1">
                     {/* Title and rating */}
                     <div className="flex items-start justify-between gap-2">
                         <h3 className="font-bold text-sm text-slate-900 truncate flex-1">

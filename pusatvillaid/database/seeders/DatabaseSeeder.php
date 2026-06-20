@@ -711,7 +711,20 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        $categoriesList = ['Ruang tamu', 'Kamar tidur', 'Dapur', 'Kolam renang', 'Luar ruangan'];
         foreach ($villasData as $data) {
+            if (isset($data['photos']) && is_array($data['photos'])) {
+                $structuredPhotos = [];
+                foreach ($data['photos'] as $idx => $photoUrl) {
+                    $category = $categoriesList[$idx % count($categoriesList)];
+                    $structuredPhotos[] = [
+                        'url' => $photoUrl,
+                        'description' => $category . ' dari ' . $data['name'],
+                        'category' => $category,
+                    ];
+                }
+                $data['photos'] = $structuredPhotos;
+            }
             $villa = Villa::firstOrCreate(['slug' => $data['slug']], $data);
 
             if ($villa->slug === 'pulas-private-villa-prawiro-oleh-fulton') {

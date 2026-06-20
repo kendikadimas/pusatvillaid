@@ -13,7 +13,7 @@ export interface Villa {
     weekend_price: number | null;
     min_nights: number;
     amenities: Array<{ name: string; icon: string }> | null;
-    photos: Array<string | { url: string; description: string }> | null;
+    photos: Array<string | { url: string; description: string; category?: string }> | null;
     rules: string | null;
     check_in_time: string;
     check_out_time: string;

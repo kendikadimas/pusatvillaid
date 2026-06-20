@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { getPhotoUrl, getPhotoDesc } from '@/lib/villaUtils';
 
 interface VillaGallerySectionProps {
-    photos: Array<string | { url: string; description: string }>;
+    photos: Array<string | { url: string; description: string; category?: string }>;
     villaName: string;
 }
 

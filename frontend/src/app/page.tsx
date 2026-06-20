@@ -335,7 +335,8 @@ export default function HomePage() {
     };
 
     const onScroll = () => {
-        const isSolid = window.scrollY > 10;
+        const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+        const isSolid = scrollPosition > 10;
         setHeaderSolid(isSolid);
     };
 
@@ -535,12 +536,13 @@ export default function HomePage() {
                         </div>
 
                         {/* Horizontal scroll property cards */}
-                        <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
+                        <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2 snap-x snap-mandatory scroll-pl-4">
                             {villas.slice(0, 6).map((villa) => (
-                                <div key={villa.id} className="flex-shrink-0 w-[280px]">
+                                <div key={villa.id} className="flex-shrink-0 w-[240px] snap-start">
                                     <MobilePropertyCard villa={villa} />
                                 </div>
                             ))}
+                            <div className="w-[1px] flex-shrink-0" />
                         </div>
                     </div>
                 )}
@@ -548,21 +550,65 @@ export default function HomePage() {
                 {/* Price bar — hidden */}
                 {/* <div className="px-4 py-4"><PriceBar /></div> */}
 
-                {/* Mobile-specific villa grid */}
-                <div className="px-4 py-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4">Villa Pilihan</h2>
-                    {loading ? (
-                        <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                {/* Mobile: Destination Grid */}
+                {!loading && destinations.length > 0 && (
+                    <div className="border-t border-slate-100">
+                        <DestinationGrid
+                            destinations={destinations}
+                            groupedByLocation={groupedByLocation}
+                        />
+                    </div>
+                )}
+
+                {/* Mobile: location-grouped carousels */}
+                {!loading && groupedByLocation.map((group) => (
+                    <div key={group.query} className="px-4 py-5">
+                        <div className="flex items-end justify-between mb-3">
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-900">
+                                    Villa di {group.city}
+                                </h2>
+                                <p className="text-xs text-slate-400 mt-0.5">{group.villas.length} villa</p>
+                            </div>
+                            <Link
+                                href={`/villas?location=${group.query}`}
+                                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                            >
+                                Lihat semua
+                                <ArrowRight className="w-3 h-3" />
+                            </Link>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4">
-                            {villas.slice(0, 10).map((villa) => (
-                                <MobilePropertyCard key={villa.id} villa={villa} />
+                        <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2 snap-x snap-mandatory scroll-pl-4">
+                            {group.villas.map((villa) => (
+                                <div key={villa.id} className="flex-shrink-0 w-[220px] snap-start">
+                                    <MobilePropertyCard villa={villa} />
+                                </div>
                             ))}
+                            <div className="w-[1px] flex-shrink-0" />
                         </div>
-                    )}
-                </div>
+                    </div>
+                ))}
+
+                {/* Unmatched villas */}
+                {!loading && unmatchedVillas.length > 0 && (
+                    <div className="px-4 py-5">
+                        <h2 className="text-lg font-bold text-slate-900 mb-3">Villa Lainnya</h2>
+                        <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2 snap-x snap-mandatory scroll-pl-4">
+                            {unmatchedVillas.map((villa) => (
+                                <div key={villa.id} className="flex-shrink-0 w-[220px] snap-start">
+                                    <MobilePropertyCard villa={villa} />
+                                </div>
+                            ))}
+                            <div className="w-[1px] flex-shrink-0" />
+                        </div>
+                    </div>
+                )}
+
+                {loading && (
+                    <div className="flex justify-center py-20">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                )}
             </div>
 
             {/* Mobile Bottom Navigation */}

@@ -382,10 +382,8 @@ function VillasCatalogContent() {
             {/* Main Split Screen Container */}
             <div className={`flex-grow flex flex-row overflow-hidden relative w-full ${showFilters ? 'h-[calc(100vh-240px)]' : 'h-[calc(100vh-180px)]'}`}>
                 
-                {/* Left Side: Scrollable Listing */}
-                <div className={`w-full lg:w-[46%] xl:w-[46%] h-full overflow-y-auto bg-white flex flex-col border-r border-slate-100 ${
-                    viewMode === 'map' ? 'hidden lg:flex' : 'flex'
-                }`}>
+                {/* Left Side: Scrollable Listing (Desktop Only) */}
+                <div className="hidden lg:flex w-[46%] xl:w-[46%] h-full overflow-y-auto bg-white flex-col border-r border-slate-100">
                     <main className="flex-1 px-4 lg:px-8 py-6 w-full">
                         {/* Heading & Price Tag Banner resembling Airbnb */}
                         <div className="flex flex-col space-y-3 mb-6">
@@ -403,7 +401,7 @@ function VillasCatalogContent() {
                         </div>
 
                         {/* Villas Listing Grid */}
-                        <div className="flex-1 flex flex-col justify-between">
+                        <div className="flex-1 flex flex-col justify-between pl-2">
                             {loading ? (
                                 <LoadingSpinner fullPage={false} message="Memuat villa..." />
                             ) : filteredVillas.length === 0 ? (
@@ -439,10 +437,8 @@ function VillasCatalogContent() {
                     </main>
                 </div>
 
-                {/* Right Side: Interactive Map */}
-                <div className={`w-full lg:w-[54%] xl:w-[54%] h-full bg-slate-100 relative ${
-                    viewMode === 'list' ? 'hidden lg:block' : 'block'
-                }`}>
+                {/* Right Side: Interactive Map (Desktop & Mobile) */}
+                <div className="w-full lg:w-[54%] xl:w-[54%] h-full bg-slate-100 relative">
                     <MapComponent
                         villas={filteredVillas}
                         hoveredVillaId={hoveredVillaId}
@@ -454,43 +450,21 @@ function VillasCatalogContent() {
                         toggleWishlist={toggleWishlist}
                     />
                 </div>
-            </div>
 
-            {/* Mobile View Floating Toggler Button */}
-            <button
-                onClick={() => setViewMode(prev => prev === 'list' ? 'map' : 'list')}
-                className="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-md hover:bg-slate-900 active:scale-[0.97] transition-all duration-200 text-white px-5 py-3 rounded-full shadow-xl flex items-center space-x-2 text-xs font-bold uppercase tracking-wider cursor-pointer border border-white/10"
-            >
-                {viewMode === 'list' ? (
-                    <>
-                        <span>Peta</span>
-                        <MapIcon className="w-4 h-4 text-blue-400 fill-blue-400/10" />
-                    </>
-                ) : (
-                    <>
-                        <span>Daftar</span>
-                        <ListIcon className="w-4 h-4 text-blue-400" />
-                    </>
-                )}
-            </button>
+                {/* Mobile Bottom Sheet Overlay (Scrollable to expand) */}
+                <div className="lg:hidden absolute inset-0 z-30 overflow-y-auto snap-y snap-proximity scrollbar-hide pointer-events-none">
+                    {/* Transparent spacer to let the map show through and be interactive */}
+                    <div className="h-[45%] w-full shrink-0 snap-start" />
+                    
+                    {/* The expanding white bottom sheet */}
+                    <div className="min-h-full pointer-events-auto bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] flex flex-col relative snap-start">
+                        {/* Header & Grabber */}
+                        <div className="sticky top-0 bg-white rounded-t-3xl pt-3 pb-4 flex justify-center z-10 border-b border-slate-50">
+                            <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+                        </div>
 
-            {/* Mobile Bottom Navigation */}
-            <BottomNav />
-
-            {/* Mobile Search Overlay */}
-            <SearchOverlay
-                isOpen={isSearchOverlayOpen}
-                onClose={() => setIsSearchOverlayOpen(false)}
-                initialLocation={locationInput}
-                initialCheckIn={checkInParam}
-                initialCheckOut={checkOutParam}
-                initialGuests={Number(guests) || 0}
-            />
-
-            {/* Mobile Property Cards (shown in list view on mobile) */}
-            {viewMode === 'list' && (
-                <div className="lg:hidden fixed inset-x-0 top-[104px] bottom-16 overflow-y-auto bg-white z-30">
-                    <div className="px-4 py-4 space-y-6">
+                        {/* Scrollable Cards */}
+                        <div className="px-4 pb-24 pt-2 space-y-6">
                         {loading ? (
                             <LoadingSpinner fullPage={false} message="Memuat villa..." />
                         ) : filteredVillas.length === 0 ? (
@@ -515,7 +489,23 @@ function VillasCatalogContent() {
                         )}
                     </div>
                 </div>
-            )}
+            </div>
+            </div>
+
+            {/* Mobile Bottom Navigation */}
+            <BottomNav />
+
+            {/* Mobile Search Overlay */}
+            <SearchOverlay
+                isOpen={isSearchOverlayOpen}
+                onClose={() => setIsSearchOverlayOpen(false)}
+                initialLocation={locationInput}
+                initialCheckIn={checkInParam}
+                initialCheckOut={checkOutParam}
+                initialGuests={Number(guests) || 0}
+            />
+
+
         </div>
     );
 }

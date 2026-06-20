@@ -23,6 +23,11 @@ export function getPhotoDesc(photo: any): string {
     return photo.description || '';
 }
 
+export function getPhotoCategory(photo: any): string {
+    if (!photo || typeof photo === 'string') return 'Lainnya';
+    return photo.category || 'Lainnya';
+}
+
 export function getMainPhoto(villa: Villa | null | undefined): string {
     if (!villa) return FALLBACK_PHOTO;
     if (villa.photos && villa.photos.length > 0) {
