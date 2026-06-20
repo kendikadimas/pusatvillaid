@@ -236,10 +236,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .then(() => console.log('[Auth] Logout API success'))
             .catch(err => console.error('[Auth] Logout API error:', err));
         
-        // Redirect to home page
+        // Smooth transition: add fade-out class then redirect
         if (typeof window !== 'undefined') {
             console.log('[Auth] Redirecting to: /');
-            window.location.href = '/';
+            document.body.classList.add('logging-out');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 250);
         }
     };
 
