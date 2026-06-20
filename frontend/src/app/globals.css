@@ -32,7 +32,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-plus-jakarta), sans-serif;
-  --font-serif: var(--font-plus-jakarta), sans-serif;
+  --font-serif: var(--font-walheim), serif;
   --font-mono: var(--font-geist-mono);
 }
 

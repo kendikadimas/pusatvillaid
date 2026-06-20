@@ -69,6 +69,10 @@ export interface Booking {
     villa?: Villa;
     payment?: Payment;
     review?: Review;
+    payment_method_id?: number | null;
+    tax_amount?: number;
+    admin_fee?: number;
+    payment_method?: PaymentMethod | null;
 }
 
 export interface Payment {
@@ -97,6 +101,7 @@ export interface PaymentMethod {
     account_number: string;
     account_name: string;
     logo_url: string | null;
+    admin_fee: number;
     is_active: boolean;
     created_at?: string;
     updated_at?: string;

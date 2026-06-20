@@ -15,6 +15,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VillaController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\Admin\SettingAdminController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +42,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::get('/bookings/{code}', [BookingController::class, 'show']);
     Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'indexPublic']);
+    Route::get('/settings/public', [SettingController::class, 'indexPublic']);
 
     Route::post('/payment/notification', [PaymentController::class, 'notification']);
 
@@ -74,6 +77,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/settings', [SettingAdminController::class, 'index']);
+        Route::post('/settings', [SettingAdminController::class, 'update']);
 
         // Bookings Management
         Route::get('/bookings', [BookingAdminController::class, 'index']);

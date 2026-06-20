@@ -23,7 +23,8 @@ import {
     X,
     Check,
     ToggleRight,
-    ToggleLeft
+    ToggleLeft,
+    Percent
 } from 'lucide-react';
 import { toast } from 'sonner';
 import axiosClient from '@/lib/axios';
@@ -32,7 +33,7 @@ import { PaymentMethod } from '@/types';
 export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'identity' | 'policies' | 'payment' | 'payment_methods'>('identity');
+    const [activeTab, setActiveTab] = useState<'identity' | 'policies' | 'tax_fees' | 'payment' | 'payment_methods'>('identity');
 
     const [propertyName, setPropertyName] = useState('PusatVilla.id');
     const [whatsappNumber, setWhatsappNumber] = useState('+62 812-3456-7890');
@@ -41,9 +42,11 @@ export default function AdminSettingsPage() {
     const [checkInTime, setCheckInTime] = useState('14:00');
     const [checkOutTime, setCheckOutTime] = useState('12:00');
     const [midtransMode, setMidtransMode] = useState('sandbox');
+    const [taxPercentage, setTaxPercentage] = useState<number>(0);
 
     // Payment Methods CRUD state
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [adminFee, setAdminFee] = useState<number>(0);
     const [loadingMethods, setLoadingMethods] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
@@ -81,6 +84,7 @@ export default function AdminSettingsPage() {
         setAccountNumber('');
         setAccountName('');
         setLogoUrl('');
+        setAdminFee(0);
         setMethodIsActive(true);
         setIsModalOpen(true);
     };
@@ -92,6 +96,7 @@ export default function AdminSettingsPage() {
         setAccountNumber(method.account_number);
         setAccountName(method.account_name);
         setLogoUrl(method.logo_url || '');
+        setAdminFee(method.admin_fee || 0);
         setMethodIsActive(method.is_active);
         setIsModalOpen(true);
     };
@@ -139,6 +144,7 @@ export default function AdminSettingsPage() {
             account_number: accountNumber.trim(),
             account_name: accountName.trim(),
             logo_url: logoUrl || null,
+            admin_fee: adminFee,
             is_active: methodIsActive
         };
 
@@ -190,31 +196,63 @@ export default function AdminSettingsPage() {
     };
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedName = localStorage.getItem('settings_prop_name');
-            const savedWA = localStorage.getItem('settings_wa');
-            const savedEmail = localStorage.getItem('settings_email');
-            const savedAddr = localStorage.getItem('settings_address');
-            const savedCheckIn = localStorage.getItem('settings_checkin');
-            const savedCheckOut = localStorage.getItem('settings_checkout');
-            const savedMidtrans = localStorage.getItem('settings_midtrans');
+        const fetchSettings = async () => {
+            setLoading(true);
+            try {
+                const response = await axiosClient.get('/admin/settings');
+                const data = response.data;
+                if (data.settings_prop_name) setPropertyName(data.settings_prop_name);
+                if (data.settings_wa) setWhatsappNumber(data.settings_wa);
+                if (data.settings_email) setPropertyEmail(data.settings_email);
+                if (data.settings_address) setAddress(data.settings_address);
+                if (data.settings_checkin) setCheckInTime(data.settings_checkin);
+                if (data.settings_checkout) setCheckOutTime(data.settings_checkout);
+                if (data.settings_midtrans) setMidtransMode(data.settings_midtrans);
+                if (data.tax_percentage !== undefined) setTaxPercentage(data.tax_percentage);
+            } catch (err) {
+                console.error('Failed to fetch settings from API, using localStorage fallback:', err);
+                if (typeof window !== 'undefined') {
+                    const savedName = localStorage.getItem('settings_prop_name');
+                    const savedWA = localStorage.getItem('settings_wa');
+                    const savedEmail = localStorage.getItem('settings_email');
+                    const savedAddr = localStorage.getItem('settings_address');
+                    const savedCheckIn = localStorage.getItem('settings_checkin');
+                    const savedCheckOut = localStorage.getItem('settings_checkout');
+                    const savedMidtrans = localStorage.getItem('settings_midtrans');
+                    const savedTax = localStorage.getItem('tax_percentage');
 
-            if (savedName) setPropertyName(savedName);
-            if (savedWA) setWhatsappNumber(savedWA);
-            if (savedEmail) setPropertyEmail(savedEmail);
-            if (savedAddr) setAddress(savedAddr);
-            if (savedCheckIn) setCheckInTime(savedCheckIn);
-            if (savedCheckOut) setCheckOutTime(savedCheckOut);
-            if (savedMidtrans) setMidtransMode(savedMidtrans);
-        }
-        setLoading(false);
+                    if (savedName) setPropertyName(savedName);
+                    if (savedWA) setWhatsappNumber(savedWA);
+                    if (savedEmail) setPropertyEmail(savedEmail);
+                    if (savedAddr) setAddress(savedAddr);
+                    if (savedCheckIn) setCheckInTime(savedCheckIn);
+                    if (savedCheckOut) setCheckOutTime(savedCheckOut);
+                    if (savedMidtrans) setMidtransMode(savedMidtrans);
+                    if (savedTax) setTaxPercentage(Number(savedTax));
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSettings();
     }, []);
 
-    const handleSaveSettings = (e: React.FormEvent) => {
+    const handleSaveSettings = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
 
         try {
+            await axiosClient.post('/admin/settings', {
+                settings_prop_name: propertyName,
+                settings_wa: whatsappNumber,
+                settings_email: propertyEmail,
+                settings_address: address,
+                settings_checkin: checkInTime,
+                settings_checkout: checkOutTime,
+                settings_midtrans: midtransMode,
+                tax_percentage: taxPercentage
+            });
+
             if (typeof window !== 'undefined') {
                 localStorage.setItem('settings_prop_name', propertyName);
                 localStorage.setItem('settings_wa', whatsappNumber);
@@ -223,12 +261,13 @@ export default function AdminSettingsPage() {
                 localStorage.setItem('settings_checkin', checkInTime);
                 localStorage.setItem('settings_checkout', checkOutTime);
                 localStorage.setItem('settings_midtrans', midtransMode);
+                localStorage.setItem('tax_percentage', String(taxPercentage));
             }
             
             toast.success('Pengaturan sistem berhasil disimpan!');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to save settings:', err);
-            toast.error('Gagal menyimpan pengaturan.');
+            toast.error(err.response?.data?.message || 'Gagal menyimpan pengaturan.');
         } finally {
             setSaving(false);
         }
@@ -246,6 +285,8 @@ export default function AdminSettingsPage() {
     const tabs = [
         { id: 'identity', name: 'Identitas properti', icon: Globe, desc: 'Nama brand, WhatsApp, email, dan alamat fisik.' },
         { id: 'policies', name: 'Kebijakan waktu', icon: Clock, desc: 'Jam default check-in & check-out villa.' },
+        { id: 'tax_fees', name: 'Biaya & Pajak', icon: Percent, desc: 'Kelola pajak persenan dan biaya layanan.' },
+        { id: 'payment', name: 'Gateway Pembayaran', icon: CreditCard, desc: 'Integrasi Midtrans sandbox & production.' },
         { id: 'payment_methods', name: 'Metode Pembayaran', icon: SlidersHorizontal, desc: 'Kelola rekening transfer bank manual.' }
     ] as const;
 
@@ -389,6 +430,34 @@ export default function AdminSettingsPage() {
                                     </div>
                                 )}
 
+                                {activeTab === 'tax_fees' && (
+                                    <div className="space-y-6 animate-in fade-in duration-200">
+                                        <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
+                                            <Percent className="w-4.5 h-4.5 text-blue-500" />
+                                            <h3 className="text-sm font-bold text-[#222222]">Biaya & Pajak</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-500 mb-1.5">Persentase Pajak (%)</label>
+                                                <div className="relative">
+                                                    <input 
+                                                        type="number"
+                                                        required
+                                                        min="0"
+                                                        max="100"
+                                                        value={taxPercentage}
+                                                        onChange={(e) => setTaxPercentage(Number(e.target.value))}
+                                                        className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] pl-3.5 pr-8 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 font-mono"
+                                                    />
+                                                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400">%</span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400 mt-1.5 font-normal">Pajak ini akan dikalkulasikan secara otomatis dari harga sewa dasar villa saat checkout tamu.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {activeTab === 'payment' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
@@ -506,11 +575,15 @@ export default function AdminSettingsPage() {
                                                 <div className="text-xs space-y-1">
                                                     <h4 className="font-extrabold text-[#222222]">{method.name}</h4>
                                                     {method.code === 'qris' ? (
-                                                        <p className="text-slate-500 text-[11px] font-semibold">QRIS — {method.account_name}</p>
+                                                        <>
+                                                            <p className="text-slate-500 text-[11px] font-semibold">QRIS — {method.account_name}</p>
+                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">Rp {(method.admin_fee || 0).toLocaleString('id-ID')}</span></div>
+                                                        </>
                                                     ) : (
                                                         <>
                                                             <p className="text-slate-500 font-mono text-[11px] font-semibold">{method.account_number}</p>
                                                             <p className="text-slate-500 text-[10px] font-medium">a.n. <span className="font-bold text-slate-800">{method.account_name}</span></p>
+                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">Rp {(method.admin_fee || 0).toLocaleString('id-ID')}</span></div>
                                                         </>
                                                     )}
                                                 </div>
@@ -630,6 +703,19 @@ export default function AdminSettingsPage() {
                                             onChange={(e) => setAccountName(e.target.value)}
                                             placeholder={methodCode.trim().toLowerCase() === 'qris' ? 'MERCHANT NAMA' : 'PT PUSAT VILLA INDONESIA'}
                                             className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Biaya Admin (Rupiah) *</label>
+                                        <input 
+                                            type="number"
+                                            required
+                                            min="0"
+                                            value={adminFee}
+                                            onChange={(e) => setAdminFee(Number(e.target.value))}
+                                            placeholder="Contoh: 2500"
+                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
                                         />
                                     </div>
 

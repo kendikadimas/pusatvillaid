@@ -15,6 +15,7 @@ class Booking extends Model
         'booking_code',
         'villa_id',
         'user_id',
+        'payment_method_id',
         'guest_name',
         'guest_email',
         'guest_phone',
@@ -23,6 +24,8 @@ class Booking extends Model
         'total_nights',
         'num_guests',
         'base_price',
+        'tax_amount',
+        'admin_fee',
         'total_amount',
         'status',
         'payment_status',
@@ -39,7 +42,10 @@ class Booking extends Model
         'check_out' => 'date:Y-m-d',
         'total_nights' => 'integer',
         'num_guests' => 'integer',
+        'payment_method_id' => 'integer',
         'base_price' => 'decimal:2',
+        'tax_amount' => 'integer',
+        'admin_fee' => 'integer',
         'total_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
     ];
@@ -67,5 +73,10 @@ class Booking extends Model
     public function reviewToken(): HasOne
     {
         return $this->hasOne(ReviewToken::class);
+    }
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

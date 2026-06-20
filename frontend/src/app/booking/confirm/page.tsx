@@ -57,6 +57,7 @@ export default function BookingConfirmPage() {
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
     const [methodsLoading, setMethodsLoading] = useState(true);
+    const [taxPercentage, setTaxPercentage] = useState<number>(0);
 
     // Form States
     const [name, setName] = useState('');
@@ -138,12 +139,33 @@ export default function BookingConfirmPage() {
         fetchMethods();
     }, []);
 
+    // Fetch public settings (tax_percentage)
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axiosClient.get('/settings/public');
+                if (response.data.tax_percentage !== undefined) {
+                    setTaxPercentage(response.data.tax_percentage);
+                }
+            } catch (err) {
+                console.error('Failed to fetch public settings:', err);
+            }
+        };
+        fetchSettings();
+    }, []);
+
     // Format seconds to MM:SS
     const formatTimer = (seconds: number) => {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
+
+    const baseTotal = totalAmount;
+    const taxAmount = Math.round((taxPercentage / 100) * baseTotal);
+    const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
+    const adminFee = selectedMethod?.admin_fee || 0;
+    const finalTotalAmount = baseTotal + taxAmount + adminFee;
 
     if (authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
         return <LoadingSpinner />;
@@ -221,6 +243,7 @@ export default function BookingConfirmPage() {
 
             const payload = {
                 villa_id: selectedVilla.id,
+                payment_method_id: selectedMethodId,
                 guest_name: name,
                 guest_email: email,
                 guest_phone: phone,
@@ -666,11 +689,23 @@ export default function BookingConfirmPage() {
                                                 <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                             </div>
                                         )}
+                                        {taxPercentage > 0 && (
+                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-t border-slate-50 pt-2.5">
+                                                <span>Pajak ({taxPercentage}%)</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                            </div>
+                                        )}
+                                        {adminFee > 0 && (
+                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-t border-slate-50 pt-2.5">
+                                                <span>Biaya Admin ({selectedMethod?.name})</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                            </div>
+                                        )}
                                     </div>
-
+ 
                                     <div className="border-t border-slate-150 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 font-black text-slate-950 text-sm">
                                         <span>Total Biaya</span>
-                                        <span className="text-blue-500 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                        <span className="text-blue-500 font-sans">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
                                     </div>
                                 </div>
 
@@ -983,10 +1018,22 @@ export default function BookingConfirmPage() {
                                                 <span className="text-blue-500 font-bold font-sans flex-shrink-0">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                             </div>
                                         )}
+                                        {taxPercentage > 0 && (
+                                            <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
+                                                <span className="text-left">Pajak ({taxPercentage}%)</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                            </div>
+                                        )}
+                                        {adminFee > 0 && (
+                                            <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
+                                                <span className="text-left">Biaya Admin ({selectedMethod?.name})</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                            </div>
+                                        )}
                                         
                                         <div className="border-t border-slate-150 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                             <span>Total Biaya</span>
-                                            <span className="text-blue-600 font-sans text-base">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                            <span className="text-blue-600 font-sans text-base">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1017,7 +1064,7 @@ export default function BookingConfirmPage() {
                             <div>
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Total Biaya</div>
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-sm font-black text-slate-900 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                    <span className="text-sm font-black text-slate-900 font-sans">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
                                     <button 
                                         onClick={() => setIsPriceDetailOpen(true)}
                                         className="text-[10px] font-bold text-blue-500 hover:underline cursor-pointer"
@@ -1204,10 +1251,22 @@ export default function BookingConfirmPage() {
                                     <span className="text-blue-500 font-bold font-sans flex-shrink-0">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
                                 </div>
                             )}
+                            {taxPercentage > 0 && (
+                                <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
+                                    <span className="text-left">Pajak ({taxPercentage}%)</span>
+                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                </div>
+                            )}
+                            {adminFee > 0 && (
+                                <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
+                                    <span className="text-left">Biaya Admin ({selectedMethod?.name})</span>
+                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                </div>
+                            )}
                             
                             <div className="border-t border-slate-100 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                 <span>Total</span>
-                                <span className="text-blue-600 font-sans text-base">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                                <span className="text-blue-600 font-sans text-base">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
                             </div>
                         </div>
                         

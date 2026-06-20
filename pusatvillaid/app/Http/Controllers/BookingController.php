@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Villa;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Mail\AdminNewBookingMail;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -27,6 +30,7 @@ class BookingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'villa_id' => 'required|exists:villas,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
             'guest_name' => 'required|string|max:255',
             'guest_email' => 'required|email|max:255',
             'guest_phone' => 'required|string|max:20',
@@ -102,21 +106,32 @@ class BookingController extends Controller
                 }
 
                 // 3. Calculate total pricing (weekday vs weekend pricing)
-                $totalAmount = 0;
+                $baseAmount = 0;
                 $period = CarbonPeriod::create($checkIn, Carbon::parse($checkOut)->subDay());
 
                 foreach ($period as $date) {
                     $isWeekend = $date->isFriday() || $date->isSaturday();
                     if ($isWeekend && $villa->weekend_price !== null) {
-                        $totalAmount += $villa->weekend_price;
+                        $baseAmount += $villa->weekend_price;
                     } else {
-                        $totalAmount += $villa->price_per_night;
+                        $baseAmount += $villa->price_per_night;
                     }
                 }
 
                 if ($request->input('is_refundable')) {
-                    $totalAmount = round($totalAmount * 1.11111);
+                    $baseAmount = round($baseAmount * 1.11111);
                 }
+
+                // Load tax percentage from settings
+                $taxPercentage = (int) Setting::getValue('tax_percentage', 0);
+                $taxAmount = round(($taxPercentage / 100) * $baseAmount);
+
+                // Load admin fee from payment method
+                $paymentMethod = PaymentMethod::find($request->payment_method_id);
+                $adminFee = $paymentMethod ? $paymentMethod->admin_fee : 0;
+
+                // Final total amount
+                $totalAmount = $baseAmount + $taxAmount + $adminFee;
 
                 // 4. Generate sequential booking code (VB-YYYY-XXXX) — atomic with lock and retry
                 $year = now()->year;
@@ -153,6 +168,7 @@ class BookingController extends Controller
                     'booking_code' => $bookingCode,
                     'villa_id' => $villa->id,
                     'user_id' => $request->user()?->id,
+                    'payment_method_id' => $request->payment_method_id,
                     'guest_name' => $request->guest_name,
                     'guest_email' => $request->guest_email,
                     'guest_phone' => $request->guest_phone,
@@ -161,6 +177,8 @@ class BookingController extends Controller
                     'total_nights' => $totalNights,
                     'num_guests' => $request->num_guests,
                     'base_price' => $villa->price_per_night,
+                    'tax_amount' => $taxAmount,
+                    'admin_fee' => $adminFee,
                     'total_amount' => $totalAmount,
                     'status' => 'pending',
                     'payment_status' => 'unpaid',
@@ -185,6 +203,18 @@ class BookingController extends Controller
                 'snap_token' => $snapToken,
                 'expired_at' => now()->addHour(),
             ]);
+
+            // Send notification email to admin(s)
+            try {
+                $adminEmails = \App\Models\User::where('role', 'admin')->pluck('email')->toArray();
+                if (empty($adminEmails)) {
+                    $adminEmails = ['admin@example.com'];
+                }
+                Mail::to($adminEmails)->send(new AdminNewBookingMail($bookingData));
+                Log::info("Email notifikasi booking baru berhasil dikirim ke admin: " . implode(', ', $adminEmails));
+            } catch (\Exception $mailEx) {
+                Log::error("Gagal mengirim email notifikasi booking baru ke admin: " . $mailEx->getMessage());
+            }
 
             return response()->json([
                 'booking_code' => $bookingData->booking_code,
@@ -211,7 +241,7 @@ class BookingController extends Controller
 
         $booking = Booking::where('booking_code', $code)
             ->where('guest_email', $email)
-            ->with(['villa', 'payment'])
+            ->with(['villa', 'payment', 'paymentMethod'])
             ->first();
 
         if (! $booking) {

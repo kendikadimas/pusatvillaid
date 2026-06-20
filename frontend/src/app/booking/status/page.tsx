@@ -19,7 +19,8 @@ import {
     CreditCard,
     ArrowRight,
     AlertTriangle,
-    XOctagon
+    XOctagon,
+    Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
@@ -87,39 +88,41 @@ function BookingStatusContent() {
     // Security Gate Form: if not verified, ask for the guest email
     if (!verifiedEmail || !booking) {
         return (
-            <div className="flex-1 flex flex-col bg-slate-50 text-slate-800">
+            <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
                 <PublicHeader />
 
-                <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center">
-                    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6">
-                        <div className="w-16 h-16 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-center mx-auto">
-                            <ShieldCheck className="w-8 h-8 text-blue-600" />
+                <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
+                    <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
+                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
+
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl flex items-center justify-center mx-auto border border-blue-200/50 shadow-sm">
+                            <ShieldCheck className="w-8 h-8 text-blue-900" />
                         </div>
 
                         <div>
-                            <h1 className="font-serif text-xl sm:text-2xl font-medium text-[#0d0d0d] tracking-tight">Verifikasi Booking</h1>
-                            <p className="text-slate-500 text-xs mt-1.5 leading-relaxed">
-                                Masukkan email yang Anda gunakan saat memesan villa dengan kode <strong>{code}</strong>.
+                            <h1 className="font-serif text-2xl sm:text-3xl font-normal text-slate-900 tracking-tight">Verifikasi Booking</h1>
+                            <p className="text-slate-500 text-xs mt-2.5 leading-relaxed px-4">
+                                Masukkan email yang Anda gunakan saat memesan villa dengan kode <strong className="text-slate-800 font-mono">{code}</strong>.
                             </p>
                         </div>
 
                         <form onSubmit={handleVerifySubmit} className="space-y-4 text-left">
-                            <div>
-                                <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase">Alamat Email</label>
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">Alamat Email</label>
                                 <input 
                                     type="email" 
                                     required
                                     placeholder="budi@example.com"
                                     value={emailInput}
                                     onChange={(e) => setEmailInput(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                    className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900/40 focus:bg-white font-semibold transition-all"
                                 />
                             </div>
 
                             <button 
                                 type="submit"
                                 disabled={verifying}
-                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm disabled:opacity-50 cursor-pointer"
+                                className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-955 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50 cursor-pointer active:scale-[0.98]"
                             >
                                 {verifying ? (
                                     <>
@@ -135,25 +138,27 @@ function BookingStatusContent() {
                             </button>
                         </form>
 
-                        <div className="border-t border-slate-100 pt-4 space-y-3 text-xs text-slate-500">
+                        <div className="border-t border-slate-100 pt-5 space-y-3.5 text-xs text-slate-500 text-left">
                             <details className="group">
-                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-500 transition-colors">
-                                    Tidak ingat email yang digunakan?
+                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-900 transition-colors list-none flex items-center justify-between">
+                                    <span>Tidak ingat email yang digunakan?</span>
+                                    <span className="transition-transform group-open:rotate-180">↓</span>
                                 </summary>
-                                <ul className="mt-2 space-y-1.5 text-[11px] leading-relaxed text-left">
-                                    <li>• Cek kotak masuk email Anda untuk email konfirmasi dari <strong>PusatVilla.id</strong></li>
-                                    <li>• Cek folder Spam atau Promosi</li>
-                                    <li>• Email berisi kode booking dan detail pemesanan Anda</li>
+                                <ul className="mt-2.5 space-y-2 text-[11px] leading-relaxed text-slate-550 border-l-2 border-slate-200 pl-3">
+                                    <li>Cek kotak masuk email Anda untuk email konfirmasi dari <strong>PusatVilla.id</strong></li>
+                                    <li>Cek folder Spam atau Promosi jika tidak ditemukan di Inbox</li>
+                                    <li>Email tersebut berisi kode booking dan rincian lengkap Anda</li>
                                 </ul>
                             </details>
                             
                             <details className="group">
-                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-500 transition-colors">
-                                    Tidak punya kode booking?
+                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-900 transition-colors list-none flex items-center justify-between">
+                                    <span>Tidak punya kode booking?</span>
+                                    <span className="transition-transform group-open:rotate-180">↓</span>
                                 </summary>
-                                <p className="mt-2 text-[11px] leading-relaxed">
-                                    Kode booking dikirim ke email Anda setelah pemesanan. Format: <strong>VB-2025-XXXX</strong>.
-                                    Cek email atau hubungi kami di <strong>support@pusatvilla.id</strong> untuk bantuan.
+                                <p className="mt-2.5 text-[11px] leading-relaxed text-slate-550 border-l-2 border-slate-200 pl-3">
+                                    Kode booking dikirim otomatis setelah pemesanan dengan format <strong>VB-2026-XXXX</strong>.
+                                    Cek inbox email Anda atau hubungi kami di <strong>support@pusatvilla.id</strong>.
                                 </p>
                             </details>
                         </div>
@@ -166,27 +171,28 @@ function BookingStatusContent() {
     const mainPhoto = getMainPhoto(booking.villa);
 
     return (
-        <div className="flex-1 flex flex-col bg-slate-50 text-slate-800">
+        <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-855">
             <PublicHeader>
                 <nav className="flex items-center space-x-8">
-                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-blue-500 transition-colors">
+                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-blue-900 transition-colors border border-slate-200 bg-white/80 backdrop-blur px-3.5 py-1.5 rounded-full hover:shadow-sm">
                         Cari Villa
                     </Link>
                 </nav>
             </PublicHeader>
 
-            <main className="max-w-4xl mx-auto px-4 py-12 w-full flex-1 space-y-8">
-                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between border-b border-slate-200 pb-5 gap-4">
+            <main className="max-w-4xl mx-auto px-4 py-12 w-full flex-1 space-y-8 animate-in fade-in duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between border-b border-slate-205 pb-6 gap-4">
                     <div>
-                        <h1 className="font-serif text-2xl md:text-[40px] md:leading-[44px] font-medium text-[#0d0d0d] tracking-tight">Status Pemesanan</h1>
-                        <p className="text-slate-505 text-xs mt-2 font-semibold uppercase tracking-wider">
-                            Kode Booking: <span className="font-bold text-slate-800">{code}</span>
-                        </p>
+                        <h1 className="font-serif text-3xl md:text-[44px] md:leading-[48px] font-normal text-slate-900 tracking-tight">Status Pemesanan</h1>
+                        <div className="inline-flex items-center space-x-1.5 bg-slate-100/80 px-2.5 py-1 rounded-full border border-slate-200/50 mt-3.5">
+                            <span className="text-[10px] font-bold text-slate-550 tracking-wider uppercase">Kode Booking:</span>
+                            <span className="text-xs font-extrabold text-blue-900 tracking-wide font-mono">{code}</span>
+                        </div>
                     </div>
 
                     {/* Status Badge */}
                     <div className="flex items-center space-x-2">
-                        <StatusBadge variant={booking.status as any} className="animate-pulse" />
+                        <StatusBadge variant={booking.status as any} className="animate-pulse shadow-sm" />
                     </div>
                 </div>
 
@@ -195,17 +201,17 @@ function BookingStatusContent() {
                     <div className="md:col-span-2 space-y-6">
                         {/* Pending Checkout Alert */}
                         {booking.status === 'pending' && booking.payment_status === 'unpaid' && (
-                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div className="flex items-start space-x-3 text-xs text-amber-800 font-medium">
+                            <div className="bg-amber-50/50 border border-amber-200/85 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                                <div className="flex items-start space-x-3 text-xs text-amber-900 font-medium">
                                     <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                                     <div>
                                         <p className="font-bold text-sm text-slate-900 mb-0.5">Pembayaran Belum Diterima</p>
-                                        <p className="leading-relaxed">Segera selesaikan transaksi Anda sebelum batas waktu berakhir untuk mengamankan pesanan Anda.</p>
+                                        <p className="leading-relaxed text-slate-650">Segera selesaikan transaksi Anda sebelum batas waktu berakhir untuk mengamankan pesanan Anda.</p>
                                     </div>
                                 </div>
                                 <Link
                                     href={`/booking/payment?code=${code}&token=${booking.payment?.snap_token || ''}`}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors text-xs flex items-center space-x-1 flex-shrink-0"
+                                    className="bg-gradient-to-r from-blue-900 to-blue-950 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all text-xs flex items-center space-x-1.5 flex-shrink-0 cursor-pointer active:scale-95"
                                 >
                                     <CreditCard className="w-3.5 h-3.5" />
                                     <span>Bayar Sekarang</span>
@@ -216,24 +222,24 @@ function BookingStatusContent() {
 
                         {/* Waiting for verification alert */}
                         {booking.status === 'pending' && booking.payment_status === 'pending' && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start space-x-3 text-xs text-blue-800 font-medium">
-                                <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-5 flex items-start space-x-3 text-xs text-blue-900 font-medium shadow-sm">
+                                <ShieldCheck className="w-5 h-5 text-blue-900 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <p className="font-bold text-sm text-slate-900 mb-0.5">Menunggu Verifikasi Pembayaran</p>
-                                    <p className="leading-relaxed">Bukti pembayaran Anda telah kami terima dan sedang diverifikasi oleh tim admin. Proses ini biasanya memakan waktu kurang dari 30 menit pada jam operasional.</p>
+                                    <p className="leading-relaxed text-slate-650">Bukti pembayaran Anda telah kami terima dan sedang diverifikasi oleh tim admin. Proses ini biasanya memakan waktu kurang dari 30 menit pada jam operasional.</p>
                                 </div>
                             </div>
                         )}
 
                         {/* Cancellation Alert */}
                         {booking.status === 'cancelled' && (
-                            <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start space-x-3 text-xs text-red-800 font-medium">
-                                <XOctagon className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <div className="bg-red-50/50 border border-red-200/85 rounded-2xl p-5 flex items-start space-x-3 text-xs text-red-900 font-medium shadow-sm">
+                                <XOctagon className="w-5 h-5 text-red-650 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <p className="font-bold text-sm text-slate-900 mb-0.5">Booking Dibatalkan</p>
-                                    <p className="leading-relaxed mb-2">Pemesanan villa ini dibatalkan dari sistem.</p>
+                                    <p className="leading-relaxed mb-2 text-slate-650">Pemesanan villa ini dibatalkan dari sistem.</p>
                                     {booking.cancel_reason && (
-                                        <div className="bg-white border border-red-150 p-3 rounded-lg text-slate-600 font-semibold italic">
+                                        <div className="bg-white/80 border border-red-150 p-3 rounded-xl text-slate-700 font-semibold italic">
                                             Alasan: "{booking.cancel_reason}"
                                         </div>
                                     )}
@@ -242,54 +248,54 @@ function BookingStatusContent() {
                         )}
 
                         {/* Villa details card */}
-                        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
-                            <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">Informasi Properti</h2>
+                        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/70 rounded-2xl p-6 shadow-sm space-y-6">
+                            <h2 className="font-serif text-xl font-normal text-slate-900 border-b border-slate-100 pb-3.5">Informasi Properti</h2>
                             
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="w-full sm:w-40 aspect-video rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                                    <img src={mainPhoto} alt={booking.villa?.name} className="w-full h-full object-cover" />
+                            <div className="flex flex-col sm:flex-row gap-5">
+                                <div className="w-full sm:w-44 aspect-video rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200/40">
+                                    <img src={mainPhoto} alt={booking.villa?.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-slate-950 text-lg">{booking.villa?.name}</h3>
-                                    <div className="flex items-center text-slate-500 text-xs mt-1">
-                                        <MapPin className="w-4 h-4 mr-0.5 text-slate-400" />
+                                <div className="space-y-1.5">
+                                    <h3 className="font-bold text-slate-900 text-lg leading-tight">{booking.villa?.name}</h3>
+                                    <div className="flex items-center text-slate-500 text-xs">
+                                        <MapPin className="w-4 h-4 mr-0.5 text-slate-400 stroke-[1.5]" />
                                         <span>{booking.villa?.location}</span>
                                     </div>
-                                    <p className="text-slate-600 text-xs mt-3 line-clamp-2">{booking.villa?.short_desc}</p>
+                                    <p className="text-slate-600 text-xs leading-relaxed pt-1">{booking.villa?.short_desc}</p>
                                 </div>
                             </div>
 
                             {/* Date Timeline */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-100 pt-6 text-sm font-semibold text-slate-800">
-                                <div className="space-y-1">
-                                    <span className="text-[10px] text-slate-400 font-bold uppercase block">TANGGAL CHECK-IN</span>
-                                    <div className="flex items-center space-x-1.5">
-                                        <Calendar className="w-4 h-4 text-blue-600" />
-                                        <span>{format(parseISO(booking.check_in), 'dd MMMM yyyy', { locale: localeID })}</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-150/80 pt-6 text-sm font-semibold text-slate-800">
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">TANGGAL CHECK-IN</span>
+                                    <div className="flex items-center space-x-2">
+                                        <Calendar className="w-4.5 h-4.5 text-blue-900" />
+                                        <span className="font-bold text-slate-900">{format(parseISO(booking.check_in), 'dd MMMM yyyy', { locale: localeID })}</span>
                                     </div>
-                                    <span className="text-xs text-slate-400 font-normal block pl-5.5">Setelah {booking.villa?.check_in_time.substring(0, 5) || '14:00'} WIB</span>
+                                    <span className="text-xs text-slate-500 font-normal block pl-6.5">Setelah {booking.villa?.check_in_time.substring(0, 5) || '14:00'} WIB</span>
                                 </div>
-                                <div className="space-y-1 border-l-0 sm:border-l border-slate-100 sm:pl-6 pl-0">
-                                    <span className="text-[10px] text-slate-400 font-bold uppercase block">TANGGAL CHECK-OUT</span>
-                                    <div className="flex items-center space-x-1.5">
-                                        <Calendar className="w-4 h-4 text-blue-600" />
-                                        <span>{format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID })}</span>
+                                <div className="space-y-1.5 border-l-0 sm:border-l border-slate-150/80 sm:pl-6 pl-0">
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">TANGGAL CHECK-OUT</span>
+                                    <div className="flex items-center space-x-2">
+                                        <Calendar className="w-4.5 h-4.5 text-blue-900" />
+                                        <span className="font-bold text-slate-900">{format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID })}</span>
                                     </div>
-                                    <span className="text-xs text-slate-400 font-normal block pl-5.5">Sebelum {booking.villa?.check_out_time.substring(0, 5) || '12:00'} WIB</span>
+                                    <span className="text-xs text-slate-500 font-normal block pl-6.5">Sebelum {booking.villa?.check_out_time.substring(0, 5) || '12:00'} WIB</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Check-in instructions (only shown if confirmed/completed) */}
                         {(booking.status === 'confirmed' || booking.status === 'completed') && (
-                            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                                <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">Petunjuk Menginap</h2>
-                                <div className="text-xs text-slate-600 space-y-3 leading-relaxed">
+                            <div className="bg-white/80 backdrop-blur-sm border border-slate-200/70 rounded-2xl p-6 shadow-sm space-y-4 animate-in fade-in duration-300">
+                                <h2 className="font-serif text-xl font-normal text-slate-900 border-b border-slate-100 pb-3.5">Petunjuk Menginap</h2>
+                                <div className="text-xs text-slate-650 space-y-3 leading-relaxed">
                                     <p>Selamat, pesanan Anda telah lunas dikonfirmasi! Berikut adalah koordinasi petunjuk saat tiba:</p>
-                                    <ul className="list-decimal pl-4 space-y-2">
-                                        <li>Tunjukkan nota status digital ini atau sebutkan <strong>Kode Booking ({code})</strong> kepada petugas/penjaga villa saat Anda tiba.</li>
+                                    <ul className="list-decimal pl-4 space-y-2 font-medium">
+                                        <li>Tunjukkan nota status digital ini atau sebutkan <strong className="text-slate-900">Kode Booking ({code})</strong> kepada petugas/penjaga villa saat Anda tiba.</li>
                                         <li>Batas keterlambatan check-in adalah pukul 22.00 WIB malam, harap koordinasikan via WhatsApp jika Anda tiba larut malam.</li>
-                                        <li>Aturan villa wajib dipatuhi: {booking.villa?.rules || 'Dilarang merokok di dalam kamar dan mematuhi jam tenang.'}</li>
+                                        <li>Aturan villa wajib dipatuhi: <span className="text-slate-700 italic">"{booking.villa?.rules || 'Dilarang merokok di dalam kamar dan mematuhi jam tenang.'}"</span></li>
                                     </ul>
                                 </div>
                             </div>
@@ -298,53 +304,73 @@ function BookingStatusContent() {
 
                     {/* Right Side Column (Receipt Details summary) */}
                     <div className="md:col-span-1">
-                        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
-                            <h3 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">Ringkasan Tagihan</h3>
+                        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-6">
+                            <h3 className="font-serif text-xl font-normal text-slate-900 border-b border-slate-100 pb-3.5">Ringkasan Tagihan</h3>
                             
-                            <div className="space-y-4 text-xs">
-                                <div className="flex justify-between text-slate-600">
+                            <div className="space-y-4 text-xs font-medium">
+                                <div className="flex justify-between items-center text-slate-600">
                                     <span>Nama Tamu:</span>
                                     <span className="font-bold text-slate-900">{booking.guest_name}</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600">
+                                <div className="flex justify-between items-center text-slate-600">
                                     <span>Nomor WA:</span>
-                                    <span className="font-semibold text-slate-900">{booking.guest_phone}</span>
+                                    <span className="font-bold text-slate-900">{booking.guest_phone}</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600">
+                                <div className="flex justify-between items-center text-slate-600">
                                     <span>Durasi Menginap:</span>
-                                    <span className="font-semibold text-slate-900">{booking.total_nights} malam</span>
+                                    <span className="font-semibold text-slate-800">{booking.total_nights} malam</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600">
+                                <div className="flex justify-between items-center text-slate-600">
                                     <span>Tamu:</span>
-                                    <span className="font-semibold text-slate-900">{booking.num_guests} orang</span>
+                                    <span className="font-semibold text-slate-800">{booking.num_guests} orang</span>
                                 </div>
                                 
-                                <div className="border-t border-slate-100 pt-4 space-y-2">
-                                    <div className="flex justify-between text-slate-500">
+                                <div className="border-t border-slate-150/80 pt-4 space-y-3">
+                                    <div className="flex justify-between items-center text-slate-500">
                                         <span>Status Bayar:</span>
-                                        <span className={`font-bold capitalize ${
-                                            booking.payment_status === 'paid' ? 'text-emerald-600' :
-                                            booking.payment_status === 'pending' ? 'text-amber-600' :
-                                            booking.payment_status === 'unpaid' ? 'text-red-500' :
-                                            'text-slate-500'
+                                        <span className={`font-bold capitalize px-2.5 py-0.5 rounded-full border text-[10px] ${
+                                            booking.payment_status === 'paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' :
+                                            booking.payment_status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200/60' :
+                                            booking.payment_status === 'unpaid' ? 'bg-red-50 text-red-750 border-red-200/60' :
+                                            'bg-slate-50 text-slate-600 border-slate-200/60'
                                         }`}>
                                             {booking.payment_status === 'paid' ? 'Lunas' :
-                                             booking.payment_status === 'pending' ? 'Menunggu Verifikasi' :
+                                             booking.payment_status === 'pending' ? 'Verifikasi' :
                                              booking.payment_status === 'unpaid' ? 'Belum Bayar' :
                                              booking.payment_status === 'refunded' ? 'Refund' :
                                              booking.payment_status === 'expired' ? 'Kadaluarsa' :
                                              booking.payment_status}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between text-slate-500">
+                                    <div className="flex justify-between items-center text-slate-500">
                                         <span>Metode:</span>
-                                        <span className="font-semibold text-slate-700">{booking.payment?.payment_type || '-'}</span>
+                                        <span className="font-bold text-slate-800 capitalize">
+                                            {booking.payment_method?.name || booking.payment?.payment_type || '-'}
+                                        </span>
                                     </div>
+                                    {((booking.tax_amount && booking.tax_amount > 0) || (booking.admin_fee && booking.admin_fee > 0)) && (
+                                        <div className="flex justify-between items-center text-slate-505 border-t border-slate-100 pt-2.5">
+                                            <span>Harga Sewa:</span>
+                                            <span className="font-bold text-slate-850">{formatPrice(booking.base_price)}</span>
+                                        </div>
+                                    )}
+                                    {booking.tax_amount !== undefined && booking.tax_amount > 0 && (
+                                        <div className="flex justify-between items-center text-slate-505">
+                                            <span>Pajak:</span>
+                                            <span className="font-bold text-slate-850">{formatPrice(booking.tax_amount)}</span>
+                                        </div>
+                                    )}
+                                    {booking.admin_fee !== undefined && booking.admin_fee > 0 && (
+                                        <div className="flex justify-between items-center text-slate-505">
+                                            <span>Biaya Admin:</span>
+                                            <span className="font-bold text-slate-850">{formatPrice(booking.admin_fee)}</span>
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="flex justify-between font-bold text-slate-900 border-t border-slate-100 pt-4 text-sm">
+                                <div className="flex justify-between font-bold text-slate-900 border-t border-slate-150/80 pt-4 text-sm">
                                     <span>Total Biaya:</span>
-                                    <span className="text-blue-600">{formatPrice(booking.total_amount)}</span>
+                                    <span className="text-blue-900 text-base">{formatPrice(booking.total_amount)}</span>
                                 </div>
                             </div>
                         </div>

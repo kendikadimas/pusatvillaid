@@ -15,10 +15,12 @@ class PaymentMethod extends Model
         'account_number',
         'account_name',
         'logo_url',
+        'admin_fee',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'admin_fee' => 'integer',
     ];
 }
