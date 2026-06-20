@@ -958,11 +958,23 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex items-center justify-between text-[13px] font-bold">
                                         <span className="text-slate-600 font-semibold">{item.label}</span>
-                                        <div className="flex items-center space-x-3 w-1/2">
-                                            <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                                                <div className="bg-blue-600 h-full rounded-full" style={{ width: `${(item.score / 5) * 100}%` }} />
+                                        <div className="flex items-center space-x-2">
+                                            <div className="flex items-center space-x-0.5">
+                                                {[1, 2, 3, 4, 5].map((star) => {
+                                                    const fillPercent = Math.min(100, Math.max(0, (item.score - (star - 1)) * 100));
+                                                    return (
+                                                        <div key={star} className="relative w-4 h-4">
+                                                            {/* Empty star (outline) */}
+                                                            <Star className="w-4 h-4 text-slate-200 fill-slate-200 absolute inset-0" />
+                                                            {/* Filled portion */}
+                                                            <div className="absolute inset-0 overflow-hidden" style={{ width: `${fillPercent}%` }}>
+                                                                <Star className="w-4 h-4 text-slate-800 fill-slate-800" />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                            <span className="text-slate-800 text-[11px] w-6 text-right font-sans">{item.score.toFixed(1)}</span>
+                                            <span className="text-slate-800 text-[11px] font-sans font-bold">{item.score.toFixed(1)}</span>
                                         </div>
                                     </div>
                                 ))}
