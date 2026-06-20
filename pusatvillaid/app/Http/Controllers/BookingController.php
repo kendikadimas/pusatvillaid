@@ -30,7 +30,7 @@ class BookingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'villa_id' => 'required|exists:villas,id',
-            'payment_method_id' => 'required|exists:payment_methods,id',
+            'payment_method_id' => 'sometimes|nullable|exists:payment_methods,id',
             'guest_name' => 'required|string|max:255',
             'guest_email' => 'required|email|max:255',
             'guest_phone' => 'required|string|max:20',

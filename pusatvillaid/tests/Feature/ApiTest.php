@@ -145,6 +145,7 @@ it('can list destinations', function () {
 // =====================================================
 
 it('can create a booking', function () {
+    Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create(['price_per_night' => 1000000, 'weekend_price' => null]);
 
     $response = $this->postJson('/api/v1/bookings', [
@@ -168,6 +169,7 @@ it('can create a booking', function () {
 });
 
 it('validates required booking fields', function () {
+    Sanctum::actingAs(User::factory()->create());
     $response = $this->postJson('/api/v1/bookings', []);
 
     $response->assertStatus(422)
@@ -175,6 +177,7 @@ it('validates required booking fields', function () {
 });
 
 it('prevents booking if guest count exceeds capacity', function () {
+    Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create(['max_guests' => 4]);
 
     $response = $this->postJson('/api/v1/bookings', [
@@ -191,6 +194,7 @@ it('prevents booking if guest count exceeds capacity', function () {
 });
 
 it('prevents overlapping bookings', function () {
+    Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create();
     Booking::factory()->create([
         'villa_id' => $villa->id,
@@ -213,6 +217,7 @@ it('prevents overlapping bookings', function () {
 });
 
 it('prevents booking on blocked dates', function () {
+    Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create();
     BlockedDate::factory()->create([
         'villa_id' => $villa->id,
@@ -258,6 +263,7 @@ it('returns 404 for invalid booking code/email', function () {
 });
 
 it('calculates weekday vs weekend pricing', function () {
+    Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create([
         'price_per_night' => 1000000,
         'weekend_price' => 1500000,
@@ -362,6 +368,7 @@ it('validates review comment min 20 characters', function () {
 
 it('can login as admin', function () {
     $user = User::factory()->create([
+        'role' => 'admin',
         'email' => 'admin@pusatvilla.id',
         'password' => bcrypt('password123'),
     ]);
@@ -394,7 +401,7 @@ it('rejects invalid admin credentials', function () {
 // =====================================================
 
 it('can access dashboard with valid admin token', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
     Villa::factory()->count(3)->create();
 
@@ -408,7 +415,7 @@ it('can access dashboard with valid admin token', function () {
 });
 
 it('can list bookings with filters', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     Booking::factory()->count(3)->confirmed()->create();
@@ -421,7 +428,7 @@ it('can list bookings with filters', function () {
 });
 
 it('can view booking detail', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create(['guest_name' => 'Detail Guest']);
@@ -435,7 +442,7 @@ it('can view booking detail', function () {
 });
 
 it('can update booking status', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create([
@@ -455,7 +462,7 @@ it('can update booking status', function () {
 });
 
 it('can cancel a booking with reason', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create();
@@ -471,7 +478,7 @@ it('can cancel a booking with reason', function () {
 });
 
 it('can list all villas for admin', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     Villa::factory()->count(4)->create();
@@ -483,7 +490,7 @@ it('can list all villas for admin', function () {
 });
 
 it('can create a villa via admin API', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
     $destination = Destination::factory()->create();
 
@@ -509,7 +516,7 @@ it('can create a villa via admin API', function () {
 });
 
 it('can update a villa', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
     $destination = Destination::factory()->create();
 
@@ -537,7 +544,7 @@ it('can update a villa', function () {
 });
 
 it('can block and unblock dates', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $villa = Villa::factory()->create();
@@ -561,7 +568,7 @@ it('can block and unblock dates', function () {
 });
 
 it('can approve and reject reviews', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $review = Review::factory()->create(['is_approved' => false]);
@@ -579,7 +586,7 @@ it('can approve and reject reviews', function () {
 });
 
 it('can list analytics data', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $response = $this->getJson('/api/v1/admin/analytics');
@@ -631,7 +638,7 @@ it('lets a guest upload a manual payment proof', function () {
 it('admin can approve a manual payment', function () {
     Mail::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create([
@@ -655,7 +662,7 @@ it('admin can approve a manual payment', function () {
 });
 
 it('admin cannot approve a manual payment without proof', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
@@ -673,7 +680,7 @@ it('admin cannot approve a manual payment without proof', function () {
 it('admin can reject a manual payment with a reason', function () {
     Mail::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
@@ -697,7 +704,7 @@ it('admin can reject a manual payment with a reason', function () {
 });
 
 it('admin reject requires a rejection reason', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'admin']);
     Sanctum::actingAs($user);
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);

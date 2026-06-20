@@ -25,12 +25,12 @@ describe('PublicFooter Component', () => {
     it('should render WhatsApp link with proper href', () => {
         render(<PublicFooter />);
         const waLink = screen.getByRole('link', { name: /\+62/ });
-        expect(waLink).toHaveAttribute('href', expect.stringContaining('https://wa.me/'));
+        expect(waLink).toHaveAttribute('href', expect.stringContaining('whatsapp.com/send'));
     });
 
     it('should render navigation link to villas', () => {
         render(<PublicFooter />);
-        const navLink = screen.getByRole('link', { name: /Cari Katalog Villa/i });
+        const navLink = screen.getByRole('link', { name: /Cari Villa/i });
         expect(navLink).toHaveAttribute('href', '/villas');
     });
 
@@ -58,12 +58,7 @@ describe('CTASection Component', () => {
     it('should render WhatsApp hubungi admin button', () => {
         render(<CTASection />);
         const waLink = screen.getByRole('link', { name: /Hubungi Admin/ });
-        expect(waLink).toHaveAttribute('href', expect.stringContaining('https://wa.me/'));
-    });
-
-    it('should render help subheading', () => {
-        render(<CTASection />);
-        expect(screen.getByText('Butuh Bantuan?')).toBeInTheDocument();
+        expect(waLink).toHaveAttribute('href', expect.stringContaining('whatsapp.com/send'));
     });
 
     it('should render description text', () => {

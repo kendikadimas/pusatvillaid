@@ -35,7 +35,7 @@ class PaymentMethodAdminController extends Controller
             'account_number' => $isQris ? 'nullable|string|max:100' : 'required|string|max:100',
             'account_name' => 'required|string|max:255',
             'logo_url' => 'nullable|string|max:1000',
-            'admin_fee' => 'required|integer|min:0',
+            'admin_fee' => 'sometimes|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
@@ -92,7 +92,7 @@ class PaymentMethodAdminController extends Controller
             'account_number' => $isQris ? 'nullable|string|max:100' : 'required|string|max:100',
             'account_name' => 'required|string|max:255',
             'logo_url' => 'nullable|string|max:1000',
-            'admin_fee' => 'required|integer|min:0',
+            'admin_fee' => 'sometimes|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
