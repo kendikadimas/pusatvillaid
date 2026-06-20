@@ -3,52 +3,75 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Heart, User } from 'lucide-react';
+import { Search, Heart, User, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BottomNav() {
     const pathname = usePathname();
+    const { user, admin } = useAuth();
 
     const isActive = (path: string) => pathname === path;
 
+    // Decide link and label for account tab dynamically
+    const getAccountLink = () => {
+        if (admin) return '/admin/dashboard';
+        if (user) return '/profile';
+        return '/login';
+    };
+
+    const getAccountLabel = () => {
+        if (admin) return 'Admin';
+        if (user) return 'Profil';
+        return 'Masuk';
+    };
+
+    const isAccountActive = () => {
+        return isActive('/login') || isActive('/profile') || pathname.startsWith('/admin');
+    };
+
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-[999] bg-blue-600 border-t border-blue-500 lg:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
+        <nav className="fixed bottom-0 left-0 right-0 z-[999] bg-white border-t border-slate-200/80 lg:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
             <div className="flex items-center justify-around h-16">
                 <Link
                     href="/"
-                    className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-                        isActive('/') ? 'text-white' : 'text-blue-200 hover:text-white'
+                    className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
+                        isActive('/') ? 'text-blue-650 font-bold' : 'text-slate-400 hover:text-slate-600'
                     }`}
                 >
-                    <Search className="w-6 h-6" />
-                    <span className="text-xs font-medium mt-1">Telusuri</span>
+                    <Search className="w-5.5 h-5.5" />
+                    <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">Telusuri</span>
                     {isActive('/') && (
-                        <div className="absolute top-0 w-12 h-1 bg-white rounded-b-full" />
+                        <div className="absolute top-0 w-12 h-1 bg-blue-600 rounded-b-full" />
                     )}
                 </Link>
 
                 <Link
                     href="/wishlist"
-                    className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-                        isActive('/wishlist') ? 'text-white' : 'text-blue-200 hover:text-white'
+                    className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
+                        isActive('/wishlist') ? 'text-blue-650 font-bold' : 'text-slate-400 hover:text-slate-600'
                     }`}
                 >
-                    <Heart className="w-6 h-6" />
-                    <span className="text-xs font-medium mt-1">Favorit</span>
+                    <Heart className="w-5.5 h-5.5" />
+                    <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">Favorit</span>
                     {isActive('/wishlist') && (
-                        <div className="absolute top-0 w-12 h-1 bg-white rounded-b-full" />
+                        <div className="absolute top-0 w-12 h-1 bg-blue-600 rounded-b-full" />
                     )}
                 </Link>
 
                 <Link
-                    href="/login"
-                    className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-                        isActive('/login') || isActive('/profile') ? 'text-white' : 'text-blue-200 hover:text-white'
+                    href={getAccountLink()}
+                    className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
+                        isAccountActive() ? 'text-blue-650 font-bold' : 'text-slate-400 hover:text-slate-600'
                     }`}
                 >
-                    <User className="w-6 h-6" />
-                    <span className="text-xs font-medium mt-1">Masuk</span>
-                    {(isActive('/login') || isActive('/profile')) && (
-                        <div className="absolute top-0 w-12 h-1 bg-white rounded-b-full" />
+                    {admin ? (
+                        <LayoutDashboard className="w-5.5 h-5.5" />
+                    ) : (
+                        <User className="w-5.5 h-5.5" />
+                    )}
+                    <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">{getAccountLabel()}</span>
+                    {isAccountActive() && (
+                        <div className="absolute top-0 w-12 h-1 bg-blue-600 rounded-b-full" />
                     )}
                 </Link>
             </div>

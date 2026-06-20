@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import axiosClient from '@/lib/axios';
 import PublicHeader from '@/components/PublicHeader';
 import PublicFooter from '@/components/PublicFooter';
+import BottomNav from '@/components/BottomNav';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { getPhotoUrl } from '@/lib/villaUtils';
 import { 
@@ -122,7 +123,7 @@ export default function ProfilePage() {
         <div className="flex-1 flex flex-col bg-slate-50 text-slate-900 font-sans min-h-screen">
             <PublicHeader />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex-1">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24 md:pb-12 w-full flex-1">
                 {/* Headline */}
                 <div className="mb-10">
                     <h1 className="font-serif text-3xl md:text-4xl font-medium text-[#0d0d0d] tracking-tight">
@@ -291,6 +292,7 @@ export default function ProfilePage() {
             </main>
 
             <PublicFooter />
+            <BottomNav />
         </div>
     );
 }

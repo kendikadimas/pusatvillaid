@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, History, Compass, ChevronLeft, ChevronRight, ArrowRight, MapPin, Calendar, Users, Menu, X } from 'lucide-react';
+import { Search, History, Compass, ChevronLeft, ChevronRight, ArrowRight, MapPin, Calendar, Users, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Destination } from '@/types';
 
@@ -80,7 +80,6 @@ export default function HomeHeader({
     getGuestsLabel,
 }: HomeHeaderProps) {
     const { user, admin } = useAuth();
-    const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
         <header
@@ -396,63 +395,8 @@ export default function HomeHeader({
                         )}
                     </nav>
 
-                    {/* Mobile Hamburger */}
-                    <button
-                        onClick={() => setMobileOpen(true)}
-                        className={`md:hidden p-2 rounded-full transition-colors ${
-                            headerSolid ? 'text-slate-700 hover:bg-slate-100' : 'text-white/90 hover:bg-white/10'
-                        }`}
-                        aria-label="Buka menu"
-                    >
-                        <Menu className="w-5 h-5" />
-                    </button>
                 </div>
             </div>
-
-            {/* Mobile Drawer Overlay */}
-            {mobileOpen && (
-                <div className="fixed inset-0 z-50 md:hidden">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-                    <div className="absolute top-0 right-0 h-full w-72 max-w-[85vw] bg-white shadow-2xl flex flex-col">
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-                            <span className="text-sm font-bold text-slate-900">Menu</span>
-                            <button
-                                onClick={() => setMobileOpen(false)}
-                                className="p-2 rounded-full hover:bg-slate-100 text-slate-500"
-                                aria-label="Tutup menu"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="flex-1 px-5 py-6 space-y-4">
-                            <Link
-                                href="/villas"
-                                onClick={() => { setMobileOpen(false); setActiveTab(null); }}
-                                className="block py-3 text-base font-semibold text-slate-900 hover:text-blue-500 border-b border-slate-100"
-                            >
-                                Cari Villa
-                            </Link>
-                            {user || admin ? (
-                                <Link
-                                    href={admin ? "/admin/dashboard" : "/profile"}
-                                    onClick={() => { setMobileOpen(false); setActiveTab(null); }}
-                                    className="block py-3 text-base font-semibold text-slate-900 hover:text-blue-500 border-b border-slate-100"
-                                >
-                                    {admin ? 'Dashboard Admin' : 'Profil Saya'}
-                                </Link>
-                            ) : (
-                                <Link
-                                    href="/login"
-                                    onClick={() => { setMobileOpen(false); setActiveTab(null); }}
-                                    className="block py-3 text-base font-semibold text-blue-600 hover:text-blue-700"
-                                >
-                                    Masuk
-                                </Link>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
         </header>
     );
 }
