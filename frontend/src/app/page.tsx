@@ -20,9 +20,7 @@ import CTASection from '@/components/sections/CTASection';
 // New mobile components
 import BottomNav from '@/components/BottomNav';
 import SearchOverlay from '@/components/SearchOverlay';
-import CategoryCards from '@/components/CategoryCards';
 import ContinueSearchCard from '@/components/ContinueSearchCard';
-import PriceBar from '@/components/PriceBar';
 import MobilePropertyCard from '@/components/MobilePropertyCard';
 import { Search, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -59,7 +57,6 @@ export default function HomePage() {
     
     // Mobile search overlay state
     const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
-    const [mobileCategory, setMobileCategory] = useState('homes');
 
     useEffect(() => {
         const saved = localStorage.getItem('pusatvilla_searches');
@@ -508,11 +505,8 @@ export default function HomePage() {
                         </button>
                     </div>
 
-                    {/* Category cards */}
-                    <CategoryCards
-                        activeCategory={mobileCategory}
-                        onCategoryChange={setMobileCategory}
-                    />
+                    {/* Category cards — hidden */}
+                    {/* <CategoryCards ... /> */}
                 </div>
 
                 {/* Continue search card */}
@@ -551,10 +545,8 @@ export default function HomePage() {
                     </div>
                 )}
 
-                {/* Price bar */}
-                <div className="px-4 py-4">
-                    <PriceBar />
-                </div>
+                {/* Price bar — hidden */}
+                {/* <div className="px-4 py-4"><PriceBar /></div> */}
 
                 {/* Mobile-specific villa grid */}
                 <div className="px-4 py-6">
