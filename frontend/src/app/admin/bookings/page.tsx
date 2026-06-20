@@ -316,7 +316,7 @@ export default function AdminBookingsPage() {
                                             <StatusBadge variant={b.payment_status as any} />
                                         </td>
                                         <td className="py-3.5 px-4 font-mono font-black tabular-nums text-[#222222]">
-                                            Rp {Number(b.total_amount).toLocaleString('id-ID')}
+                                            {formatPrice(b.total_amount)}
                                         </td>
                                         <td className="py-3.5 px-6 text-right">
                                             <div className="flex items-center justify-end space-x-1.5">
@@ -376,7 +376,7 @@ export default function AdminBookingsPage() {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Total</span>
-                                        <span className="font-mono font-black tabular-nums text-[#222222]">Rp {Number(b.total_amount).toLocaleString('id-ID')}</span>
+                                        <span className="font-mono font-black tabular-nums text-[#222222]">{formatPrice(b.total_amount)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">

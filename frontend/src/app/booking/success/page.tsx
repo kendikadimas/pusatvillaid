@@ -10,7 +10,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { formatPrice } from '@/lib/format';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { CheckCircle2, MapPin, Copy, Printer, Home, Check, MessageCircle } from 'lucide-react';
+import { CheckCircle2, MapPin, Copy, Printer, Home, Check, MessageCircle, Download } from 'lucide-react';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { toast } from 'sonner';
 
 function BookingSuccessContent() {
@@ -60,6 +61,18 @@ function BookingSuccessContent() {
     const handlePrint = () => {
         if (typeof window !== 'undefined') {
             window.print();
+        }
+    };
+
+    const handleDownloadPDF = async () => {
+        if (!booking || !code) return;
+        
+        try {
+            await generateInvoicePDF(booking, code);
+            toast.success('Invoice berhasil didownload!');
+        } catch (error) {
+            console.error('Failed to generate PDF:', error);
+            toast.error('Gagal membuat invoice PDF.');
         }
     };
 
@@ -220,27 +233,36 @@ function BookingSuccessContent() {
                     {/* CTA buttons (hidden on print) */}
                     <div className="flex flex-col sm:flex-row items-center gap-3 pt-5 border-t border-slate-100 print:hidden">
                         {booking && (
-                            <button
-                                onClick={handleSendWa}
-                                className="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
-                            >
-                                <MessageCircle className="w-4 h-4" />
-                                <span>Kirim Invoice via WA</span>
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleDownloadPDF}
+                                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    <span>Download Invoice PDF</span>
+                                </button>
+                                <button
+                                    onClick={handleSendWa}
+                                    className="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                                >
+                                    <MessageCircle className="w-4 h-4" />
+                                    <span>Kirim via WA</span>
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={handlePrint}
                             className="w-full sm:w-auto flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                         >
                             <Printer className="w-4 h-4" />
-                            <span>Cetak Halaman</span>
+                            <span>Cetak</span>
                         </button>
                         <Link
                             href="/"
                             className="w-full sm:w-auto flex-1 bg-gradient-to-r from-blue-900 to-blue-955 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                         >
                             <Home className="w-4 h-4" />
-                            <span>Kembali ke Beranda</span>
+                            <span>Beranda</span>
                         </Link>
                     </div>
                 </div>

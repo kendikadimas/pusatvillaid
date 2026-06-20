@@ -32,7 +32,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-plus-jakarta), sans-serif;
-  --font-serif: var(--font-walheim), serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -40,6 +40,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Add padding for mobile bottom navigation */
+@media (max-width: 1024px) {
+  body {
+    padding-bottom: max(env(safe-area-inset-bottom), 64px);
+  }
 }
 
 .scrollbar-none::-webkit-scrollbar {
@@ -47,6 +55,15 @@ body {
 }
 
 .scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

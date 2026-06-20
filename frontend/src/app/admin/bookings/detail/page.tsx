@@ -335,7 +335,7 @@ function AdminBookingDetailContent() {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Jumlah Tagihan:</span>
-                                        <span className="font-bold text-blue-600 text-xs">Rp {Number(booking.payment.amount).toLocaleString('id-ID')}</span>
+                                        <span className="font-bold text-blue-600 text-xs">{formatPrice(booking.payment.amount)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Status Pembayaran:</span>

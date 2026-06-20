@@ -8,6 +8,7 @@ import axiosClient from '@/lib/axios';
 import { Villa, Review } from '@/types';
 import { useBookingStore } from '@/store/bookingStore';
 import { getPhotoUrl, getPhotoCategory } from '@/lib/villaUtils';
+import { formatPrice } from '@/lib/format';
 import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns';
@@ -428,8 +429,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         return (
             <div className="text-center py-64 min-h-screen bg-slate-50 flex flex-col justify-center items-center">
                 <p className="text-slate-600 text-base mb-4 font-bold">Villa tidak ditemukan atau telah dinonaktifkan.</p>
-                <Link href="/villas" className="text-blue-600 font-bold hover:underline active:scale-95 transition-transform">
-                    Kembali ke Katalog Villa
+                <Link href="/" className="text-blue-600 font-bold hover:underline active:scale-95 transition-transform">
+                    Kembali ke Beranda
                 </Link>
             </div>
         );
@@ -532,7 +533,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             <div>
                 <div className="flex items-baseline gap-1.5 flex-wrap">
                     <span className="text-xl lg:text-[22px] font-bold text-slate-900 font-sans tracking-tight">
-                        Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                        {totalNights > 0 ? formatPrice(totalAmount) : formatPrice(villa.price_per_night)}
                     </span>
                     <span className="text-sm text-slate-500 font-normal">
                         {totalNights > 0 ? `untuk ${totalNights} malam` : 'untuk 1 malam'}
@@ -594,25 +595,25 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             {totalNights > 0 && (
                 <div className="border-t border-slate-100 pt-3 lg:pt-4 space-y-2 lg:space-y-3 text-xs font-bold">
                     <div className="flex justify-between text-slate-500 font-semibold">
-                        <span className="underline">Weekday <br className="lg:hidden" /> (Rp {priceBreakdown.weekdays.price.toLocaleString('id-ID')} x {priceBreakdown.weekdays.count} malam)</span>
-                        <span className="font-sans">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                        <span className="underline">Weekday <br className="lg:hidden" /> ({formatPrice(priceBreakdown.weekdays.price)} x {priceBreakdown.weekdays.count} malam)</span>
+                        <span className="font-sans">{formatPrice(priceBreakdown.weekdays.total)}</span>
                     </div>
                     {priceBreakdown.weekends.count > 0 && (
                         <div className="flex justify-between text-slate-500 font-semibold">
-                            <span className="underline">Weekend <br className="lg:hidden" /> (Rp {priceBreakdown.weekends.price.toLocaleString('id-ID')} x {priceBreakdown.weekends.count} malam)</span>
-                            <span className="font-sans">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                            <span className="underline">Weekend <br className="lg:hidden" /> ({formatPrice(priceBreakdown.weekends.price)} x {priceBreakdown.weekends.count} malam)</span>
+                            <span className="font-sans">{formatPrice(priceBreakdown.weekends.total)}</span>
                         </div>
                     )}
                     {isRefundable && (
                         <div className="flex justify-between text-slate-500 font-semibold">
                             <span className="underline">Pilihan tarif (Bisa dikembalikan +{((villa.refundable_surcharge_rate || 0.1111) * 100).toFixed(1)}%)</span>
-                            <span className="font-sans text-blue-600">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * (villa.refundable_surcharge_rate || 0.1111)).toLocaleString('id-ID')}</span>
+                            <span className="font-sans text-blue-600">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * (villa.refundable_surcharge_rate || 0.1111)))}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-slate-500 font-semibold">
                         <span className="underline">Biaya Kebersihan</span>
                         {villa.cleaning_fee && villa.cleaning_fee > 0 ? (
-                            <span className="font-sans">Rp {villa.cleaning_fee.toLocaleString('id-ID')}</span>
+                            <span className="font-sans">{formatPrice(villa.cleaning_fee)}</span>
                         ) : (
                             <span className="text-emerald-600">Gratis</span>
                         )}
@@ -623,7 +624,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     </div>
                     <div className="flex justify-between font-black text-slate-900 border-t border-slate-100 pt-3 lg:pt-4 text-sm">
                         <span>Total sebelum pajak</span>
-                        <span className="text-blue-600 font-sans">Rp {totalAmount.toLocaleString('id-ID')}</span>
+                        <span className="text-blue-600 font-sans">{formatPrice(totalAmount)}</span>
                     </div>
                 </div>
             )}
@@ -636,7 +637,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             <div className="hidden lg:block">
                 <PublicHeader
                     showBackButton
-                    onBackClick={() => router.push('/villas')}
+                    onBackClick={() => router.push('/')}
                 />
             </div>
 
@@ -652,7 +653,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 
                 {/* Overlay actions */}
                 <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-                    <button onClick={() => router.push('/villas')} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
+                    <button onClick={() => router.push('/')} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex space-x-3">
@@ -938,33 +939,34 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
                                 </p>
                             </div>
-                            <div className="w-full flex justify-center overflow-x-auto pb-4">
+                            <div className="w-full flex justify-center pb-4">
                                 <style dangerouslySetInnerHTML={{ __html: `
-                                    .rdp { --rdp-cell-size: min(40px, 11vw); margin: 0; width: 100%; }
-                                    .rdp-months { width: 100%; justify-content: center; }
-                                    .rdp-month { width: 100%; max-width: 100%; margin: 0 auto; }
-                                    .rdp-table { max-width: 100%; border-collapse: collapse; margin: 0 auto; }
+                                    .rdp { margin: 0; width: 100%; }
+                                    .rdp-months { width: 100%; justify-content: center; gap: 1rem; }
+                                    .rdp-month { width: 100%; max-width: 100%; margin: 0; }
+                                    .rdp-table { width: 100%; max-width: 100%; border-collapse: collapse; table-layout: fixed; }
                                     .rdp-cell { text-align: center; padding: 2px; }
                                     .rdp-head_cell { text-align: center; font-size: 13px; font-weight: 600; padding-bottom: 8px; }
                                     .rdp-day { 
-                                        width: var(--rdp-cell-size) !important; 
-                                        height: var(--rdp-cell-size) !important; 
-                                        max-width: var(--rdp-cell-size) !important; 
+                                        width: 100% !important;
+                                        aspect-ratio: 1 !important;
+                                        max-width: none !important;
                                         margin: 0 auto; 
                                         border-radius: 9999px;
                                         font-size: 14px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
                                     }
                                     
                                     @media (max-width: 768px) {
-                                        .rdp { --rdp-cell-size: min(48px, 13.5vw) !important; }
-                                        .rdp-cell { padding: 1.5px; }
-                                        .rdp-day { font-size: 14px !important; }
+                                        .rdp-cell { padding: 1px; }
+                                        .rdp-day { font-size: 13px !important; }
+                                        .rdp-head_cell { font-size: 11px; padding-bottom: 4px; }
                                     }
                                     @media (max-width: 400px) {
-                                        .rdp-day { font-size: 13px !important; }
-                                    }
-                                    @media (max-width: 350px) {
                                         .rdp-day { font-size: 12px !important; }
+                                        .rdp-head_cell { font-size: 10px; }
                                     }
                                 `}} />
                                 <DayPicker
@@ -1282,7 +1284,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         >
                             <div className="flex items-baseline gap-1">
                                 <span className="text-[15px] font-extrabold text-slate-900">
-                                    Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                                    {totalNights > 0 ? formatPrice(totalAmount) : formatPrice(villa.price_per_night)}
                                 </span>
                                 <span className="text-[11px] text-slate-500 font-semibold">
                                     {totalNights > 0 ? `total (${totalNights} mlm)` : '/ malam'}

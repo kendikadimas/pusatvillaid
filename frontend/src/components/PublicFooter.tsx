@@ -50,11 +50,56 @@ export default function PublicFooter() {
                     <div className="space-y-4">
                         <h3 className="text-xs font-bold text-blue-300 uppercase tracking-wider">Panduan</h3>
                         <ul className="space-y-2.5">
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Cara Memesan</Link></li>
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Syarat & Ketentuan</Link></li>
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Kebijakan Privasi</Link></li>
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Kebijakan Pembatalan</Link></li>
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Pusat Bantuan</Link></li>
+                            <li>
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20cara%20memesan%20villa`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                >
+                                    Cara Memesan
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20syarat%20dan%20ketentuan`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                >
+                                    Syarat & Ketentuan
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20privasi`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                >
+                                    Kebijakan Privasi
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20pembatalan`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                >
+                                    Kebijakan Pembatalan
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20butuh%20bantuan`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                >
+                                    Pusat Bantuan
+                                </a>
+                            </li>
                         </ul>
                     </div>
 

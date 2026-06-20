@@ -6,6 +6,7 @@ import { Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Villa } from '@/types';
 import { getPhotoUrl } from '@/lib/villaUtils';
 import { useWishlist } from '@/hooks/useWishlist';
+import { formatPrice } from '@/lib/format';
 
 interface MobilePropertyCardProps {
     villa: Villa;
@@ -132,16 +133,11 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
                     </p>
 
                     {/* Price */}
-                    <div className="flex items-baseline gap-2 pt-1">
-                        {villa.weekend_price && villa.weekend_price < villa.price_per_night && (
-                            <span className="text-xs text-slate-400 line-through">
-                                Rp {villa.price_per_night.toLocaleString('id-ID')}
-                            </span>
-                        )}
+                    <div className="flex items-baseline gap-1 pt-1">
                         <span className="font-bold text-sm text-slate-900">
-                            Rp {(villa.weekend_price || villa.price_per_night).toLocaleString('id-ID')}
+                            {formatPrice(villa.price_per_night)}
                         </span>
-                        <span className="text-xs text-slate-400">untuk 1 malam</span>
+                        <span className="text-xs text-slate-400">/ malam</span>
                     </div>
                 </div>
             </div>

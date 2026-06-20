@@ -149,7 +149,7 @@ export default function WishlistPage() {
                         </div>
 
                         {/* Footer info */}
-                        <div className="mt-12 pt-8 border-t border-slate-200 text-center">
+                        <div className="mt-12 pt-8 pb-20 border-t border-slate-200 text-center">
                             <p className="text-xs text-slate-400">
                                 Data favorit disimpan secara lokal di perangkat Anda.
                             </p>

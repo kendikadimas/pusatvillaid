@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import { formatPrice } from '@/lib/format';
 import { 
     Settings, 
     Save, 
@@ -577,13 +578,13 @@ export default function AdminSettingsPage() {
                                                     {method.code === 'qris' ? (
                                                         <>
                                                             <p className="text-slate-500 text-[11px] font-semibold">QRIS — {method.account_name}</p>
-                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">Rp {(method.admin_fee || 0).toLocaleString('id-ID')}</span></div>
+                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">{formatPrice(method.admin_fee || 0)}</span></div>
                                                         </>
                                                     ) : (
                                                         <>
                                                             <p className="text-slate-500 font-mono text-[11px] font-semibold">{method.account_number}</p>
                                                             <p className="text-slate-500 text-[10px] font-medium">a.n. <span className="font-bold text-slate-800">{method.account_name}</span></p>
-                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">Rp {(method.admin_fee || 0).toLocaleString('id-ID')}</span></div>
+                                                            <div className="text-[10px] text-slate-405 mt-1 font-semibold">Biaya Admin: <span className="font-bold text-slate-700">{formatPrice(method.admin_fee || 0)}</span></div>
                                                         </>
                                                     )}
                                                 </div>

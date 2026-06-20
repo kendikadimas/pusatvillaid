@@ -289,9 +289,17 @@ function BookingPaymentContent() {
         return (
             <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
                 <PublicHeader>
-                    <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
-                        <Lock className="w-3 h-3 text-emerald-600" />
-                        <span>Checkout Status</span>
+                    <div className="flex items-center gap-2">
+                        <Link
+                            href={`/booking/status?code=${code}&email=${booking.guest_email}`}
+                            className="flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all active:scale-95"
+                        >
+                            <span>Lihat Status Pemesanan</span>
+                        </Link>
+                        <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
+                            <Lock className="w-3 h-3 text-emerald-600" />
+                            <span>Checkout Status</span>
+                        </div>
                     </div>
                 </PublicHeader>
 
@@ -326,7 +334,7 @@ function BookingPaymentContent() {
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500 font-medium">Total Tagihan:</span>
-                                <span className="font-bold text-blue-900 text-sm">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
+                                <span className="font-bold text-blue-900 text-sm">{formatPrice(booking.total_amount)}</span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500 font-medium">Bukti Transfer:</span>
@@ -360,9 +368,17 @@ function BookingPaymentContent() {
         <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
             {/* Header */}
             <PublicHeader>
-                <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
-                    <Lock className="w-3 h-3 text-emerald-600" />
-                    <span>Checkout Secure</span>
+                <div className="flex items-center gap-2">
+                    <Link
+                        href={`/booking/status?code=${code}&email=${booking.guest_email}`}
+                        className="flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all active:scale-95"
+                    >
+                        <span>Lihat Status Pemesanan</span>
+                    </Link>
+                    <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
+                        <Lock className="w-3 h-3 text-emerald-600" />
+                        <span>Checkout Secure</span>
+                    </div>
                 </div>
             </PublicHeader>
 
@@ -441,7 +457,7 @@ function BookingPaymentContent() {
                         <div className="border-t border-slate-200/80 pt-3 flex justify-between items-center">
                             <span className="text-xs font-bold text-slate-900">Total Tagihan</span>
                             <span className="text-blue-900 font-extrabold text-lg tracking-tight">
-                                Rp {Number(booking.total_amount).toLocaleString('id-ID')}
+                                {formatPrice(booking.total_amount)}
                             </span>
                         </div>
                     </div>
@@ -548,25 +564,31 @@ function BookingPaymentContent() {
                                 return (
                                     <div className="bg-slate-50/60 border border-slate-250/60 rounded-2xl p-5 space-y-4 shadow-inner">
                                         {isQris ? (
-                                            <>
+                                                <>  
                                                 <div className="text-center space-y-3">
-                                                    <div className="w-fit mx-auto bg-white rounded-2xl border border-slate-200 p-3 shadow-md">
+                                                    <div className="w-fit mx-auto bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-lg">
                                                         {selectedMethod.logo_url ? (
                                                             <img
                                                                 src={selectedMethod.logo_url}
                                                                 alt="QRIS QR Code"
-                                                                className="w-48 h-48 object-contain"
+                                                                className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 object-contain mx-auto"
                                                             />
                                                         ) : (
-                                                            <div className="w-48 h-48 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400">
-                                                                <Smartphone className="w-12 h-12 mb-2 stroke-[1.5]" />
-                                                                <span className="text-[10px] font-bold tracking-wider">QRIS</span>
+                                                            <div className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                                                                <Smartphone className="w-16 h-16 mb-3 stroke-[1.5]" />
+                                                                <span className="text-xs font-bold tracking-wider">QRIS Code</span>
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <p className="text-[11px] text-slate-500 font-medium px-4 leading-relaxed">
-                                                        Scan QR code di atas menggunakan aplikasi e-wallet atau mobile banking yang mendukung QRIS
-                                                    </p>
+                                                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mx-auto max-w-md">
+                                                        <p className="text-xs text-blue-900 font-bold mb-1">Cara Pembayaran:</p>
+                                                        <ol className="text-[11px] text-blue-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
+                                                            <li>Buka aplikasi e-wallet atau mobile banking</li>
+                                                            <li>Pilih menu Scan QR / QRIS</li>
+                                                            <li>Arahkan kamera ke QR code di atas</li>
+                                                            <li>Konfirmasi pembayaran sesuai nominal</li>
+                                                        </ol>
+                                                    </div>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-550 font-medium">Merchant:</span>
@@ -575,7 +597,7 @@ function BookingPaymentContent() {
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-550 font-medium">Total Pembayaran:</span>
                                                     <span className="font-extrabold text-blue-900 text-sm">
-                                                        Rp {Number(booking.total_amount).toLocaleString('id-ID')}
+                                                        {formatPrice(booking.total_amount)}
                                                     </span>
                                                 </div>
                                             </>
@@ -612,7 +634,7 @@ function BookingPaymentContent() {
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-555 font-medium">Jumlah Transfer:</span>
                                                     <span className="font-extrabold text-blue-900 text-sm">
-                                                        Rp {Number(booking.total_amount).toLocaleString('id-ID')}
+                                                        {formatPrice(booking.total_amount)}
                                                     </span>
                                                 </div>
                                             </>
@@ -626,7 +648,7 @@ function BookingPaymentContent() {
                                 <label className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">
                                     Upload Bukti {paymentMethods.find(m => m.id === selectedMethodId)?.code === 'qris' ? 'Pembayaran' : 'Transfer'} *
                                 </label>
-                                <div className="border-2 border-dashed border-slate-200 hover:border-blue-900 hover:bg-slate-50/30 transition-all duration-300 rounded-2xl p-6 bg-slate-50/20 text-center cursor-pointer relative group overflow-hidden">
+                                <div className="border-2 border-dashed border-slate-200 hover:border-blue-900 hover:bg-slate-50/30 active:border-blue-700 active:bg-blue-50/20 active:scale-[0.99] transition-all duration-200 rounded-2xl p-6 bg-slate-50/20 text-center cursor-pointer relative group overflow-hidden">
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/png,image/jpg,image/webp"
@@ -637,6 +659,7 @@ function BookingPaymentContent() {
                                                     toast.error('Ukuran file maksimal adalah 5MB.');
                                                     return;
                                                 }
+                                                toast.success('Foto bukti transfer berhasil dipilih!');
                                                 setProofFile(file);
                                                 setProofPreview(URL.createObjectURL(file));
                                             }
@@ -658,17 +681,17 @@ function BookingPaymentContent() {
                                                 </div>
                                                 <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
                                             </div>
-                                            <span className="inline-block text-[11px] text-blue-900 group-hover:underline font-bold bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm transition-all duration-200">
+                                            <span className="inline-block text-[11px] text-blue-900 group-hover:underline font-bold bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm group-active:scale-95 transition-all duration-200">
                                                 Ganti Bukti Transfer
                                             </span>
                                         </div>
                                     ) : (
                                         <div className="py-2 space-y-2.5 flex flex-col items-center z-20 relative">
-                                            <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 group-hover:text-blue-900 group-hover:border-blue-900 group-hover:shadow-md transition-all duration-300 shadow-sm">
-                                                <Upload className="w-5 h-5 stroke-[1.5]" />
+                                            <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 group-hover:text-blue-900 group-hover:border-blue-900 group-hover:shadow-md group-active:scale-95 transition-all duration-200 shadow-sm">
+                                                <Upload className="w-5 h-5 stroke-[1.5] group-active:animate-pulse" />
                                             </div>
                                             <div>
-                                                <span className="text-xs font-bold text-slate-700 block">Pilih file gambar</span>
+                                                <span className="text-xs font-bold text-slate-700 block group-hover:text-blue-900 transition-colors">Pilih file gambar</span>
                                                 <span className="text-[10px] text-slate-400 block mt-1">JPG, JPEG, PNG, atau WEBP (Maks 5MB)</span>
                                             </div>
                                         </div>
@@ -707,8 +730,11 @@ function BookingPaymentContent() {
                         <button
                             onClick={handleManualPaymentSubmit}
                             disabled={submittingProof || !selectedMethodId || !proofFile}
-                            className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                            className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98] relative overflow-hidden group"
                         >
+                            {/* Ripple effect background */}
+                            <span className="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition-opacity duration-200"></span>
+                            
                             {submittingProof ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -716,8 +742,8 @@ function BookingPaymentContent() {
                                 </>
                             ) : (
                                 <>
-                                    <span>Konfirmasi Pembayaran</span>
-                                    <ArrowRight className="w-4 h-4" />
+                                    <span className="relative z-10">Konfirmasi Pembayaran</span>
+                                    <ArrowRight className="w-4 h-4 relative z-10 group-active:translate-x-1 transition-transform duration-200" />
                                 </>
                             )}
                         </button>

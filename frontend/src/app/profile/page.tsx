@@ -9,6 +9,7 @@ import PublicFooter from '@/components/PublicFooter';
 import BottomNav from '@/components/BottomNav';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { getPhotoUrl } from '@/lib/villaUtils';
+import { formatPrice } from '@/lib/format';
 import { 
     User, 
     Mail, 
@@ -21,8 +22,10 @@ import {
     XCircle,
     ChevronRight,
     MapPin,
-    ArrowRight
+    ArrowRight,
+    Download
 } from 'lucide-react';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -254,11 +257,11 @@ export default function ProfilePage() {
                                                         </div>
                                                         <div>
                                                             <span className="text-[8px] text-slate-400 block font-black uppercase tracking-widest">Total Biaya</span>
-                                                            <span className="text-blue-600 font-bold">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
+                                                            <span className="text-blue-600 font-bold">{formatPrice(booking.total_amount)}</span>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                                         <div className="flex items-center space-x-2">
                                                             <div>
                                                                 <span className="text-[7px] text-slate-400 block font-black uppercase tracking-widest mb-0.5">Status Reservasi</span>
@@ -270,15 +273,35 @@ export default function ProfilePage() {
                                                             </div>
                                                         </div>
 
-                                                        {isUnpaid && booking.payment?.snap_token && (
-                                                            <button
-                                                                onClick={() => router.push(`/booking/payment?code=${booking.booking_code}&token=${booking.payment?.snap_token}`)}
-                                                                className="py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-bold rounded-xl text-xs shadow-sm hover:shadow transition-all cursor-pointer flex items-center space-x-1"
-                                                            >
-                                                                <span>Selesaikan Pembayaran</span>
-                                                                <ChevronRight className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            {booking.payment_status === 'paid' && (
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        try {
+                                                                            await generateInvoicePDF(booking, booking.booking_code);
+                                                                            toast.success('Invoice berhasil didownload!');
+                                                                        } catch (error) {
+                                                                            console.error('Failed to generate PDF:', error);
+                                                                            toast.error('Gagal membuat invoice PDF.');
+                                                                        }
+                                                                    }}
+                                                                    className="py-2 px-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 active:scale-95 text-white font-bold rounded-xl text-xs shadow-sm hover:shadow transition-all cursor-pointer flex items-center space-x-1.5"
+                                                                    title="Download Invoice"
+                                                                >
+                                                                    <Download className="w-3.5 h-3.5" />
+                                                                    <span className="hidden sm:inline">Invoice</span>
+                                                                </button>
+                                                            )}
+                                                            {isUnpaid && booking.payment?.snap_token && (
+                                                                <button
+                                                                    onClick={() => router.push(`/booking/payment?code=${booking.booking_code}&token=${booking.payment?.snap_token}`)}
+                                                                    className="py-2 px-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 active:scale-95 text-white font-bold rounded-xl text-xs shadow-sm hover:shadow transition-all cursor-pointer flex items-center space-x-1"
+                                                                >
+                                                                    <span>Bayar Sekarang</span>
+                                                                    <ChevronRight className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -291,7 +314,9 @@ export default function ProfilePage() {
                 </div>
             </main>
 
-            <PublicFooter />
+            <div className="pb-20 lg:pb-0">
+                <PublicFooter />
+            </div>
             <BottomNav />
         </div>
     );

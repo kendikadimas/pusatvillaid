@@ -20,8 +20,10 @@ import {
     ArrowRight,
     AlertTriangle,
     XOctagon,
-    Lock
+    Lock,
+    Download
 } from 'lucide-react';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
@@ -89,7 +91,12 @@ function BookingStatusContent() {
     if (!verifiedEmail || !booking) {
         return (
             <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
-                <PublicHeader />
+                <PublicHeader>
+                    <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span>Status Booking</span>
+                    </div>
+                </PublicHeader>
 
                 <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                     <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
@@ -173,10 +180,18 @@ function BookingStatusContent() {
     return (
         <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-855">
             <PublicHeader>
-                <nav className="flex items-center space-x-8">
-                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-blue-900 transition-colors border border-slate-200 bg-white/80 backdrop-blur px-3.5 py-1.5 rounded-full hover:shadow-sm">
+                <nav className="flex items-center space-x-2">
+                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-blue-900 transition-colors border border-slate-200 bg-white/80 backdrop-blur px-3.5 py-1.5 rounded-full hover:shadow-sm active:scale-95">
                         Cari Villa
                     </Link>
+                    {booking.status === 'pending' && booking.payment_status === 'unpaid' && booking.payment?.snap_token && (
+                        <Link
+                            href={`/booking/payment?code=${code}&token=${booking.payment.snap_token}`}
+                            className="text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-3.5 py-1.5 rounded-full shadow-sm transition-all active:scale-95"
+                        >
+                            Lanjut Bayar
+                        </Link>
+                    )}
                 </nav>
             </PublicHeader>
 
@@ -373,6 +388,25 @@ function BookingStatusContent() {
                                     <span className="text-blue-900 text-base">{formatPrice(booking.total_amount)}</span>
                                 </div>
                             </div>
+
+                            {/* Download Invoice Button */}
+                            {booking.payment_status === 'paid' && (
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await generateInvoicePDF(booking, code);
+                                            toast.success('Invoice berhasil didownload!');
+                                        } catch (error) {
+                                            console.error('Failed to generate PDF:', error);
+                                            toast.error('Gagal membuat invoice PDF.');
+                                        }
+                                    }}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    <span>Download Invoice PDF</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -179,11 +179,11 @@ export default function AdminVillasPage() {
                                         </div>
                                         <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs">
                                             <span className="font-extrabold text-[#222222] font-mono tabular-nums">
-                                                Rp {Number(villa.price_per_night).toLocaleString('id-ID')}
+                                                {formatPrice(villa.price_per_night)}
                                             </span>
                                             {villa.weekend_price !== null && (
                                                 <span className="text-blue-600 font-semibold text-[10px]">
-                                                    | Weekend Rp {Number(villa.weekend_price).toLocaleString('id-ID')}
+                                                    | Weekend {formatPrice(villa.weekend_price)}
                                                 </span>
                                             )}
                                         </div>
@@ -301,13 +301,13 @@ export default function AdminVillasPage() {
                                                 </td>
                                                 <td className="py-4 px-6 text-right">
                                                     <span className="font-bold text-[#222222] text-sm font-mono tabular-nums">
-                                                        Rp {Number(villa.price_per_night).toLocaleString('id-ID')}
+                                                        {formatPrice(villa.price_per_night)}
                                                     </span>
                                                 </td>
                                                 <td className="py-4 px-6 text-right hidden sm:table-cell">
                                                     <span className="font-bold text-[#222222] text-sm font-mono tabular-nums">
                                                         {villa.weekend_price !== null 
-                                                            ? `Rp ${Number(villa.weekend_price).toLocaleString('id-ID')}` 
+                                                            ? formatPrice(villa.weekend_price) 
                                                             : <span className="text-slate-300 font-semibold">—</span>}
                                                     </span>
                                                 </td>

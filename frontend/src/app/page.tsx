@@ -480,11 +480,13 @@ export default function HomePage() {
 
                 <CTASection />
 
-                <PublicFooter />
+                <div className="pb-20 lg:pb-0">
+                    <PublicFooter />
+                </div>
             </div>
 
             {/* ===== MOBILE LAYOUT ===== */}
-            <div className="lg:hidden">
+            <div className="lg:hidden pb-20">
                 {/* Mobile Header */}
                 <div className={`sticky top-0 z-40 transition-all duration-300 ${headerSolid ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white'}`}>
                     <div className="flex items-center gap-3 px-4 py-3">
@@ -590,7 +592,7 @@ export default function HomePage() {
 
                 {/* Unmatched villas */}
                 {!loading && unmatchedVillas.length > 0 && (
-                    <div className="px-4 py-5">
+                    <div className="px-4 py-5 pb-20">
                         <h2 className="text-lg font-bold text-slate-900 mb-3">Villa Lainnya</h2>
                         <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2 snap-x snap-mandatory scroll-pl-4">
                             {unmatchedVillas.map((villa) => (

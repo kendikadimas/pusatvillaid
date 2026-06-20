@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
                         <div className="flex-1 min-w-0">
                             <span className="text-[11px] text-blue-100 font-bold block mb-2 uppercase tracking-wider">Pendapatan bulan ini</span>
                             <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
-                                Rp {stats.revenue_this_month.toLocaleString('id-ID')}
+                                {formatPrice(stats.revenue_this_month)}
                             </span>
                         </div>
                         <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -289,7 +289,7 @@ export default function AdminDashboardPage() {
                                                 {format(parseISO(b.check_in), 'dd MMM yy')}
                                             </td>
                                             <td className="py-3.5 px-2 text-[#222222] font-black font-mono tabular-nums">
-                                                Rp {Number(b.total_amount).toLocaleString('id-ID')}
+                                                {formatPrice(b.total_amount)}
                                             </td>
                                             <td className="py-3.5 px-2 text-right">
                                                 <StatusBadge variant={b.status as any} />
@@ -324,7 +324,7 @@ export default function AdminDashboardPage() {
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-[#6a6a6a] font-medium">Total</span>
-                                                <span className="font-mono font-black tabular-nums text-[#222222]">Rp {Number(b.total_amount).toLocaleString('id-ID')}</span>
+                                                <span className="font-mono font-black tabular-nums text-[#222222]">{formatPrice(b.total_amount)}</span>
                                             </div>
                                         </div>
                                     </div>

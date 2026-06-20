@@ -510,15 +510,35 @@ export default function BookingConfirmPage() {
                                                             </div>
                                                         )}
                                                         {selectedMethod && (
-                                                            <div className="mt-3 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl">
+                                                            <div className="mt-3 p-4 bg-blue-50 border border-blue-200/80 rounded-2xl">
                                                                 {selectedMethod.code === 'qris' ? (
-                                                                    <p className="text-xs font-semibold text-slate-600 leading-relaxed">
-                                                                        <strong>QRIS:</strong> Scan kode QR yang akan ditampilkan di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking.
-                                                                    </p>
+                                                                    <div className="space-y-2">
+                                                                        <p className="text-xs font-bold text-blue-900">Pembayaran via QRIS</p>
+                                                                        <p className="text-xs font-semibold text-blue-700 leading-relaxed">
+                                                                            Scan kode QR yang akan ditampilkan di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking.
+                                                                        </p>
+                                                                    </div>
                                                                 ) : (
-                                                                    <p className="text-xs font-semibold text-slate-600 leading-relaxed">
-                                                                        <strong>{selectedMethod.name}:</strong> Transfer ke rekening <span className="font-mono font-bold">{selectedMethod.account_number}</span> a.n. {selectedMethod.account_name}. Upload bukti transfer di halaman berikutnya.
-                                                                    </p>
+                                                                    <div className="space-y-3">
+                                                                        <p className="text-xs font-bold text-blue-900">Detail Transfer Bank</p>
+                                                                        <div className="space-y-2">
+                                                                            <div className="flex justify-between items-center">
+                                                                                <span className="text-xs text-blue-700 font-semibold">Bank:</span>
+                                                                                <span className="text-xs font-bold text-blue-900">{selectedMethod.name}</span>
+                                                                            </div>
+                                                                            <div className="flex justify-between items-center">
+                                                                                <span className="text-xs text-blue-700 font-semibold">No. Rekening:</span>
+                                                                                <span className="text-xs font-mono font-bold text-blue-900 bg-white px-2 py-1 rounded border border-blue-200">{selectedMethod.account_number}</span>
+                                                                            </div>
+                                                                            <div className="flex justify-between items-center">
+                                                                                <span className="text-xs text-blue-700 font-semibold">Atas Nama:</span>
+                                                                                <span className="text-xs font-bold text-blue-900">{selectedMethod.account_name}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <p className="text-[10px] text-blue-600 mt-2 font-semibold italic">
+                                                                            Upload bukti transfer di halaman berikutnya setelah melakukan pembayaran.
+                                                                        </p>
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         )}
@@ -674,38 +694,38 @@ export default function BookingConfirmPage() {
                                     
                                     <div className="space-y-3 text-xs font-semibold text-slate-550">
                                         <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
-                                            <span className="break-words">{priceBreakdown.weekdays.count} malam x Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekday)</span>
-                                            <span className="text-slate-800 font-bold font-sans whitespace-nowrap">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                                            <span className="break-words">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                            <span className="text-slate-800 font-bold font-sans whitespace-nowrap">{formatPrice(priceBreakdown.weekdays.total)}</span>
                                         </div>
                                         {priceBreakdown.weekends.count > 0 && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
-                                                <span className="break-words">{priceBreakdown.weekends.count} malam x Rp {Number(selectedVilla.weekend_price || selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekend)</span>
-                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                                                <span className="break-words">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">{formatPrice(priceBreakdown.weekends.total)}</span>
                                             </div>
                                         )}
                                         {isRefundable && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
                                                 <span>Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                                <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                                <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                             </div>
                                         )}
                                         {taxPercentage > 0 && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-t border-slate-50 pt-2.5">
                                                 <span>Pajak ({taxPercentage}%)</span>
-                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+{formatPrice(taxAmount)}</span>
                                             </div>
                                         )}
                                         {adminFee > 0 && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-t border-slate-50 pt-2.5">
                                                 <span>Biaya Admin ({selectedMethod?.name})</span>
-                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">+{formatPrice(adminFee)}</span>
                                             </div>
                                         )}
                                     </div>
  
                                     <div className="border-t border-slate-150 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 font-black text-slate-950 text-sm">
                                         <span>Total Biaya</span>
-                                        <span className="text-blue-500 font-sans">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
+                                        <span className="text-blue-500 font-sans">{formatPrice(finalTotalAmount)}</span>
                                     </div>
                                 </div>
 
@@ -1003,37 +1023,37 @@ export default function BookingConfirmPage() {
                                     </h3>
                                     <div className="space-y-3 text-xs font-semibold text-slate-605">
                                         <div className="flex justify-between items-start gap-4">
-                                            <span className="text-left">{priceBreakdown.weekdays.count} malam x Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekday)</span>
-                                            <span className="text-slate-800 font-bold font-sans flex-shrink-0">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                                            <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                            <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
                                         </div>
                                         {priceBreakdown.weekends.count > 0 && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
-                                                <span className="text-left">{priceBreakdown.weekends.count} malam x Rp {Number(selectedVilla.weekend_price || selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekend)</span>
-                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                                                <span className="text-left">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekends.total)}</span>
                                             </div>
                                         )}
                                         {isRefundable && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                                <span className="text-blue-500 font-bold font-sans flex-shrink-0">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                                <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                             </div>
                                         )}
                                         {taxPercentage > 0 && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">Pajak ({taxPercentage}%)</span>
-                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+{formatPrice(taxAmount)}</span>
                                             </div>
                                         )}
                                         {adminFee > 0 && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">Biaya Admin ({selectedMethod?.name})</span>
-                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">+{formatPrice(adminFee)}</span>
                                             </div>
                                         )}
                                         
                                         <div className="border-t border-slate-150 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                             <span>Total Biaya</span>
-                                            <span className="text-blue-600 font-sans text-base">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
+                                            <span className="text-blue-600 font-sans text-base">{formatPrice(finalTotalAmount)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1064,7 +1084,7 @@ export default function BookingConfirmPage() {
                             <div>
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Total Biaya</div>
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-sm font-black text-slate-900 font-sans">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
+                                    <span className="text-sm font-black text-slate-900 font-sans">{formatPrice(finalTotalAmount)}</span>
                                     <button 
                                         onClick={() => setIsPriceDetailOpen(true)}
                                         className="text-[10px] font-bold text-blue-500 hover:underline cursor-pointer"
@@ -1236,37 +1256,37 @@ export default function BookingConfirmPage() {
                         
                         <div className="space-y-4 text-xs font-semibold text-slate-600">
                             <div className="flex justify-between items-start gap-4">
-                                <span className="text-left">{priceBreakdown.weekdays.count} malam x Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekday)</span>
-                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">Rp {priceBreakdown.weekdays.total.toLocaleString('id-ID')}</span>
+                                <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
                             </div>
                             {priceBreakdown.weekends.count > 0 && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
-                                    <span className="text-left">{priceBreakdown.weekends.count} malam x Rp {Number(selectedVilla.weekend_price || selectedVilla.price_per_night).toLocaleString('id-ID')} (Weekend)</span>
-                                    <span className="text-slate-850 font-bold font-sans flex-shrink-0">Rp {priceBreakdown.weekends.total.toLocaleString('id-ID')}</span>
+                                    <span className="text-left">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
+                                    <span className="text-slate-850 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekends.total)}</span>
                                 </div>
                             )}
                             {isRefundable && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                    <span className="text-blue-500 font-bold font-sans flex-shrink-0">+Rp {Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111).toLocaleString('id-ID')}</span>
+                                    <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                 </div>
                             )}
                             {taxPercentage > 0 && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">Pajak ({taxPercentage}%)</span>
-                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {taxAmount.toLocaleString('id-ID')}</span>
+                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+{formatPrice(taxAmount)}</span>
                                 </div>
                             )}
                             {adminFee > 0 && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">Biaya Admin ({selectedMethod?.name})</span>
-                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+Rp {adminFee.toLocaleString('id-ID')}</span>
+                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">+{formatPrice(adminFee)}</span>
                                 </div>
                             )}
                             
                             <div className="border-t border-slate-100 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                 <span>Total</span>
-                                <span className="text-blue-600 font-sans text-base">Rp {finalTotalAmount.toLocaleString('id-ID')}</span>
+                                <span className="text-blue-600 font-sans text-base">{formatPrice(finalTotalAmount)}</span>
                             </div>
                         </div>
                         

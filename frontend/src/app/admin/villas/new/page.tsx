@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import FormField from '@/components/ui/FormField';
 import PageHeader from '@/components/ui/PageHeader';
+import { formatPrice } from '@/lib/format';
 import { 
     ArrowLeft, 
     Save, 
@@ -1124,7 +1125,7 @@ export default function AdminNewVillaPage() {
                                     {name || 'Nama Villa Baru'}
                                 </h3>
                                 <p className="text-[13px] text-[#787774] leading-normal font-normal m-0">
-                                    Villa di {location.split(',')[0].trim() || 'Nama Lokasi'} · Rp {Number(pricePerNight || 0).toLocaleString('id-ID')} / malam
+                                    Villa di {location.split(',')[0].trim() || 'Nama Lokasi'} · {formatPrice(pricePerNight || 0)} / malam
                                 </p>
                                 {shortDesc && (
                                     <p className="text-[12px] text-[#787774] line-clamp-2 mt-0.5 leading-snug font-normal">
@@ -1199,12 +1200,12 @@ export default function AdminNewVillaPage() {
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] text-left">
                             <div className="flex items-baseline justify-between">
                                 <div>
-                                    <span className="text-sm font-bold text-slate-950">Rp {Number(pricePerNight || 0).toLocaleString('id-ID')}</span>
+                                    <span className="text-sm font-bold text-slate-950">{formatPrice(pricePerNight || 0)}</span>
                                     <span className="text-[10px] text-slate-500 font-medium"> / malam</span>
                                 </div>
                                 {weekendPrice && (
                                     <div className="text-[10px] text-right font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                                        Weekend: Rp {Number(weekendPrice).toLocaleString('id-ID')}
+                                        Weekend: {formatPrice(weekendPrice)}
                                     </div>
                                 )}
                             </div>
@@ -1221,7 +1222,7 @@ export default function AdminNewVillaPage() {
                                 {cleaningFee && (
                                     <div className="flex justify-between">
                                         <span>Biaya Kebersihan</span>
-                                        <span className="text-slate-950 font-bold">Rp {Number(cleaningFee).toLocaleString('id-ID')}</span>
+                                        <span className="text-slate-950 font-bold">{formatPrice(cleaningFee)}</span>
                                     </div>
                                 )}
                             </div>

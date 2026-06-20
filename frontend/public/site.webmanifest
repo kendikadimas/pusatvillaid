@@ -1,0 +1,17 @@
+{
+  "name": "PusatVilla.id",
+  "short_name": "PusatVilla",
+  "description": "Platform Sewa Villa Premium di Indonesia",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
