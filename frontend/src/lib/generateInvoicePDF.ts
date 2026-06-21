@@ -1,9 +1,33 @@
 import jsPDF from 'jspdf';
-import { Booking } from '@/types';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 
-export async function generateInvoicePDF(booking: Booking, bookingCode: string) {
+interface InvoiceBooking {
+    booking_code?: string;
+    guest_name?: string;
+    guest_email?: string;
+    guest_phone?: string;
+    check_in: string;
+    check_out: string;
+    total_nights: number;
+    num_guests: number;
+    base_price?: number;
+    tax_amount?: number;
+    admin_fee?: number;
+    total_amount: number | string;
+    payment_status: string;
+    villa?: {
+        name?: string;
+        location?: string;
+        check_in_time?: string;
+        check_out_time?: string;
+    };
+    payment_method?: {
+        name?: string;
+    } | null;
+}
+
+export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: string) {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -71,7 +95,7 @@ export async function generateInvoicePDF(booking: Booking, bookingCode: string) 
   pdf.text('Nama Lengkap:', 25, yPos);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(15, 23, 42);
-  pdf.text(booking.guest_name, 70, yPos);
+  pdf.text(booking.guest_name || '-', 70, yPos);
   
   yPos += 7;
   pdf.setFont('helvetica', 'normal');
@@ -79,7 +103,7 @@ export async function generateInvoicePDF(booking: Booking, bookingCode: string) 
   pdf.text('Email:', 25, yPos);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(15, 23, 42);
-  pdf.text(booking.guest_email, 70, yPos);
+  pdf.text(booking.guest_email || '-', 70, yPos);
   
   yPos += 7;
   pdf.setFont('helvetica', 'normal');
@@ -87,7 +111,7 @@ export async function generateInvoicePDF(booking: Booking, bookingCode: string) 
   pdf.text('Nomor Telepon:', 25, yPos);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(15, 23, 42);
-  pdf.text(booking.guest_phone, 70, yPos);
+  pdf.text(booking.guest_phone || '-', 70, yPos);
   
   yPos += 15;
   
