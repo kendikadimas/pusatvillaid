@@ -813,12 +813,20 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         </div>
                                         <p className="text-xs text-slate-400">{hostJoinedLabel}</p>
                                     </div>
+                                    </div>
+                                    <a 
+                                        href={villa.host_phone 
+                                            ? `https://api.whatsapp.com/send?phone=${villa.host_phone.replace(/[^0-9]/g, '').replace(/^0/, '62')}&text=${encodeURIComponent(`Halo ${hostName}, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
+                                            : `https://api.whatsapp.com/send?phone=6281234567890&text=${encodeURIComponent(`Halo, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-3 py-2 sm:px-4 rounded-lg transition-colors active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2"
+                                    >
+                                        <MessageCircle className="w-4 h-4 sm:hidden" />
+                                        <span className="hidden sm:inline">Hubungi Tuan Rumah</span>
+                                    </a>
                                 </div>
-                                <button className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-3 py-2 sm:px-4 rounded-lg transition-colors active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2">
-                                    <MessageCircle className="w-4 h-4 sm:hidden" />
-                                    <span className="hidden sm:inline">Hubungi Tuan Rumah</span>
-                                </button>
-                            </div>
                         </div>
 
                         {/* Property Highlights */}
@@ -939,34 +947,71 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     Pilih tanggal check-in dan check-out untuk menghitung rincian sewa. Tanggal redup tidak dapat dipesan.
                                 </p>
                             </div>
-                            <div className="w-full flex justify-center pb-4">
+                            <div className="w-full overflow-x-auto pb-4 -mx-2 px-2">
                                 <style dangerouslySetInnerHTML={{ __html: `
-                                    .rdp { margin: 0; width: 100%; }
-                                    .rdp-months { width: 100%; justify-content: center; gap: 1rem; }
-                                    .rdp-month { width: 100%; max-width: 100%; margin: 0; }
-                                    .rdp-table { width: 100%; max-width: 100%; border-collapse: collapse; table-layout: fixed; }
-                                    .rdp-cell { text-align: center; padding: 2px; }
-                                    .rdp-head_cell { text-align: center; font-size: 13px; font-weight: 600; padding-bottom: 8px; }
+                                    .rdp { 
+                                        margin: 0; 
+                                        width: 100%;
+                                        min-width: 280px;
+                                    }
+                                    .rdp-months { 
+                                        width: 100%; 
+                                        justify-content: center; 
+                                    }
+                                    .rdp-month { 
+                                        width: 100%; 
+                                        margin: 0; 
+                                    }
+                                    .rdp-table { 
+                                        width: 100%; 
+                                        border-collapse: collapse;
+                                    }
+                                    .rdp-cell { 
+                                        text-align: center;
+                                    }
+                                    .rdp-head_cell { 
+                                        text-align: center; 
+                                        font-size: 12px; 
+                                        font-weight: 600;
+                                        color: #64748b;
+                                        padding: 8px 0;
+                                    }
                                     .rdp-day { 
-                                        width: 100% !important;
-                                        aspect-ratio: 1 !important;
-                                        max-width: none !important;
-                                        margin: 0 auto; 
+                                        width: 36px;
+                                        height: 36px;
+                                        margin: 2px auto; 
                                         border-radius: 9999px;
                                         font-size: 14px;
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
+                                        touch-action: manipulation;
                                     }
                                     
-                                    @media (max-width: 768px) {
-                                        .rdp-cell { padding: 1px; }
-                                        .rdp-day { font-size: 13px !important; }
-                                        .rdp-head_cell { font-size: 11px; padding-bottom: 4px; }
+                                    @media (min-width: 640px) {
+                                        .rdp-day { 
+                                            width: 40px;
+                                            height: 40px;
+                                        }
+                                        .rdp-head_cell { 
+                                            font-size: 13px; 
+                                        }
                                     }
-                                    @media (max-width: 400px) {
-                                        .rdp-day { font-size: 12px !important; }
-                                        .rdp-head_cell { font-size: 10px; }
+                                    
+                                    @media (max-width: 639px) {
+                                        .rdp-day { 
+                                            width: 32px;
+                                            height: 32px;
+                                            font-size: 13px;
+                                            margin: 1px auto;
+                                        }
+                                        .rdp-head_cell { 
+                                            font-size: 11px; 
+                                            padding: 6px 0;
+                                        }
+                                        .rdp-cell {
+                                            padding: 0;
+                                        }
                                     }
                                 `}} />
                                 <DayPicker
@@ -977,10 +1022,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     numberOfMonths={isMobile ? 1 : 2}
                                     locale={localeID}
                                     hideNavigation
-                                    className="text-slate-800 w-full"
+                                    className="text-slate-800"
                                     classNames={{
-                                        selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
-                                        today: "text-blue-600 font-black rounded-full",
+                                        selected: "bg-blue-600 text-white hover:bg-blue-700",
+                                        range_middle: "bg-blue-100 text-blue-900",
+                                        range_start: "bg-blue-600 text-white",
+                                        range_end: "bg-blue-600 text-white",
+                                        today: "text-blue-600 font-bold",
                                         month_caption: "flex items-center w-full",
                                         caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
                                     }}

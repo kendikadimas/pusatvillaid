@@ -121,7 +121,7 @@ export default function PublicFooter() {
                                     href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-white transition-colors"
+                                    className="text-blue-200/80 hover:text-white transition-colors"
                                 >
                                     {whatsappDisplay}
                                 </a>
