@@ -89,19 +89,7 @@ export default function HostProfileSection({
                         </div>
                     )}
 
-                    {coHosts.length > 0 && (
-                        <div className="pt-4 border-t border-slate-100">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Rekan Tuan Rumah (Co-host)</h4>
-                            <div className="flex flex-wrap gap-3">
-                                {coHosts.map((co, idx) => (
-                                    <div key={idx} className="flex items-center space-x-2 bg-slate-50 py-1.5 px-3 rounded-full border border-slate-200">
-                                        <img src={co.avatar || coHostFallbackAvatar} alt={co.name} className="w-6 h-6 rounded-full object-cover border border-white" />
-                                        <span className="text-xs font-semibold text-slate-700">{co.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+
 
                     <div className="pt-2 space-y-3">
                         <button className="bg-slate-900 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 duration-150">

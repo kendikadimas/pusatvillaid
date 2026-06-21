@@ -32,6 +32,7 @@ class Villa extends Model
         'host_name',
         'host_years',
         'host_avatar',
+        'host_phone',
         'highlights',
         'bedrooms_info',
         'accessibility_features',
