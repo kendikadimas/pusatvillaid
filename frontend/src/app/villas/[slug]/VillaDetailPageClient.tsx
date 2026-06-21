@@ -979,11 +979,16 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         min-width: 280px;
                                     }
                                     .rdp-months { 
+                                        display: flex;
+                                        flex-direction: row;
+                                        flex-wrap: nowrap;
                                         width: 100%; 
-                                        justify-content: center; 
+                                        justify-content: center;
+                                        gap: 16px;
                                     }
                                     .rdp-month { 
-                                        width: 100%; 
+                                        flex: 1;
+                                        min-width: 0;
                                         margin: 0; 
                                     }
                                     .rdp-table { 
@@ -1023,6 +1028,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     }
                                     
                                     @media (max-width: 639px) {
+                                        .rdp-months {
+                                            flex-direction: column;
+                                        }
+                                        .rdp-month {
+                                            width: 100%;
+                                        }
                                         .rdp-day { 
                                             width: 32px;
                                             height: 32px;
