@@ -316,7 +316,7 @@ export default function PhotoTourModal({
                         {/* Navigation: Left */}
                         <button
                             onClick={() => setSelectedPhotoIndex((prev) => (prev !== null ? (prev - 1 + photos.length) % photos.length : null))}
-                            className="absolute left-2 sm:left-4 z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white/80 hover:text-white transition-all cursor-pointer active:scale-95 border border-white/5 backdrop-blur-xs"
+                            className="absolute left-2 sm:left-4 z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white/80 hover:text-white transition-all cursor-pointer active:scale-95 border border-white/5 backdrop-blur-sm"
                             aria-label="Foto sebelumnya"
                         >
                             <ChevronLeft className="w-6 h-6" strokeWidth={2.5} />
@@ -334,7 +334,7 @@ export default function PhotoTourModal({
                             
                             {/* Description block */}
                             {getPhotoDesc(photos[selectedPhotoIndex]) && (
-                                <p className="text-white text-xs sm:text-sm bg-black/50 border border-white/10 backdrop-blur-md px-5 py-2.5 rounded-2xl text-center max-w-xl font-semibold leading-relaxed shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                <p className="text-white text-xs sm:text-sm bg-black/50 border border-white/10 backdrop-blur-md px-5 py-2.5 rounded-2xl text-center max-w-xl font-semibold leading-relaxed shadow-xl animate-fadeInUp">
                                     {getPhotoDesc(photos[selectedPhotoIndex])}
                                 </p>
                             )}
@@ -343,7 +343,7 @@ export default function PhotoTourModal({
                         {/* Navigation: Right */}
                         <button
                             onClick={() => setSelectedPhotoIndex((prev) => (prev !== null ? (prev + 1) % photos.length : null))}
-                            className="absolute right-2 sm:right-4 z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white/80 hover:text-white transition-all cursor-pointer active:scale-95 border border-white/5 backdrop-blur-xs"
+                            className="absolute right-2 sm:right-4 z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white/80 hover:text-white transition-all cursor-pointer active:scale-95 border border-white/5 backdrop-blur-sm"
                             aria-label="Foto berikutnya"
                         >
                             <ChevronRight className="w-6 h-6" strokeWidth={2.5} />
@@ -404,11 +404,11 @@ function StandardGrid({
                 <img
                     src={getPhotoUrl(featured.item)}
                     alt={category}
-                    className="w-full aspect-video sm:aspect-[16/7] object-cover transition duration-305 group-hover:scale-[1.01] group-hover:brightness-95"
+                    className="w-full aspect-video sm:aspect-[16/7] object-cover transition duration-300 group-hover:scale-[1.01] group-hover:brightness-95"
                     loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <span className="bg-white/90 text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-md backdrop-blur-xs flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition duration-350">
+                    <span className="bg-white/90 text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-md backdrop-blur-sm flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition duration-300">
                         Lihat Detail
                     </span>
                 </div>
@@ -426,11 +426,11 @@ function StandardGrid({
                             <img
                                 src={getPhotoUrl(ph.item)}
                                 alt={category}
-                                className="w-full aspect-[4/3] object-cover transition duration-305 group-hover:scale-102 group-hover:brightness-95"
+                                className="w-full aspect-[4/3] object-cover transition duration-300 group-hover:scale-[1.02] group-hover:brightness-95"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <span className="bg-white/90 text-slate-900 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition duration-350">
+                                <span className="bg-white/90 text-slate-900 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm transform translate-y-2 group-hover:translate-y-0 transition duration-300">
                                     Lihat Detail
                                 </span>
                             </div>
@@ -472,11 +472,11 @@ function AsymmetricGrid({
                     <img
                         src={getPhotoUrl(leftPhoto.item)}
                         alt={category}
-                        className="w-full h-full object-cover min-h-[300px] sm:min-h-[420px] transition duration-305 group-hover:scale-[1.01] group-hover:brightness-95"
+                        className="w-full h-full object-cover min-h-[300px] sm:min-h-[420px] transition duration-300 group-hover:scale-[1.01] group-hover:brightness-95"
                         loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <span className="bg-white/90 text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-md backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition duration-350">
+                        <span className="bg-white/90 text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-md backdrop-blur-sm transform translate-y-2 group-hover:translate-y-0 transition duration-300">
                             Lihat Detail
                         </span>
                     </div>
@@ -493,11 +493,11 @@ function AsymmetricGrid({
                             <img
                                 src={getPhotoUrl(ph.item)}
                                 alt={category}
-                                className="w-full h-full object-cover transition duration-305 group-hover:scale-[1.01] group-hover:brightness-95"
+                                className="w-full h-full object-cover transition duration-300 group-hover:scale-[1.01] group-hover:brightness-95"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <span className="bg-white/90 text-slate-900 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition duration-350">
+                                <span className="bg-white/90 text-slate-900 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm transform translate-y-2 group-hover:translate-y-0 transition duration-300">
                                     Lihat Detail
                                 </span>
                             </div>

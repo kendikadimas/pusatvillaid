@@ -146,10 +146,7 @@ class DatabaseSeeder extends Seeder
                 'bedrooms_info' => [
                     ['image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=600&q=80', 'title' => 'Kamar tidur 1', 'subtext' => '1 tempat tidur king'],
                 ],
-                'accessibility_features' => [
-                    ['image' => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80', 'title' => 'Pintu masuk dan parkir tamu', 'subtext' => 'Tempat parkir penyandang disabilitas'],
-                    ['image' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80', 'title' => 'Kamar mandi lengkap', 'subtext' => 'Pegangan tetap untuk shower'],
-                ],
+                'accessibility_features' => [],
             ],
             [
                 'name' => 'Ubud Sanctuary Pool Villa',

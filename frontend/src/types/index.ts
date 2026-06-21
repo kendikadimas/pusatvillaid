@@ -24,7 +24,6 @@ export interface Villa {
     host_phone?: string | null;
     highlights?: Array<{ icon: string; title: string; description: string }> | null;
     bedrooms_info?: Array<{ image: string; title: string; subtext: string }> | null;
-    accessibility_features?: Array<{ image: string; title: string; subtext: string }> | null;
     host_joined_label?: string;
     host_is_verified?: boolean;
     host_about?: string[] | null;
