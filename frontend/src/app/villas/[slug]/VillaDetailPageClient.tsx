@@ -1155,15 +1155,26 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
                                     {/* Right Column: Map Frame */}
                                     <div className="aspect-[4/3] sm:aspect-[16/10] md:aspect-square lg:aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm">
-                                        <iframe 
-                                            src={villa.maps_url} 
-                                            width="100%" 
-                                            height="100%" 
-                                            style={{ border: 0 }} 
-                                            allowFullScreen={false} 
-                                            loading="lazy" 
-                                            referrerPolicy="no-referrer-when-downgrade"
-                                        />
+                                        {(() => {
+                                            let cleanMapsUrl = villa.maps_url || '';
+                                            if (cleanMapsUrl.includes('<iframe')) {
+                                                const match = cleanMapsUrl.match(/src=["']([^"']+)["']/);
+                                                if (match && match[1]) {
+                                                    cleanMapsUrl = match[1];
+                                                }
+                                            }
+                                            return (
+                                                <iframe 
+                                                    src={cleanMapsUrl} 
+                                                    width="100%" 
+                                                    height="100%" 
+                                                    style={{ border: 0 }} 
+                                                    allowFullScreen={false} 
+                                                    loading="lazy" 
+                                                    referrerPolicy="no-referrer-when-downgrade"
+                                                />
+                                            );
+                                        })()}
                                     </div>
                                 </div>
                             </div>

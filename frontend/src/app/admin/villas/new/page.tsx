@@ -495,7 +495,17 @@ export default function AdminNewVillaPage() {
                                     type="text" 
                                     placeholder="https://www.google.com/maps/embed?pb=..."
                                     value={mapsUrl}
-                                    onChange={(e) => setMapsUrl(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val.includes('<iframe')) {
+                                            const match = val.match(/src=["']([^"']+)["']/);
+                                            if (match && match[1]) {
+                                                setMapsUrl(match[1]);
+                                                return;
+                                            }
+                                        }
+                                        setMapsUrl(val);
+                                    }}
                                     className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200"
                                 />
                             </div>
