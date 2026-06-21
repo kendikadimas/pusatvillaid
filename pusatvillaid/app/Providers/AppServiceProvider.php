@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         // Custom URL for Email Verification notification to use backend signed verification route
         \Illuminate\Auth\Notifications\VerifyEmail::createUrlUsing(function (object $notifiable) {
             return \Illuminate\Support\Facades\URL::temporarySignedRoute(
-                'verification.verify',
+                'api.verification.verify',
                 now()->addMinutes(60),
                 [
                     'id' => $notifiable->getKey(),
