@@ -483,13 +483,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             subtext: '1 tempat tidur king'
         }));
 
-    // Dynamic Accessibility Features Fallback
-    const accessibilityFeatures = villa.accessibility_features && villa.accessibility_features.length > 0
-        ? villa.accessibility_features
-        : [
-            { image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80', title: 'Pintu masuk dan parkir tamu', subtext: 'Tempat parkir penyandang disabilitas' },
-            { image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80', title: 'Kamar mandi lengkap', subtext: 'Pegangan tetap untuk shower' }
-        ];
+
 
     // Dynamic Amenities Fallback
     const amenities = villa.amenities && villa.amenities.length > 0
@@ -966,28 +960,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             </div>
                         </div>
 
-                        {/* Accessibility Features */}
-                        <div className="pb-6 border-b border-slate-200/80">
-                            <div className="space-y-5">
-                                <div>
-                                    <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Fitur aksesibilitas</h3>
-                                    <p className="text-[13px] text-slate-500 mt-0.5 font-normal">Info ini diberikan oleh Tuan Rumah dan sudah ditinjau oleh PusatVilla.id</p>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {accessibilityFeatures.map((ac, idx) => (
-                                        <div key={idx} className="rounded-2xl flex flex-col space-y-3">
-                                            <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
-                                                <img src={ac.image} alt={ac.title} className="w-full h-full object-cover" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-[14px] font-bold text-slate-900">{ac.title}</h4>
-                                                <p className="text-[12px] text-slate-500 mt-0.5 font-normal">{ac.subtext}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+
 
                         {/* Interactive Calendar Select */}
                         <div id="calendar-section" className="space-y-5 pb-6 border-b border-slate-200/80 scroll-mt-32">

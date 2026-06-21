@@ -162,13 +162,7 @@ function AdminEditVillaContent() {
     const [brTitle, setBrTitle] = useState('');
     const [brSubtext, setBrSubtext] = useState('');
 
-    const [accessList, setAccessList] = useState<Array<{ image: string; title: string; subtext: string }>>([]);
-    const [acImage, setAcImage] = useState('');
-    const [acTitle, setAcTitle] = useState('');
-    const [acSubtext, setAcSubtext] = useState('');
-
     const [uploadingBrImage, setUploadingBrImage] = useState(false);
-    const [uploadingAcImage, setUploadingAcImage] = useState(false);
 
     const handleBrImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -191,30 +185,6 @@ function AdminEditVillaContent() {
             toast.error(err.response?.data?.message || 'Gagal mengunggah foto kamar.');
         } finally {
             setUploadingBrImage(false);
-        }
-    };
-
-    const handleAcImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setUploadingAcImage(true);
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-            const response = await axiosClient.post('/admin/villas/upload-image', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            setAcImage(normaliseStorageUrl(response.data.url));
-            toast.success('Foto fitur aksesibilitas berhasil diunggah.');
-        } catch (err: any) {
-            console.error('Upload accessibility image failed:', err);
-            toast.error(err.response?.data?.message || 'Gagal mengunggah foto fitur.');
-        } finally {
-            setUploadingAcImage(false);
         }
     };
 
@@ -262,7 +232,6 @@ function AdminEditVillaContent() {
             
             setHighlightsList(v.highlights || []);
             setBedroomsList(v.bedrooms_info || []);
-            setAccessList(v.accessibility_features || []);
         } catch (err) {
             console.error('Failed to load villa:', err);
             toast.error('Gagal memuat data detail villa.');
@@ -352,7 +321,7 @@ function AdminEditVillaContent() {
                 neighborhood_desc: neighborhoodDesc || null,
                 highlights: highlightsList,
                 bedrooms_info: bedroomsList,
-                accessibility_features: accessList
+                accessibility_features: []
             };
 
             await axiosClient.put(`/admin/villas/${id}`, payload);
@@ -567,7 +536,7 @@ function AdminEditVillaContent() {
                 neighborhood_desc: neighborhoodDesc || null,
                 highlights: highlightsList,
                 bedrooms_info: bedroomsList,
-                accessibility_features: accessList
+                accessibility_features: []
             };
 
             await axiosClient.put(`/admin/villas/${id}`, payload);
@@ -1378,47 +1347,7 @@ function AdminEditVillaContent() {
                         </div>
                     </div>
 
-                    {/* Aksesibilitas */}
-                    <div className="space-y-5">
-                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Fitur Aksesibilitas</h3>
-                        {accessList.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {accessList.map((ac, idx) => (
-                                    <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-                                        <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
-                                            <img src={ac.image} alt={ac.title} className="w-full h-full object-cover" />
-                                            <button type="button" onClick={() => setAccessList(prev => prev.filter((_, i) => i !== idx))} className="absolute top-2 right-2 bg-red-600 text-white hover:bg-red-700 p-1.5 rounded-lg cursor-pointer"><X className="w-3.5 h-3.5" /></button>
-                                        </div>
-                                        <div className="p-3 text-xs"><h5 className="font-bold text-slate-800">{ac.title}</h5><p className="text-[10px] text-slate-500 mt-0.5">{ac.subtext}</p></div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                            <div className="sm:col-span-3">
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Fitur (Upload / URL)</label>
-                                <div className="flex gap-2">
-                                    <input type="url" placeholder="https://..." value={acImage} onChange={(e) => setAcImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
-                                        <Upload className="w-3.5 h-3.5 shrink-0" />
-                                        <span className="hidden sm:inline">{uploadingAcImage ? 'Uploading...' : 'Upload File'}</span>
-                                        <input type="file" accept="image/*" onChange={handleAcImageUpload} disabled={uploadingAcImage} className="hidden" />
-                                    </label>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Fitur</label>
-                                <input type="text" placeholder="Pintu masuk" value={acTitle} onChange={(e) => setAcTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                            </div>
-                            <div className="sm:col-span-2">
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Deskripsi</label>
-                                <input type="text" placeholder="Tempat parkir disabilitas" value={acSubtext} onChange={(e) => setAcSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                            </div>
-                            <div className="sm:col-span-3 flex justify-end">
-                                <button type="button" onClick={() => { if (!acImage.trim() || !acTitle.trim() || !acSubtext.trim()) { toast.error('Semua field Fitur wajib diisi.'); return; } setAccessList(prev => [...prev, { image: acImage, title: acTitle, subtext: acSubtext }]); setAcImage(''); setAcTitle(''); setAcSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Aksesibilitas"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
-                            </div>
-                        </div>
-                    </div>
+
 
                      {/* Kebijakan & Lingkungan */}
                     <div className="space-y-5">
