@@ -841,7 +841,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 <div className="flex items-center space-x-3">
                                     <div className="relative">
                                         <img
-                                            src={hostAvatar}
+                                            src={getPhotoUrl(hostAvatar)}
                                             alt={hostName}
                                             className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
                                         />
@@ -899,14 +899,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         {/* Bedrooms Gallery */}
                         <div className="pb-6 border-b border-slate-200/80">
                             <div className="space-y-5">
-                                <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Kamar Anda</h3>
-
-                                {/* Mobile View: Horizontal scrolling carousel */}
+                                <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Kamar Anda</h3>                                 {/* Mobile View: Horizontal scrolling carousel */}
                                 <div className="flex sm:hidden overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-none pb-4 -mx-6 px-6 scroll-px-6 after:content-[''] after:w-[1px] after:flex-shrink-0">
                                     {bedroomsInfo.map((br, idx) => (
                                         <div key={idx} className="w-[70vw] max-w-[240px] shrink-0 snap-start flex flex-col space-y-3">
                                             <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-slate-100">
-                                                <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
+                                                <img src={getPhotoUrl(br.image)} alt={br.title} className="w-full h-full object-cover" />
                                             </div>
                                             <div>
                                                 <h4 className="text-[14px] font-bold text-slate-900">{br.title}</h4>
@@ -921,7 +919,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     {bedroomsInfo.map((br, idx) => (
                                         <div key={idx} className="rounded-2xl flex flex-col space-y-3">
                                             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
-                                                <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
+                                                <img src={getPhotoUrl(br.image)} alt={br.title} className="w-full h-full object-cover" />
                                             </div>
                                             <div>
                                                 <h4 className="text-[14px] font-bold text-slate-900">{br.title}</h4>

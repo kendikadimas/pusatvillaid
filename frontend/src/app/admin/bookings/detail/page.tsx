@@ -11,6 +11,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StatusBadge from '@/components/ui/StatusBadge';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import PageHeader from '@/components/ui/PageHeader';
 import { formatPrice } from '@/lib/format';
 import { 
@@ -48,7 +49,8 @@ function AdminBookingDetailContent() {
     const [paymentStatus, setPaymentStatus] = useState('');
     const [cancelReason, setCancelReason] = useState('');
     const [updating, setUpdating] = useState(false);
-    const [sendingEmail, setSendingEmail] = useState(false);
+    const [generatingInvoice, setGeneratingInvoice] = useState(false);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
     const [copiedJson, setCopiedJson] = useState(false);
 
     // Manual payment verification states
@@ -104,16 +106,75 @@ function AdminBookingDetailContent() {
         }
     };
 
-    const handleResendEmail = async () => {
-        setSendingEmail(true);
+    const handleSendInvoiceWhatsApp = async () => {
+        if (!booking) return;
+        
+        setGeneratingInvoice(true);
         try {
-            const response = await axiosClient.post(`/admin/bookings/${id}/resend-email`);
-            toast.success(response.data.message || 'Email konfirmasi berhasil dikirim ulang.');
+            // 1. Generate & download the PDF invoice
+            const invoiceBooking = {
+                booking_code: booking.booking_code,
+                guest_name: booking.guest_name,
+                guest_email: booking.guest_email,
+                guest_phone: booking.guest_phone,
+                check_in: booking.check_in,
+                check_out: booking.check_out,
+                total_nights: booking.total_nights,
+                num_guests: booking.num_guests,
+                base_price: Number(booking.base_price || 0),
+                tax_amount: Number(booking.tax_amount || 0),
+                admin_fee: Number(booking.admin_fee || 0),
+                total_amount: booking.total_amount,
+                payment_status: booking.payment_status,
+                villa: booking.villa ? {
+                    name: booking.villa.name,
+                    location: booking.villa.location,
+                    check_in_time: booking.villa.check_in_time,
+                    check_out_time: booking.villa.check_out_time,
+                } : undefined,
+                payment_method: booking.payment ? {
+                    name: booking.payment.payment_type?.replace('manual_', '')
+                } : null
+            };
+            await generateInvoicePDF(invoiceBooking, booking.booking_code);
+            toast.success('Invoice PDF berhasil diunduh.');
+
+            // 2. Format details
+            const guestPhone = booking.guest_phone.replace(/^0/, '62');
+            const paymentStatusLabel = booking.payment_status === 'paid' 
+                ? 'LUNAS' 
+                : booking.payment_status === 'pending' 
+                    ? 'MENUNGGU VERIFIKASI' 
+                    : 'BELUM BAYAR';
+            
+            const formattedCheckIn = format(parseISO(booking.check_in), 'dd MMM yyyy', { locale: localeID });
+            const formattedCheckOut = format(parseISO(booking.check_out), 'dd MMM yyyy', { locale: localeID });
+            const formattedTotalAmount = Number(booking.total_amount).toLocaleString('id-ID');
+
+            // 3. Construct WhatsApp message
+            const message = `Halo *${booking.guest_name}*,
+
+Berikut adalah Invoice Pemesanan Anda di *PusatVilla.id*:
+
+• *Kode Booking*: ${booking.booking_code}
+• *Villa*: ${booking.villa?.name || 'Villa'}
+• *Check-in*: ${formattedCheckIn}
+• *Check-out*: ${formattedCheckOut}
+• *Durasi*: ${booking.total_nights} Malam
+• *Tamu*: ${booking.num_guests} Orang
+• *Total Bayar*: Rp ${formattedTotalAmount}
+• *Status Pembayaran*: *${paymentStatusLabel}*
+
+Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice PDF yang terlampir.`;
+
+            // 4. Open WhatsApp
+            const waUrl = `https://api.whatsapp.com/send?phone=${guestPhone}&text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
         } catch (err) {
-            console.error('Failed to resend email:', err);
-            toast.error('Gagal mengirim ulang email konfirmasi.');
+            console.error('Failed to generate or send invoice:', err);
+            toast.error('Gagal memproses pengiriman invoice.');
         } finally {
-            setSendingEmail(false);
+            setGeneratingInvoice(false);
         }
     };
 
@@ -502,21 +563,12 @@ function AdminBookingDetailContent() {
                         </div>
                         
                         <button
-                            onClick={handleResendEmail}
-                            disabled={sendingEmail}
-                            className="w-full bg-slate-900 hover:bg-slate-850 text-white font-bold py-3 rounded-[8px] text-xs  hover: transition-all duration-300 flex items-center justify-center space-x-1.5 disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+                            onClick={() => setShowInvoiceModal(true)}
+                            disabled={generatingInvoice}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-[8px] text-xs transition-all duration-300 flex items-center justify-center space-x-1.5 disabled:opacity-50 active:scale-[0.98] cursor-pointer"
                         >
-                            {sendingEmail ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Mengirim email...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Send className="w-4 h-4" />
-                                    <span>Kirim ulang email konfirmasi</span>
-                                </>
-                            )}
+                            <WhatsAppIcon className="w-4 h-4 text-white" />
+                            <span>Kirim Invoice ke WhatsApp</span>
                         </button>
                     </div>
                 </div>
@@ -580,6 +632,165 @@ function AdminBookingDetailContent() {
                                     <XCircle className="w-3.5 h-3.5" />
                                 )}
                                 <span>Tolak & Kirim Email</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Invoice Preview Modal */}
+            {showInvoiceModal && booking && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[16px] shadow-2xl w-full max-w-lg p-6 my-8 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto flex flex-col">
+                        <div className="flex items-start justify-between mb-4 pb-3 border-b border-[#dddddd] shrink-0">
+                            <div className="flex items-center space-x-2.5">
+                                <div className="w-9 h-9 rounded-[8px] bg-blue-50 flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-[#222222] text-sm">Pratinjau Invoice Pemesanan</h3>
+                                    <p className="text-[10px] text-[#6a6a6a]">Booking {booking.booking_code}</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowInvoiceModal(false)}
+                                className="text-[#6a6a6a] hover:text-[#222222] transition-colors cursor-pointer"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Invoice visual mockup */}
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
+                            {/* Invoice Paper Card */}
+                            <div className="border border-[#dddddd] rounded-xl overflow-hidden shadow-xs text-xs">
+                                {/* Header */}
+                                <div className="bg-blue-600 text-white p-4">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <h4 className="font-bold text-sm tracking-wide">PusatVilla.id</h4>
+                                            <p className="text-[9px] opacity-90">Platform Sewa Villa Premium</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold">INVOICE</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Body */}
+                                <div className="p-4 space-y-4 bg-slate-50/30">
+                                    {/* Info columns */}
+                                    <div className="grid grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-3">
+                                        <div>
+                                            <span className="text-[9px] text-[#6a6a6a] font-bold block uppercase">Kode Booking</span>
+                                            <span className="font-mono font-bold text-[#222222]">{booking.booking_code}</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-[9px] text-[#6a6a6a] font-bold block uppercase">Status Bayar</span>
+                                            <span className={`font-bold ${booking.payment_status === 'paid' ? 'text-emerald-600' : 'text-red-500'}`}>
+                                                {booking.payment_status === 'paid' ? 'LUNAS' : booking.payment_status === 'pending' ? 'PENDING' : 'BELUM BAYAR'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Guest & Villa Info */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] border-b border-slate-100 pb-3">
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] text-[#6a6a6a] font-bold block uppercase">Detail Tamu</span>
+                                            <p className="font-bold text-slate-800">{booking.guest_name}</p>
+                                            <p className="text-slate-500">{booking.guest_phone}</p>
+                                            <p className="text-slate-500 truncate">{booking.guest_email}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] text-[#6a6a6a] font-bold block uppercase">Detail Villa</span>
+                                            <p className="font-bold text-slate-800">{booking.villa?.name}</p>
+                                            <p className="text-slate-500">{booking.total_nights} malam ({booking.num_guests} tamu)</p>
+                                            <p className="text-slate-500">
+                                                {format(parseISO(booking.check_in), 'dd MMM yyyy', { locale: localeID })} s/d {format(parseISO(booking.check_out), 'dd MMM yyyy', { locale: localeID })}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Pricing breakdown */}
+                                    <div className="space-y-2">
+                                        <span className="text-[9px] text-[#6a6a6a] font-bold block uppercase">Rincian Pembayaran</span>
+                                        <div className="space-y-1 text-slate-600">
+                                            <div className="flex justify-between">
+                                                <span>Harga Sewa</span>
+                                                <span className="font-mono">Rp {Number(booking.base_price || 0).toLocaleString('id-ID')}</span>
+                                            </div>
+                                            {Number(booking.tax_amount || 0) > 0 && (
+                                                <div className="flex justify-between">
+                                                    <span>Pajak</span>
+                                                    <span className="font-mono">Rp {Number(booking.tax_amount).toLocaleString('id-ID')}</span>
+                                                </div>
+                                            )}
+                                            {Number(booking.admin_fee || 0) > 0 && (
+                                                <div className="flex justify-between">
+                                                    <span>Biaya Admin</span>
+                                                    <span className="font-mono">Rp {Number(booking.admin_fee).toLocaleString('id-ID')}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-1.5 text-xs">
+                                                <span>Total Amount</span>
+                                                <span className="font-mono text-blue-600">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* WhatsApp Message Preview */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold text-slate-600 block uppercase tracking-wider">Preview Pesan WhatsApp</label>
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 font-mono whitespace-pre-wrap max-h-36 overflow-y-auto leading-relaxed border-l-4 border-l-emerald-500">
+                                    {`Halo *${booking.guest_name}*,
+
+Berikut adalah Invoice Pemesanan Anda di *PusatVilla.id*:
+
+• *Kode Booking*: ${booking.booking_code}
+• *Villa*: ${booking.villa?.name || 'Villa'}
+• *Check-in*: ${format(parseISO(booking.check_in), 'dd MMM yyyy', { locale: localeID })}
+• *Check-out*: ${format(parseISO(booking.check_out), 'dd MMM yyyy', { locale: localeID })}
+• *Durasi*: ${booking.total_nights} Malam
+• *Tamu*: ${booking.num_guests} Orang
+• *Total Bayar*: Rp ${Number(booking.total_amount).toLocaleString('id-ID')}
+• *Status Pembayaran*: *${booking.payment_status === 'paid' ? 'LUNAS' : booking.payment_status === 'pending' ? 'MENUNGGU VERIFIKASI' : 'BELUM BAYAR'}*
+
+Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice PDF yang terlampir.`}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Action Buttons */}
+                        <div className="flex gap-2.5 mt-5 pt-3 border-t border-[#dddddd] shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => setShowInvoiceModal(false)}
+                                className="flex-1 bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-bold text-xs py-2.5 rounded-[8px] transition-all cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleSendInvoiceWhatsApp();
+                                    setShowInvoiceModal(false);
+                                }}
+                                disabled={generatingInvoice}
+                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-[8px] transition-all flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                            >
+                                {generatingInvoice ? (
+                                    <>
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                        <span>Mengunduh...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <WhatsAppIcon className="w-3.5 h-3.5 text-white" />
+                                        <span>Unduh & Kirim WA</span>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

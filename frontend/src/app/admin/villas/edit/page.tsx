@@ -1298,15 +1298,47 @@ function AdminEditVillaContent() {
                             </div>
                         )}
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                            <div className="sm:col-span-3">
-                                <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Foto Kamar (Upload / URL)</label>
-                                <div className="flex gap-2">
-                                    <input type="url" placeholder="https://..." value={brImage} onChange={(e) => setBrImage(e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                    <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-3 sm:py-1.5 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Upload File">
-                                        <Upload className="w-3.5 h-3.5 shrink-0" />
-                                        <span className="hidden sm:inline">{uploadingBrImage ? 'Uploading...' : 'Upload File'}</span>
-                                        <input type="file" accept="image/*" onChange={handleBrImageUpload} disabled={uploadingBrImage} className="hidden" />
-                                    </label>
+                            <div className="sm:col-span-3 space-y-2">
+                                <label className="text-[9px] font-bold text-slate-600 block uppercase tracking-wider">Foto Kamar</label>
+                                <div className="flex items-center space-x-4">
+                                    <div className="relative w-20 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                        {brImage ? (
+                                            <img src={brImage} alt="Preview Kamar" className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-200" />
+                                        ) : (
+                                            <span className="text-slate-400 text-[9px] font-bold uppercase tracking-wider text-center p-1 leading-tight">Belum ada foto</span>
+                                        )}
+                                        {uploadingBrImage && (
+                                            <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
+                                                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center space-x-2">
+                                            <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all" title="Unggah Foto Kamar">
+                                                <Upload className="w-3.5 h-3.5" />
+                                                <span className="hidden sm:inline">{uploadingBrImage ? 'Mengunggah...' : 'Pilih Foto'}</span>
+                                                <span className="sm:hidden">{uploadingBrImage ? '...' : 'Pilih'}</span>
+                                                <input 
+                                                    type="file" 
+                                                    accept="image/*" 
+                                                    onChange={handleBrImageUpload} 
+                                                    className="hidden" 
+                                                    disabled={uploadingBrImage} 
+                                                />
+                                            </label>
+                                            {brImage && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setBrImage('')}
+                                                    className="border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-600 font-bold text-[10px] px-3 py-2 rounded-xl transition-colors cursor-pointer"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-[9px] text-slate-400 font-medium">Pilih foto kamar dari galeri perangkat Anda (maks 5MB).</p>
+                                    </div>
                                 </div>
                             </div>
                             <div>

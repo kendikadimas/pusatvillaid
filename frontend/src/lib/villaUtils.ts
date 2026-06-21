@@ -1,13 +1,7 @@
 import type { Villa } from '@/types';
 
 const FALLBACK_PHOTO = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80';
-const PROD_STORAGE_URL = 'https://api.pusatvillaid.com/storage';
-const LOCAL_API_URL = 'http://localhost:8000';
-
-// Detect environment: if running in browser on localhost, use local API URL so admin thumbnails work
-const isLocalDev =
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 /**
  * Normalise any image URL or path from the API into a fully-qualified URL
@@ -16,7 +10,7 @@ const isLocalDev =
  * Handles:
  *  - Relative paths: "/storage/..." or "storage/..."
  *  - Absolute localhost URLs: "http://localhost:8000/storage/..."
- *  - Already-absolute production URLs: "https://api.pusatvillaid.com/storage/..."
+ *  - Configured backend URLs: rewrites standard localhost:8000 to the current backend URL if they differ
  *  - External URLs (Unsplash, etc): returned as-is
  */
 export function normaliseStorageUrl(url: string | null | undefined): string {
@@ -25,14 +19,12 @@ export function normaliseStorageUrl(url: string | null | undefined): string {
     // Relative storage path → absolute
     if (url.startsWith('/storage/') || url.startsWith('storage/')) {
         const path = url.startsWith('/') ? url : '/' + url;
-        return isLocalDev
-            ? `${LOCAL_API_URL}${path}`
-            : `${PROD_STORAGE_URL}${path.replace('/storage', '')}`;
+        return `${BACKEND_URL}${path}`;
     }
 
-    // Localhost URL in production → rewrite to production storage
-    if (!isLocalDev && url.includes('localhost:8000')) {
-        return url.replace(/https?:\/\/localhost:8000\/storage\//, PROD_STORAGE_URL + '/');
+    // Rewrites hardcoded localhost URLs if backend runs on a different URL (e.g. production, staging, or local IP for mobile dev)
+    if (url.includes('localhost:8000') && !BACKEND_URL.includes('localhost:8000')) {
+        return url.replace(/https?:\/\/localhost:8000/, BACKEND_URL);
     }
 
     return url;
