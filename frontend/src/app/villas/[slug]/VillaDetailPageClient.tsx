@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import PublicHeader from '@/components/PublicHeader';
+import PhotoTourModal from '@/components/villa/PhotoTourModal';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -1427,68 +1428,16 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 document.body
             )}
 
-            {/* Photo Tour Modal (Tur foto) */}
-            {isLightboxOpen && (
-                <div className="fixed inset-0 z-55 bg-white overflow-y-auto animate-fadeIn pb-10">
-                    <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-100">
-                        <button 
-                            onClick={() => setIsLightboxOpen(false)}
-                            className="p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors text-slate-900 cursor-pointer active:scale-95"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <button 
-                            onClick={handleShare}
-                            className="p-2 -mr-2 rounded-full hover:bg-slate-100 transition-colors text-slate-900 cursor-pointer active:scale-95"
-                        >
-                            <Share2 className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-4 pb-20">
-                        <h2 className="text-[28px] sm:text-3xl font-bold text-slate-900 tracking-tight mb-8">Tur foto</h2>
-
-                        {/* Dynamic categories rendering */}
-                        {(() => {
-                            const groups: { [key: string]: typeof photos } = {};
-                            photos.forEach(ph => {
-                                const cat = getPhotoCategory(ph);
-                                if (!groups[cat]) {
-                                    groups[cat] = [];
-                                }
-                                groups[cat].push(ph);
-                            });
-
-                            return Object.entries(groups).map(([category, catPhotos]) => {
-                                // Assign premium layouts depending on category for nice visual rhythm
-                                let gridCols = "grid-cols-1 sm:grid-cols-2";
-                                let aspectClass = "aspect-[4/3]";
-                                
-                                if (category.toLowerCase() === 'kamar tidur') {
-                                    gridCols = "grid-cols-1";
-                                    aspectClass = "aspect-video sm:aspect-[21/9]";
-                                } else if (category.toLowerCase() === 'dapur') {
-                                    gridCols = "grid-cols-1 sm:grid-cols-2";
-                                    aspectClass = "aspect-[4/3] sm:aspect-square";
-                                }
-
-                                return (
-                                    <div key={category} className="mb-10">
-                                        <h3 className="text-lg font-bold text-slate-900 mb-4 capitalize">{category}</h3>
-                                        <div className={`grid ${gridCols} gap-2 sm:gap-4`}>
-                                            {catPhotos.map((ph, idx) => (
-                                                <div key={`${category}-${idx}`} className={`w-full ${aspectClass} rounded-xl overflow-hidden bg-slate-100 relative group`}>
-                                                    <img src={getPhotoUrl(ph)} alt={category} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            });
-                        })()}
-                    </div>
-                </div>
-            )}
+            {/* Photo Tour Modal (Tur foto) - uses PhotoTourModal with createPortal for production safety */}
+            <PhotoTourModal
+                isOpen={isLightboxOpen}
+                onClose={() => setIsLightboxOpen(false)}
+                photos={photos}
+                villaName={villa.name}
+                isSaved={isSaved}
+                onShare={handleShare}
+                onToggleSave={() => toggleWishlist(villa.id, { stopPropagation: () => {} } as React.MouseEvent<Element, MouseEvent>)}
+            />
 
             {/* Amenities Full Modal */}
             {isAmenitiesModalOpen && (
