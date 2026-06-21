@@ -5,6 +5,7 @@ import Link from 'next/link';
 import axiosClient from '@/lib/axios';
 import { Villa, Booking, BlockedDate } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { 
     format, 
     parseISO, 
@@ -514,7 +515,7 @@ export default function AdminCalendarPage() {
                                         }`}
                                     >
                                         <div className="flex items-center justify-between w-full">
-                                            <span className={`text-[10px] sm:text-xs font-mono font-bold ${textClass}`}>{dayNum}</span>
+                                            <span className={`text-[10px] sm:text-xs font-sans font-bold ${textClass}`}>{dayNum}</span>
                                             {isBulkSelectMode && !matchedBooking && (
                                                 <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
                                                     isChecked ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300'
@@ -573,7 +574,7 @@ export default function AdminCalendarPage() {
                                 </div>
                             ) : (
                                 <div className="space-y-4 text-xs">
-                                    <div className="space-y-2 max-h-24 overflow-y-auto p-2 border border-[#dddddd] rounded-[8px] bg-slate-50 text-[10px] font-mono scrollbar-thin">
+                                    <div className="space-y-2 max-h-24 overflow-y-auto p-2 border border-[#dddddd] rounded-[8px] bg-slate-50 text-[10px] font-sans scrollbar-thin">
                                         {selectedDates.map(d => (
                                             <div key={d} className="flex justify-between items-center text-slate-650">
                                                 <span>{format(parseISO(d), 'dd MMM yyyy', { locale: localeID })}</span>
@@ -656,23 +657,25 @@ export default function AdminCalendarPage() {
                                         <div>
                                             <span className="text-[10px] text-slate-450 font-bold block uppercase">Kontak WhatsApp</span>
                                             <a 
-                                                href={`https://api.whatsapp.com/send?phone=${selectedSlot.data.guest_phone.replace(/^0/, '62')}`}
+                                                href={`https://api.whatsapp.com/send?phone=${selectedSlot.data.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(
+                                                    `Halo ${selectedSlot.data.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${selectedSlot.data.booking_code}* di *${villas.find(v => String(v.id) === selectedVillaId)?.name || 'Villa'}* untuk tanggal *${format(parseISO(selectedSlot.data.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(selectedSlot.data.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail pemesanan Anda.`
+                                                )}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="font-bold text-blue-600 hover:underline flex items-center space-x-1.5 mt-0.5 active:scale-[0.98] transition-all duration-300 w-fit"
+                                                className="font-bold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center space-x-1.5 mt-0.5 active:scale-[0.98] transition-all duration-300 w-fit"
                                             >
-                                                <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
-                                                <span className="font-mono tabular-nums">{selectedSlot.data.guest_phone}</span>
+                                                <WhatsAppIcon className="w-3.5 h-3.5 text-emerald-600" />
+                                                <span className="tabular-nums">{selectedSlot.data.guest_phone}</span>
                                             </a>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 border-t border-b border-[#dddddd] py-3">
                                             <div>
                                                 <span className="text-[9px] text-slate-450 font-bold block">IN</span>
-                                                <span className="font-bold font-mono text-slate-850">{selectedSlot.data.check_in}</span>
+                                                <span className="font-bold text-slate-850">{selectedSlot.data.check_in}</span>
                                             </div>
                                             <div>
                                                 <span className="text-[9px] text-slate-450 block font-bold">OUT</span>
-                                                <span className="font-bold font-mono text-slate-850">{selectedSlot.data.check_out}</span>
+                                                <span className="font-bold text-slate-850">{selectedSlot.data.check_out}</span>
                                             </div>
                                         </div>
                                         <div>
@@ -699,7 +702,7 @@ export default function AdminCalendarPage() {
                                     <div className="space-y-3">
                                         <div>
                                             <span className="text-[10px] text-slate-450 font-bold block">TANGGAL</span>
-                                            <span className="font-bold text-slate-850 text-sm font-mono tabular-nums">
+                                            <span className="font-bold text-slate-850 text-sm">
                                                 {format(parseISO(selectedSlot.data.date), 'dd MMMM yyyy', { locale: localeID })}
                                             </span>
                                         </div>
@@ -728,7 +731,7 @@ export default function AdminCalendarPage() {
                                     <div className="space-y-3">
                                         <div>
                                             <span className="text-[10px] text-slate-450 font-bold block">TANGGAL</span>
-                                            <span className="font-bold text-slate-855 text-sm font-mono tabular-nums">
+                                            <span className="font-bold text-slate-855 text-sm">
                                                 {format(parseISO(selectedSlot.data.date), 'dd MMMM yyyy', { locale: localeID })}
                                             </span>
                                         </div>

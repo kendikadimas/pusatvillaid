@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle } from 'lucide-react';
+import WhatsAppIcon from './WhatsAppIcon';
 
 interface WhatsAppButtonProps {
     phone: string;
@@ -26,7 +26,7 @@ export default function WhatsAppButton({ phone, label, variant = 'icon', classNa
                 aria-label={label || 'Hubungi via WhatsApp'}
                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 hover:bg-emerald-200 transition-colors cursor-pointer ${className}`}
             >
-                <MessageCircle className="w-4 h-4" />
+                <WhatsAppIcon className="w-4 h-4" />
             </a>
         );
     }
@@ -46,7 +46,7 @@ export default function WhatsAppButton({ phone, label, variant = 'icon', classNa
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-full transition-colors cursor-pointer active:scale-95 ${className}`}
         >
-            <MessageCircle className="w-3.5 h-3.5" />
+            <WhatsAppIcon className="w-3.5 h-3.5" />
             <span>{label || 'WhatsApp'}</span>
         </a>
     );

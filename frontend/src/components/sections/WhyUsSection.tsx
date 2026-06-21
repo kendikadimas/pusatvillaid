@@ -4,10 +4,10 @@ import React from 'react';
 import { Calendar, ShieldCheck, Zap, Phone } from 'lucide-react';
 
 const benefits = [
-    { icon: Calendar, title: 'Kalender Real-time', desc: 'Jadwal ketersediaan diperbarui otomatis secara real-time untuk mencegah double booking.' },
-    { icon: ShieldCheck, title: 'Pembayaran Digital Aman', desc: 'Pembayaran digital terverifikasi otomatis via Midtrans Snap (QRIS, Transfer, E-Wallet).' },
-    { icon: Zap, title: 'Konfirmasi Instan', desc: 'Tiket reservasi dan nota pembayaran dikirim langsung ke email setelah transaksi sukses.' },
-    { icon: Phone, title: 'Dukungan WhatsApp', desc: 'Koordinasi check-in dan serah terima kunci dipandu langsung oleh admin via WhatsApp.' },
+    { icon: Calendar, title: 'Kalender Real-time', desc: 'Jadwal ketersediaan diperbarui otomatis secara real-time untuk mencegah double booking.', whatsapp: false },
+    { icon: ShieldCheck, title: 'Pembayaran Digital Aman', desc: 'Pembayaran via transfer bank dan QRIS yang aman, dikonfirmasi langsung oleh admin.', whatsapp: false },
+    { icon: Zap, title: 'Konfirmasi Instan', desc: 'Tiket reservasi dan nota pembayaran dikirim langsung ke email setelah transaksi sukses.', whatsapp: false },
+    { icon: Phone, title: 'Dukungan WhatsApp', desc: 'Koordinasi check-in dan serah terima kunci dipandu langsung oleh admin via WhatsApp.', whatsapp: true },
 ];
 
 export default function WhyUsSection() {
@@ -29,8 +29,13 @@ export default function WhyUsSection() {
                             <div className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center text-white/60">
                                 <item.icon className="w-4.5 h-4.5" />
                             </div>
-                            <h3 className="text-base font-medium text-white">{item.title}</h3>
-                            <p className="text-white/45 text-sm leading-relaxed">{item.desc}</p>
+                            <h3 className={`text-base font-medium ${item.whatsapp ? 'text-green-400' : 'text-white'}`}>{item.title}</h3>
+                            <p className="text-white/45 text-sm leading-relaxed">
+                                {item.whatsapp
+                                    ? <>Koordinasi check-in dan serah terima kunci dipandu langsung oleh admin via <span className="text-green-400 font-semibold">WhatsApp</span>.</>
+                                    : item.desc
+                                }
+                            </p>
                         </div>
                     ))}
                 </div>

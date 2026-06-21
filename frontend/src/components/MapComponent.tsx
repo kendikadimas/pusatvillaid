@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { Villa } from '@/types';
 import Link from 'next/link';
 import { getMainPhoto } from '@/lib/villaUtils';
+import { formatPrice } from '@/lib/format';
 
 // CartoDB Voyager tiles (clean, light, modern style matching Airbnb aesthetic)
 const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
@@ -31,7 +32,7 @@ const createPriceIcon = (price: number, isActive: boolean) => {
                     ? 'bg-slate-900 border border-slate-900 text-white scale-105 shadow-lg z-50' 
                     : 'bg-white border border-slate-200/80 text-slate-900 hover:bg-slate-50'
             }">
-                Rp ${Number(price).toLocaleString('id-ID')}
+                ${formatPrice(price)}
             </div>
         `,
         iconSize: [110, 32],
@@ -312,7 +313,7 @@ export default function MapComponent({
                             {/* Line 4: Price formatted with underline */}
                             <div className="text-[13.5px] text-slate-800 font-normal pt-0.5">
                                 <span className="font-bold underline">
-                                    Rp {Number(selectedVilla.price_per_night).toLocaleString('id-ID')}
+                                    {formatPrice(selectedVilla.price_per_night)}
                                 </span>
                                 <span className="text-slate-700"> untuk 1 malam</span>
                             </div>

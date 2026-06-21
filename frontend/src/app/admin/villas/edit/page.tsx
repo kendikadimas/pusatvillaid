@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
-import { getPhotoUrl, getPhotoDesc, getPhotoCategory } from '@/lib/villaUtils';
+import { getPhotoUrl, getPhotoDesc, getPhotoCategory, normaliseStorageUrl } from '@/lib/villaUtils';
 
 function AdminEditVillaContent() {
     const searchParams = useSearchParams();
@@ -184,7 +184,7 @@ function AdminEditVillaContent() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setBrImage(response.data.url);
+            setBrImage(normaliseStorageUrl(response.data.url));
             toast.success('Foto kamar berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload bedroom image failed:', err);
@@ -208,7 +208,7 @@ function AdminEditVillaContent() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setAcImage(response.data.url);
+            setAcImage(normaliseStorageUrl(response.data.url));
             toast.success('Foto fitur aksesibilitas berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload accessibility image failed:', err);
@@ -252,7 +252,7 @@ function AdminEditVillaContent() {
             // Set advanced layouts
             setHostName(v.host_name || 'Admin');
             setHostYears(v.host_years || 1);
-            setHostAvatar(v.host_avatar || '');
+            setHostAvatar(normaliseStorageUrl(v.host_avatar) || '');
             setHostJoinedLabel(v.host_joined_label || '');
             setHostIsVerified(v.host_is_verified !== false);
             setHostAboutList(v.host_about || []);
@@ -371,26 +371,63 @@ function AdminEditVillaContent() {
         }
     };
 
-    // Upload files handler
-    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
+    // Upload files handler — category-aware
+    // Returns the new photos array from API so caller can assign category
+    const handlePhotoUploadForCategory = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+        targetCategory: string
+    ) => {
+        // Copy files into array FIRST before resetting the input
+        // (e.target.files is a live reference — resetting the input clears it)
+        const filesList = e.target.files ? Array.from(e.target.files) : [];
+        e.target.value = '';
+        if (filesList.length === 0) return;
 
         setUploadingPhotos(true);
+        setActiveCategoryUpload(targetCategory);
         const formData = new FormData();
-        
-        for (let i = 0; i < files.length; i++) {
-            formData.append('photos[]', files[i]);
+        for (const file of filesList) {
+            formData.append('photos[]', file);
         }
 
         try {
             const response = await axiosClient.post(`/admin/villas/${id}/photos`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
-            setPhotos(response.data.photos || []);
-            toast.success('Foto villa berhasil diunggah.');
+
+            // API returns the full updated photos array.
+            // Newly uploaded photos arrive WITHOUT a category (or with 'Lainnya').
+            // We preserve the existing category of photos that already had one,
+            // and assign targetCategory ONLY to the new entries.
+            const serverPhotos: Array<string | { url: string; description: string; category?: string }> =
+                response.data.photos || [];
+
+            setPhotos(prev => {
+                // Build a map of url -> category from current state
+                const existingCatMap = new Map<string, string>();
+                prev.forEach(p => {
+                    const url = typeof p === 'string' ? p : p.url;
+                    const cat = typeof p === 'string' ? 'Lainnya' : (p.category || 'Lainnya');
+                    existingCatMap.set(url, cat);
+                });
+
+                return serverPhotos.map(p => {
+                    const url = typeof p === 'string' ? p : p.url;
+                    const existing = existingCatMap.get(url);
+                    // If this URL was already known, keep its category
+                    if (existing) {
+                        return typeof p === 'string'
+                            ? { url: p, description: '', category: existing }
+                            : { ...p, category: existing };
+                    }
+                    // New photo — assign targetCategory
+                    return typeof p === 'string'
+                        ? { url: p, description: '', category: targetCategory }
+                        : { ...p, category: targetCategory };
+                });
+            });
+
+            toast.success(`Foto berhasil diunggah ke kategori "${targetCategory}".`);
         } catch (err: any) {
             console.error('Upload photos failed:', err);
             toast.error(err.response?.data?.message || 'Gagal mengunggah foto.');
@@ -414,7 +451,7 @@ function AdminEditVillaContent() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setHostAvatar(response.data.host_avatar);
+            setHostAvatar(normaliseStorageUrl(response.data.host_avatar));
             toast.success('Avatar tuan rumah berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload avatar failed:', err);
@@ -439,6 +476,26 @@ function AdminEditVillaContent() {
     };
 
     const [savingPhotos, setSavingPhotos] = useState(false);
+
+    // Photo gallery category-based UI state
+    const PHOTO_CATEGORIES = [
+        'Ruang tamu',
+        'Kamar tidur',
+        'Kamar mandi',
+        'Dapur',
+        'Kolam renang',
+        'Luar ruangan',
+        'Lainnya',
+    ];
+    const [activeCategoryUpload, setActiveCategoryUpload] = useState<string>('Ruang tamu');
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(PHOTO_CATEGORIES));
+    const toggleCategoryExpand = (cat: string) => {
+        setExpandedCategories(prev => {
+            const next = new Set(prev);
+            next.has(cat) ? next.delete(cat) : next.add(cat);
+            return next;
+        });
+    };
 
     const handlePhotoDescriptionChange = (index: number, newDesc: string) => {
         setPhotos(prev => {
@@ -1411,153 +1468,161 @@ function AdminEditVillaContent() {
 
             {/* TAB CONTENT: 2. GALERI FOTO */}
             {activeTab === 'photos' && (
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
-                    <div>
-                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider mb-2">Unggah Foto Villa</h3>
-                        <p className="text-slate-500 text-xs">
-                            Unggah foto properti (JPG, PNG, atau WEBP, Maksimal 5MB per file). Foto pertama di urutan galeri akan otomatis dijadikan foto utama di katalog.
-                        </p>
-                    </div>
+                <div className="space-y-6">
 
-                    {/* Uploader drag-drop board */}
-                    <label className="border-2 border-dashed border-slate-200 hover:border-blue-400 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors relative">
-                        <input 
-                            type="file" 
-                            multiple
-                            accept="image/*"
-                            onChange={handlePhotoUpload}
-                            disabled={uploadingPhotos}
-                            className="hidden"
-                        />
-                        {uploadingPhotos ? (
-                            <div className="flex flex-col items-center space-y-2">
-                                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                                <span className="text-xs text-slate-500 font-bold">Sedang Mengunggah File...</span>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col items-center space-y-2 text-slate-500 text-center">
-                                <Upload className="w-8 h-8 text-blue-500" />
-                                <span className="text-xs font-bold text-slate-700">Klik untuk pilih berkas foto</span>
-                                <span className="text-[10px] text-slate-400">Pilih satu atau beberapa file sekaligus</span>
-                            </div>
-                        )}
-                    </label>
-
-                    {/* Photos list grid */}
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Foto Terunggah ({photos.length})</h4>
-                            {photos.length > 0 && (
-                                <button
-                                    type="button"
-                                    onClick={savePhotoGallery}
-                                    disabled={savingPhotos}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-sm transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
-                                >
-                                    {savingPhotos ? (
-                                        <>
-                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                            <span>Menyimpan...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="w-3.5 h-3.5" />
-                                            <span>Simpan Deskripsi Foto</span>
-                                        </>
-                                    )}
-                                </button>
-                            )}
+                    {/* ── Header + global save ── */}
+                    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h3 className="text-sm font-bold text-slate-900 mb-1">Galeri Foto Villa</h3>
+                            <p className="text-slate-500 text-xs">
+                                Buat kategori terlebih dahulu, lalu unggah foto ke tiap kategori. Foto pertama dari kategori pertama otomatis menjadi foto utama katalog.
+                            </p>
                         </div>
-                        
-                        {photos.length === 0 ? (
-                            <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-xs text-slate-400">
-                                Belum ada foto yang diunggah untuk villa ini.
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                {photos.map((photo, index) => {
-                                    const photoUrl = getPhotoUrl(photo);
-                                    return (
-                                        <div key={index} className="flex flex-col border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group">
-                                            <div className="relative aspect-video bg-slate-50 overflow-hidden">
-                                                <img src={photoUrl} alt={`Villa Photo ${index}`} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
-                                                
-                                                {/* Primary marker badge */}
-                                                {index === 0 && (
-                                                    <span className="absolute top-2.5 left-2.5 bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow-sm z-10">
-                                                        UTAMA
-                                                    </span>
-                                                )}
-          
-                                                {/* Delete Action */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDeletePhoto(photoUrl)}
-                                                    className="absolute top-2.5 right-2.5 bg-red-600 text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-700 cursor-pointer z-10"
-                                                    title="Hapus Foto"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                            
-                                            {/* Photo Caption & Category Fields */}
-                                            <div className="p-3.5 bg-slate-50 border-t border-slate-100 flex flex-col space-y-3">
-                                                <div className="flex flex-col space-y-1.5">
-                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Deskripsi / Caption Foto</label>
-                                                    <input 
-                                                        type="text"
-                                                        value={getPhotoDesc(photo)}
-                                                        onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)}
-                                                        placeholder="Contoh: Kamar tidur utama dengan kasur king size..."
-                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col space-y-1.5">
-                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kategori Foto</label>
-                                                    <select 
-                                                        value={getPhotoCategory(photo)}
-                                                        onChange={(e) => handlePhotoCategoryChange(index, e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none transition-all cursor-pointer"
-                                                    >
-                                                        <option value="Ruang tamu">Ruang tamu</option>
-                                                        <option value="Kamar tidur">Kamar tidur</option>
-                                                        <option value="Dapur">Dapur</option>
-                                                        <option value="Kamar mandi">Kamar mandi</option>
-                                                        <option value="Kolam renang">Kolam renang</option>
-                                                        <option value="Luar ruangan">Luar ruangan</option>
-                                                        <option value="Lainnya">Lainnya</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
                         {photos.length > 0 && (
-                            <div className="flex justify-end pt-4 border-t border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={savePhotoGallery}
-                                    disabled={savingPhotos}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
-                                >
-                                    {savingPhotos ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            <span>Menyimpan...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="w-4 h-4" />
-                                            <span>Simpan Deskripsi Foto</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={savePhotoGallery}
+                                disabled={savingPhotos}
+                                className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-sm transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                            >
+                                {savingPhotos ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /><span>Menyimpan...</span></> : <><Save className="w-3.5 h-3.5" /><span>Simpan Galeri</span></>}
+                            </button>
                         )}
                     </div>
+
+                    {/* ── Category sections ── */}
+                    {PHOTO_CATEGORIES.map((cat) => {
+                        const catPhotos = photos
+                            .map((p, i) => ({ photo: p, index: i }))
+                            .filter(({ photo }) => getPhotoCategory(photo) === cat);
+                        const isExpanded = expandedCategories.has(cat);
+                        const isActiveUpload = activeCategoryUpload === cat;
+
+                        return (
+                            <div key={cat} className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+
+                                {/* Category header row */}
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleCategoryExpand(cat)}
+                                        className="flex items-center space-x-3 flex-1 text-left cursor-pointer group"
+                                    >
+                                        <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                                        <span className="text-sm font-bold text-slate-800">{cat}</span>
+                                        {catPhotos.length > 0 && (
+                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                                {catPhotos.length} foto
+                                            </span>
+                                        )}
+                                    </button>
+
+                                    {/* Upload button for this category */}
+                                    <label className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all active:scale-95 ${
+                                        isActiveUpload
+                                            ? 'bg-blue-600 text-white shadow-sm'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}>
+                                         <input
+                                             type="file"
+                                             multiple
+                                             accept="image/*"
+                                             className="hidden"
+                                             disabled={uploadingPhotos}
+                                             onChange={(e) => handlePhotoUploadForCategory(e, cat)}
+                                         />
+                                        {uploadingPhotos && isActiveUpload
+                                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            : <Upload className="w-3.5 h-3.5" />
+                                        }
+                                        <span>Unggah Foto</span>
+                                    </label>
+                                </div>
+
+                                {/* Collapsible photos grid */}
+                                {isExpanded && (
+                                    <div className="p-6">
+                                        {catPhotos.length === 0 ? (
+                                            <div className="border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center">
+                                                <Upload className="w-7 h-7 text-slate-300 mx-auto mb-2" />
+                                                <p className="text-xs text-slate-400 font-medium">Belum ada foto di kategori ini.</p>
+                                                <p className="text-[10px] text-slate-300 mt-1">Klik "Unggah Foto" di atas untuk menambahkan.</p>
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {catPhotos.map(({ photo, index }) => {
+                                                    const photoUrl = getPhotoUrl(photo);
+                                                    const isMainPhoto = index === 0;
+                                                    return (
+                                                        <div key={index} className="group flex flex-col border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+                                                            <div className="relative aspect-video bg-slate-50 overflow-hidden">
+                                                                <img
+                                                                    src={photoUrl}
+                                                                    alt={`Foto ${cat} ${index}`}
+                                                                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                                                />
+                                                                {isMainPhoto && (
+                                                                    <span className="absolute top-2.5 left-2.5 bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow-sm z-10">
+                                                                        UTAMA
+                                                                    </span>
+                                                                )}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDeletePhoto(photoUrl)}
+                                                                    className="absolute top-2.5 right-2.5 bg-red-600 text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-700 cursor-pointer z-10"
+                                                                    title="Hapus Foto"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="p-3 bg-slate-50 border-t border-slate-100 space-y-2">
+                                                                <div>
+                                                                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Caption</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={getPhotoDesc(photo)}
+                                                                        onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)}
+                                                                        placeholder="Deskripsikan foto ini..."
+                                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none transition-all"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Pindah Kategori</label>
+                                                                    <select
+                                                                        value={getPhotoCategory(photo)}
+                                                                        onChange={(e) => handlePhotoCategoryChange(index, e.target.value)}
+                                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none cursor-pointer"
+                                                                    >
+                                                                        {PHOTO_CATEGORIES.map(c => (
+                                                                            <option key={c} value={c}>{c}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+
+                    {/* ── Bottom save ── */}
+                    {photos.length > 0 && (
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                onClick={savePhotoGallery}
+                                disabled={savingPhotos}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                            >
+                                {savingPhotos ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Menyimpan...</span></> : <><Save className="w-4 h-4" /><span>Simpan Galeri</span></>}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 

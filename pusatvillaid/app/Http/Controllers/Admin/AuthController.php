@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -130,6 +133,9 @@ class AuthController extends Controller
             'role' => 'user', // Default role for registering guests
         ]);
 
+        // Dispatch registered event to trigger email verification notification
+        event(new Registered($user));
+
         $token = $user->createToken('user-token')->plainTextToken;
 
         return response()->json([
@@ -169,5 +175,153 @@ class AuthController extends Controller
             'email' => $user->email,
             'role' => $user->role,
         ]);
+    }
+
+    /**
+     * Send password reset link to the user.
+     */
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Email tidak terdaftar di sistem kami.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $status = Password::broker()->sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json([
+                'status' => 'Link reset password telah dikirim ke email Anda.',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Gagal mengirim link reset password.',
+        ], 500);
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'token.required' => 'Token wajib disertakan.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Email tidak terdaftar.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $status = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'status' => 'Password Anda berhasil diperbarui.',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Gagal reset password. Token kemungkinan tidak valid atau kedaluwarsa.',
+        ], 400);
+    }
+
+    /**
+     * Confirm the user's password.
+     */
+    public function confirmPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string',
+        ], [
+            'password.required' => 'Password wajib diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if (! Hash::check($request->password, $request->user()->password)) {
+            return response()->json([
+                'message' => 'Password salah.',
+            ], 422);
+        }
+
+        \Illuminate\Support\Facades\Cache::put(
+            'auth.password_confirmed_at.' . $request->user()->id,
+            time(),
+            config('auth.password_timeout', 10800)
+        );
+
+        return response()->json([
+            'message' => 'Password terkonfirmasi.',
+        ]);
+    }
+
+    /**
+     * Resend the email verification notification.
+     */
+    public function sendVerificationEmail(Request $request): JsonResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email Anda sudah terverifikasi.',
+            ], 400);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json([
+            'message' => 'Link verifikasi baru telah dikirim ke email Anda.',
+        ]);
+    }
+
+    /**
+     * Verify the user's email address.
+     */
+    public function verifyEmail(Request $request): RedirectResponse
+    {
+        if (! $request->hasValidSignature()) {
+            return redirect()->to(config('app.frontend_url') . '/login?error=invalid_signature');
+        }
+
+        $user = User::findOrFail($request->route('id'));
+
+        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return redirect()->to(config('app.frontend_url') . '/login?error=invalid_signature');
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+            event(new \Illuminate\Auth\Events\Verified($user));
+        }
+
+        return redirect()->to(config('app.frontend_url') . '/profile?verified=1');
     }
 }

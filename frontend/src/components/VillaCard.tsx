@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Star, Heart } from 'lucide-react';
 import { Villa } from '@/types';
 import { getMainPhoto } from '@/lib/villaUtils';
+import { formatPrice } from '@/lib/format';
 
 export interface VillaCardProps {
     villa: Villa;
@@ -96,7 +97,7 @@ export default function VillaCard({
                             
                             <div className="text-[13px] sm:text-[14px] text-slate-600 font-normal pt-1.5">
                                 <span className="font-medium">
-                                    Rp {Number(villa.price_per_night).toLocaleString('id-ID')}
+                                    {formatPrice(villa.price_per_night)}
                                 </span>
                                 <span className="text-slate-500"> malam</span>
                             </div>
@@ -108,7 +109,7 @@ export default function VillaCard({
     }
 
     const subdistrict = villa.location.split(',')[0].trim();
-    const priceText = `Rp ${Number(villa.price_per_night).toLocaleString('id-ID')}`;
+    const priceText = formatPrice(villa.price_per_night);
     let priceLabel = '/malam';
     
     if (checkInParam && checkOutParam) {

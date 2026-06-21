@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            'password.confirm' => \App\Http\Middleware\RequirePasswordCustom::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

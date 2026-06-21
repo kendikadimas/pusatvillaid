@@ -208,7 +208,7 @@ export default function AdminSettingsPage() {
                 if (data.settings_address) setAddress(data.settings_address);
                 if (data.settings_checkin) setCheckInTime(data.settings_checkin);
                 if (data.settings_checkout) setCheckOutTime(data.settings_checkout);
-                if (data.settings_midtrans) setMidtransMode(data.settings_midtrans);
+                // ARCHIVED: if (data.settings_midtrans) setMidtransMode(data.settings_midtrans);
                 if (data.tax_percentage !== undefined) setTaxPercentage(data.tax_percentage);
             } catch (err) {
                 console.error('Failed to fetch settings from API, using localStorage fallback:', err);
@@ -219,7 +219,7 @@ export default function AdminSettingsPage() {
                     const savedAddr = localStorage.getItem('settings_address');
                     const savedCheckIn = localStorage.getItem('settings_checkin');
                     const savedCheckOut = localStorage.getItem('settings_checkout');
-                    const savedMidtrans = localStorage.getItem('settings_midtrans');
+                    // ARCHIVED: const savedMidtrans = localStorage.getItem('settings_midtrans');
                     const savedTax = localStorage.getItem('tax_percentage');
 
                     if (savedName) setPropertyName(savedName);
@@ -228,7 +228,7 @@ export default function AdminSettingsPage() {
                     if (savedAddr) setAddress(savedAddr);
                     if (savedCheckIn) setCheckInTime(savedCheckIn);
                     if (savedCheckOut) setCheckOutTime(savedCheckOut);
-                    if (savedMidtrans) setMidtransMode(savedMidtrans);
+                    // ARCHIVED: if (savedMidtrans) setMidtransMode(savedMidtrans);
                     if (savedTax) setTaxPercentage(Number(savedTax));
                 }
             } finally {
@@ -250,7 +250,7 @@ export default function AdminSettingsPage() {
                 settings_address: address,
                 settings_checkin: checkInTime,
                 settings_checkout: checkOutTime,
-                settings_midtrans: midtransMode,
+                // ARCHIVED: settings_midtrans: midtransMode,
                 tax_percentage: taxPercentage
             });
 
@@ -261,7 +261,7 @@ export default function AdminSettingsPage() {
                 localStorage.setItem('settings_address', address);
                 localStorage.setItem('settings_checkin', checkInTime);
                 localStorage.setItem('settings_checkout', checkOutTime);
-                localStorage.setItem('settings_midtrans', midtransMode);
+                // ARCHIVED: localStorage.setItem('settings_midtrans', midtransMode);
                 localStorage.setItem('tax_percentage', String(taxPercentage));
             }
             
@@ -459,53 +459,15 @@ export default function AdminSettingsPage() {
                                     </div>
                                 )}
 
+                                {/* ARCHIVED: Midtrans payment gateway settings (belum diaktifkan) */}
                                 {activeTab === 'payment' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
                                             <CreditCard className="w-4.5 h-4.5 text-blue-500" />
-                                            <h3 className="text-sm font-bold text-[#222222]">Integrasi pembayaran (Midtrans)</h3>
+                                            <h3 className="text-sm font-bold text-[#222222]">Gateway Pembayaran</h3>
                                         </div>
-
-                                        <div className="space-y-4">
-                                            <label className="block text-[11px] font-semibold text-slate-500">Mode gateway</label>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-xs font-bold text-[#222222]">
-                                                <label className={`flex items-center space-x-3 rounded-[8px] px-5 py-4 cursor-pointer flex-1 select-none border transition-all duration-300 ${
-                                                    midtransMode === 'sandbox' 
-                                                        ? 'bg-blue-50 border-blue-300' 
-                                                        : 'bg-slate-50 border-[#dddddd] hover:bg-slate-100 hover:border-[#ccc]'
-                                                }`}>
-                                                    <input 
-                                                        type="radio" 
-                                                        name="midtransMode"
-                                                        value="sandbox"
-                                                        checked={midtransMode === 'sandbox'}
-                                                        onChange={(e) => setMidtransMode(e.target.value)}
-                                                        className="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
-                                                    />
-                                                    <div className="flex flex-col">
-                                                        <span className="font-semibold text-[#222222] text-xs">Sandbox mode</span>
-                                                        <span className="text-[10px] text-slate-500 font-medium mt-0.5 leading-snug">Gunakan kartu uji coba Midtrans untuk pengujian (UAT).</span>
-                                                    </div>
-                                                </label>
-                                                <label className={`flex items-center space-x-3 rounded-[8px] px-5 py-4 cursor-pointer flex-1 select-none border transition-all duration-300 ${
-                                                    midtransMode === 'production' 
-                                                        ? 'bg-blue-50 border-blue-300' 
-                                                        : 'bg-slate-50 border-[#dddddd] hover:bg-slate-100 hover:border-[#ccc]'
-                                                }`}>
-                                                    <input 
-                                                        type="radio" 
-                                                        name="midtransMode"
-                                                        value="production"
-                                                        checked={midtransMode === 'production'}
-                                                        onChange={(e) => setMidtransMode(e.target.value)}
-                                                        className="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
-                                                    />
-                                                    <div className="flex flex-col">
-                                                        <span className="font-semibold text-[#222222] text-xs">Production mode</span>
-                                                        <span className="text-[10px] text-slate-500 font-medium mt-0.5 leading-snug">Hubungkan ke gateway riil untuk memproses transaksi asli.</span>
-                                                    </div>
-                                                </label>
-                                            </div>
+                                        <div className="bg-amber-50 border border-amber-200 rounded-[8px] p-4 text-xs text-amber-800 font-medium">
+                                            Integrasi payment gateway (Midtrans) belum diaktifkan. Saat ini platform menggunakan transfer manual dan QRIS.
                                         </div>
                                     </div>
                                 )}

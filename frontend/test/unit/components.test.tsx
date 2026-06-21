@@ -45,26 +45,26 @@ describe('CTASection Component', () => {
     it('should render CTA headline', () => {
         render(<CTASection />);
         expect(
-            screen.getByText(/Butuh Rekomendasi atau Rencana Rombongan/)
+            screen.getByText(/Butuh rekomendasi villa/i)
         ).toBeInTheDocument();
     });
 
     it('should render jelajahi villa button', () => {
         render(<CTASection />);
-        const button = screen.getByRole('link', { name: /Jelajahi Villa Sekarang/ });
+        const button = screen.getByRole('link', { name: /Jelajahi Villa/i });
         expect(button).toHaveAttribute('href', '/villas');
     });
 
     it('should render WhatsApp hubungi admin button', () => {
         render(<CTASection />);
-        const waLink = screen.getByRole('link', { name: /Hubungi Admin/ });
+        const waLink = screen.getByRole('link', { name: /Chat WhatsApp/i });
         expect(waLink).toHaveAttribute('href', expect.stringContaining('whatsapp.com/send'));
     });
 
     it('should render description text', () => {
         render(<CTASection />);
         expect(
-            screen.getByText(/Hubungi layanan admin kami via WhatsApp/)
+            screen.getByText(/Hubungi admin langsung via/i)
         ).toBeInTheDocument();
     });
 });

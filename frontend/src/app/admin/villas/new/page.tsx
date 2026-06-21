@@ -21,6 +21,7 @@ import {
     Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { normaliseStorageUrl } from '@/lib/villaUtils';
 import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
 
 export default function AdminNewVillaPage() {
@@ -164,7 +165,7 @@ export default function AdminNewVillaPage() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setBrImage(response.data.url);
+            setBrImage(normaliseStorageUrl(response.data.url));
             toast.success('Foto kamar berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload bedroom image failed:', err);
@@ -188,7 +189,7 @@ export default function AdminNewVillaPage() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setAcImage(response.data.url);
+            setAcImage(normaliseStorageUrl(response.data.url));
             toast.success('Foto fitur aksesibilitas berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload accessibility image failed:', err);
@@ -212,7 +213,7 @@ export default function AdminNewVillaPage() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setHostAvatar(response.data.url);
+            setHostAvatar(normaliseStorageUrl(response.data.url));
             toast.success('Avatar tuan rumah berhasil diunggah.');
         } catch (err: any) {
             console.error('Upload host avatar failed:', err);

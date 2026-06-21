@@ -10,7 +10,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { formatPrice } from '@/lib/format';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { CheckCircle2, MapPin, Copy, Printer, Home, Check, MessageCircle, Download } from 'lucide-react';
+import { CheckCircle2, MapPin, Copy, Printer, Home, Check, Download } from 'lucide-react';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { toast } from 'sonner';
 
@@ -226,7 +227,7 @@ function BookingSuccessContent() {
                         <ul className="list-disc pl-4 space-y-1.5 text-slate-550">
                             <li>Nota konfirmasi check-in telah kami kirimkan ke email Anda. Cek folder spam jika belum masuk.</li>
                             <li>Tunjukkan halaman ini atau sebutkan <strong>Kode Booking</strong> saat tiba di lokasi villa.</li>
-                            <li>Kontak villa kami: +62 812-3456-7890 (WhatsApp).</li>
+                            <li>Kontak villa kami: +62 812-3456-7890 (<span className="text-green-600 font-semibold">WhatsApp</span>).</li>
                         </ul>
                     </div>
 
@@ -245,7 +246,7 @@ function BookingSuccessContent() {
                                     onClick={handleSendWa}
                                     className="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                                 >
-                                    <MessageCircle className="w-4 h-4" />
+                                    <WhatsAppIcon className="w-4 h-4" />
                                     <span>Kirim via WA</span>
                                 </button>
                             </>

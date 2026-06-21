@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '@/lib/axios';
 import { Destination } from '@/types';
+import { normaliseStorageUrl } from '@/lib/villaUtils';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import { 
@@ -73,7 +74,7 @@ export default function AdminDestinationsPage() {
         setName(dest.name);
         setCity(dest.city);
         setQuery(dest.query);
-        setImage(dest.image);
+        setImage(normaliseStorageUrl(dest.image));
         setIsModalOpen(true);
     };
 
@@ -147,7 +148,7 @@ export default function AdminDestinationsPage() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setImage(response.data.image_url);
+            setImage(normaliseStorageUrl(response.data.image_url));
             toast.success('Foto destinasi berhasil diunggah.');
         } catch (err: any) {
             console.error('Failed to upload destination image:', err);
@@ -247,7 +248,7 @@ export default function AdminDestinationsPage() {
                                     <div className="aspect-[16/10] overflow-hidden bg-slate-100 relative">
                                         {dest.image ? (
                                             <img 
-                                                src={dest.image} 
+                                                src={normaliseStorageUrl(dest.image)} 
                                                 alt={dest.name} 
                                                 className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500 ease-out" 
                                             />

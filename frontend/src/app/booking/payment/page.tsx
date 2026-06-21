@@ -12,7 +12,6 @@ import { formatPrice } from '@/lib/format';
 import { 
     CreditCard, 
     Loader2,
-    Phone,
     ArrowRight, 
     ShieldCheck,
     Building,
@@ -23,35 +22,79 @@ import {
     Smartphone,
     Lock
 } from 'lucide-react';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { toast } from 'sonner';
 
 function BookingPaymentContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const code = searchParams.get('code') || '';
-    const snapTokenParam = searchParams.get('token');
+    // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
     const [booking, setBooking] = useState<Booking | null>(null);
     const [loading, setLoading] = useState(true);
-    const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam);
-    const [scriptLoaded, setScriptLoaded] = useState(false);
+    // const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam); // ARCHIVED: Midtrans
+    // const [scriptLoaded, setScriptLoaded] = useState(false); // ARCHIVED: Midtrans
 
-    // New states for manual payment
-    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    // Manual payment states
+    // paymentType state dipertahankan untuk kompatibilitas UI tab (isOnlineEnabled = false jadi tab tidak muncul)
     const [paymentType, setPaymentType] = useState<'online' | 'manual'>('manual');
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [submittingProof, setSubmittingProof] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [copiedMethodId, setCopiedMethodId] = useState<number | null>(null);
+    const [uploadTapAnim, setUploadTapAnim] = useState(false);
+    const [compressing, setCompressing] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    // Online payment (Midtrans) is only available when a real client key is configured.
-    const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-    const isOnlineEnabled = Boolean(
-        midtransClientKey &&
-        !midtransClientKey.includes('placeholder') &&
-        !midtransClientKey.includes('Mid-client-key-anda')
-    );
+    // Compress image client-side before preview & upload (max 1200px, quality 0.82)
+    const compressImage = (file: File): Promise<{ file: File; preview: string }> => {
+        return new Promise((resolve, reject) => {
+            const MAX_SIZE = 1200;
+            const QUALITY = 0.82;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let { width, height } = img;
+                    if (width > MAX_SIZE || height > MAX_SIZE) {
+                        if (width > height) { height = Math.round((height * MAX_SIZE) / width); width = MAX_SIZE; }
+                        else { width = Math.round((width * MAX_SIZE) / height); height = MAX_SIZE; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                    canvas.toBlob(
+                        (blob) => {
+                            if (!blob) { reject(new Error('Compression failed')); return; }
+                            const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+                            const preview = URL.createObjectURL(compressed);
+                            resolve({ file: compressed, preview });
+                        },
+                        'image/jpeg',
+                        QUALITY
+                    );
+                };
+                img.onerror = reject;
+                img.src = ev.target?.result as string;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    // ARCHIVED: Midtrans belum diaktifkan
+    // const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+    // const isOnlineEnabled = Boolean(
+    //     midtransClientKey &&
+    //     !midtransClientKey.includes('placeholder') &&
+    //     !midtransClientKey.includes('Mid-client-key-anda')
+    // );
+    const isOnlineEnabled = false;
 
     useEffect(() => {
         // 1. Fetch booking details to verify unpaid status
@@ -85,10 +128,10 @@ function BookingPaymentContent() {
                     return;
                 }
 
-                // If token exists in DB but not in URL, use it
-                if (!snapToken && b.payment?.snap_token) {
-                    setSnapToken(b.payment.snap_token);
-                }
+                // ARCHIVED: snap_token logic (Midtrans belum diaktifkan)
+                // if (!snapToken && b.payment?.snap_token) {
+                //     setSnapToken(b.payment.snap_token);
+                // }
 
             } catch (err) {
                 console.error('Failed to fetch booking:', err);
@@ -99,45 +142,26 @@ function BookingPaymentContent() {
         };
 
         fetchBooking();
-    }, [code, snapTokenParam]);
+    }, [code]);
 
-    // 2. Load Midtrans Snap.js script (only when online payment is enabled)
+    /* ARCHIVED: Midtrans Snap.js loader (belum diaktifkan)
     useEffect(() => {
-        if (!isOnlineEnabled) {
-            return;
-        }
+        if (!isOnlineEnabled) return;
         const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
-        const snapSrc = isProduction 
-            ? 'https://app.midtrans.com/snap/snap.js' 
+        const snapSrc = isProduction
+            ? 'https://app.midtrans.com/snap/snap.js'
             : 'https://app.sandbox.midtrans.com/snap/snap.js';
-
-        // Check if script already exists
         const existingScript = document.querySelector(`script[src="${snapSrc}"]`);
-        if (existingScript) {
-            setScriptLoaded(true);
-            return;
-        }
-
+        if (existingScript) { setScriptLoaded(true); return; }
         const script = document.createElement('script');
         script.src = snapSrc;
         script.setAttribute('data-client-key', midtransClientKey as string);
         script.async = true;
-        
-        script.onload = () => {
-            setScriptLoaded(true);
-        };
-
-        script.onerror = () => {
-            console.error('Gagal memuat library Midtrans Snap.');
-            toast.error('Gagal memuat sistem pembayaran Midtrans. Coba segarkan halaman.');
-        };
-
+        script.onload = () => setScriptLoaded(true);
+        script.onerror = () => toast.error('Gagal memuat sistem pembayaran Midtrans.');
         document.body.appendChild(script);
-
-        return () => {
-            // Clean up is not strictly necessary but nice to avoid duplicate script tags
-        };
     }, []);
+    */
 
     // Fetch active manual payment methods
     useEffect(() => {
@@ -167,6 +191,7 @@ function BookingPaymentContent() {
         }
 
         setSubmittingProof(true);
+        setUploadProgress(0);
         try {
             const formData = new FormData();
             formData.append('payment_method_id', String(selectedMethodId));
@@ -178,6 +203,12 @@ function BookingPaymentContent() {
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data'
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        if (progressEvent.total) {
+                            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            setUploadProgress(percent);
+                        }
                     }
                 }
             );
@@ -199,74 +230,11 @@ function BookingPaymentContent() {
         }
     };
 
-    const triggerPayment = () => {
-        if (!snapToken) {
-            toast.error('Token pembayaran tidak valid.');
-            return;
-        }
-
-        if (snapToken.startsWith('mock-snap-token-')) {
-            // Development/offline mock payment simulation!
-            toast.info('Simulasi Pembayaran: Menggunakan mockup token untuk testing offline.');
-            simulateMockPayment();
-            return;
-        }
-
-        if (typeof window !== 'undefined' && (window as any).snap) {
-            (window as any).snap.pay(snapToken, {
-                onSuccess: function (result: any) {
-                    console.log('Payment success:', result);
-                    toast.success('Pembayaran sukses terkonfirmasi!');
-                    router.push(`/booking/success?code=${code}`);
-                },
-                onPending: function (result: any) {
-                    console.log('Payment pending:', result);
-                    toast.info('Menunggu penyelesaian pembayaran.');
-                    router.push(`/booking/status?code=${code}&status=pending`);
-                },
-                onError: function (result: any) {
-                    console.error('Payment error:', result);
-                    toast.error('Pembayaran gagal dilakukan.');
-                    router.push(`/booking/failed?code=${code}`);
-                },
-                onClose: function () {
-                    console.log('Payment checkout widget closed');
-                    toast.warning('Checkout ditutup sebelum pembayaran selesai.');
-                }
-            });
-        } else {
-            toast.error('Sistem pembayaran belum siap. Silakan tunggu beberapa saat.');
-        }
-    };
-
-    const simulateMockPayment = async () => {
-        setLoading(true);
-        try {
-            // In mock mode, we trigger the webhook simulator endpoint or directly call a mock success simulation
-            // To make this fully functional locally, we can make an API request to simulate payment approval
-            // For example, mock direct notification callback
-            const mockWebhookPayload = {
-                order_id: booking?.payment?.midtrans_order_id || (code + '-mock'),
-                status_code: '200',
-                gross_amount: booking?.total_amount ? String(booking.total_amount) : '0',
-                signature_key: 'mock-signature-key-approved',
-                transaction_status: 'settlement',
-                payment_type: 'mock_qris',
-                transaction_id: 'mock-transaction-' + uniqid(),
-            };
-
-            await axiosClient.post('/payment/notification', mockWebhookPayload);
-            toast.success('Simulasi Pembayaran Berhasil! Booking Anda telah aktif.');
-            router.push(`/booking/success?code=${code}`);
-        } catch (err) {
-            console.error('Mock payment simulation failed:', err);
-            toast.error('Simulasi pembayaran gagal.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    /* ARCHIVED: Midtrans triggerPayment & simulateMockPayment (belum diaktifkan)
+    const triggerPayment = () => { ... };
+    const simulateMockPayment = async () => { ... };
     const uniqid = () => Math.random().toString(36).substring(2, 9);
+    */
 
     if (loading) {
         return <LoadingSpinner message="Menyiapkan halaman pembayaran..." />;
@@ -648,55 +616,91 @@ function BookingPaymentContent() {
                                 <label className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">
                                     Upload Bukti {paymentMethods.find(m => m.id === selectedMethodId)?.code === 'qris' ? 'Pembayaran' : 'Transfer'} *
                                 </label>
-                                <div className="border-2 border-dashed border-slate-200 hover:border-blue-900 hover:bg-slate-50/30 active:border-blue-700 active:bg-blue-50/20 active:scale-[0.99] transition-all duration-200 rounded-2xl p-6 bg-slate-50/20 text-center cursor-pointer relative group overflow-hidden">
-                                    <input
-                                        type="file"
-                                        accept="image/jpeg,image/png,image/jpg,image/webp"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                if (file.size > 5120 * 1024) {
-                                                    toast.error('Ukuran file maksimal adalah 5MB.');
-                                                    return;
-                                                }
-                                                toast.success('Foto bukti transfer berhasil dipilih!');
-                                                setProofFile(file);
-                                                setProofPreview(URL.createObjectURL(file));
-                                            }
-                                        }}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    />
-                                    {proofPreview ? (
-                                        <div className="space-y-3 z-20 relative">
-                                            <div className="relative w-full h-44 mx-auto rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
-                                                <img 
-                                                    src={proofPreview} 
-                                                    alt="Preview bukti" 
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            </div>
-                                            <div className="text-xs text-slate-600 font-medium flex items-center justify-center space-x-1.5">
-                                                <div className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center shadow-sm">
-                                                    <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
-                                                </div>
-                                                <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
-                                            </div>
-                                            <span className="inline-block text-[11px] text-blue-900 group-hover:underline font-bold bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm group-active:scale-95 transition-all duration-200">
-                                                Ganti Bukti Transfer
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <div className="py-2 space-y-2.5 flex flex-col items-center z-20 relative">
-                                            <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 group-hover:text-blue-900 group-hover:border-blue-900 group-hover:shadow-md group-active:scale-95 transition-all duration-200 shadow-sm">
-                                                <Upload className="w-5 h-5 stroke-[1.5] group-active:animate-pulse" />
-                                            </div>
-                                            <div>
-                                                <span className="text-xs font-bold text-slate-700 block group-hover:text-blue-900 transition-colors">Pilih file gambar</span>
-                                                <span className="text-[10px] text-slate-400 block mt-1">JPG, JPEG, PNG, atau WEBP (Maks 5MB)</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                 {/* Hidden file input — triggered programmatically */}
+                                 <input
+                                     ref={fileInputRef}
+                                     type="file"
+                                     accept="image/jpeg,image/png,image/jpg,image/webp"
+                                     className="hidden"
+                                     onChange={async (e) => {
+                                         const file = e.target.files?.[0];
+                                         // Reset so same file can be re-selected
+                                         e.target.value = '';
+                                         if (!file) return;
+                                         if (file.size > 10 * 1024 * 1024) {
+                                             toast.error('Ukuran file maksimal adalah 10MB.');
+                                             return;
+                                         }
+                                         setCompressing(true);
+                                         try {
+                                             const { file: compressed, preview } = await compressImage(file);
+                                             setProofFile(compressed);
+                                             setProofPreview(preview);
+                                         } catch {
+                                             // Fallback: use original file without compression
+                                             setProofFile(file);
+                                             setProofPreview(URL.createObjectURL(file));
+                                         } finally {
+                                             setCompressing(false);
+                                         }
+                                     }}
+                                 />
+
+                                 <div
+                                     className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer relative group overflow-hidden transition-all duration-200 ${
+                                         uploadTapAnim
+                                             ? 'border-blue-500 bg-blue-50/40 scale-[0.97]'
+                                             : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30 bg-slate-50/20'
+                                     }`}
+                                     onClick={() => {
+                                         if (compressing) return;
+                                         setUploadTapAnim(true);
+                                         setTimeout(() => setUploadTapAnim(false), 400);
+                                         fileInputRef.current?.click();
+                                     }}
+                                 >
+                                     {compressing ? (
+                                         <div className="py-4 flex flex-col items-center space-y-2.5">
+                                             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                                             <span className="text-xs font-bold text-blue-600">Memproses gambar...</span>
+                                         </div>
+                                     ) : proofPreview ? (
+                                         <div className="space-y-3">
+                                             <div className="relative w-full h-44 mx-auto rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+                                                 <img
+                                                     src={proofPreview}
+                                                     alt="Preview bukti"
+                                                     className="w-full h-full object-contain"
+                                                 />
+                                             </div>
+                                             <div className="text-xs text-slate-600 font-medium flex items-center justify-center space-x-1.5">
+                                                 <div className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center shadow-sm">
+                                                     <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                                                 </div>
+                                                 <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
+                                             </div>
+                                             <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm active:scale-95">
+                                                 Ganti Bukti Transfer
+                                             </span>
+                                         </div>
+                                     ) : (
+                                         <div className="py-2 space-y-2.5 flex flex-col items-center">
+                                             <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm ${
+                                                 uploadTapAnim
+                                                     ? 'bg-blue-600 border-blue-600 text-white scale-110'
+                                                     : 'bg-white border-slate-200/80 text-slate-400 group-hover:text-blue-600 group-hover:border-blue-400 group-hover:shadow-md'
+                                             }`}>
+                                                 <Upload className={`w-5 h-5 stroke-[1.5] ${uploadTapAnim ? 'animate-bounce' : ''}`} />
+                                             </div>
+                                             <div>
+                                                 <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-blue-600' : 'text-slate-700 group-hover:text-blue-600'}`}>
+                                                     {uploadTapAnim ? 'Buka galeri...' : 'Pilih file gambar'}
+                                                 </span>
+                                                 <span className="text-[10px] text-slate-400 block mt-1">JPG, PNG, WEBP (Maks 10MB, dikompres otomatis)</span>
+                                             </div>
+                                         </div>
+                                     )}
+                                 </div>
                             </div>
                         </div>
                     )})()}
@@ -708,25 +712,9 @@ function BookingPaymentContent() {
                     )}
 
                     {/* Payment Trigger Button */}
-                    {paymentType === 'online' ? (
-                        <button
-                            onClick={triggerPayment}
-                            disabled={!scriptLoaded || !snapToken}
-                            className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
-                        >
-                            {!scriptLoaded ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Menyiapkan Gateway...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span>Bayar Sekarang (Online)</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </>
-                            )}
-                        </button>
-                    ) : (
+                    {/* ARCHIVED: Online payment tab (Midtrans belum diaktifkan — isOnlineEnabled = false, tab tidak pernah muncul) */}
+                    {paymentType === 'online' ? null : (
+                        <>
                         <button
                             onClick={handleManualPaymentSubmit}
                             disabled={submittingProof || !selectedMethodId || !proofFile}
@@ -747,6 +735,23 @@ function BookingPaymentContent() {
                                 </>
                             )}
                         </button>
+
+                        {/* Upload Progress Bar */}
+                        {submittingProof && (
+                            <div className="space-y-2 animate-in fade-in duration-200">
+                                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                    <div 
+                                        className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300 ease-out"
+                                        style={{ width: `${uploadProgress}%` }}
+                                    />
+                                </div>
+                                <div className="flex justify-between items-center text-[11px] text-slate-500 font-semibold">
+                                    <span>Mengupload bukti transfer...</span>
+                                    <span className="text-blue-700 font-bold">{uploadProgress}%</span>
+                                </div>
+                            </div>
+                        )}
+                        </>
                     )}
 
                     <div className="border-t border-slate-100 pt-6 flex items-center justify-center space-x-2 text-xs text-slate-500 font-semibold">
@@ -762,8 +767,8 @@ function BookingPaymentContent() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center text-slate-500 hover:text-slate-800 text-xs font-semibold space-x-1 hover:underline transition-all"
                     >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>Butuh bantuan pembayaran? WhatsApp Kami</span>
+                        <WhatsAppIcon className="w-3.5 h-3.5 text-green-500" />
+                        <span>Butuh bantuan pembayaran? <span className="text-green-500">WhatsApp</span> Kami</span>
                     </a>
                 </div>
             </main>

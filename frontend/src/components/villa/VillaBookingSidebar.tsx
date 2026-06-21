@@ -4,6 +4,7 @@ import React from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Villa } from '@/types';
+import { formatPrice } from '@/lib/format';
 
 interface VillaBookingSidebarProps {
     villa: Villa;
@@ -31,7 +32,7 @@ export default function VillaBookingSidebar({
                     <div>
                         <div className="flex items-baseline gap-1.5 flex-wrap">
                             <span className="text-[22px] font-bold text-slate-900 font-sans tracking-tight">
-                                Rp {totalNights > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                                {totalNights > 0 ? formatPrice(totalAmount) : formatPrice(villa.price_per_night)}
                             </span>
                             <span className="text-sm text-slate-500 font-normal">
                                 {totalNights > 0 ? `untuk ${totalNights} malam` : 'untuk 1 malam'}
@@ -82,7 +83,7 @@ export default function VillaBookingSidebar({
             <div className="fixed bottom-0 left-0 right-0 z-45 bg-white/95 backdrop-blur-md border-t border-slate-200 p-4 flex items-center justify-between lg:hidden shadow-2xl">
                 <div>
                     <span className="text-base text-slate-900 font-black block">
-                        Rp {totalAmount > 0 ? totalAmount.toLocaleString('id-ID') : Number(villa.price_per_night).toLocaleString('id-ID')}
+                        {totalAmount > 0 ? formatPrice(totalAmount) : formatPrice(villa.price_per_night)}
                         <span className="text-[10px] text-slate-500 font-normal ml-1">/ malam</span>
                     </span>
                     <span className="text-[10px] text-slate-500 font-medium block mt-0.5">

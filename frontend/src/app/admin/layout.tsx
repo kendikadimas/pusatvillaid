@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Toaster } from 'sonner';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -216,6 +217,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     {children}
                 </div>
             </div>
+            <Toaster
+                position="top-right"
+                richColors
+                closeButton
+                toastOptions={{
+                    duration: 3500,
+                    style: { fontFamily: 'inherit', fontSize: '13px' },
+                }}
+            />
         </div>
     );
 }

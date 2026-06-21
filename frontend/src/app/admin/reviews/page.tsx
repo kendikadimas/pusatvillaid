@@ -325,7 +325,7 @@ export default function AdminReviewsPage() {
                                     {[...Array(5)].map((_, i) => (
                                         <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200 fill-slate-200'}`} />
                                     ))}
-                                    <span className="text-[10px] font-black text-[#222222] ml-1.5 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200/30 font-mono tabular-nums">{r.rating} / 5</span>
+                                    <span className="text-[10px] font-black text-[#222222] ml-1.5 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200/30">{r.rating} / 5</span>
                                 </div>
 
                                 <p className="text-[#222222] text-xs leading-relaxed whitespace-pre-line pl-1 font-medium italic">

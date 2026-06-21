@@ -178,7 +178,7 @@ export default function AdminVillasPage() {
                                             </div>
                                         </div>
                                         <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs">
-                                            <span className="font-extrabold text-[#222222] font-mono tabular-nums">
+                                            <span className="font-extrabold text-[#222222]">
                                                 {formatPrice(villa.price_per_night)}
                                             </span>
                                             {villa.weekend_price !== null && (
@@ -300,12 +300,12 @@ export default function AdminVillasPage() {
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6 text-right">
-                                                    <span className="font-bold text-[#222222] text-sm font-mono tabular-nums">
+                                                    <span className="font-bold text-[#222222] text-sm">
                                                         {formatPrice(villa.price_per_night)}
                                                     </span>
                                                 </td>
                                                 <td className="py-4 px-6 text-right hidden sm:table-cell">
-                                                    <span className="font-bold text-[#222222] text-sm font-mono tabular-nums">
+                                                    <span className="font-bold text-[#222222] text-sm">
                                                         {villa.weekend_price !== null 
                                                             ? formatPrice(villa.weekend_price) 
                                                             : <span className="text-slate-300 font-semibold">—</span>}

@@ -309,7 +309,7 @@ function BookingStatusContent() {
                                     <p>Selamat, pesanan Anda telah lunas dikonfirmasi! Berikut adalah koordinasi petunjuk saat tiba:</p>
                                     <ul className="list-decimal pl-4 space-y-2 font-medium">
                                         <li>Tunjukkan nota status digital ini atau sebutkan <strong className="text-slate-900">Kode Booking ({code})</strong> kepada petugas/penjaga villa saat Anda tiba.</li>
-                                        <li>Batas keterlambatan check-in adalah pukul 22.00 WIB malam, harap koordinasikan via WhatsApp jika Anda tiba larut malam.</li>
+                                        <li>Batas keterlambatan check-in adalah pukul 22.00 WIB malam, harap koordinasikan via <span className="text-green-600 font-semibold">WhatsApp</span> jika Anda tiba larut malam.</li>
                                         <li>Aturan villa wajib dipatuhi: <span className="text-slate-700 italic">"{booking.villa?.rules || 'Dilarang merokok di dalam kamar dan mematuhi jam tenang.'}"</span></li>
                                     </ul>
                                 </div>

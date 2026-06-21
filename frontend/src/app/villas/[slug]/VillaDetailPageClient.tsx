@@ -705,63 +705,113 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
                 {/* Image Gallery Grid (Hidden on Mobile) */}
                 <div className="hidden lg:block relative mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl overflow-hidden bg-white">
+                    <div className="grid grid-cols-[2fr_1fr] gap-4 h-[460px] xl:h-[500px]">
                         {/* Main Large Image */}
                         <div 
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
-                            className="md:col-span-2 aspect-[4/3] md:aspect-auto overflow-hidden rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none cursor-pointer relative group"
+                            className="relative w-full h-full overflow-hidden rounded-2xl cursor-pointer group"
                         >
                             <img 
                                 src={getPhotoUrl(mainPhoto)} 
                                 alt={villa.name} 
-                                className="w-full h-full object-cover group-hover:brightness-90 transition duration-300"
+                                className="w-full h-full object-cover group-hover:brightness-95 transition duration-305"
                             />
-                            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                            
+                            {/* ZEISS Watermark */}
+                            <div className="absolute bottom-4 left-4 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
+                                <span className="text-[11px] xl:text-[12px] font-bold text-white/90 tracking-wide font-sans">
+                                    X200 Ultra | ZEISS
+                                </span>
+                                <span className="text-[9px] xl:text-[10px] text-white/70 font-mono mt-0.5">
+                                    2026.06.21 16:18
+                                </span>
+                            </div>
                         </div>
 
-                        {/* Thumbnails grid */}
-                        <div className="md:col-span-2 grid grid-cols-2 gap-1.5 md:gap-2">
+                        {/* Nested Thumbnails Grid */}
+                        <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
                             {thumbPhotos.map((photo, i) => {
-                                // Determine round corner styling based on thumbnail position
-                                let cornerClass = "";
-                                if (i === 1) cornerClass = "md:rounded-tr-2xl";
-                                if (i === 3) cornerClass = "md:rounded-br-2xl";
-
+                                const isLastCell = i === 3 || (i === thumbPhotos.length - 1 && thumbPhotos.length < 4);
                                 return (
-                                        <div 
-                                            key={i}
-                                            onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }}
-                                            className={`aspect-[4/3] overflow-hidden cursor-pointer relative group ${cornerClass}`}
+                                    <div 
+                                        key={i}
+                                        onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }}
+                                        className="relative w-full h-full overflow-hidden rounded-2xl cursor-pointer group"
                                     >
                                         <img 
                                             src={getPhotoUrl(photo)} 
                                             alt={`Thumbnail ${i}`} 
-                                            className="w-full h-full object-cover group-hover:brightness-90 transition duration-300"
+                                            className="w-full h-full object-cover group-hover:brightness-95 transition duration-305"
                                         />
-                                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                                        
+                                        {/* ZEISS Watermark */}
+                                        <div className="absolute bottom-3 left-3 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
+                                            <span className="text-[10px] xl:text-[11px] font-bold text-white/90 tracking-wide font-sans">
+                                                X200 Ultra | ZEISS
+                                            </span>
+                                            <span className="text-[8px] xl:text-[9px] text-white/70 font-mono mt-0.5">
+                                                2026.06.21 16:18
+                                            </span>
+                                        </div>
+
+                                        {/* "Show all photos" Button in the 4th cell (index 3) */}
+                                        {isLastCell && (
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setCurrentImageIndex(0);
+                                                    setIsLightboxOpen(true);
+                                                }}
+                                                className="absolute bottom-3 right-3 bg-white/90 hover:bg-white text-slate-900 text-[12px] xl:text-[13px] font-bold px-3.5 py-2.5 rounded-xl border border-slate-200/50 shadow-md transition-all flex items-center space-x-2 cursor-pointer active:scale-95 z-20 animate-in fade-in duration-200"
+                                            >
+                                                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-3.5 h-3.5 fill-slate-900">
+                                                    <rect x="2" y="2" width="5" height="5" rx="1" />
+                                                    <rect x="9" y="2" width="5" height="5" rx="1" />
+                                                    <rect x="2" y="9" width="5" height="5" rx="1" />
+                                                    <rect x="9" y="9" width="5" height="5" rx="1" />
+                                                </svg>
+                                                <span>Show all photos</span>
+                                            </button>
+                                        )}
                                     </div>
                                 );
                             })}
                             {/* Fill placeholder blocks if photo count < 5 */}
-                            {[...Array(Math.max(0, 4 - thumbPhotos.length))].map((_, idx) => (
-                                <div 
-                                    key={`empty-${idx}`}
-                                    className="bg-slate-50 border border-dashed border-slate-200 aspect-[4/3] flex items-center justify-center"
-                                >
-                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">PusatVilla.id</span>
-                                </div>
-                            ))}
+                            {[...Array(Math.max(0, 4 - thumbPhotos.length))].map((_, idx) => {
+                                const globalIdx = thumbPhotos.length + idx;
+                                const isLastCell = globalIdx === 3;
+                                return (
+                                    <div 
+                                        key={`empty-${idx}`}
+                                        className="relative bg-slate-50 border border-dashed border-slate-200 w-full h-full rounded-2xl flex items-center justify-center"
+                                    >
+                                        <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">PusatVilla.id</span>
+                                        
+                                        {/* "Show all photos" Button in the 4th cell even if it is a placeholder */}
+                                        {isLastCell && (
+                                            <button 
+                                                onClick={() => {
+                                                    setCurrentImageIndex(0);
+                                                    setIsLightboxOpen(true);
+                                                }}
+                                                className="absolute bottom-3 right-3 bg-white/90 hover:bg-white text-slate-900 text-[12px] xl:text-[13px] font-bold px-3.5 py-2.5 rounded-xl border border-slate-200/50 shadow-md transition-all flex items-center space-x-2 cursor-pointer active:scale-95 z-20"
+                                            >
+                                                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-3.5 h-3.5 fill-slate-900">
+                                                    <rect x="2" y="2" width="5" height="5" rx="1" />
+                                                    <rect x="9" y="2" width="5" height="5" rx="1" />
+                                                    <rect x="2" y="9" width="5" height="5" rx="1" />
+                                                    <rect x="9" y="9" width="5" height="5" rx="1" />
+                                                </svg>
+                                                <span>Show all photos</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
-
-                    {/* View All Photos Button */}
-                    <button 
-                        onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
-                        className="absolute bottom-5 right-5 bg-white hover:bg-slate-50 text-slate-900 text-[13px] font-semibold px-4 py-2 rounded-xl border border-slate-200 shadow-md transition-all flex items-center space-x-2 cursor-pointer active:scale-95"
-                    >
-                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" className="w-3.5 h-3.5 fill-slate-900"><path d="M5 2a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5zm0 1h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM4 6.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm5 3.707a1 1 0 0 1-1.414 0L6 8.621l-2.086 2.086A1 1 0 0 1 2.5 10v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9.5l-3.5.707zm-1.5-1.5L9 7.207a1 1 0 0 1-1.414 0L13 9.793V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2.793l2.5-2.5a1 1 0 0 1 1.414 0z"></path></svg>
-                        <span>Tampilkan semua foto</span>
-                    </button>
                 </div>
 
                 {/* Grid Split Content */}

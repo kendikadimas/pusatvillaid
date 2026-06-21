@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Villa } from '@/types';
@@ -17,6 +17,8 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
     const { wishlist, toggleWishlist } = useWishlist();
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const isSaved = wishlist.includes(villa.id);
+    const touchStartX = useRef<number | null>(null);
+    const touchDeltaX = useRef(0);
 
     const photos = villa.photos && villa.photos.length > 0
         ? villa.photos
@@ -34,6 +36,30 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
         setCurrentPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.touches[0].clientX;
+        touchDeltaX.current = 0;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+        touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const threshold = 50;
+        if (touchDeltaX.current < -threshold) {
+            setCurrentPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
+        } else if (touchDeltaX.current > threshold) {
+            setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1));
+        }
+        touchStartX.current = null;
+        touchDeltaX.current = 0;
+    };
+
     const handleToggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -49,7 +75,12 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
         <Link href={villaUrl} className="block">
             <div className="space-y-3">
                 {/* Photo carousel */}
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100">
+                <div 
+                    className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 touch-pan-y"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
                     <img
                         src={getPhotoUrl(photos[currentPhotoIndex])}
                         alt={villa.name}

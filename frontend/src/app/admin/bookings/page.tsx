@@ -20,9 +20,9 @@ import {
     ChevronRight,
     ArrowUpDown,
     Eye,
-    MessageSquare,
     BookOpen
 } from 'lucide-react';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { toast } from 'sonner';
 
 export default function AdminBookingsPage() {
@@ -295,112 +295,120 @@ export default function AdminBookingsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bookings.map((b) => (
-                                    <tr key={b.id} className="border-b border-[#dddddd] hover:bg-slate-50/40 transition-colors duration-200">
-                                        <td className="py-3.5 px-6 font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</td>
-                                        <td className="py-3.5 px-4 font-bold text-[#222222] truncate max-w-[140px]">{b.villa?.name}</td>
-                                        <td className="py-3.5 px-4">
-                                            <p className="font-semibold text-[#222222]">{b.guest_name}</p>
-                                            <p className="text-[10px] text-[#6a6a6a] mt-0.5 truncate max-w-[140px] font-medium">{b.guest_email}</p>
-                                        </td>
-                                        <td className="py-3.5 px-4 font-mono tabular-nums text-[#222222] font-semibold">
-                                            {format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}
-                                        </td>
-                                        <td className="py-3.5 px-4 font-mono tabular-nums text-[#222222] font-semibold">
-                                            {format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}
-                                        </td>
-                                        <td className="py-3.5 px-4 text-center">
-                                            <StatusBadge variant={b.status as any} />
-                                        </td>
-                                        <td className="py-3.5 px-4 text-center">
-                                            <StatusBadge variant={b.payment_status as any} />
-                                        </td>
-                                        <td className="py-3.5 px-4 font-mono font-black tabular-nums text-[#222222]">
-                                            {formatPrice(b.total_amount)}
-                                        </td>
-                                        <td className="py-3.5 px-6 text-right">
-                                            <div className="flex items-center justify-end space-x-1.5">
-                                                <a 
-                                                    href={`https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                                                    title="Hubungi WhatsApp"
-                                                    aria-label="Hubungi via WhatsApp"
-                                                >
-                                                    <MessageSquare className="w-3.5 h-3.5" />
-                                                </a>
-                                                <Link 
-                                                    href={`/admin/bookings/detail?id=${b.id}`}
-                                                    className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
-                                                    title="Detail Pesanan"
-                                                >
-                                                    <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
-                                                    <span className="hidden sm:inline">Detail</span>
-                                                </Link>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {bookings.map((b) => {
+                                    const message = `Halo ${b.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${b.booking_code}* di *${b.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail pemesanan Anda.`;
+                                    const waUrl = `https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                                    return (
+                                        <tr key={b.id} className="border-b border-[#dddddd] hover:bg-slate-50/40 transition-colors duration-200">
+                                            <td className="py-3.5 px-6 font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</td>
+                                            <td className="py-3.5 px-4 font-bold text-[#222222] truncate max-w-[140px]">{b.villa?.name}</td>
+                                            <td className="py-3.5 px-4">
+                                                <p className="font-semibold text-[#222222]">{b.guest_name}</p>
+                                                <p className="text-[10px] text-[#6a6a6a] mt-0.5 truncate max-w-[140px] font-medium">{b.guest_email}</p>
+                                            </td>
+                                            <td className="py-3.5 px-4 text-[#222222] font-semibold">
+                                                {format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}
+                                            </td>
+                                            <td className="py-3.5 px-4 text-[#222222] font-semibold">
+                                                {format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}
+                                            </td>
+                                            <td className="py-3.5 px-4 text-center">
+                                                <StatusBadge variant={b.status as any} />
+                                            </td>
+                                            <td className="py-3.5 px-4 text-center">
+                                                <StatusBadge variant={b.payment_status as any} />
+                                            </td>
+                                            <td className="py-3.5 px-4 font-black text-[#222222]">
+                                                {formatPrice(b.total_amount)}
+                                            </td>
+                                            <td className="py-3.5 px-6 text-right">
+                                                <div className="flex items-center justify-end space-x-1.5">
+                                                    <a 
+                                                        href={waUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 p-2 rounded-[8px] border border-[#dddddd] hover:border-emerald-200 transition-all duration-250 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                                                        title="Hubungi WhatsApp"
+                                                        aria-label="Hubungi via WhatsApp"
+                                                    >
+                                                        <WhatsAppIcon className="w-3.5 h-3.5" />
+                                                    </a>
+                                                    <Link 
+                                                        href={`/admin/bookings/detail?id=${b.id}`}
+                                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
+                                                        title="Detail Pesanan"
+                                                    >
+                                                        <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
+                                                        <span className="hidden sm:inline">Detail</span>
+                                                    </Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
                     {/* Mobile card view */}
                     <div className="block md:hidden space-y-3 px-6 pb-2">
-                        {bookings.map((b) => (
-                            <div key={b.id} className="bg-white border border-[#dddddd] rounded-[12px] p-4 space-y-3 shadow-sm">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</span>
-                                    <StatusBadge variant={b.status as any} />
+                        {bookings.map((b) => {
+                            const message = `Halo ${b.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${b.booking_code}* di *${b.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail pemesanan Anda.`;
+                            const waUrl = `https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                            return (
+                                <div key={b.id} className="bg-white border border-[#dddddd] rounded-[12px] p-4 space-y-3 shadow-sm">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-mono font-bold text-[#222222] tracking-wider text-[11px]">{b.booking_code}</span>
+                                        <StatusBadge variant={b.status as any} />
+                                    </div>
+                                    <div className="space-y-2 text-xs">
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Tamu</span>
+                                            <span className="font-semibold text-[#222222]">{b.guest_name}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Villa</span>
+                                            <span className="font-bold text-[#222222] truncate max-w-[180px]">{b.villa?.name}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Check-in</span>
+                                            <span className="text-[#222222] font-semibold">{format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Check-out</span>
+                                            <span className="text-[#222222] font-semibold">{format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[#6a6a6a] font-medium">Pembayaran</span>
+                                            <StatusBadge variant={b.payment_status as any} />
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Total</span>
+                                            <span className="font-black text-[#222222]">{formatPrice(b.total_amount)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">
+                                        <a 
+                                            href={waUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 p-2 rounded-[8px] border border-[#dddddd] hover:border-emerald-200 transition-all duration-250 active:scale-95"
+                                            title="Hubungi WhatsApp"
+                                            aria-label="Hubungi via WhatsApp"
+                                        >
+                                            <WhatsAppIcon className="w-3.5 h-3.5" />
+                                        </a>
+                                        <Link 
+                                            href={`/admin/bookings/detail?id=${b.id}`}
+                                            className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 shrink-0"
+                                            title="Detail Pesanan"
+                                        >
+                                            <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
+                                            <span className="hidden sm:inline">Detail</span>
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex justify-between">
-                                        <span className="text-[#6a6a6a] font-medium">Tamu</span>
-                                        <span className="font-semibold text-[#222222]">{b.guest_name}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-[#6a6a6a] font-medium">Villa</span>
-                                        <span className="font-bold text-[#222222] truncate max-w-[180px]">{b.villa?.name}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-[#6a6a6a] font-medium">Check-in</span>
-                                        <span className="font-mono tabular-nums text-[#222222] font-semibold">{format(parseISO(b.check_in), 'dd MMM yyyy', { locale: localeID })}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-[#6a6a6a] font-medium">Check-out</span>
-                                        <span className="font-mono tabular-nums text-[#222222] font-semibold">{format(parseISO(b.check_out), 'dd MMM yyyy', { locale: localeID })}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[#6a6a6a] font-medium">Pembayaran</span>
-                                        <StatusBadge variant={b.payment_status as any} />
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-[#6a6a6a] font-medium">Total</span>
-                                        <span className="font-mono font-black tabular-nums text-[#222222]">{formatPrice(b.total_amount)}</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">
-                                    <a 
-                                        href={`https://api.whatsapp.com/send?phone=${b.guest_phone.replace(/^0/, '62')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="bg-white hover:bg-slate-50 text-[#6a6a6a] hover:text-[#222222] p-2 rounded-[8px] border border-[#dddddd] transition-all duration-250 active:scale-95"
-                                        title="Hubungi WhatsApp"
-                                        aria-label="Hubungi via WhatsApp"
-                                    >
-                                        <MessageSquare className="w-3.5 h-3.5" />
-                                    </a>
-                                    <Link 
-                                        href={`/admin/bookings/detail?id=${b.id}`}
-                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 shrink-0"
-                                        title="Detail Pesanan"
-                                    >
-                                        <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
-                                        <span className="hidden sm:inline">Detail</span>
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                     </>
                 )}

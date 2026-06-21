@@ -5,6 +5,7 @@ import Link from 'next/link';
 import axiosClient from '@/lib/axios';
 import { Booking } from '@/types';
 import { format, parseISO } from 'date-fns';
+import { id as localeID } from 'date-fns/locale';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StatCard from '@/components/ui/StatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -20,10 +21,10 @@ import {
     Loader2,
     Clock,
     ArrowUpRight,
-    MessageSquare,
     UserCheck,
     UserMinus
 } from 'lucide-react';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { toast } from 'sonner';
 
 interface Stats {
@@ -86,7 +87,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <span className="text-[11px] text-blue-100 font-bold block mb-2 uppercase tracking-wider">Pendapatan bulan ini</span>
-                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
+                            <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {formatPrice(stats.revenue_this_month)}
                             </span>
                         </div>
@@ -101,7 +102,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <span className="text-[11px] text-indigo-100 font-bold block mb-2 uppercase tracking-wider">Pemesanan baru (MTD)</span>
-                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
+                            <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {stats.bookings_this_month}
                             </span>
                         </div>
@@ -116,7 +117,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <span className="text-[11px] text-sky-100 font-bold block mb-2 uppercase tracking-wider">Tingkat hunian</span>
-                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
+                            <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {stats.occupancy_rate}%
                             </span>
                         </div>
@@ -131,7 +132,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <span className="text-[11px] text-amber-100 font-bold block mb-2 uppercase tracking-wider">Belum bayar (unpaid)</span>
-                            <span className="text-2xl font-black text-white tracking-tight font-mono tabular-nums">
+                            <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {stats.pending_payments}
                             </span>
                         </div>
@@ -182,26 +183,30 @@ export default function AdminDashboardPage() {
                                 <p className="text-[#6a6a6a] text-xs py-6 text-center font-medium">Tidak ada jadwal kedatangan tamu hari ini.</p>
                             ) : (
                                 <div className="space-y-2.5">
-                                    {todayCheckIns.map((item) => (
-                                        <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
-                                            <div className="min-w-0">
-                                                <p className="font-bold text-[#222222] truncate">{item.guest_name}</p>
-                                                <p className="text-[10px] text-slate-500 mt-0.5 font-semibold truncate">{item.villa?.name}</p>
-                                                <p className="text-[10px] text-slate-500 mt-0.5 font-medium">
-                                                    Kode: <span className="font-mono font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
-                                                </p>
+                                    {todayCheckIns.map((item) => {
+                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kedatangan Anda hari ini.`;
+                                        const waUrl = `https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                                        return (
+                                            <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-[#222222] truncate">{item.guest_name}</p>
+                                                    <p className="text-[10px] text-slate-500 mt-0.5 font-semibold truncate">{item.villa?.name}</p>
+                                                    <p className="text-[10px] text-slate-500 mt-0.5 font-medium">
+                                                        Kode: <span className="font-sans font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
+                                                    </p>
+                                                </div>
+                                                <a 
+                                                    href={waUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
+                                                    title="Chat WhatsApp"
+                                                >
+                                                    <WhatsAppIcon className="w-4 h-4" />
+                                                </a>
                                             </div>
-                                            <a 
-                                                href={`https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-[#dddddd] hover:border-blue-200 p-2.5 rounded-[8px] transition-all duration-200  active:scale-95 flex-shrink-0"
-                                                title="Chat WhatsApp"
-                                            >
-                                                <MessageSquare className="w-4 h-4" />
-                                            </a>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -220,26 +225,30 @@ export default function AdminDashboardPage() {
                                 <p className="text-[#6a6a6a] text-xs py-6 text-center font-medium">Tidak ada jadwal kepulangan tamu hari ini.</p>
                             ) : (
                                 <div className="space-y-2.5">
-                                    {todayCheckOuts.map((item) => (
-                                        <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
-                                            <div className="min-w-0">
-                                                <p className="font-bold text-[#222222] truncate">{item.guest_name}</p>
-                                                <p className="text-[10px] text-slate-500 mt-0.5 font-semibold truncate">{item.villa?.name}</p>
-                                                <p className="text-[10px] text-slate-500 mt-0.5 font-medium">
-                                                    Kode: <span className="font-mono font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
-                                                </p>
+                                    {todayCheckOuts.map((item) => {
+                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kepulangan Anda hari ini.`;
+                                        const waUrl = `https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                                        return (
+                                            <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-[#222222] truncate">{item.guest_name}</p>
+                                                    <p className="text-[10px] text-slate-500 mt-0.5 font-semibold truncate">{item.villa?.name}</p>
+                                                    <p className="text-[10px] text-slate-500 mt-0.5 font-medium">
+                                                        Kode: <span className="font-sans font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
+                                                    </p>
+                                                </div>
+                                                <a 
+                                                    href={waUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
+                                                    title="Chat WhatsApp"
+                                                >
+                                                    <WhatsAppIcon className="w-4 h-4" />
+                                                </a>
                                             </div>
-                                            <a 
-                                                href={`https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-[#dddddd] hover:border-blue-200 p-2.5 rounded-[8px] transition-all duration-200  active:scale-95 flex-shrink-0"
-                                                title="Chat WhatsApp"
-                                            >
-                                                <MessageSquare className="w-4 h-4" />
-                                            </a>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -279,16 +288,16 @@ export default function AdminDashboardPage() {
                                     {recentBookings.map((b) => (
                                         <tr key={b.id} className="border-b border-[#dddddd] hover:bg-[#f7f7f7]/30 transition-colors">
                                             <td className="py-3.5 px-2">
-                                                <Link href={`/admin/bookings/detail?id=${b.id}`} className="hover:text-blue-500 transition-colors font-mono tracking-wider font-bold text-[11px] text-[#222222]">
+                                                <Link href={`/admin/bookings/detail?id=${b.id}`} className="hover:text-blue-500 transition-colors font-sans tracking-wider font-bold text-[11px] text-[#222222]">
                                                     {b.booking_code}
                                                 </Link>
                                             </td>
                                             <td className="py-3.5 px-2 text-[#222222] font-bold truncate max-w-[130px]">{b.villa?.name}</td>
                                             <td className="py-3.5 px-2 font-semibold text-[#222222]">{b.guest_name}</td>
-                                            <td className="py-3.5 px-2 font-medium font-mono tabular-nums">
+                                            <td className="py-3.5 px-2 font-medium font-sans tabular-nums">
                                                 {format(parseISO(b.check_in), 'dd MMM yy')}
                                             </td>
-                                            <td className="py-3.5 px-2 text-[#222222] font-black font-mono tabular-nums">
+                                            <td className="py-3.5 px-2 text-[#222222] font-black font-sans tabular-nums">
                                                 {formatPrice(b.total_amount)}
                                             </td>
                                             <td className="py-3.5 px-2 text-right">
@@ -304,7 +313,7 @@ export default function AdminDashboardPage() {
                                 {recentBookings.map((b) => (
                                     <div key={b.id} className="bg-white border border-[#dddddd] rounded-[12px] p-4 space-y-3 shadow-sm">
                                         <div className="flex items-center justify-between">
-                                            <Link href={`/admin/bookings/detail?id=${b.id}`} className="font-mono tracking-wider font-bold text-[11px] text-blue-600 hover:text-blue-800">
+                                            <Link href={`/admin/bookings/detail?id=${b.id}`} className="font-sans tracking-wider font-bold text-[11px] text-blue-600 hover:text-blue-800">
                                                 {b.booking_code}
                                             </Link>
                                             <StatusBadge variant={b.status as any} />
@@ -320,11 +329,11 @@ export default function AdminDashboardPage() {
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-[#6a6a6a] font-medium">Check-in</span>
-                                                <span className="font-mono tabular-nums text-[#222222] font-medium">{format(parseISO(b.check_in), 'dd MMM yy')}</span>
+                                                <span className="font-sans tabular-nums text-[#222222] font-medium">{format(parseISO(b.check_in), 'dd MMM yy')}</span>
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-[#6a6a6a] font-medium">Total</span>
-                                                <span className="font-mono font-black tabular-nums text-[#222222]">{formatPrice(b.total_amount)}</span>
+                                                <span className="font-sans font-black tabular-nums text-[#222222]">{formatPrice(b.total_amount)}</span>
                                             </div>
                                         </div>
                                     </div>

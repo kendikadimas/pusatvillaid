@@ -34,6 +34,7 @@ import { toast } from 'sonner';
 
 export default function AdminAnalyticsPage() {
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
     const [from, setFrom] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
     const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
 
@@ -50,6 +51,10 @@ export default function AdminAnalyticsPage() {
         totalBookings: 0,
         avgOrderValue: 0
     });
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const fetchAnalytics = async () => {
         setLoading(true);
@@ -68,23 +73,42 @@ export default function AdminAnalyticsPage() {
             }));
             setDailyRevenue(formattedRevenue);
 
-            setBookingsPerVilla(data.bookings_per_villa || []);
-            setPaymentMethods(data.payment_methods || []);
+            // Format bookings per villa numbers for Recharts
+            const formattedBookings = (data.bookings_per_villa || []).map((item: any) => ({
+                ...item,
+                bookings_count: Number(item.bookings_count)
+            }));
+            setBookingsPerVilla(formattedBookings);
+
+            // Format payment methods numbers for Recharts
+            const formattedPayments = (data.payment_methods || []).map((item: any) => ({
+                ...item,
+                count: Number(item.count),
+                revenue: Number(item.revenue)
+            }));
+            setPaymentMethods(formattedPayments);
+
             setLeadSources(data.lead_sources || []);
-            setFunnelData(data.conversion_funnel || []);
+
+            // Format funnel data numbers for Recharts
+            const formattedFunnel = (data.conversion_funnel || []).map((item: any) => ({
+                ...item,
+                value: Number(item.value)
+            }));
+            setFunnelData(formattedFunnel);
 
             // Calculate totals
             const totalRevenue = formattedRevenue.reduce((sum: number, item: any) => sum + item.revenueAmount, 0);
-            const totalBookings = (data.conversion_funnel || [])
+            const totalBookings = formattedFunnel
                 .filter((item: any) => !item.step.includes('Cancelled'))
-                .reduce((sum: number, item: any) => sum + Number(item.value), 0);
+                .reduce((sum: number, item: any) => sum + item.value, 0);
             const avgOrderValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
             console.log('Analytics data:', {
                 totalRevenue,
                 totalBookings,
                 avgOrderValue,
-                funnelData: data.conversion_funnel,
+                funnelData: formattedFunnel,
                 dailyRevenue: formattedRevenue
             });
 
@@ -188,7 +212,7 @@ export default function AdminAnalyticsPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
                                         <span className="text-[10px] text-blue-100 font-bold block uppercase tracking-wider mb-1.5">Total omset</span>
-                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
+                                        <span className="text-2xl font-black text-white tracking-tight">
                                             Rp {summary.totalRevenue.toLocaleString('id-ID')}
                                         </span>
                                     </div>
@@ -202,8 +226,8 @@ export default function AdminAnalyticsPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
                                         <span className="text-[10px] text-indigo-100 font-bold block uppercase tracking-wider mb-1.5">Total reservasi aktif</span>
-                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
-                                            {summary.totalBookings} <span className="font-sans text-sm font-bold text-indigo-200 lowercase">booking</span>
+                                        <span className="text-2xl font-black text-white tracking-tight">
+                                            {summary.totalBookings} <span className="text-sm font-bold text-indigo-200 lowercase">booking</span>
                                         </span>
                                     </div>
                                     <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -216,7 +240,7 @@ export default function AdminAnalyticsPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
                                         <span className="text-[10px] text-sky-100 font-bold block uppercase tracking-wider mb-1.5">Nilai rata-rata sewa</span>
-                                        <span className="text-2xl font-black text-white font-mono tracking-tight tabular-nums">
+                                        <span className="text-2xl font-black text-white tracking-tight">
                                             Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
                                         </span>
                                     </div>
@@ -239,7 +263,7 @@ export default function AdminAnalyticsPage() {
                             <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
                                 {dailyRevenue.length === 0 ? (
                                     <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data pendapatan.</div>
-                                ) : (
+                                ) : mounted ? (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={dailyRevenue} margin={{ left: 0, right: 10 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -249,6 +273,8 @@ export default function AdminAnalyticsPage() {
                                             <Bar dataKey="revenueAmount" fill="#10b981" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
+                                ) : (
+                                    <div className="h-full w-full bg-slate-50 animate-pulse rounded-[14px]" />
                                 )}
                             </div>
                         </div>
@@ -264,31 +290,35 @@ export default function AdminAnalyticsPage() {
                                 ) : (
                                     <>
                                         <div className="h-56">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie
-                                                        data={bookingsPerVilla}
-                                                        cx="50%"
-                                                        cy="50%"
-                                                        innerRadius={45}
-                                                        outerRadius={75}
-                                                        paddingAngle={4}
-                                                        dataKey="bookings_count"
-                                                    >
-                                                        {bookingsPerVilla.map((entry, index) => (
-                                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                        ))}
-                                                    </Pie>
-                                                    <Tooltip formatter={(value) => [`${value} Booking`, 'Kuantitas']} />
-                                                </PieChart>
-                                            </ResponsiveContainer>
+                                            {mounted ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={bookingsPerVilla}
+                                                            cx="50%"
+                                                            cy="50%"
+                                                            innerRadius={45}
+                                                            outerRadius={75}
+                                                            paddingAngle={4}
+                                                            dataKey="bookings_count"
+                                                        >
+                                                            {bookingsPerVilla.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                            ))}
+                                                        </Pie>
+                                                        <Tooltip formatter={(value) => [`${value} Booking`, 'Kuantitas']} />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full w-full bg-slate-50 animate-pulse rounded-[14px]" />
+                                            )}
                                         </div>
                                         {/* Custom legend */}
                                         <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-[#6a6a6a] pt-2 border-t border-[#dddddd]">
                                             {bookingsPerVilla.map((item, index) => (
                                                 <div key={index} className="flex items-center space-x-1.5 truncate">
                                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                                                    <span className="truncate">{item.villa_name}: <span className="font-mono tabular-nums text-[#222222] font-bold">{item.bookings_count}</span></span>
+                                                    <span className="truncate">{item.villa_name}: <span className="text-[#222222] font-bold">{item.bookings_count}</span></span>
                                                 </div>
                                             ))}
                                         </div>
@@ -310,31 +340,35 @@ export default function AdminAnalyticsPage() {
                                 ) : (
                                     <>
                                         <div className="h-56">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie
-                                                        data={paymentMethods}
-                                                        cx="50%"
-                                                        cy="50%"
-                                                        innerRadius={45}
-                                                        outerRadius={75}
-                                                        paddingAngle={4}
-                                                        dataKey="count"
-                                                    >
-                                                        {paymentMethods.map((entry, index) => (
-                                                            <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
-                                                        ))}
-                                                    </Pie>
-                                                    <Tooltip formatter={(value) => [`${value} Transaksi`, 'Kuantitas']} />
-                                                </PieChart>
-                                            </ResponsiveContainer>
+                                            {mounted ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={paymentMethods}
+                                                            cx="50%"
+                                                            cy="50%"
+                                                            innerRadius={45}
+                                                            outerRadius={75}
+                                                            paddingAngle={4}
+                                                            dataKey="count"
+                                                        >
+                                                            {paymentMethods.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
+                                                            ))}
+                                                        </Pie>
+                                                        <Tooltip formatter={(value) => [`${value} Transaksi`, 'Kuantitas']} />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full w-full bg-slate-50 animate-pulse rounded-[14px]" />
+                                            )}
                                         </div>
                                         {/* Custom legend */}
                                         <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold text-[#6a6a6a] pt-2 border-t border-[#dddddd]">
                                             {paymentMethods.map((item, index) => (
                                                 <div key={index} className="flex items-center space-x-1.5 truncate">
                                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[(index + 2) % COLORS.length] }} />
-                                                    <span className="truncate">{item.method || 'Unknown'}: <span className="font-mono tabular-nums text-[#222222] font-bold">{item.count}</span></span>
+                                                    <span className="truncate">{item.method || 'Unknown'}: <span className="text-[#222222] font-bold">{item.count}</span></span>
                                                 </div>
                                             ))}
                                         </div>
@@ -352,7 +386,7 @@ export default function AdminAnalyticsPage() {
                             <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
                                 {funnelData.length === 0 ? (
                                     <div className="h-full flex items-center justify-center text-[#6a6a6a]">Belum ada data konversi.</div>
-                                ) : (
+                                ) : mounted ? (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={funnelData} margin={{ left: 0, right: 10 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -362,6 +396,8 @@ export default function AdminAnalyticsPage() {
                                             <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
+                                ) : (
+                                    <div className="h-full w-full bg-slate-50 animate-pulse rounded-[14px]" />
                                 )}
                             </div>
                         </div>

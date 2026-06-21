@@ -10,6 +10,7 @@ import { id as localeID } from 'date-fns/locale';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StatusBadge from '@/components/ui/StatusBadge';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import PageHeader from '@/components/ui/PageHeader';
 import { formatPrice } from '@/lib/format';
 import { 
@@ -233,13 +234,15 @@ function AdminBookingDetailContent() {
                             <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-4">
                                 <span className="text-[10px] text-[#6a6a6a] font-bold block">Nomor WhatsApp</span>
                                 <a 
-                                    href={`https://api.whatsapp.com/send?phone=${booking.guest_phone.replace(/^0/, '62')}`}
+                                    href={`https://api.whatsapp.com/send?phone=${booking.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(
+                                        `Halo ${booking.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${booking.booking_code}* di *${booking.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(booking.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(booking.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail pemesanan Anda.`
+                                    )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="font-extrabold text-blue-600 text-sm hover:text-blue-700 transition-all active:scale-95 flex items-center space-x-1 w-fit group"
+                                    className="font-extrabold text-emerald-600 text-sm hover:text-emerald-700 transition-all active:scale-95 flex items-center space-x-1.5 w-fit group"
                                 >
-                                    <Phone className="w-3.5 h-3.5 text-blue-500" />
-                                    <span className="font-mono tabular-nums">{booking.guest_phone}</span>
+                                    <WhatsAppIcon className="w-3.5 h-3.5 text-emerald-600 group-hover:text-emerald-700" />
+                                    <span className="tabular-nums">{booking.guest_phone}</span>
                                     <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </a>
                             </div>
@@ -291,13 +294,13 @@ function AdminBookingDetailContent() {
                             <div className="grid grid-cols-2 divide-x divide-[#dddddd] bg-white">
                                 <div className="p-4 sm:p-5">
                                     <span className="text-[10px] text-[#6a6a6a] font-extrabold block mb-1">Check-in</span>
-                                    <span className="font-extrabold text-[#222222] text-xs sm:text-sm font-mono tabular-nums">
+                                    <span className="font-extrabold text-[#222222] text-xs sm:text-sm">
                                         {format(parseISO(booking.check_in), 'EEEE, dd MMMM yyyy', { locale: localeID })}
                                     </span>
                                 </div>
                                 <div className="p-4 sm:p-5">
                                     <span className="text-[10px] text-[#6a6a6a] font-extrabold block mb-1">Check-out</span>
-                                    <span className="font-extrabold text-[#222222] text-xs sm:text-sm font-mono tabular-nums">
+                                    <span className="font-extrabold text-[#222222] text-xs sm:text-sm">
                                         {format(parseISO(booking.check_out), 'EEEE, dd MMMM yyyy', { locale: localeID })}
                                     </span>
                                 </div>
@@ -305,11 +308,11 @@ function AdminBookingDetailContent() {
                             <div className="bg-slate-50 border-t border-[#dddddd] px-5 py-3.5 flex flex-wrap justify-between items-center text-xs gap-3">
                                 <div className="flex items-center space-x-1 text-[#6a6a6a] font-semibold">
                                     <span>Durasi menginap:</span>
-                                    <span className="text-[#222222] font-bold bg-white px-2 py-0.5 rounded-[8px] border border-[#dddddd] font-mono tabular-nums">{booking.total_nights} malam</span>
+                                    <span className="text-[#222222] font-bold bg-white px-2 py-0.5 rounded-[8px] border border-[#dddddd]">{booking.total_nights} malam</span>
                                 </div>
                                 <div className="flex items-center space-x-1 text-[#6a6a6a] font-semibold">
                                     <span>Jumlah tamu:</span>
-                                    <span className="text-[#222222] font-bold bg-white px-2 py-0.5 rounded-[8px] border border-[#dddddd] font-mono tabular-nums">{booking.num_guests} orang</span>
+                                    <span className="text-[#222222] font-bold bg-white px-2 py-0.5 rounded-[8px] border border-[#dddddd]">{booking.num_guests} orang</span>
                                 </div>
                             </div>
                         </div>
@@ -414,80 +417,7 @@ function AdminBookingDetailContent() {
                         </div>
                     )}
 
-                    {/* Card 3: Midtrans Audit Logs */}
-                    <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
-                        <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">
-                            <div className="w-8 h-8 rounded-[8px] bg-blue-50 flex items-center justify-center">
-                                <CreditCard className="w-4.5 h-4.5 text-blue-600" />
-                            </div>
-                            <h2 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
-                                Audit transaksi (Midtrans)
-                            </h2>
-                        </div>
-
-                        {booking.payment ? (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                                    <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-3.5">
-                                        <span className="text-[10px] text-[#6a6a6a] font-bold block">Order ID</span>
-                                        <span className="font-extrabold text-[#222222] font-mono truncate block">{booking.payment.midtrans_order_id}</span>
-                                    </div>
-                                    <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-3.5">
-                                        <span className="text-[10px] text-[#6a6a6a] font-bold block">Transaction ID</span>
-                                        <span className="font-extrabold text-[#222222] font-mono truncate block">{booking.payment.midtrans_transaction_id || '-'}</span>
-                                    </div>
-                                    <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-3.5">
-                                        <span className="text-[10px] text-[#6a6a6a] font-bold block">Metode pembayaran</span>
-                                        <span className="font-extrabold text-[#222222] uppercase">{booking.payment.payment_type || '-'}</span>
-                                    </div>
-                                    <div className="space-y-1 bg-slate-50/50 border border-[#dddddd] rounded-[14px] p-3.5">
-                                        <span className="text-[10px] text-[#6a6a6a] font-bold block">Tanggal pembayaran</span>
-                                        <span className="font-extrabold text-[#222222] font-mono tabular-nums">
-                                            {booking.payment.paid_at 
-                                                ? format(parseISO(booking.payment.paid_at), 'dd MMM yyyy HH:mm:ss') 
-                                                : '-'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {booking.payment?.raw_response && (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-1.5 text-[#6a6a6a]">
-                                                <FileText className="w-4 h-4 text-[#6a6a6a]" />
-                                                <span className="text-[10px] text-[#6a6a6a] font-extrabold uppercase tracking-wide">Payload response lengkap</span>
-                                            </div>
-                                            <button 
-                                                onClick={() => copyToClipboard(JSON.stringify(booking.payment?.raw_response, null, 2))}
-                                                className="group flex items-center space-x-1 px-2.5 py-1 rounded-[8px] border border-[#dddddd] text-[#6a6a6a] hover:text-[#222222] hover:bg-slate-50 hover:border-[#dddddd] transition-all text-[10px] font-bold active:scale-95 cursor-pointer"
-                                            >
-                                                {copiedJson ? (
-                                                    <>
-                                                        <Check className="w-3 h-3 text-blue-500" />
-                                                        <span className="text-blue-600">Disalin!</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Copy className="w-3 h-3" />
-                                                        <span>Salin JSON</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        </div>
-                                        <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden ">
-                                            <pre className="bg-[#1e293b] text-[#cbd5e1] p-4 text-[10px] font-mono leading-relaxed overflow-x-auto max-h-56">
-                                                {JSON.stringify(booking.payment.raw_response, null, 2)}
-                                            </pre>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center py-6 bg-slate-50/40 border border-dashed border-[#dddddd] rounded-[14px]">
-                                <p className="text-[#6a6a6a] text-xs font-semibold">Belum ada transaksi pembayaran terdaftar di Midtrans.</p>
-                            </div>
-                        )}
-                    </div>
+                    {/* Card 3: Midtrans Audit Logs — ARCHIVED (Midtrans belum diaktifkan) */}
                 </div>
 
                 {/* Right side: Widgets & Actions (1 column) */}

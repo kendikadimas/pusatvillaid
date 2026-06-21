@@ -17,6 +17,12 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VillaController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\SettingAdminController;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\SecurityController;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
+use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
+use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +63,9 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'userLogin']);
     Route::post('/admin/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
     // ==========================================
     // Protected User/Guest Endpoints (Sanctum Token Required)
@@ -66,6 +75,25 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
+
+        // User Settings (Profile, Security, Password)
+        Route::get('/settings/profile', [ProfileController::class, 'edit']);
+        Route::patch('/settings/profile', [ProfileController::class, 'update']);
+        Route::delete('/settings/profile', [ProfileController::class, 'destroy']);
+        Route::get('/settings/security', [SecurityController::class, 'edit']);
+        Route::put('/settings/password', [SecurityController::class, 'update']);
+
+        // Stateless Email Verification Trigger & Password Confirmation
+        Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
+        Route::post('/user/confirm-password', [AuthController::class, 'confirmPassword']);
+
+        // Fortify 2FA endpoints under Sanctum
+        Route::post('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store']);
+        Route::delete('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
+        Route::get('/user/two-factor-qr-code', [TwoFactorQrCodeController::class, 'show']);
+        Route::get('/user/two-factor-secret-key', [TwoFactorSecretKeyController::class, 'show']);
+        Route::get('/user/two-factor-recovery-codes', [RecoveryCodeController::class, 'index']);
+        Route::post('/user/two-factor-recovery-codes', [RecoveryCodeController::class, 'store']);
     });
 
     // ==========================================

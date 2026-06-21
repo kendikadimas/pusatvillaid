@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Mail, Phone, Heart } from 'lucide-react';
+import { MapPin, Mail, Heart } from 'lucide-react';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '6281234567890';
 
@@ -116,7 +117,7 @@ export default function PublicFooter() {
                                 <span>support@pusatvilla.id</span>
                             </li>
                             <li className="flex items-start space-x-2.5">
-                                <Phone className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <WhatsAppIcon className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                                 <a
                                     href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                     target="_blank"
