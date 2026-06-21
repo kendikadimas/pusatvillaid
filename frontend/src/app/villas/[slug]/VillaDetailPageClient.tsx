@@ -13,12 +13,12 @@ import { DayPicker, DateRange, useDayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { 
-    Star, 
-    MapPin, 
-    BedDouble, 
-    Bath, 
-    Users, 
+import {
+    Star,
+    MapPin,
+    BedDouble,
+    Bath,
+    Users,
     Calendar,
     ArrowRight,
     Loader2,
@@ -123,12 +123,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const [avgRating, setAvgRating] = useState(0);
     const [disabledDates, setDisabledDates] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
-    
+
     // Lightbox & Modal states
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isAmenitiesModalOpen, setIsAmenitiesModalOpen] = useState(false);
-    
+
     // Reviews Modal & Search/Filter states
     const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
     const [reviewSearchQuery, setReviewSearchQuery] = useState('');
@@ -151,14 +151,14 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const [isMobileDetailsOpen, setIsMobileDetailsOpen] = useState(false);
 
     // Zustand Booking Store Actions
-    const { 
-        setVilla: setStoreVilla, 
-        setDates: setStoreDates, 
+    const {
+        setVilla: setStoreVilla,
+        setDates: setStoreDates,
         setNumGuests,
-        checkIn: storeCheckIn, 
+        checkIn: storeCheckIn,
         checkOut: storeCheckOut,
         numGuests: storeNumGuests,
-        totalNights, 
+        totalNights,
         totalAmount,
         priceBreakdown,
         isRefundable,
@@ -229,7 +229,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         } else if (reviewSortOrder === 'lowest') {
             list.sort((a, b) => a.rating - b.rating);
         }
-        
+
         return list;
     };
 
@@ -338,7 +338,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     // Handle calendar date range selections
     const handleSelectRange = (range: DateRange | undefined) => {
         setDateRange(range);
-        
+
         if (range?.from && range?.to) {
             // Check if any date in between is disabled
             let hasOverlappingDisabledDate = false;
@@ -438,8 +438,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     }
 
     // Process Photos
-    const photos = villa.photos && villa.photos.length > 0 
-        ? villa.photos 
+    const photos = villa.photos && villa.photos.length > 0
+        ? villa.photos
         : ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80'];
 
     const mainPhoto = photos[0];
@@ -477,7 +477,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const bedroomsInfo = villa.bedrooms_info && villa.bedrooms_info.length > 0
         ? villa.bedrooms_info
         : [...Array(villa.bedrooms)].map((_, i) => ({
-            image: i % 2 === 0 
+            image: i % 2 === 0
                 ? 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80'
                 : 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80',
             title: `Kamar tidur ${i + 1}`,
@@ -539,7 +539,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             {/* Date & Guest Input Form Box */}
             <div className="border border-slate-300 rounded-xl lg:rounded-2xl overflow-hidden divide-y divide-slate-200">
                 <div className="grid grid-cols-2 divide-x divide-slate-200">
-                    <div 
+                    <div
                         onClick={() => scrollToSection('calendar')}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
@@ -548,7 +548,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             {storeCheckIn ? format(parseISO(storeCheckIn), 'd/M/yyyy') : 'Tambah tanggal'}
                         </span>
                     </div>
-                    <div 
+                    <div
                         onClick={() => scrollToSection('calendar')}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
@@ -560,7 +560,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
                 <div className="p-2 lg:p-3 hover:bg-slate-50 transition-colors">
                     <label className="text-[9px] font-black text-slate-700 block tracking-wider">TAMU</label>
-                    <select 
+                    <select
                         value={storeNumGuests}
                         onChange={(e) => setNumGuests(Number(e.target.value))}
                         className="w-full bg-transparent border-0 p-0 text-xs font-bold text-slate-800 focus:ring-0 focus:outline-none mt-0.5 cursor-pointer"
@@ -638,14 +638,14 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
             {/* Mobile Hero Image (Hidden on lg) */}
             <div className="lg:hidden relative w-full aspect-[4/3] bg-slate-200">
-                <img 
-                    src={getPhotoUrl(mainPhoto)} 
-                    alt={villa.name} 
+                <img
+                    src={getPhotoUrl(mainPhoto)}
+                    alt={villa.name}
                     className="w-full h-full object-cover"
                     onClick={() => setIsLightboxOpen(true)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none" />
-                
+
                 {/* Overlay actions */}
                 <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
                     <button onClick={() => router.push('/')} className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-900 shadow-sm cursor-pointer">
@@ -675,22 +675,21 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             <span>{villa.name}</span>
                         </h1>
                         <div className="flex items-center space-x-5 flex-shrink-0 text-[14px] font-bold text-slate-800">
-                            <button 
+                            <button
                                 onClick={handleShare}
                                 className="flex items-center space-x-2 hover:bg-slate-100 py-1.5 px-2.5 rounded-lg transition-colors cursor-pointer"
                             >
                                 <Share2 className="w-4 h-4 text-slate-800" strokeWidth={2} />
                                 <span className="underline">Bagikan</span>
                             </button>
-                            <button 
+                            <button
                                 onClick={(e) => toggleWishlist(villa.id, e)}
                                 className="flex items-center space-x-2 hover:bg-slate-100 py-1.5 px-2.5 rounded-lg transition-colors cursor-pointer"
                             >
-                                <Heart 
-                                    className={`w-4 h-4 transition-colors ${
-                                        isSaved ? 'fill-blue-600 text-blue-600' : 'text-slate-800'
-                                    }`} 
-                                    strokeWidth={2} 
+                                <Heart
+                                    className={`w-4 h-4 transition-colors ${isSaved ? 'fill-blue-600 text-blue-600' : 'text-slate-800'
+                                        }`}
+                                    strokeWidth={2}
                                 />
                                 <span className="underline">{isSaved ? 'Disimpan' : 'Simpan'}</span>
                             </button>
@@ -702,17 +701,17 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 <div className="hidden lg:block relative mb-6">
                     <div className="grid grid-cols-[2fr_1fr] gap-4 h-[460px] xl:h-[500px]">
                         {/* Main Large Image */}
-                        <div 
+                        <div
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
                             className="relative w-full h-full overflow-hidden rounded-2xl cursor-pointer group"
                         >
-                            <img 
-                                src={getPhotoUrl(mainPhoto)} 
-                                alt={villa.name} 
+                            <img
+                                src={getPhotoUrl(mainPhoto)}
+                                alt={villa.name}
                                 className="w-full h-full object-cover group-hover:brightness-95 transition duration-305"
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-                            
+
                             {/* ZEISS Watermark */}
                             <div className="absolute bottom-4 left-4 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
                                 <span className="text-[11px] xl:text-[12px] font-bold text-white/90 tracking-wide font-sans">
@@ -729,18 +728,18 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             {thumbPhotos.map((photo, i) => {
                                 const isLastCell = i === 3 || (i === thumbPhotos.length - 1 && thumbPhotos.length < 4);
                                 return (
-                                    <div 
+                                    <div
                                         key={i}
                                         onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }}
                                         className="relative w-full h-full overflow-hidden rounded-2xl cursor-pointer group"
                                     >
-                                        <img 
-                                            src={getPhotoUrl(photo)} 
-                                            alt={`Thumbnail ${i}`} 
+                                        <img
+                                            src={getPhotoUrl(photo)}
+                                            alt={`Thumbnail ${i}`}
                                             className="w-full h-full object-cover group-hover:brightness-95 transition duration-305"
                                         />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-                                        
+
                                         {/* ZEISS Watermark */}
                                         <div className="absolute bottom-3 left-3 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
                                             <span className="text-[10px] xl:text-[11px] font-bold text-white/90 tracking-wide font-sans">
@@ -753,7 +752,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
                                         {/* "Show all photos" Button in the 4th cell (index 3) */}
                                         {isLastCell && (
-                                            <button 
+                                            <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setCurrentImageIndex(0);
@@ -778,15 +777,15 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 const globalIdx = thumbPhotos.length + idx;
                                 const isLastCell = globalIdx === 3;
                                 return (
-                                    <div 
+                                    <div
                                         key={`empty-${idx}`}
                                         className="relative bg-slate-50 border border-dashed border-slate-200 w-full h-full rounded-2xl flex items-center justify-center"
                                     >
                                         <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">PusatVilla.id</span>
-                                        
+
                                         {/* "Show all photos" Button in the 4th cell even if it is a placeholder */}
                                         {isLastCell && (
-                                            <button 
+                                            <button
                                                 onClick={() => {
                                                     setCurrentImageIndex(0);
                                                     setIsLightboxOpen(true);
@@ -841,9 +840,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
                                     <div className="relative">
-                                        <img 
-                                            src={hostAvatar} 
-                                            alt={hostName} 
+                                        <img
+                                            src={hostAvatar}
+                                            alt={hostName}
                                             className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
                                         />
                                         {hostIsVerified && (
@@ -858,20 +857,20 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         </div>
                                         <p className="text-xs text-slate-400">{hostJoinedLabel}</p>
                                     </div>
-                                    </div>
-                                    <a 
-                                        href={villa.host_phone 
-                                            ? `https://api.whatsapp.com/send?phone=${villa.host_phone.replace(/[^0-9]/g, '').replace(/^0/, '62')}&text=${encodeURIComponent(`Halo ${hostName}, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
-                                            : `https://api.whatsapp.com/send?phone=6281234567890&text=${encodeURIComponent(`Halo, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
-                                        }
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-3 py-2 sm:px-4 rounded-lg transition-colors active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2"
-                                    >
-                                        <MessageCircle className="w-4 h-4 sm:hidden" />
-                                        <span className="hidden sm:inline">Hubungi Tuan Rumah</span>
-                                    </a>
                                 </div>
+                                <a
+                                    href={villa.host_phone
+                                        ? `https://api.whatsapp.com/send?phone=${villa.host_phone.replace(/[^0-9]/g, '').replace(/^0/, '62')}&text=${encodeURIComponent(`Halo ${hostName}, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
+                                        : `https://api.whatsapp.com/send?phone=6281234567890&text=${encodeURIComponent(`Halo, saya tertarik dengan villa ${villa.name}. Apakah tersedia?`)}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-3 py-2 sm:px-4 rounded-lg transition-colors active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2"
+                                >
+                                    <MessageCircle className="w-4 h-4 sm:hidden" />
+                                    <span className="hidden sm:inline">Hubungi Tuan Rumah</span>
+                                </a>
+                            </div>
                         </div>
 
                         {/* Property Highlights */}
@@ -901,7 +900,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         <div className="pb-6 border-b border-slate-200/80">
                             <div className="space-y-5">
                                 <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Kamar Anda</h3>
-                                
+
                                 {/* Mobile View: Horizontal scrolling carousel */}
                                 <div className="flex sm:hidden overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-none pb-4 -mx-6 px-6 scroll-px-6 after:content-[''] after:w-[1px] after:flex-shrink-0">
                                     {bedroomsInfo.map((br, idx) => (
@@ -951,7 +950,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     })}
                                 </div>
                                 {amenities.length > 8 && (
-                                    <button 
+                                    <button
                                         onClick={() => setIsAmenitiesModalOpen(true)}
                                         className="border border-slate-900 hover:bg-slate-50 text-slate-900 text-[15px] font-bold px-5 py-3 rounded-xl transition-all cursor-pointer inline-block mt-4"
                                     >
@@ -972,83 +971,61 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </p>
                             </div>
                             <div className="w-full overflow-x-auto pb-4 -mx-2 px-2">
-                                <style dangerouslySetInnerHTML={{ __html: `
-                                    .rdp { 
-                                        margin: 0; 
-                                        width: 100%;
-                                        min-width: 280px;
-                                    }
-                                    .rdp-months { 
-                                        display: flex;
-                                        flex-direction: row;
-                                        flex-wrap: nowrap;
-                                        width: 100%; 
-                                        justify-content: center;
-                                        gap: 16px;
-                                    }
-                                    .rdp-month { 
-                                        flex: 1;
-                                        min-width: 0;
-                                        margin: 0; 
-                                    }
-                                    .rdp-table { 
-                                        width: 100%; 
-                                        border-collapse: collapse;
-                                    }
-                                    .rdp-cell { 
-                                        text-align: center;
-                                    }
-                                    .rdp-head_cell { 
-                                        text-align: center; 
-                                        font-size: 12px; 
-                                        font-weight: 600;
-                                        color: #64748b;
-                                        padding: 8px 0;
-                                    }
-                                    .rdp-day { 
-                                        width: 36px;
-                                        height: 36px;
-                                        margin: 2px auto; 
-                                        border-radius: 9999px;
-                                        font-size: 14px;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        touch-action: manipulation;
-                                    }
-                                    
-                                    @media (min-width: 640px) {
-                                        .rdp-day { 
-                                            width: 40px;
-                                            height: 40px;
-                                        }
-                                        .rdp-head_cell { 
-                                            font-size: 13px; 
-                                        }
-                                    }
-                                    
-                                    @media (max-width: 639px) {
-                                        .rdp-months {
-                                            flex-direction: column;
-                                        }
-                                        .rdp-month {
-                                            width: 100%;
-                                        }
-                                        .rdp-day { 
-                                            width: 32px;
-                                            height: 32px;
-                                            font-size: 13px;
-                                            margin: 1px auto;
-                                        }
-                                        .rdp-head_cell { 
-                                            font-size: 11px; 
-                                            padding: 6px 0;
-                                        }
-                                        .rdp-cell {
-                                            padding: 0;
-                                        }
-                                    }
-                                `}} />
+                                <style dangerouslySetInnerHTML={{
+                                    __html: `
+    .rdp-root {
+        margin: 0;
+        width: 100%;
+        min-width: 280px;
+        --rdp-day-width: 40px;
+        --rdp-day-height: 40px;
+        --rdp-day_button-width: 40px;
+        --rdp-day_button-height: 40px;
+    }
+    .rdp-months {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: 100%;
+        justify-content: center;
+        gap: 16px;
+    }
+    .rdp-month_grid {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .rdp-weekday {
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        padding: 8px 0;
+    }
+    .rdp-day_button {
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    @media (max-width: 639px) {
+        .rdp-root {
+            --rdp-day-width: 32px;
+            --rdp-day-height: 32px;
+            --rdp-day_button-width: 32px;
+            --rdp-day_button-height: 32px;
+        }
+        .rdp-months {
+            flex-direction: column;
+        }
+        .rdp-day_button {
+            font-size: 13px;
+        }
+        .rdp-weekday {
+            font-size: 11px;
+            padding: 6px 0;
+        }
+    }
+`}} />
+
                                 <DayPicker
                                     mode="range"
                                     selected={dateRange}
@@ -1127,7 +1104,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                 {neighborhoodDesc}
                                             </p>
                                             {neighborhoodDesc.length > 180 && (
-                                                <button 
+                                                <button
                                                     onClick={() => setIsNeighborhoodExpanded(!isNeighborhoodExpanded)}
                                                     className="text-slate-900 hover:text-blue-600 font-bold underline mt-2 flex items-center gap-1 cursor-pointer active:scale-95 transition-all text-xs"
                                                 >
@@ -1149,13 +1126,13 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                 }
                                             }
                                             return (
-                                                <iframe 
-                                                    src={cleanMapsUrl} 
-                                                    width="100%" 
-                                                    height="100%" 
-                                                    style={{ border: 0 }} 
-                                                    allowFullScreen={false} 
-                                                    loading="lazy" 
+                                                <iframe
+                                                    src={cleanMapsUrl}
+                                                    width="100%"
+                                                    height="100%"
+                                                    style={{ border: 0 }}
+                                                    allowFullScreen={false}
+                                                    loading="lazy"
                                                     referrerPolicy="no-referrer-when-downgrade"
                                                 />
                                             );
@@ -1234,7 +1211,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     <span className="text-slate-500 font-medium">{reviews.length} ulasan</span>
                                 </div>
                             </div>
-                            
+
                             {/* Ratings Breakdown Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 bg-slate-50 border border-slate-200 p-6 rounded-2xl">
                                 {[
@@ -1303,9 +1280,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                 <div className="space-y-2.5">
                                                     <div className="flex items-center space-x-3.5">
                                                         {review.guest_avatar ? (
-                                                            <img 
-                                                                src={review.guest_avatar} 
-                                                                alt={review.guest_name} 
+                                                            <img
+                                                                src={review.guest_avatar}
+                                                                alt={review.guest_name}
                                                                 className="w-10 h-10 rounded-full object-cover shadow-xs"
                                                             />
                                                         ) : (
@@ -1320,20 +1297,20 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center text-slate-900 text-[11px] font-bold space-x-1.5 pl-0.5">
                                                         <div className="flex items-center text-amber-500 space-x-0.5">
                                                             {[...Array(5)].map((_, i) => (
-                                                                <Star 
-                                                                    key={i} 
-                                                                    className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} 
+                                                                <Star
+                                                                    key={i}
+                                                                    className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`}
                                                                 />
                                                             ))}
                                                         </div>
                                                         <span className="text-slate-400 font-normal">·</span>
                                                         <span>{format(parseISO(review.created_at), 'dd MMM yyyy', { locale: localeID })}</span>
                                                     </div>
-                                                    
+
                                                     <p className="text-slate-700 text-[14px] leading-relaxed line-clamp-3 pl-0.5 font-normal">
                                                         {review.comment}
                                                     </p>
@@ -1341,7 +1318,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             </div>
                                         ))}
                                     </div>
-                                    
+
                                     {reviews.length > 6 && (
                                         <button
                                             onClick={() => {
@@ -1372,7 +1349,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     {/* Collapsed Sticky Bar */}
                     <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 px-5 py-4 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] flex items-center justify-between pb-[calc(1rem+env(safe-area-inset-bottom))]">
                         {/* Left Side: Clickable to show details */}
-                        <div 
+                        <div
                             onClick={() => setIsMobileDetailsOpen(true)}
                             className="flex-1 pr-4 cursor-pointer text-left"
                         >
@@ -1408,11 +1385,11 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     {isMobileDetailsOpen && (
                         <>
                             {/* Backdrop */}
-                            <div 
+                            <div
                                 className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-xs transition-opacity duration-300"
                                 onClick={() => setIsMobileDetailsOpen(false)}
                             />
-                            
+
                             {/* Bottom Sheet Container */}
                             <div className="fixed bottom-0 left-0 right-0 z-[120] bg-white rounded-t-3xl shadow-[0_-15px_40px_rgba(0,0,0,0.15)] max-h-[85vh] overflow-y-auto overscroll-contain transition-transform duration-300 animate-slideUp pb-[calc(1.5rem+env(safe-area-inset-bottom))] p-6 space-y-5">
                                 {/* Header with drag indicator and close */}
@@ -1421,7 +1398,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
                                         <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Rincian Reservasi</h3>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => setIsMobileDetailsOpen(false)}
                                         className="text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-100 py-1.5 px-3 rounded-lg"
                                     >
@@ -1447,7 +1424,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 villaName={villa.name}
                 isSaved={isSaved}
                 onShare={handleShare}
-                onToggleSave={() => toggleWishlist(villa.id, { stopPropagation: () => {} } as React.MouseEvent<Element, MouseEvent>)}
+                onToggleSave={() => toggleWishlist(villa.id, { stopPropagation: () => { } } as React.MouseEvent<Element, MouseEvent>)}
             />
 
             {/* Amenities Full Modal */}
@@ -1456,7 +1433,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6 animate-scaleIn">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                             <h3 className="text-lg sm:text-xl font-bold text-slate-900">Fasilitas yang ditawarkan</h3>
-                            <button 
+                            <button
                                 onClick={() => setIsAmenitiesModalOpen(false)}
                                 className="bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors text-slate-700 cursor-pointer active:scale-90"
                             >
@@ -1483,7 +1460,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             {isReviewsModalOpen && (
                 <div className="fixed inset-0 z-55 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
                     <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-scaleIn">
-                        
+
                         {/* Modal Header */}
                         <div className="flex items-center justify-between border-b border-slate-100 p-6">
                             <div className="flex items-center space-x-2 text-slate-900">
@@ -1492,7 +1469,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     {avgRating > 0 ? avgRating.toFixed(1).replace('.', ',') : '5,0'} · {reviews.length} ulasan
                                 </span>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => {
                                     setIsReviewsModalOpen(false);
                                     setReviewSearchQuery('');
@@ -1513,7 +1490,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Cari ulasan</label>
                                     <div className="relative">
                                         <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                                        <input 
+                                        <input
                                             type="text"
                                             placeholder="Cari kata kunci (misal: bersih, ac)"
                                             value={reviewSearchQuery}
@@ -1521,7 +1498,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-blue-600 focus:border-blue-600 outline-none text-slate-800 bg-white"
                                         />
                                         {reviewSearchQuery && (
-                                            <button 
+                                            <button
                                                 onClick={() => setReviewSearchQuery('')}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                                             >
@@ -1541,11 +1518,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                 <button
                                                     key={idx}
                                                     onClick={() => setSelectedReviewTag(isSelected ? null : tag.label)}
-                                                    className={`text-xs font-semibold py-1.5 px-3 rounded-full border transition-all cursor-pointer ${
-                                                        isSelected 
-                                                            ? 'bg-slate-900 border-slate-900 text-white' 
+                                                    className={`text-xs font-semibold py-1.5 px-3 rounded-full border transition-all cursor-pointer ${isSelected
+                                                            ? 'bg-slate-900 border-slate-900 text-white'
                                                             : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {tag.label} ({tag.count})
                                                 </button>
@@ -1582,9 +1558,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             <div key={review.id} className="border-b border-slate-100 pb-6 last:border-0">
                                                 <div className="flex items-center space-x-3.5 mb-3">
                                                     {review.guest_avatar ? (
-                                                        <img 
-                                                            src={review.guest_avatar} 
-                                                            alt={review.guest_name} 
+                                                        <img
+                                                            src={review.guest_avatar}
+                                                            alt={review.guest_name}
                                                             className="w-10 h-10 rounded-full object-cover shadow-xs"
                                                         />
                                                     ) : (
@@ -1603,9 +1579,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                 <div className="flex items-center text-slate-900 text-[11px] font-bold space-x-1.5 pl-0.5 mb-2.5">
                                                     <div className="flex items-center text-amber-500 space-x-0.5">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <Star 
-                                                                key={i} 
-                                                                className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} 
+                                                            <Star
+                                                                key={i}
+                                                                className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`}
                                                             />
                                                         ))}
                                                     </div>
