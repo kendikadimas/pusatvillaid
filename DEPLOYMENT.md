@@ -196,6 +196,12 @@ npm run build
     # Redirect root ke site/
     RewriteRule ^$ site/ [L]
 
+    # Fallback untuk Next.js dynamic routing /villas/[slug]/ pada static export (Cara 2)
+    RewriteCond %{REQUEST_URI} ^/villas/([^/]+)/?$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ site/villas/placeholder/index.html [L]
+
     # Jika request bukan ke /api/ atau file yang ada, arahkan ke site/
     RewriteCond %{REQUEST_URI} !^/api/
     RewriteCond %{REQUEST_FILENAME} !-f
