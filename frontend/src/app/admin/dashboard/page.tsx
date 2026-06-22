@@ -184,7 +184,9 @@ export default function AdminDashboardPage() {
                             ) : (
                                 <div className="space-y-2.5">
                                     {todayCheckIns.map((item) => {
-                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kedatangan Anda hari ini.`;
+                                        const checkInDate = item.check_in ? format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID }) : '-';
+                                        const checkOutDate = item.check_out ? format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID }) : '-';
+                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${checkInDate}* s/d *${checkOutDate}*, kami ingin mengonfirmasi detail kedatangan Anda hari ini.`;
                                         const phone = item.guest_phone ? item.guest_phone.replace(/^0/, '62') : '';
                                         const waUrl = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}` : null;
                                         return (
@@ -229,7 +231,9 @@ export default function AdminDashboardPage() {
                             ) : (
                                 <div className="space-y-2.5">
                                     {todayCheckOuts.map((item) => {
-                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kepulangan Anda hari ini.`;
+                                        const checkInDate = item.check_in ? format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID }) : '-';
+                                        const checkOutDate = item.check_out ? format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID }) : '-';
+                                        const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${checkInDate}* s/d *${checkOutDate}*, kami ingin mengonfirmasi detail kepulangan Anda hari ini.`;
                                         const phone = item.guest_phone ? item.guest_phone.replace(/^0/, '62') : '';
                                         const waUrl = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}` : null;
                                         return (
@@ -301,7 +305,7 @@ export default function AdminDashboardPage() {
                                             <td className="py-3.5 px-2 text-[#222222] font-bold truncate max-w-[130px]">{b.villa?.name}</td>
                                             <td className="py-3.5 px-2 font-semibold text-[#222222]">{b.guest_name}</td>
                                             <td className="py-3.5 px-2 font-medium font-sans tabular-nums">
-                                                {format(parseISO(b.check_in), 'dd MMM yy')}
+                                                {b.check_in ? format(parseISO(b.check_in), 'dd MMM yy') : '-'}
                                             </td>
                                             <td className="py-3.5 px-2 text-[#222222] font-black font-sans tabular-nums">
                                                 {formatPrice(b.total_amount)}
@@ -335,7 +339,7 @@ export default function AdminDashboardPage() {
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-[#6a6a6a] font-medium">Check-in</span>
-                                                <span className="font-sans tabular-nums text-[#222222] font-medium">{format(parseISO(b.check_in), 'dd MMM yy')}</span>
+                                                <span className="font-sans tabular-nums text-[#222222] font-medium">{b.check_in ? format(parseISO(b.check_in), 'dd MMM yy') : '-'}</span>
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-[#6a6a6a] font-medium">Total</span>
