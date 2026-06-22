@@ -733,7 +733,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
 
-                                        {/* "Show all photos" Button in the 4th cell (index 3) */
+                                        {/* "Show all photos" Button in the 4th cell (index 3) */}
                                         {isLastCell && (
                                             <button
                                                 onClick={(e) => {
