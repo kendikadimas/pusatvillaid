@@ -215,7 +215,7 @@ export default function AdminDashboardPage() {
                         </div>
                     </div>
 
-                    {/* Check Out Today */
+                    {/* Check Out Today */}
                     <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden">
                         <div className="px-5 pt-5 pb-0">
                             <div className="flex items-center space-x-2.5 font-bold text-[#222222] border-b border-[#dddddd] pb-3">
