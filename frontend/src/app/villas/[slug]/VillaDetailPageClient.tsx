@@ -670,9 +670,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
             </div>
 
-            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-36 sm:pb-40 lg:pb-16 relative bg-white rounded-t-3xl -mt-6 lg:mt-0 pt-8 lg:pt-0 z-10" id="foto-section">
+            <main className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full flex-1 pb-36 sm:pb-40 lg:pb-16 relative bg-white rounded-t-3xl -mt-6 lg:mt-0 pt-8 lg:pt-6 z-10" id="foto-section">
                 {/* Desktop Title, Share, Save (Hidden on Mobile) */}
-                <div className="hidden lg:block mb-4 mt-10">
+                <div className="hidden lg:block mb-4 mt-6">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <h1 className="font-serif text-2xl md:text-[32px] md:leading-[36px] font-semibold text-slate-900 tracking-tight leading-snug flex items-center gap-2.5">
                             <span>{villa.name}</span>
@@ -702,7 +702,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
                 {/* Image Gallery Grid (Hidden on Mobile) */}
                 <div className="hidden lg:block relative mb-6">
-                    <div className="grid grid-cols-[2fr_1fr] gap-4 h-[460px] xl:h-[500px]">
+                    <div className="grid grid-cols-[2fr_1fr] gap-4" style={{ height: 'min(500px, 55vh)' }}>
                         {/* Main Large Image */}
                         <div
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
