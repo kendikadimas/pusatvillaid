@@ -714,16 +714,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 className="w-full h-full object-cover group-hover:brightness-95 transition duration-305"
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-
-                            {/* ZEISS Watermark */}
-                            <div className="absolute bottom-4 left-4 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
-                                <span className="text-[11px] xl:text-[12px] font-bold text-white/90 tracking-wide font-sans">
-                                    X200 Ultra | ZEISS
-                                </span>
-                                <span className="text-[9px] xl:text-[10px] text-white/70 font-mono mt-0.5">
-                                    2026.06.21 16:18
-                                </span>
-                            </div>
                         </div>
 
                         {/* Nested Thumbnails Grid */}
@@ -743,17 +733,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
 
-                                        {/* ZEISS Watermark */}
-                                        <div className="absolute bottom-3 left-3 flex flex-col text-left pointer-events-none drop-shadow-md select-none">
-                                            <span className="text-[10px] xl:text-[11px] font-bold text-white/90 tracking-wide font-sans">
-                                                X200 Ultra | ZEISS
-                                            </span>
-                                            <span className="text-[8px] xl:text-[9px] text-white/70 font-mono mt-0.5">
-                                                2026.06.21 16:18
-                                            </span>
-                                        </div>
-
-                                        {/* "Show all photos" Button in the 4th cell (index 3) */}
+                                        {/* "Show all photos" Button in the 4th cell (index 3) */
                                         {isLastCell && (
                                             <button
                                                 onClick={(e) => {
