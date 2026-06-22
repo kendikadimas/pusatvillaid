@@ -701,8 +701,8 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 </div>
 
                 {/* Image Gallery Grid (Hidden on Mobile) */}
-                <div className="hidden lg:block relative mb-6">
-                    <div className="grid grid-cols-[2fr_1fr] gap-4" style={{ height: 'min(500px, 55vh)' }}>
+                <div className="hidden lg:block relative mb-6 overflow-hidden">
+                    <div className="grid grid-cols-[2fr_1fr] gap-4" style={{ height: 'min(460px, 50vh)' }}>
                         {/* Main Large Image */}
                         <div
                             onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
@@ -1316,7 +1316,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </div>
                     </div>
                     {/* Right Column (Sticky Booking Widget - Desktop Only) */}
-                    <aside className="hidden lg:block lg:col-span-1">
+                    <aside className="hidden lg:block lg:col-span-1 relative z-10">
                         <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl sticky top-28 space-y-5">
                             {bookingWidgetContent}
                         </div>
