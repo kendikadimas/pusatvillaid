@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
@@ -47,8 +49,11 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Generate Sanctum plain text token
-        $token = $user->createToken('admin-token')->plainTextToken;
+        // Revoke all existing admin tokens for this user (single active session)
+        $user->tokens()->where('name', 'admin-token')->delete();
+
+        // Generate Sanctum token with admin-only ability
+        $token = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
 
         return response()->json([
             'token' => $token,
@@ -86,6 +91,13 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Email atau password salah.',
             ], 401);
+        }
+
+        // Block admin accounts from logging in via the user login endpoint
+        if ($user->role === 'admin') {
+            return response()->json([
+                'message' => 'Akun administrator harus login melalui portal admin.',
+            ], 403);
         }
 
         // Generate Sanctum plain text token
@@ -236,7 +248,7 @@ class AuthController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->save();
             }
         );
@@ -273,8 +285,8 @@ class AuthController extends Controller
             ], 422);
         }
 
-        \Illuminate\Support\Facades\Cache::put(
-            'auth.password_confirmed_at.' . $request->user()->id,
+        Cache::put(
+            'auth.password_confirmed_at.'.$request->user()->id,
             time(),
             config('auth.password_timeout', 10800)
         );
@@ -308,20 +320,20 @@ class AuthController extends Controller
     public function verifyEmail(Request $request): RedirectResponse
     {
         if (! $request->hasValidSignature()) {
-            return redirect()->to(config('app.frontend_url') . '/login?error=invalid_signature');
+            return redirect()->to(config('app.frontend_url').'/login?error=invalid_signature');
         }
 
         $user = User::findOrFail($request->route('id'));
 
         if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
-            return redirect()->to(config('app.frontend_url') . '/login?error=invalid_signature');
+            return redirect()->to(config('app.frontend_url').'/login?error=invalid_signature');
         }
 
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
-            event(new \Illuminate\Auth\Events\Verified($user));
+            event(new Verified($user));
         }
 
-        return redirect()->to(config('app.frontend_url') . '/profile?verified=1');
+        return redirect()->to(config('app.frontend_url').'/profile?verified=1');
     }
 }

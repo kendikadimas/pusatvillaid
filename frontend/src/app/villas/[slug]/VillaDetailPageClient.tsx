@@ -642,7 +642,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     src={getPhotoUrl(mainPhoto)}
                     alt={villa.name}
                     className="w-full h-full object-cover"
-                    onClick={() => setIsLightboxOpen(true)}
+                    onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none" />
 
@@ -1423,6 +1423,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 isSaved={isSaved}
                 onShare={handleShare}
                 onToggleSave={() => toggleWishlist(villa.id, { stopPropagation: () => { } } as React.MouseEvent<Element, MouseEvent>)}
+                initialPhotoIndex={currentImageIndex}
             />
 
             {/* Amenities Full Modal */}

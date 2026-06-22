@@ -185,7 +185,8 @@ export default function AdminDashboardPage() {
                                 <div className="space-y-2.5">
                                     {todayCheckIns.map((item) => {
                                         const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kedatangan Anda hari ini.`;
-                                        const waUrl = `https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                                        const phone = item.guest_phone ? item.guest_phone.replace(/^0/, '62') : '';
+                                        const waUrl = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}` : null;
                                         return (
                                             <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
                                                 <div className="min-w-0">
@@ -195,15 +196,17 @@ export default function AdminDashboardPage() {
                                                         Kode: <span className="font-sans font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
                                                     </p>
                                                 </div>
-                                                <a 
-                                                    href={waUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
-                                                    title="Chat WhatsApp"
-                                                >
-                                                    <WhatsAppIcon className="w-4 h-4" />
-                                                </a>
+                                                {waUrl && (
+                                                    <a 
+                                                        href={waUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
+                                                        title="Chat WhatsApp"
+                                                    >
+                                                        <WhatsAppIcon className="w-4 h-4" />
+                                                    </a>
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -212,7 +215,7 @@ export default function AdminDashboardPage() {
                         </div>
                     </div>
 
-                    {/* Check Out Today */}
+                    {/* Check Out Today */
                     <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden">
                         <div className="px-5 pt-5 pb-0">
                             <div className="flex items-center space-x-2.5 font-bold text-[#222222] border-b border-[#dddddd] pb-3">
@@ -227,7 +230,8 @@ export default function AdminDashboardPage() {
                                 <div className="space-y-2.5">
                                     {todayCheckOuts.map((item) => {
                                         const message = `Halo ${item.guest_name}, saya dari Admin PusatVilla.id. Terkait pemesanan Anda dengan kode booking *${item.booking_code}* di *${item.villa?.name || 'Villa'}* untuk tanggal *${format(parseISO(item.check_in), 'dd MMM yyyy', { locale: localeID })}* s/d *${format(parseISO(item.check_out), 'dd MMM yyyy', { locale: localeID })}*, kami ingin mengonfirmasi detail kepulangan Anda hari ini.`;
-                                        const waUrl = `https://api.whatsapp.com/send?phone=${item.guest_phone.replace(/^0/, '62')}&text=${encodeURIComponent(message)}`;
+                                        const phone = item.guest_phone ? item.guest_phone.replace(/^0/, '62') : '';
+                                        const waUrl = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}` : null;
                                         return (
                                             <div key={item.id} className="bg-[#f7f7f7]/50 hover:bg-[#f7f7f7] border border-[#dddddd] p-3.5 rounded-[8px] text-xs flex items-center justify-between transition-all duration-200 group">
                                                 <div className="min-w-0">
@@ -237,15 +241,17 @@ export default function AdminDashboardPage() {
                                                         Kode: <span className="font-sans font-bold text-slate-500 bg-[#f7f7f7] px-1 rounded-[4px]">{item.booking_code}</span>
                                                     </p>
                                                 </div>
-                                                <a 
-                                                    href={waUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
-                                                    title="Chat WhatsApp"
-                                                >
-                                                    <WhatsAppIcon className="w-4 h-4" />
-                                                </a>
+                                                {waUrl && (
+                                                    <a 
+                                                        href={waUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-[#dddddd] hover:border-emerald-200 p-2.5 rounded-[8px] transition-all duration-200 active:scale-95 flex-shrink-0"
+                                                        title="Chat WhatsApp"
+                                                    >
+                                                        <WhatsAppIcon className="w-4 h-4" />
+                                                    </a>
+                                                )}
                                             </div>
                                         );
                                     })}

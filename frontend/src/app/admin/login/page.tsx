@@ -12,6 +12,17 @@ export default function AdminLoginPage() {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
+    // Show session expiry or forced logout message from sessionStorage
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const reason = sessionStorage.getItem('admin_logout_reason');
+            if (reason) {
+                setError(reason);
+                sessionStorage.removeItem('admin_logout_reason');
+            }
+        }
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email.trim() || !password.trim()) {

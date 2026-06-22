@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import axiosClient from '@/lib/axios';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -28,6 +28,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** Admin inactivity timeout: 1 hour in milliseconds */
+const ADMIN_INACTIVITY_MS = 60 * 60 * 1000;
+
+/** localStorage key that stores the timestamp of the last admin activity */
+const ADMIN_LAST_ACTIVE_KEY = 'admin_last_active';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [admin, setAdmin] = useState<AdminUser | null>(null);
     const [user, setUser] = useState<any | null>(null);
@@ -35,6 +41,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<any>(null);
     const router = useRouter();
     const pathname = usePathname();
+    const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // ── Admin inactivity tracking ─────────────────────────────────────────
+    const resetInactivityTimer = () => {
+        if (typeof window === 'undefined') return;
+        localStorage.setItem(ADMIN_LAST_ACTIVE_KEY, String(Date.now()));
+        if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = setTimeout(() => {
+            forceAdminLogout('Sesi admin berakhir karena tidak aktif selama 1 jam.');
+        }, ADMIN_INACTIVITY_MS);
+    };
+
+    const forceAdminLogout = (message?: string) => {
+        if (typeof window === 'undefined') return;
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem(ADMIN_LAST_ACTIVE_KEY);
+        setAdmin(null);
+        if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+        // Fire revoke in background
+        axiosClient.post('/admin/logout').catch(() => {});
+        if (message) {
+            // Store message to show after redirect
+            sessionStorage.setItem('admin_logout_reason', message);
+        }
+        router.push('/admin/login');
+    };
+
+    // Attach activity listeners when admin is logged in
+    useEffect(() => {
+        if (!admin) {
+            if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+            return;
+        }
+
+        // Check if already expired on mount/tab-focus
+        const lastActive = parseInt(localStorage.getItem(ADMIN_LAST_ACTIVE_KEY) || '0', 10);
+        if (lastActive && Date.now() - lastActive > ADMIN_INACTIVITY_MS) {
+            forceAdminLogout('Sesi admin berakhir karena tidak aktif selama 1 jam.');
+            return;
+        }
+
+        const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+        const handleActivity = () => resetInactivityTimer();
+
+        events.forEach(ev => window.addEventListener(ev, handleActivity, { passive: true }));
+        resetInactivityTimer();
+
+        return () => {
+            events.forEach(ev => window.removeEventListener(ev, handleActivity));
+            if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [admin]);
 
     const refreshUser = async () => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
