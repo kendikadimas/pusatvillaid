@@ -20,9 +20,11 @@ export default function MobilePropertyCard({ villa, searchParams }: MobileProper
     const touchStartX = useRef<number | null>(null);
     const touchDeltaX = useRef(0);
 
-    const photos = villa.photos && villa.photos.length > 0
+    const MAX_SLIDER_PHOTOS = 3;
+    const allPhotos = villa.photos && villa.photos.length > 0
         ? villa.photos
         : ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80'];
+    const photos = allPhotos.slice(0, MAX_SLIDER_PHOTOS);
 
     const handlePrevPhoto = (e: React.MouseEvent) => {
         e.preventDefault();
