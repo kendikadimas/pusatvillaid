@@ -2,9 +2,13 @@
     RewriteEngine On
     RewriteBase /
 
-    # Villa detail pages are fully pre-rendered as static HTML (one file per slug).
-    # Trailing slash: /villas/some-slug/ serves /villas/some-slug/index.html directly.
-    # No placeholder redirect needed - all slugs have their own folder.
+    # Villa detail pages: serve pre-built static HTML if the slug folder exists.
+    # For new villas not yet in the static build, fall through to placeholder.
+    # The placeholder page reads the real slug from window.location and fetches from API.
+    RewriteCond %{REQUEST_URI} ^/villas/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/villas/%1 !-d
+    RewriteCond %1 !^placeholder$
+    RewriteRule ^villas/([^/]+)/?$ /villas/placeholder/index.html [L]
 
     # SPA fallback - serve 404.html for missing routes
     RewriteCond %{REQUEST_FILENAME} !-f

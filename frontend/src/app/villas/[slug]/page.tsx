@@ -8,16 +8,21 @@ export async function generateStaticParams() {
     return [{ slug: 'placeholder' }];
   }
 
-  // Production build: fetch semua slug real dari API
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://www.pusatvillaid.com/api/v1';
+  // Production build: fetch semua slug real dari API + selalu include 'placeholder'
+  // 'placeholder' dipakai sebagai fallback untuk villa baru yang belum di-build
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.pusatvillaid.com/api/v1';
   try {
-    const res = await fetch(`${apiUrl}/villas?per_page=50`, {
+    const res = await fetch(`${apiUrl}/villas?per_page=200`, {
       headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(10000),
     });
     const data = await res.json();
     const villas = data.villas || data.data || [];
-    if (villas.length > 0) return villas.map((v: any) => ({ slug: v.slug }));
+    const slugs = villas.map((v: any) => ({ slug: v.slug }));
+    // Always include placeholder for new villas not yet in static build
+    const hasPlaceholder = slugs.some((s: any) => s.slug === 'placeholder');
+    if (!hasPlaceholder) slugs.push({ slug: 'placeholder' });
+    return slugs;
   } catch {}
   return [{ slug: 'placeholder' }];
 }

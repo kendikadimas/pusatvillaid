@@ -109,9 +109,13 @@ const getHostAboutIcon = (text: string, index: number) => {
 
 export default function VillaDetailPageClient({ params }: PageProps) {
     const { slug: paramSlug } = use(params);
-    // For static export, each villa has its own pre-rendered HTML.
-    // paramSlug is the actual slug from the static route — no placeholder redirect needed.
-    const slug = paramSlug;
+    // For static export with placeholder fallback:
+    // - Real villa slugs: paramSlug is the actual slug
+    // - New villas not yet built: .htaccess rewrites to /villas/placeholder/
+    //   so paramSlug = 'placeholder', but we read the real slug from the URL
+    const slug = typeof window !== 'undefined' && paramSlug === 'placeholder'
+        ? window.location.pathname.split('/villas/')[1]?.replace(/\/$/, '') || paramSlug
+        : paramSlug;
     const router = useRouter();
     const searchParams = useSearchParams();
     const checkInQuery = searchParams.get('checkIn');
