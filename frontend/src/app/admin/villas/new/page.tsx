@@ -375,7 +375,7 @@ export default function AdminNewVillaPage() {
                                 {formErrors.short_desc && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.short_desc}</p>}
                             </div>
 
-                            <div>
+                            <div className="min-w-0">
                                 <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Lokasi / alamat ringkas *</label>
                                 <input 
                                     type="text" 
@@ -389,24 +389,22 @@ export default function AdminNewVillaPage() {
                                 {formErrors.location && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.location}</p>}
                             </div>
 
-                            <div>
+                            <div className="min-w-0">
                                 <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Destinasi Wilayah *</label>
                                 {!showNewDestination ? (
                                     <div className="space-y-2">
-                                        <div className="flex gap-2">
-                                            <select 
-                                                value={destinationId}
-                                                onChange={(e) => setDestinationId(e.target.value)}
-                                                className={`flex-1 bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
-                                                    formErrors.destination_id ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
-                                                }`}
-                                            >
-                                                <option value="">-- Pilih Destinasi --</option>
-                                                {destinations.map((dest) => (
-                                                    <option key={dest.id} value={dest.id}>{dest.name} ({dest.city})</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        <select 
+                                            value={destinationId}
+                                            onChange={(e) => setDestinationId(e.target.value)}
+                                            className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                                formErrors.destination_id ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
+                                            }`}
+                                        >
+                                            <option value="">-- Pilih Destinasi --</option>
+                                            {destinations.map((dest) => (
+                                                <option key={dest.id} value={dest.id}>{dest.name} ({dest.city})</option>
+                                            ))}
+                                        </select>
                                         <button
                                             type="button"
                                             onClick={() => setShowNewDestination(true)}
