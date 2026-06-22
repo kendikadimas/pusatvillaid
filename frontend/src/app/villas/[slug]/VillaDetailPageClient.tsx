@@ -280,19 +280,25 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
     useEffect(() => {
         const fetchVillaDetails = async () => {
+            if (!slug || slug === 'placeholder') {
+                setLoading(false);
+                return;
+            }
+
             try {
-                // Fetch details + reviews
-                const res = await axiosClient.get(`/villas/${slug}`);
+                // Fetch villa details and availability in parallel
+                const [res, availRes] = await Promise.all([
+                    axiosClient.get(`/villas/${slug}`),
+                    axiosClient.get(`/villas/${slug}/availability`).catch(() => ({ data: { disabled_dates: [] } })),
+                ]);
+
                 setVilla(res.data.villa);
                 setReviews(res.data.reviews || []);
                 setAvgRating(res.data.stats?.rating_avg || 0);
                 setStoreVilla(res.data.villa);
-
-                // Fetch disabled dates
-                const availRes = await axiosClient.get(`/villas/${slug}/availability`);
                 setDisabledDates(availRes.data.disabled_dates || []);
 
-                // Check for URL query params to initialize dates
+                // Initialize dates from URL query params or booking store
                 if (checkInQuery && checkOutQuery) {
                     setDateRange({
                         from: parseISO(checkInQuery),
@@ -305,9 +311,11 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         to: parseISO(storeCheckOut)
                     });
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Failed to fetch details:', err);
-                toast.error('Gagal memuat detail villa.');
+                if (err.response?.status !== 404) {
+                    toast.error('Gagal memuat detail villa.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -423,8 +431,31 @@ export default function VillaDetailPageClient({ params }: PageProps) {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center py-64 min-h-screen bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex-1 flex flex-col bg-white">
+                {/* Skeleton header placeholder */}
+                <div className="hidden lg:block h-16 border-b border-slate-100" />
+                <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full pt-8 lg:pt-6 space-y-6 animate-pulse">
+                    {/* Title skeleton */}
+                    <div className="h-8 bg-slate-100 rounded-xl w-2/3" />
+                    {/* Gallery skeleton */}
+                    <div className="grid grid-cols-[2fr_1fr] gap-4" style={{ height: 'min(460px, 50vh)' }}>
+                        <div className="bg-slate-100 rounded-2xl w-full h-full" />
+                        <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="bg-slate-100 rounded-2xl" />
+                            ))}
+                        </div>
+                    </div>
+                    {/* Content skeleton */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="h-6 bg-slate-100 rounded-lg w-3/4" />
+                            <div className="h-4 bg-slate-100 rounded-lg w-1/2" />
+                            <div className="h-4 bg-slate-100 rounded-lg w-2/3" />
+                        </div>
+                        <div className="hidden lg:block bg-slate-100 rounded-3xl h-72" />
+                    </div>
+                </div>
             </div>
         );
     }
