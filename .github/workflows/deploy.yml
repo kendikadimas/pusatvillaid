@@ -200,6 +200,26 @@ jobs:
           name: frontend-build
           path: frontend-out
 
+      - name: Clear Old Frontend Files on Server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            FRONTEND="${{ secrets.CPANEL_FRONTEND_PATH }}"
+            BACKEND="/home/${{ secrets.SSH_USERNAME }}/backend-laravel/public"
+
+            # Remove all old frontend files EXCEPT the api symlink and .htaccess
+            echo "=== Clearing old frontend files ==="
+            find "${FRONTEND}" -mindepth 1 -maxdepth 1 \
+              ! -name 'api.pusatvillaid.com' \
+              ! -name '.htaccess' \
+              ! -name '.user.ini' \
+              -exec rm -rf {} + 2>/dev/null || true
+            echo "=== Old files cleared ==="
+
       - name: Upload & Deploy Frontend
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -211,7 +231,7 @@ jobs:
           target: ${{ secrets.CPANEL_FRONTEND_PATH }}
           strip_components: 1
 
-      - name: Clean Old Frontend Files & Fix Symlink
+      - name: Fix Symlink & Verify
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
