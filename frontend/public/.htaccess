@@ -2,16 +2,9 @@
     RewriteEngine On
     RewriteBase /
 
-    # Serve placeholder page for non-existent villa slug pages
-    # This keeps the URL intact so client-side React can read the slug
-    RewriteCond %{REQUEST_URI} ^/villas/([^/]+)/$
-    RewriteCond %{DOCUMENT_ROOT}/villas/%1 !-d
-    RewriteRule ^villas/([^/]+)/$ /villas/placeholder/ [L]
-
-    # Same for booking detail pages
-    RewriteCond %{REQUEST_URI} ^/booking/([^/]+)/$
-    RewriteCond %{DOCUMENT_ROOT}/booking/%1 !-d
-    RewriteRule ^booking/([^/]+)/$ /booking/ [L]
+    # Villa detail pages are fully pre-rendered as static HTML (one file per slug).
+    # Trailing slash: /villas/some-slug/ serves /villas/some-slug/index.html directly.
+    # No placeholder redirect needed - all slugs have their own folder.
 
     # SPA fallback - serve 404.html for missing routes
     RewriteCond %{REQUEST_FILENAME} !-f
