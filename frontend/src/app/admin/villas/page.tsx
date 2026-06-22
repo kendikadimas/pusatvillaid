@@ -83,24 +83,36 @@ export default function AdminVillasPage() {
     const handleToggleStatus = async (villa: Villa) => {
         try {
             const nextStatus = !villa.is_active;
-            
-            // To toggle status, we can call PUT/PUT endpoint to update is_active field
+
             await axiosClient.put(`/admin/villas/${villa.id}`, {
                 name: villa.name,
-                description: villa.description,
-                short_desc: villa.short_desc,
+                description: villa.description || '',
+                short_desc: villa.short_desc || '',
                 location: villa.location,
-                maps_url: villa.maps_url,
+                destination_id: villa.destination_id ?? null,
+                maps_url: villa.maps_url ?? null,
                 bedrooms: villa.bedrooms,
                 bathrooms: villa.bathrooms,
                 max_guests: villa.max_guests,
                 price_per_night: villa.price_per_night,
-                weekend_price: villa.weekend_price,
+                weekend_price: villa.weekend_price ?? null,
                 min_nights: villa.min_nights,
-                amenities: villa.amenities,
+                amenities: villa.amenities ?? [],
                 check_in_time: villa.check_in_time,
                 check_out_time: villa.check_out_time,
-                is_active: nextStatus
+                rules: villa.rules ?? null,
+                is_active: nextStatus,
+                host_name: villa.host_name ?? null,
+                host_years: villa.host_years ?? null,
+                host_avatar: villa.host_avatar ?? null,
+                host_phone: villa.host_phone ?? null,
+                host_joined_label: villa.host_joined_label ?? null,
+                host_is_verified: villa.host_is_verified ?? true,
+                host_about: villa.host_about ?? [],
+                safety_property: villa.safety_property ?? [],
+                neighborhood_desc: villa.neighborhood_desc ?? null,
+                highlights: villa.highlights ?? [],
+                bedrooms_info: villa.bedrooms_info ?? [],
             });
 
             toast.success(`Villa "${villa.name}" sekarang ${nextStatus ? 'aktif' : 'nonaktif'}.`);
