@@ -28,20 +28,39 @@ export default function LoginPage() {
         setStatus(null);
 
         try {
-            await login({
-                email,
-                password,
-                remember: remember ? 'on' : '',
-            });
+            // First try user login; if the account is admin, retry with admin endpoint
+            await login({ email, password, remember: remember ? 'on' : '' });
         } catch (err: any) {
-            if (err.response?.data?.errors) {
+            const message: string = err.response?.data?.message || '';
+            const isAdminAccount = err.response?.status === 403 &&
+                message.includes('administrator');
+
+            if (isAdminAccount) {
+                // Retry as admin login
+                try {
+                    await login({ email, password, remember: remember ? 'on' : '' }, true);
+                    return;
+                } catch (adminErr: any) {
+                    if (adminErr.response?.data?.errors) {
+                        const apiErrors: Record<string, string> = {};
+                        Object.keys(adminErr.response.data.errors).forEach((key) => {
+                            apiErrors[key] = adminErr.response.data.errors[key][0];
+                        });
+                        setErrors(apiErrors);
+                    } else if (adminErr.response?.data?.message) {
+                        setErrors({ email: adminErr.response.data.message });
+                    } else {
+                        setErrors({ email: 'Terjadi kesalahan sistem. Silakan coba lagi.' });
+                    }
+                }
+            } else if (err.response?.data?.errors) {
                 const apiErrors: Record<string, string> = {};
                 Object.keys(err.response.data.errors).forEach((key) => {
                     apiErrors[key] = err.response.data.errors[key][0];
                 });
                 setErrors(apiErrors);
-            } else if (err.response?.data?.message) {
-                setErrors({ email: err.response.data.message });
+            } else if (message) {
+                setErrors({ email: message });
             } else {
                 setErrors({ email: 'Terjadi kesalahan sistem. Silakan coba lagi.' });
             }
