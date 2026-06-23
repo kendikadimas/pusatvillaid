@@ -280,6 +280,11 @@ function AdminEditVillaContent() {
     const handleUpdateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        if (!villa) {
+            toast.error('Data villa belum termuat. Silakan muat ulang halaman.');
+            return;
+        }
+
         if (!validateForm()) {
             toast.error('Silakan periksa kembali isian form Anda.');
             return;
@@ -492,6 +497,11 @@ function AdminEditVillaContent() {
     };
 
     const savePhotoGallery = async () => {
+        if (!villa) {
+            toast.error('Data villa belum termuat. Silakan muat ulang halaman.');
+            return;
+        }
+
         setSavingPhotos(true);
         try {
             const normalizedPhotos = photos.map(photo => {

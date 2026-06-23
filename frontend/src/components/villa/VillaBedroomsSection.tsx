@@ -1,4 +1,5 @@
 import React from 'react';
+import { getPhotoUrl } from '@/lib/villaUtils';
 
 interface BedroomInfo {
     image: string;
@@ -27,7 +28,7 @@ export default function VillaBedroomsSection({ bedroomsInfo, totalBeds }: VillaB
                     {bedroomsInfo.map((br, idx) => (
                         <div key={idx} className="border border-slate-200 rounded-2xl p-4 flex flex-col space-y-3 bg-white">
                             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100">
-                                <img src={br.image} alt={br.title} className="w-full h-full object-cover" />
+                                <img src={getPhotoUrl(br.image)} alt={br.title} className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <h4 className="text-[14px] font-bold text-slate-900">{br.title}</h4>
