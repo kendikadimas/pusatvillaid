@@ -183,7 +183,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log('[Auth] initAuth started');
             setLoading(true);
             try {
-                await Promise.all([refreshAdmin(), refreshUser()]);
+                const timeoutPromise = new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('Auth init timeout')), 25000)
+                );
+                await Promise.race([
+                    Promise.all([refreshAdmin(), refreshUser()]),
+                    timeoutPromise,
+                ]);
                 console.log('[Auth] initAuth completed');
             } catch (err) {
                 console.error('[Auth] initAuth error:', err);

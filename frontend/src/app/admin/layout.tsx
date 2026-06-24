@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { 
     LayoutDashboard, 
@@ -23,8 +23,15 @@ import {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
     const { admin, loading, logout } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        if (!loading && (!admin || admin.role !== 'admin') && pathname !== '/admin/login') {
+            router.push('/admin/login');
+        }
+    }, [loading, admin, pathname, router]);
 
     if (pathname === '/admin/login') {
         return <>{children}</>;
