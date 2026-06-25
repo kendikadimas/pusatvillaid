@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Star, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Heart, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import { Villa } from '@/types';
 import { getPhotoUrl } from '@/lib/villaUtils';
 import { formatPrice } from '@/lib/format';
@@ -37,6 +37,7 @@ export default function VillaCard({
     isSelected = false
 }: VillaCardProps) {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [imgError, setImgError] = useState(false);
     const touchStartX = useRef<number | null>(null);
     const touchDeltaX = useRef(0);
 
@@ -63,12 +64,14 @@ export default function VillaCard({
     const handlePrevPhoto = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        setImgError(false);
         setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1));
     };
 
     const handleNextPhoto = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        setImgError(false);
         setCurrentPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
     };
 
@@ -94,6 +97,10 @@ export default function VillaCard({
         touchDeltaX.current = 0;
     };
 
+    const handleImgError = () => {
+        setImgError(true);
+    };
+
     const PhotoContainer = ({ children }: { children: React.ReactNode }) => (
         <div
             className="relative aspect-[20/19] w-full overflow-hidden rounded-[12px] bg-[#F7F6F3] border border-[#EAEAEA] touch-pan-y"
@@ -101,11 +108,19 @@ export default function VillaCard({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
-            <img
-                src={getPhotoUrl(photos[currentPhotoIndex])}
-                alt={villa.name}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
-            />
+            {imgError ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <ImageOff className="w-8 h-8 mb-1" />
+                    <span className="text-[10px] font-medium">Gambar tidak tersedia</span>
+                </div>
+            ) : (
+                <img
+                    src={getPhotoUrl(photos[currentPhotoIndex])}
+                    alt={villa.name}
+                    onError={handleImgError}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                />
+            )}
 
             {/* Wishlist button */}
             <button
@@ -215,7 +230,7 @@ export default function VillaCard({
         <Link
             href={detailUrl}
             target="_blank"
-            className="group cursor-pointer flex flex-col w-full bg-transparent hover:no-underline"
+            className="group cursor-pointer flex flex-col w-full bg-transparent hover:no-underline min-h-0"
         >
             <PhotoContainer>
                 <></>
