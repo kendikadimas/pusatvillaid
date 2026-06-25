@@ -39,7 +39,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
                     </h2>
                 </div>
                 {/* Carousel Controls */}
-                {/* <div className="flex-end items-center space-x-2 shrink-0">
+                <div className="flex items-center space-x-2 shrink-0">
                     <button
                         onClick={() => scroll('left')}
                         className="p-2.5 rounded-full border border-[#EAEAEA] hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 active:scale-95 transition-all cursor-pointer shadow-xs"
@@ -54,7 +54,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>
-                </div> */}
+                </div>
             </div>
 
             <div
