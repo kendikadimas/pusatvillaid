@@ -38,6 +38,14 @@ class DestinationAdminController extends Controller
             $validated['query'] = $validated['name'];
         }
 
+        $existing = Destination::where('name', $validated['name'])->first();
+        if ($existing) {
+            return response()->json([
+                'message' => 'Destinasi sudah ada, menggunakan destinasi yang sudah tersedia.',
+                'data' => $existing,
+            ]);
+        }
+
         $destination = Destination::create($validated);
 
         return response()->json([

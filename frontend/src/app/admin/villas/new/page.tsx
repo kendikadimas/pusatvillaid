@@ -75,6 +75,17 @@ export default function AdminNewVillaPage() {
             return;
         }
 
+        const match = destinations.find(d => d.name.toLowerCase() === newDestName.trim().toLowerCase());
+        if (match) {
+            toast.info(`"${newDestName.trim()}" sudah tersedia, menggunakan destinasi yang sudah ada.`);
+            setDestinationId(String(match.id));
+            setNewDestName('');
+            setNewDestCity('');
+            setNewDestImage('');
+            setShowNewDestination(false);
+            return;
+        }
+
         setSavingDestination(true);
         try {
             const response = await axiosClient.post('/admin/destinations', {

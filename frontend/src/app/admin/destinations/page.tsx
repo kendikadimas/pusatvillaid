@@ -104,6 +104,15 @@ export default function AdminDestinationsPage() {
             return;
         }
 
+        if (modalMode === 'create') {
+            const match = destinations.find(d => d.name.toLowerCase() === name.toLowerCase());
+            if (match) {
+                toast.info(`"${name}" sudah tersedia. Mengarahkan ke destinasi yang sudah ada.`);
+                setIsModalOpen(false);
+                return;
+            }
+        }
+
         setSubmitting(true);
         const payload = {
             name,
