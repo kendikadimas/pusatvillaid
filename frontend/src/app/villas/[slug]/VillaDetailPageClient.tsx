@@ -1239,7 +1239,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         <div className="flex items-center space-x-2">
                                             <div className="flex items-center space-x-0.5">
                                                 {[1, 2, 3, 4, 5].map((star) => {
-                                                    const fillPercent = Math.min(100, Math.max(0, (avgRating - (star - 0.5)) * 100));
+                                                    const fillPercent = Math.min(100, Math.max(0, (avgRating - (star - 1)) * 100));
                                                     return (
                                                         <div key={star} className="relative w-4 h-4">
                                                             <Star className="w-4 h-4 text-slate-200 fill-slate-200 absolute inset-0" />
