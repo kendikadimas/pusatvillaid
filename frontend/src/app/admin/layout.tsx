@@ -26,17 +26,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
     const { admin, loading, logout } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+    const isLoginPage = normalizedPathname === '/admin/login';
 
-    console.log('[AdminLayout] Render:', { pathname, loading, admin: admin ? { id: admin.id, role: admin.role } : null });
+    console.log('[AdminLayout] Render:', { pathname, normalizedPathname, isLoginPage, loading, admin: admin ? { id: admin.id, role: admin.role } : null });
 
     useEffect(() => {
-        if (!loading && (!admin || admin.role !== 'admin') && pathname !== '/admin/login') {
+        if (!loading && (!admin || admin.role !== 'admin') && !isLoginPage) {
             console.log('[AdminLayout] Not authenticated, redirecting to /admin/login');
             router.push('/admin/login');
         }
-    }, [loading, admin, pathname, router]);
+    }, [loading, admin, isLoginPage, router]);
 
-    if (pathname === '/admin/login') {
+    if (isLoginPage) {
         return <>{children}</>;
     }
 
