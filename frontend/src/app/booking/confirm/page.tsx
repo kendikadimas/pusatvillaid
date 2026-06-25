@@ -27,6 +27,9 @@ import {
     X,
     Star,
     MapPin,
+    Upload,
+    ImagePlus,
+    FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -65,6 +68,36 @@ export default function BookingConfirmPage() {
     const [phone, setPhone] = useState('');
     const [agree, setAgree] = useState(false);
     const [formErrors, setFormErrors] = useState<any>({});
+
+    // KTP Upload State
+    const [ktpFile, setKtpFile] = useState<File | null>(null);
+    const [ktpPreview, setKtpPreview] = useState<string | null>(null);
+    const ktpInputRef = useRef<HTMLInputElement>(null);
+
+    const handleKtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (!['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(file.type)) {
+            toast.error('Format file KTP tidak valid. Gunakan JPG, PNG, atau WebP.');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Ukuran file KTP maksimal 5MB.');
+            return;
+        }
+        setKtpFile(file);
+        const reader = new FileReader();
+        reader.onload = (ev) => setKtpPreview(ev.target?.result as string);
+        reader.readAsDataURL(file);
+        // Clear error
+        setFormErrors((prev: any) => ({ ...prev, ktp_image: undefined }));
+    };
+
+    const removeKtp = () => {
+        setKtpFile(null);
+        setKtpPreview(null);
+        if (ktpInputRef.current) ktpInputRef.current.value = '';
+    };
 
     // Mobile Wizard States
     const [currentStep, setCurrentStep] = useState(1);
@@ -184,6 +217,7 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
+        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         if (!agree) errors.agree = 'Anda harus menyetujui syarat & ketentuan.';
 
         setFormErrors(errors);
@@ -241,23 +275,25 @@ export default function BookingConfirmPage() {
             const utm_medium = sessionStorage.getItem('utm_medium') || null;
             const utm_campaign = sessionStorage.getItem('utm_campaign') || null;
 
-            const payload = {
-                villa_id: selectedVilla.id,
-                payment_method_id: selectedMethodId,
-                guest_name: name,
-                guest_email: email,
-                guest_phone: phone,
-                check_in: checkIn,
-                check_out: checkOut,
-                num_guests: numGuests,
-                notes: notes,
-                is_refundable: isRefundable,
-                utm_source,
-                utm_medium,
-                utm_campaign,
-            };
+            const payload = new FormData();
+            payload.append('villa_id', String(selectedVilla.id));
+            if (selectedMethodId) payload.append('payment_method_id', String(selectedMethodId));
+            payload.append('guest_name', name);
+            payload.append('guest_email', email);
+            payload.append('guest_phone', phone);
+            payload.append('check_in', checkIn!);
+            payload.append('check_out', checkOut!);
+            payload.append('num_guests', String(numGuests));
+            if (notes) payload.append('notes', notes);
+            payload.append('is_refundable', isRefundable ? '1' : '0');
+            if (utm_source) payload.append('utm_source', utm_source);
+            if (utm_medium) payload.append('utm_medium', utm_medium);
+            if (utm_campaign) payload.append('utm_campaign', utm_campaign);
+            if (ktpFile) payload.append('ktp_image', ktpFile);
 
-            const response = await axiosClient.post('/bookings', payload);
+            const response = await axiosClient.post('/bookings', payload, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
             
             // Save email used for checkout in sessionStorage to allow verification access to checking status
             sessionStorage.setItem(`checkout_email_${response.data.booking_code}`, email);
@@ -269,8 +305,11 @@ export default function BookingConfirmPage() {
             // Redirect directly to payment checkout page before clearing store
             router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
 
-            // Clear booking selection store
-            resetStore();
+            // Delay store reset so redirect has time to complete — immediate reset causes
+            // selectedVilla to become null which triggers the guard and shows LoadingSpinner
+            setTimeout(() => {
+                resetStore();
+            }, 3000);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
@@ -312,10 +351,11 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
+        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
-            toast.error('Silakan lengkapi detail kontak Anda terlebih dahulu.');
+            toast.error('Silakan lengkapi detail kontak dan foto KTP Anda terlebih dahulu.');
             setIsEditContactOpen(true);
             return;
         }
@@ -611,9 +651,74 @@ export default function BookingConfirmPage() {
                                     </div>
                                 </div>
 
-                                {/* Step 3: Terms and Agreement */}
+                                {/* Step 2b: KTP Upload */}
+                                <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-5">
+                                    <div className="border-b border-slate-100 pb-4">
+                                        <h2 className="font-serif text-lg font-bold text-slate-900">3. Upload KTP / Identitas</h2>
+                                        <p className="text-xs text-slate-500 mt-1 font-medium leading-relaxed">Diperlukan untuk verifikasi identitas tamu sesuai regulasi penginapan.</p>
+                                    </div>
+
+                                    <input
+                                        ref={ktpInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                                        className="hidden"
+                                        onChange={handleKtpChange}
+                                        id="ktp-upload-desktop"
+                                    />
+
+                                    {ktpPreview ? (
+                                        <div className="relative rounded-2xl overflow-hidden border border-slate-200 group">
+                                            <img
+                                                src={ktpPreview}
+                                                alt="Preview KTP"
+                                                className="w-full h-48 object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                                            <button
+                                                type="button"
+                                                onClick={removeKtp}
+                                                className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-90 cursor-pointer"
+                                            >
+                                                <X className="w-4 h-4 text-slate-700" />
+                                            </button>
+                                            <div className="absolute bottom-3 left-3 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                                <Check className="w-3 h-3" />
+                                                KTP Terunggah
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <label
+                                            htmlFor="ktp-upload-desktop"
+                                            className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-blue-400 hover:bg-blue-50/30 ${formErrors.ktp_image ? 'border-red-400 bg-red-50/20' : 'border-slate-200 bg-slate-50/40'}`}
+                                        >
+                                            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                                                <ImagePlus className="w-6 h-6 text-blue-500" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-xs font-bold text-slate-700">Klik untuk unggah foto KTP</p>
+                                                <p className="text-[11px] text-slate-400 font-medium mt-0.5">JPG, PNG, WebP · Maks. 5MB</p>
+                                            </div>
+                                        </label>
+                                    )}
+
+                                    {formErrors.ktp_image && (
+                                        <p className="text-red-500 text-[10px] font-bold flex items-center gap-1">
+                                            <X className="w-3 h-3" />{formErrors.ktp_image}
+                                        </p>
+                                    )}
+
+                                    <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-3 flex items-start gap-2.5">
+                                        <FileText className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                                        <p className="text-[11px] text-amber-800 font-semibold leading-relaxed">
+                                            Foto KTP harus jelas dan terbaca. Data KTP hanya digunakan untuk keperluan verifikasi identitas dan tidak akan dibagikan kepada pihak ketiga.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Step 4: Terms and Agreement */}
                                 <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
-                                    <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">3. Syarat & Ketentuan</h2>
+                                    <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">4. Syarat & Ketentuan</h2>
                                     
                                     <div className="space-y-4">
                                         <label className="flex items-start space-x-3 cursor-pointer">
@@ -827,6 +932,71 @@ export default function BookingConfirmPage() {
                                                 <span className="text-slate-800 block">{phone || '-'}</span>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* KTP Upload (Mobile) */}
+                                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                                    <div className="border-b border-slate-100 pb-2.5">
+                                        <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider">
+                                            Upload KTP / Identitas
+                                        </h3>
+                                        <p className="text-[10px] text-slate-500 font-medium mt-1 leading-relaxed">Wajib untuk verifikasi identitas tamu.</p>
+                                    </div>
+
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                                        className="hidden"
+                                        onChange={handleKtpChange}
+                                        id="ktp-upload-mobile"
+                                    />
+
+                                    {ktpPreview ? (
+                                        <div className="relative rounded-xl overflow-hidden border border-slate-200">
+                                            <img
+                                                src={ktpPreview}
+                                                alt="Preview KTP"
+                                                className="w-full h-36 object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={removeKtp}
+                                                className="absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-90 cursor-pointer"
+                                            >
+                                                <X className="w-3.5 h-3.5 text-slate-700" />
+                                            </button>
+                                            <div className="absolute bottom-2 left-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <Check className="w-2.5 h-2.5" />
+                                                Terunggah
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <label
+                                            htmlFor="ktp-upload-mobile"
+                                            className={`flex items-center gap-3 p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all ${formErrors.ktp_image ? 'border-red-400 bg-red-50/20' : 'border-slate-200 bg-slate-50/40'}`}
+                                        >
+                                            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <ImagePlus className="w-5 h-5 text-blue-500" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-700">Tap untuk unggah foto KTP</p>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">JPG, PNG, WebP · Maks. 5MB</p>
+                                            </div>
+                                        </label>
+                                    )}
+
+                                    {formErrors.ktp_image && (
+                                        <p className="text-red-500 text-[10px] font-bold flex items-center gap-1">
+                                            <X className="w-3 h-3" />{formErrors.ktp_image}
+                                        </p>
+                                    )}
+
+                                    <div className="bg-amber-50 border border-amber-200/80 rounded-lg p-2.5 flex items-start gap-2">
+                                        <FileText className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-amber-800 font-semibold leading-relaxed">
+                                            Foto KTP hanya digunakan untuk verifikasi identitas dan tidak dibagikan ke pihak ketiga.
+                                        </p>
                                     </div>
                                 </div>
                             </>

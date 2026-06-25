@@ -333,6 +333,50 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                         )}
                     </div>
 
+                    {/* Card 1.5: KTP / Identitas Tamu */}
+                    <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
+                        <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">
+                            <div className="w-8 h-8 rounded-[8px] bg-violet-50 flex items-center justify-center">
+                                <FileText className="w-4 h-4 text-violet-600" />
+                            </div>
+                            <h2 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
+                                KTP / Identitas Tamu
+                            </h2>
+                        </div>
+
+                        {booking.ktp_image ? (
+                            <div className="space-y-4">
+                                <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64 group">
+                                    <img
+                                        src={booking.ktp_image}
+                                        alt="KTP Tamu"
+                                        className="max-h-full max-w-full object-contain"
+                                    />
+                                    <a
+                                        href={booking.ktp_image}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="absolute bottom-4 right-4 bg-slate-900/80 hover:bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px] flex items-center space-x-1 backdrop-blur-sm transition-all"
+                                    >
+                                        <span>Lihat Gambar Penuh</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
+                                <div className="bg-violet-50 border border-violet-200/60 rounded-[10px] p-3 text-[10px] text-violet-800 font-semibold leading-relaxed">
+                                    KTP diunggah oleh tamu saat booking. Verifikasi kesesuaian nama di KTP dengan nama pemesan.
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-amber-50 border border-amber-200/60 rounded-[14px] p-4 flex items-start gap-3">
+                                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-bold text-amber-800">KTP tidak diunggah</p>
+                                    <p className="text-[10px] text-amber-700 mt-0.5 leading-relaxed">Tamu tidak mengunggah foto KTP pada saat melakukan pemesanan.</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Card 2: Rental Information */}
                     <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
                         <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">

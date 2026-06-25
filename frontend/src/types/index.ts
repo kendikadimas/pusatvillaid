@@ -64,6 +64,7 @@ export interface Booking {
     utm_campaign: string | null;
     cancel_reason: string | null;
     cancelled_at: string | null;
+    ktp_image?: string | null;
     created_at: string;
     updated_at: string;
     villa?: Villa;
