@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axiosClient from '@/lib/axios';
+import { useAuth } from '@/context/AuthContext';
 import { Booking } from '@/types';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
@@ -37,6 +38,7 @@ interface Stats {
 }
 
 export default function AdminDashboardPage() {
+    const { admin, loading: authLoading } = useAuth();
     const [stats, setStats] = useState<Stats | null>(null);
     const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
     const [todayCheckIns, setTodayCheckIns] = useState<any[]>([]);
@@ -44,6 +46,8 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading || !admin) return;
+
         const fetchDashboardData = async () => {
             try {
                 const response = await axiosClient.get('/admin/dashboard');
@@ -60,7 +64,7 @@ export default function AdminDashboardPage() {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [authLoading, admin]);
 
     if (loading || !stats) {
         return <LoadingSpinner fullPage={false} />;

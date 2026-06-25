@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import axiosClient from '@/lib/axios';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -102,8 +103,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        const response = await axiosClient.get('/user');
-        setUser(response.data);
+        try {
+            const response = await axiosClient.get('/user');
+            setUser(response.data);
+        } catch {
+            setUser(null);
+        }
     };
 
     const forgotPassword = async (email: string) => {
@@ -252,13 +257,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const isAdminUser = userData?.role === 'admin';
             
             if (typeof window !== 'undefined') {
-                if (targetIsAdmin || isAdminUser) {
-                    localStorage.setItem('admin_token', token);
-                    setAdmin(userData);
-                } else {
-                    localStorage.setItem('user_token', token);
-                    setUser(userData);
-                }
+                flushSync(() => {
+                    if (targetIsAdmin || isAdminUser) {
+                        localStorage.setItem('admin_token', token);
+                        setAdmin(userData);
+                    } else {
+                        localStorage.setItem('user_token', token);
+                        setUser(userData);
+                    }
+                });
             }
             
             if (targetIsAdmin || isAdminUser) {
