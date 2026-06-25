@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import AuthLayout from '@/components/auth-layout';
 import InputError from '@/components/input-error';
 import GoogleLoginButton from '@/components/google-login-button';
@@ -11,9 +11,14 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
+function LoginContent() {
     const { login } = useAuth();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+    const registerUrl = redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : '/register';
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
@@ -189,7 +194,7 @@ export default function LoginPage() {
                 {/* Footer link */}
                 <div className="text-center text-xs text-slate-500 font-semibold pt-2">
                     Belum punya akun?{' '}
-                    <TextLink href="/register" className="text-blue-500 hover:underline font-bold" tabIndex={5}>
+                    <TextLink href={registerUrl} className="text-blue-500 hover:underline font-bold" tabIndex={5}>
                         Daftar sekarang
                     </TextLink>
                 </div>
@@ -201,5 +206,19 @@ export default function LoginPage() {
                 </div>
             )}
         </AuthLayout>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <AuthLayout title="Masuk ke Akun Anda" description="Memuat halaman masuk...">
+                <div className="flex justify-center py-10">
+                    <Spinner className="w-8 h-8 text-blue-600" />
+                </div>
+            </AuthLayout>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

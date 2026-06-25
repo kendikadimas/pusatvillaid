@@ -25,11 +25,13 @@ import {
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 function BookingPaymentContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { whatsappNumber } = useSettings();
+    const { user, loading: authLoading } = useAuth();
     const code = searchParams.get('code') || '';
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
@@ -108,10 +110,12 @@ function BookingPaymentContent() {
                 return;
             }
 
+            if (authLoading) return;
+
             try {
-                // To fetch details we need the email. We retrieve it from sessionStorage (saved during confirm checkout)
-                const email = sessionStorage.getItem(`checkout_email_${code}`);
-                if (!email) {
+                // To fetch details we need the email. We retrieve it from sessionStorage (saved during confirm checkout) or use user's email
+                const email = sessionStorage.getItem(`checkout_email_${code}`) || user?.email;
+                if (!email && !user) {
                     // If no email, redirect back to home or request check status
                     toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
                     router.push(`/booking/status?code=${code}`);
@@ -119,7 +123,7 @@ function BookingPaymentContent() {
                 }
 
                 const response = await axiosClient.get(`/bookings/${code}`, {
-                    params: { email }
+                    params: email ? { email } : {}
                 });
                 
                 const b = response.data;
@@ -139,14 +143,15 @@ function BookingPaymentContent() {
 
             } catch (err) {
                 console.error('Failed to fetch booking:', err);
-                toast.error('Gagal mengambil detail pemesanan.');
+                toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
+                router.push(`/booking/status?code=${code}`);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchBooking();
-    }, [code]);
+    }, [code, user, authLoading]);
 
     /* ARCHIVED: Midtrans Snap.js loader (belum diaktifkan)
     useEffect(() => {

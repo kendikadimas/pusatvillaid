@@ -21,17 +21,19 @@ import {
     AlertTriangle,
     XOctagon,
     Lock,
-    Download
+    Download,
+    Loader2
 } from 'lucide-react';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 function BookingStatusContent() {
     const { settings } = useSettings();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { user, loading: authLoading } = useAuth();
     const code = searchParams.get('code') || '';
     const emailParam = searchParams.get('email');
 
@@ -44,15 +46,36 @@ function BookingStatusContent() {
     const [verifying, setVerifying] = useState(false);
 
     useEffect(() => {
-        // Attempt to find verified email from query param, state, or sessionStorage
-        const savedEmail = emailParam || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) : null);
+        if (authLoading) return;
+
+        // Attempt to find verified email from query param, state, or sessionStorage, or logged-in user
+        const savedEmail = emailParam || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) : null) || user?.email;
         if (savedEmail) {
             setVerifiedEmail(savedEmail);
             fetchBookingStatus(savedEmail);
+        } else if (user) {
+            // If logged in but email isn't verified yet, try to fetch without email param
+            // since backend allows it if user is owner / admin
+            const fetchWithoutEmail = async () => {
+                try {
+                    const response = await axiosClient.get(`/bookings/${code}`);
+                    setBooking(response.data);
+                    setVerifiedEmail(response.data.guest_email);
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.setItem(`checkout_email_${code}`, response.data.guest_email);
+                    }
+                } catch (err) {
+                    console.warn('Failed to fetch booking status without email:', err);
+                    // Just let them verify manually
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchWithoutEmail();
         } else {
             setLoading(false);
         }
-    }, [code, emailParam]);
+    }, [code, emailParam, user, authLoading]);
 
     const fetchBookingStatus = async (email: string) => {
         setLoading(true);

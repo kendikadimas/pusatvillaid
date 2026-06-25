@@ -238,23 +238,39 @@ class BookingController extends Controller
     }
 
     /**
-     * Fetch booking details by code and guest email.
+     * Fetch booking details by code and optional guest email (if authenticated owner/admin).
      */
     public function show(string $code, Request $request): JsonResponse
     {
         $email = $request->query('email');
+        
+        // Retrieve authenticated user using sanctum guard (if token header exists)
+        $user = auth('sanctum')->user() ?? $request->user('sanctum');
 
-        if (! $email) {
-            return response()->json(['message' => 'Email verifikasi diperlukan.'], 400);
+        $query = Booking::where('booking_code', $code);
+
+        if ($user) {
+            // If admin/super_admin, can view any booking.
+            // If regular user, can view if they are the owner OR if email parameter matches guest_email.
+            if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+                $query->where(function ($q) use ($email, $user) {
+                    $q->where('user_id', $user->id);
+                    if ($email) {
+                        $q->orWhere('guest_email', $email);
+                    }
+                });
+            }
+        } else {
+            if (! $email) {
+                return response()->json(['message' => 'Email verifikasi diperlukan.'], 400);
+            }
+            $query->where('guest_email', $email);
         }
 
-        $booking = Booking::where('booking_code', $code)
-            ->where('guest_email', $email)
-            ->with(['villa', 'payment', 'paymentMethod'])
-            ->first();
+        $booking = $query->with(['villa', 'payment', 'paymentMethod'])->first();
 
         if (! $booking) {
-            return response()->json(['message' => 'Booking tidak ditemukan atau email tidak sesuai.'], 404);
+            return response()->json(['message' => 'Booking tidak ditemukan atau Anda tidak memiliki akses.'], 404);
         }
 
         return response()->json($booking);

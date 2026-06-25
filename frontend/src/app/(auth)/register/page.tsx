@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import AuthLayout from '@/components/auth-layout';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
@@ -9,9 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/AuthContext';
 import { User, Mail, Lock, UserPlus } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
-export default function RegisterPage() {
+function RegisterContent() {
     const { register } = useAuth();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+    const loginUrl = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login';
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -169,11 +174,25 @@ export default function RegisterPage() {
                 {/* Footer link */}
                 <div className="text-center text-xs text-slate-500 font-semibold pt-2">
                     Sudah memiliki akun?{' '}
-                    <TextLink href="/login" className="text-blue-500 hover:underline font-bold" tabIndex={6}>
+                    <TextLink href={loginUrl} className="text-blue-500 hover:underline font-bold" tabIndex={6}>
                         Masuk sekarang
                     </TextLink>
                 </div>
             </form>
         </AuthLayout>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={
+            <AuthLayout title="Daftar Akun Baru" description="Memuat halaman pendaftaran...">
+                <div className="flex justify-center py-10">
+                    <Spinner className="w-8 h-8 text-blue-600" />
+                </div>
+            </AuthLayout>
+        }>
+            <RegisterContent />
+        </Suspense>
     );
 }

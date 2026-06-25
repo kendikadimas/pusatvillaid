@@ -54,6 +54,7 @@ export default function BookingConfirmPage() {
     } = useBookingStore();
 
     const [loading, setLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const navigatingAway = useRef(false);
     
     // Payment Method selection
@@ -110,13 +111,18 @@ export default function BookingConfirmPage() {
     const [holdExpired, setHoldExpired] = useState(false);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    // Set mounted on client mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     // Enforce login
     useEffect(() => {
-        if (!authLoading && !user) {
+        if (mounted && !authLoading && !user) {
             toast.error('Silakan masuk (login) terlebih dahulu untuk melanjutkan pembayaran.');
             router.push('/login?redirect=/booking/confirm');
         }
-    }, [user, authLoading, router]);
+    }, [mounted, user, authLoading, router]);
 
     // Prefill form states once user loads
     useEffect(() => {
@@ -128,13 +134,13 @@ export default function BookingConfirmPage() {
     }, [user]);
 
     useEffect(() => {
-        if (navigatingAway.current) return;
+        if (!mounted || navigatingAway.current) return;
         // Guard check: redirect if booking details are missing
         if (!selectedVilla || !checkIn || !checkOut || totalNights <= 0) {
             toast.error('Data sewa tidak lengkap. Silakan pilih tanggal kembali.');
             router.push('/villas');
         }
-    }, [selectedVilla, checkIn, checkOut, totalNights]);
+    }, [mounted, selectedVilla, checkIn, checkOut, totalNights]);
 
     // Layer 4: Start countdown timer
     useEffect(() => {
@@ -200,7 +206,7 @@ export default function BookingConfirmPage() {
     const adminFee = selectedMethod?.admin_fee || 0;
     const finalTotalAmount = baseTotal + taxAmount + adminFee;
 
-    if (authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
+    if (!mounted || authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
         return <LoadingSpinner />;
     }
 

@@ -488,7 +488,8 @@ class DatabaseSeeder extends Seeder
                 'check_out_time' => '11:00:00',
                 'is_active' => true,
             ],
-            ['name' => 'Villa Seminyak Garden Paradise',
+            [
+                'name' => 'Villa Seminyak Garden Paradise',
                 'slug' => 'villa-seminyak-garden-paradise',
                 'description' => 'Villa di Seminyak tengah dengan taman tropis yang indah. Kolam renang dikelilingi oleh tanaman hijau, area lounging yang nyaman, dan kamar tidur yang elegan. Lokasi strategis dekat dengan restoran dan klub pantai terkenal.',
                 'short_desc' => 'Villa mewah di pusat Seminyak dengan taman tropis dan lokasi strategis.',
@@ -726,9 +727,36 @@ class DatabaseSeeder extends Seeder
 
             if ($villa->slug === 'pulas-private-villa-prawiro-oleh-fulton') {
                 $guestNames = [
-                    'Andi', 'Siti', 'Dewi', 'Rian', 'Fajar', 'Tari', 'Hendra', 'Mega', 'Joko', 'Gita',
-                    'Bagus', 'Putu', 'Made', 'Nyoman', 'Ketut', 'Laras', 'Wati', 'Budi', 'Eko', 'Sari',
-                    'Indah', 'Agus', 'Yanto', 'Dian', 'Ari', 'Guntur', 'Rini', 'Surya', 'Lia', 'Rudi',
+                    'Andi',
+                    'Siti',
+                    'Dewi',
+                    'Rian',
+                    'Fajar',
+                    'Tari',
+                    'Hendra',
+                    'Mega',
+                    'Joko',
+                    'Gita',
+                    'Bagus',
+                    'Putu',
+                    'Made',
+                    'Nyoman',
+                    'Ketut',
+                    'Laras',
+                    'Wati',
+                    'Budi',
+                    'Eko',
+                    'Sari',
+                    'Indah',
+                    'Agus',
+                    'Yanto',
+                    'Dian',
+                    'Ari',
+                    'Guntur',
+                    'Rini',
+                    'Surya',
+                    'Lia',
+                    'Rudi',
                 ];
 
                 $specificReviews = [
@@ -786,7 +814,7 @@ class DatabaseSeeder extends Seeder
                         $comment = $specificReviews[$i]['comment'];
                     } else {
                         $rating = $i % 6 === 0 ? 4 : 5; // mixture of 4s and 5s to average around 4.8
-                        $guestName = $guestNames[$i - count($specificReviews)] ?? ('Tamu '.($i + 1));
+                        $guestName = $guestNames[$i - count($specificReviews)] ?? ('Tamu ' . ($i + 1));
                         $comment = $comments[$i % count($comments)];
 
                         // Pick a random user avatar from unsplash or use generic
@@ -810,12 +838,12 @@ class DatabaseSeeder extends Seeder
                     }
 
                     $mockBooking = Booking::firstOrCreate(
-                        ['booking_code' => 'VB-2026-PULAS-'.str_pad($i + 1, 3, '0', STR_PAD_LEFT)],
+                        ['booking_code' => 'VB-2026-PULAS-' . str_pad($i + 1, 3, '0', STR_PAD_LEFT)],
                         [
                             'villa_id' => $villa->id,
                             'guest_name' => $guestName,
-                            'guest_email' => strtolower(str_replace(' ', '', $guestName)).'@example.com',
-                            'guest_phone' => '081234567'.str_pad($i, 3, '0', STR_PAD_LEFT),
+                            'guest_email' => strtolower(str_replace(' ', '', $guestName)) . '@example.com',
+                            'guest_phone' => '081234567' . str_pad($i, 3, '0', STR_PAD_LEFT),
                             'check_in' => now()->subMonths(3)->addDays($i * 3)->toDateString(),
                             'check_out' => now()->subMonths(3)->addDays($i * 3 + 2)->toDateString(),
                             'total_nights' => 2,
@@ -832,7 +860,7 @@ class DatabaseSeeder extends Seeder
                         Payment::firstOrCreate(
                             ['booking_id' => $mockBooking->id],
                             [
-                                'midtrans_order_id' => 'MID-'.$mockBooking->booking_code,
+                                'midtrans_order_id' => 'MID-' . $mockBooking->booking_code,
                                 'amount' => $mockBooking->total_amount,
                                 'status' => 'success',
                                 'paid_at' => $mockBooking->check_in,
@@ -859,7 +887,7 @@ class DatabaseSeeder extends Seeder
             } else {
                 // 3. Create a Mock Booking and Review for each other villa
                 $booking = Booking::firstOrCreate(
-                    ['booking_code' => 'VB-2026-'.str_pad($villa->id, 4, '0', STR_PAD_LEFT)],
+                    ['booking_code' => 'VB-2026-' . str_pad($villa->id, 4, '0', STR_PAD_LEFT)],
                     [
                         'villa_id' => $villa->id,
                         'guest_name' => 'Budi Santoso',
@@ -883,7 +911,7 @@ class DatabaseSeeder extends Seeder
                     Payment::firstOrCreate(
                         ['booking_id' => $booking->id],
                         [
-                            'midtrans_order_id' => 'MID-'.$booking->booking_code,
+                            'midtrans_order_id' => 'MID-' . $booking->booking_code,
                             'amount' => $booking->total_amount,
                             'status' => 'success',
                             'paid_at' => $booking->check_in,

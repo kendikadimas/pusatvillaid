@@ -1040,7 +1040,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                     mode="range"
                                     selected={dateRange}
                                     onSelect={handleSelectRange}
-                                    disabled={[{ before: new Date() }, ...disabledDays]}
+                                    disabled={[{ before: startOfDay(new Date()) }, ...disabledDays]}
                                     numberOfMonths={isMobile ? 1 : 2}
                                     locale={localeID}
                                     hideNavigation
