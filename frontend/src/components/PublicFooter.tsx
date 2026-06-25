@@ -2,8 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { MapPin, Mail, Heart } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '6281234567890';
+import { useSettings } from '@/context/SettingsContext';
 
 const formatWhatsAppDisplay = (num: string): string => {
     if (num.length >= 12) {
@@ -13,7 +12,8 @@ const formatWhatsAppDisplay = (num: string): string => {
 };
 
 export default function PublicFooter() {
-    const whatsappDisplay = formatWhatsAppDisplay(WHATSAPP_NUMBER);
+    const { settings, whatsappNumber } = useSettings();
+    const whatsappDisplay = formatWhatsAppDisplay(whatsappNumber);
     
     return (
         <footer className="bg-gradient-to-b from-blue-800 to-blue-950 text-white">
@@ -27,7 +27,7 @@ export default function PublicFooter() {
                                 <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
                             </svg>
                             <span className="text-xl font-sans font-black tracking-tight text-white">
-                                pusatvilla.id
+                                {settings.settings_prop_name}
                             </span>
                         </Link>
                         <p className="text-sm leading-relaxed text-blue-200/80 max-w-xs">
@@ -53,7 +53,7 @@ export default function PublicFooter() {
                         <ul className="space-y-2.5">
                             <li>
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20cara%20memesan%20villa`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20cara%20memesan%20villa`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-200/80 hover:text-white transition-colors"
@@ -63,7 +63,7 @@ export default function PublicFooter() {
                             </li>
                             <li>
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20syarat%20dan%20ketentuan`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20syarat%20dan%20ketentuan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-200/80 hover:text-white transition-colors"
@@ -73,7 +73,7 @@ export default function PublicFooter() {
                             </li>
                             <li>
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20privasi`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20privasi`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-200/80 hover:text-white transition-colors"
@@ -83,7 +83,7 @@ export default function PublicFooter() {
                             </li>
                             <li>
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20pembatalan`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20pembatalan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-200/80 hover:text-white transition-colors"
@@ -93,7 +93,7 @@ export default function PublicFooter() {
                             </li>
                             <li>
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20butuh%20bantuan`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20butuh%20bantuan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-200/80 hover:text-white transition-colors"
@@ -110,16 +110,16 @@ export default function PublicFooter() {
                         <ul className="space-y-3 text-sm text-blue-200/80">
                             <li className="flex items-start space-x-2.5">
                                 <MapPin className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                                <span>Yogyakarta, Indonesia</span>
+                                <span>{settings.settings_address}</span>
                             </li>
                             <li className="flex items-start space-x-2.5">
                                 <Mail className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                                <span>support@pusatvilla.id</span>
+                                <span>{settings.settings_email}</span>
                             </li>
                             <li className="flex items-start space-x-2.5">
                                 <WhatsAppIcon className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                                 <a
-                                    href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
+                                    href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-200/80 hover:text-white transition-colors"
@@ -136,7 +136,7 @@ export default function PublicFooter() {
             <div className="border-t border-blue-700/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                     <p className="text-blue-300">
-                        &copy; {new Date().getFullYear()} PusatVilla.id &mdash; Semua hak cipta dilindungi.
+                        &copy; {new Date().getFullYear()} {settings.settings_prop_name} &mdash; Semua hak cipta dilindungi.
                     </p>
                     <p className="text-blue-400 flex items-center gap-1">
                         Dibuat dengan <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400" /> oleh KalanaLabs

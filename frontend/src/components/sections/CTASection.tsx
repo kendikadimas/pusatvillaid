@@ -3,10 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '6281234567890';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function CTASection() {
+    const { whatsappNumber } = useSettings();
     return (
         <section data-reveal className="mt-20 mb-20 px-4 sm:px-8 lg:px-16 reveal reveal-delay-1">
             <div className="max-w-6xl mx-auto">
@@ -30,7 +30,7 @@ export default function CTASection() {
                         {/* Right: CTAs stacked */}
                         <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:w-52">
                             <a
-                                href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
+                                href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center space-x-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors duration-150 active:scale-[0.97] cursor-pointer"

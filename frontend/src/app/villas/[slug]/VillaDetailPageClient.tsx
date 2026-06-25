@@ -52,6 +52,7 @@ import {
 import { toast } from 'sonner';
 import PublicHeader from '@/components/PublicHeader';
 import PhotoTourModal from '@/components/villa/PhotoTourModal';
+import { useSettings } from '@/context/SettingsContext';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -108,11 +109,8 @@ const getHostAboutIcon = (text: string, index: number) => {
 };
 
 export default function VillaDetailPageClient({ params }: PageProps) {
+    const { settings } = useSettings();
     const { slug: paramSlug } = use(params);
-    // For static export with placeholder fallback:
-    // - Real villa slugs: paramSlug is the actual slug
-    // - New villas not yet built: .htaccess rewrites to /villas/placeholder/
-    //   so paramSlug = 'placeholder', but we read the real slug from the URL
     const slug = typeof window !== 'undefined' && paramSlug === 'placeholder'
         ? window.location.pathname.split('/villas/')[1]?.replace(/\/$/, '') || paramSlug
         : paramSlug;
@@ -795,7 +793,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         key={`empty-${idx}`}
                                         className="relative bg-slate-50 border border-dashed border-slate-200 w-full h-full rounded-2xl flex items-center justify-center"
                                     >
-                                        <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">PusatVilla.id</span>
+                                        <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{settings.settings_prop_name}</span>
 
                                         {/* "Show all photos" Button in the 4th cell even if it is a placeholder */}
                                         {isLastCell && (

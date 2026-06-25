@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BookingAdminController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -166,5 +167,25 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update']);
         Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy']);
         Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo']);
+
+        // ==========================================
+        // Super Admin Only — Admin User Management
+        // ==========================================
+        Route::middleware('super_admin')->group(function () {
+            // Available permissions reference
+            Route::get('/permissions', [AdminUserController::class, 'availablePermissions']);
+
+            // Admin sub-account CRUD
+            Route::get('/admins', [AdminUserController::class, 'index']);
+            Route::post('/admins', [AdminUserController::class, 'store']);
+            Route::get('/admins/{id}', [AdminUserController::class, 'show']);
+            Route::put('/admins/{id}', [AdminUserController::class, 'update']);
+            Route::delete('/admins/{id}', [AdminUserController::class, 'destroy']);
+
+            // Session management for admin sub-accounts
+            Route::get('/admins/{id}/sessions', [AdminUserController::class, 'sessions']);
+            Route::delete('/admins/{id}/sessions', [AdminUserController::class, 'revokeAllSessions']);
+            Route::delete('/sessions/{tokenId}', [AdminUserController::class, 'revokeSession']);
+        });
     });
 });

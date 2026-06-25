@@ -13,11 +13,13 @@ import { id as localeID } from 'date-fns/locale';
 import { CheckCircle2, MapPin, Copy, Printer, Home, Check, Download } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 
 function BookingSuccessContent() {
     const searchParams = useSearchParams();
     const code = searchParams.get('code');
+    const { settings } = useSettings();
 
     const [booking, setBooking] = useState<Booking | null>(null);
     const [loading, setLoading] = useState(true);
@@ -69,7 +71,7 @@ function BookingSuccessContent() {
         if (!booking || !code) return;
         
         try {
-            await generateInvoicePDF(booking, code);
+            await generateInvoicePDF(booking, code, settings);
             toast.success('Invoice berhasil didownload!');
         } catch (error) {
             console.error('Failed to generate PDF:', error);
@@ -85,10 +87,10 @@ function BookingSuccessContent() {
         const checkOutDate = format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID });
         const totalAmountText = Number(booking.total_amount).toLocaleString('id-ID');
         
-        const host = typeof window !== 'undefined' ? window.location.origin : 'https://pusatvilla.id';
+        const host = typeof window !== 'undefined' ? window.location.origin : `https://${settings.settings_prop_name}`;
         const invoiceUrl = `${host}/booking/status?code=${codeText}`;
 
-        const message = `*INVOICE PEMESANAN VILLA - PUSATVILLA.ID*\n` +
+        const message = `*INVOICE PEMESANAN VILLA - ${settings.settings_prop_name.toUpperCase()}*\n` +
             `--------------------------------------------------\n` +
             `Halo *${booking.guest_name}*,\n\n` +
             `Berikut adalah rincian invoice pemesanan Anda:\n\n` +
@@ -102,7 +104,7 @@ function BookingSuccessContent() {
             `*Status Pembayaran:* Lunas / Sukses\n\n` +
             `Lihat detail status & petunjuk menginap:\n` +
             `${invoiceUrl}\n\n` +
-            `Terima kasih telah mempercayai PusatVilla.id untuk liburan Anda!`;
+            `Terima kasih telah mempercayai ${settings.settings_prop_name} untuk liburan Anda!`;
 
         let cleanPhone = booking.guest_phone.replace(/[^0-9]/g, '');
         if (cleanPhone.startsWith('0')) {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, History, Compass, ChevronLeft, ChevronRight, ArrowRight, MapPin, Calendar, Users, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useSettings } from '@/context/SettingsContext';
 import { Destination } from '@/types';
 
 interface RecentSearch {
@@ -80,6 +81,7 @@ export default function HomeHeader({
     getGuestsLabel,
 }: HomeHeaderProps) {
     const { user, admin } = useAuth();
+    const { settings } = useSettings();
 
     return (
         <header
@@ -107,7 +109,7 @@ export default function HomeHeader({
                         <span className={`text-lg sm:text-xl font-sans font-black tracking-tight transition-colors ${
                             headerSolid ? 'text-blue-500' : 'text-white'
                         }`}>
-                            pusatvilla.id
+                            {settings.settings_prop_name}
                         </span>
                     </Link>
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { X, Home, Search, Heart, User, LayoutDashboard, LogIn, Sparkles, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useSettings } from '@/context/SettingsContext';
 
 interface MobileSidebarProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface MobileSidebarProps {
 
 export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     const { user, admin } = useAuth();
+    const { settings } = useSettings();
     const router = useRouter();
 
     // Prevent background scrolling when sidebar is open
@@ -47,7 +49,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                             <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
                         </svg>
                         <span className="text-base font-black tracking-tight text-slate-800">
-                            pusatvilla.id
+                            {settings.settings_prop_name}
                         </span>
                     </div>
                     <button
@@ -157,7 +159,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
                 {/* Footer Brand info */}
                 <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex flex-col items-center justify-center space-y-1">
-                    <span className="text-[11px] font-bold text-slate-800">PusatVilla.id</span>
+                    <span className="text-[11px] font-bold text-slate-800">{settings.settings_prop_name}</span>
                     <span className="text-[9px] text-slate-400">© 2026. Hak Cipta Dilindungi.</span>
                 </div>
             </div>

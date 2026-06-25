@@ -30,8 +30,10 @@ import {
 import { toast } from 'sonner';
 import axiosClient from '@/lib/axios';
 import { PaymentMethod } from '@/types';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function AdminSettingsPage() {
+    const { refreshSettings } = useSettings();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState<'identity' | 'policies' | 'tax_fees' | 'payment' | 'payment_methods'>('identity');
@@ -262,6 +264,7 @@ export default function AdminSettingsPage() {
             }
             
             toast.success('Pengaturan sistem berhasil disimpan!');
+            refreshSettings();
         } catch (err: any) {
             console.error('Failed to save settings:', err);
             toast.error(err.response?.data?.message || 'Gagal menyimpan pengaturan.');

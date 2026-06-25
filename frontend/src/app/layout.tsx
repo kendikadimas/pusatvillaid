@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { SettingsProvider } from "@/context/SettingsContext";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -79,9 +80,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <AuthProvider>
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
+          <SettingsProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </SettingsProvider>
         </AuthProvider>
       </body>
     </html>

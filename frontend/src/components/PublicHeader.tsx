@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, X, Search, MapPin, Calendar, Users } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useSettings } from '@/context/SettingsContext';
 
 interface PublicHeaderProps {
     headerSolid?: boolean;
@@ -26,6 +27,7 @@ export default function PublicHeader({
     children
 }: PublicHeaderProps) {
     const { user, admin } = useAuth();
+    const { settings } = useSettings();
     const router = useRouter();
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchLocation, setSearchLocation] = useState('');
@@ -93,7 +95,7 @@ export default function PublicHeader({
                             <span className={`text-lg sm:text-xl font-sans font-black tracking-tight transition-colors ${
                                 headerSolid ? 'text-blue-500' : 'text-white'
                             }`}>
-                                pusatvilla.id
+                                {settings.settings_prop_name}
                             </span>
                         </Link>
                     </div>

@@ -2,6 +2,12 @@ import jsPDF from 'jspdf';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 
+interface InvoiceSettings {
+    settings_prop_name?: string;
+    settings_email?: string;
+    settings_wa?: string;
+}
+
 interface InvoiceBooking {
     booking_code?: string;
     guest_name?: string;
@@ -27,7 +33,10 @@ interface InvoiceBooking {
     } | null;
 }
 
-export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: string) {
+export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: string, invoiceSettings?: InvoiceSettings) {
+    const propName = invoiceSettings?.settings_prop_name || 'PusatVilla.id';
+    const email = invoiceSettings?.settings_email || 'support@pusatvilla.id';
+    const wa = invoiceSettings?.settings_wa || '+62 812-3456-7890';
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -47,7 +56,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   pdf.setFontSize(24);
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('PusatVilla.id', 20, 20);
+  pdf.text(propName, 20, 20);
   
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'normal');
@@ -286,10 +295,10 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   pdf.setFontSize(8);
   pdf.setTextColor(100, 116, 139);
   pdf.setFont('helvetica', 'normal');
-  pdf.text('PusatVilla.id - Platform Sewa Villa Premium', 20, footerY + 7);
-  pdf.text('Email: support@pusatvilla.id', 20, footerY + 12);
-  pdf.text('WhatsApp: +62 812-3456-7890', 20, footerY + 17);
-  pdf.text('Website: https://pusatvilla.id', 20, footerY + 22);
+  pdf.text(`${propName} - Platform Sewa Villa Premium`, 20, footerY + 7);
+  pdf.text(`Email: ${email}`, 20, footerY + 12);
+  pdf.text(`WhatsApp: ${wa}`, 20, footerY + 17);
+  pdf.text(`Website: https://${propName.toLowerCase().replace(/[^a-z0-9]/g, '')}.id`, 20, footerY + 22);
   
   // Page number
   pdf.setTextColor(150, 150, 150);
@@ -311,7 +320,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
     const notes = [
       '• Tunjukkan invoice ini atau sebutkan kode booking saat check-in',
       '• Konfirmasi check-in telah dikirim ke email Anda',
-      '• Hubungi kami jika ada pertanyaan: +62 812-3456-7890 (WhatsApp)'
+      '• Hubungi kami jika ada pertanyaan: ' + wa + ' (WhatsApp)'
     ];
     let noteY = yPos + 12;
     notes.forEach(note => {

@@ -23,16 +23,19 @@ import {
     Lock
 } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
+import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 
 function BookingPaymentContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { whatsappNumber } = useSettings();
     const code = searchParams.get('code') || '';
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
     const [booking, setBooking] = useState<Booking | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Start loading only if we have a code — avoids premature spinner/redirect during static hydration
+    const [loading, setLoading] = useState(Boolean(code));
     // const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam); // ARCHIVED: Midtrans
     // const [scriptLoaded, setScriptLoaded] = useState(false); // ARCHIVED: Midtrans
 
@@ -99,6 +102,12 @@ function BookingPaymentContent() {
     useEffect(() => {
         // 1. Fetch booking details to verify unpaid status
         const fetchBooking = async () => {
+            // Guard: code is empty during static-export hydration — wait for URL params to be available
+            if (!code) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 // To fetch details we need the email. We retrieve it from sessionStorage (saved during confirm checkout)
                 const email = sessionStorage.getItem(`checkout_email_${code}`);
@@ -127,11 +136,6 @@ function BookingPaymentContent() {
                     router.push(`/booking/failed?code=${code}`);
                     return;
                 }
-
-                // ARCHIVED: snap_token logic (Midtrans belum diaktifkan)
-                // if (!snapToken && b.payment?.snap_token) {
-                //     setSnapToken(b.payment.snap_token);
-                // }
 
             } catch (err) {
                 console.error('Failed to fetch booking:', err);
@@ -217,9 +221,9 @@ function BookingPaymentContent() {
                 duration: 5000,
             });
             
-            // Re-fetch booking details or redirect to refresh status
+            // Navigate to status page — avoids static-cache stale reload issue
             setTimeout(() => {
-                window.location.reload();
+                router.push(`/booking/status?code=${code}`);
             }, 2000);
         } catch (err: any) {
             console.error('Failed to submit manual payment:', err);
@@ -762,7 +766,7 @@ function BookingPaymentContent() {
 
                 <div className="text-center mt-6">
                     <a 
-                        href="https://api.whatsapp.com/send?phone=6281234567890" 
+                        href={`https://api.whatsapp.com/send?phone=${whatsappNumber}`} 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center text-slate-500 hover:text-slate-800 text-xs font-semibold space-x-1 hover:underline transition-all"

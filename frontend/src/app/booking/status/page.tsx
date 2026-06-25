@@ -24,10 +24,12 @@ import {
     Download
 } from 'lucide-react';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 function BookingStatusContent() {
+    const { settings } = useSettings();
     const router = useRouter();
     const searchParams = useSearchParams();
     const code = searchParams.get('code') || '';
@@ -152,7 +154,7 @@ function BookingStatusContent() {
                                     <span className="transition-transform group-open:rotate-180">↓</span>
                                 </summary>
                                 <ul className="mt-2.5 space-y-2 text-[11px] leading-relaxed text-slate-550 border-l-2 border-slate-200 pl-3">
-                                    <li>Cek kotak masuk email Anda untuk email konfirmasi dari <strong>PusatVilla.id</strong></li>
+                                    <li>Cek kotak masuk email Anda untuk email konfirmasi dari <strong>{settings.settings_prop_name}</strong></li>
                                     <li>Cek folder Spam atau Promosi jika tidak ditemukan di Inbox</li>
                                     <li>Email tersebut berisi kode booking dan rincian lengkap Anda</li>
                                 </ul>
@@ -165,7 +167,7 @@ function BookingStatusContent() {
                                 </summary>
                                 <p className="mt-2.5 text-[11px] leading-relaxed text-slate-550 border-l-2 border-slate-200 pl-3">
                                     Kode booking dikirim otomatis setelah pemesanan dengan format <strong>VB-2026-XXXX</strong>.
-                                    Cek inbox email Anda atau hubungi kami di <strong>support@pusatvilla.id</strong>.
+                                    Cek inbox email Anda atau hubungi kami di <strong>{settings.settings_email}</strong>.
                                 </p>
                             </details>
                         </div>
@@ -394,7 +396,7 @@ function BookingStatusContent() {
                                 <button
                                     onClick={async () => {
                                         try {
-                                            await generateInvoicePDF(booking, code);
+                                            await generateInvoicePDF(booking, code, settings);
                                             toast.success('Invoice berhasil didownload!');
                                         } catch (error) {
                                             console.error('Failed to generate PDF:', error);

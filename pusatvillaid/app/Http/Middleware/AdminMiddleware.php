@@ -17,8 +17,8 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        // Must be authenticated and have admin role
-        if (! $user || $user->role !== 'admin') {
+        // Must be authenticated and have admin or super_admin role
+        if (! $user || ! $user->isAdmin()) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 

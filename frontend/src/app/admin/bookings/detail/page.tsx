@@ -35,11 +35,13 @@ import {
     AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSettings } from '@/context/SettingsContext';
 
 function AdminBookingDetailContent() {
     const searchParams = useSearchParams();
     const id = searchParams.get('id') || '';
     const router = useRouter();
+    const { settings } = useSettings();
     
     const [booking, setBooking] = useState<Booking | null>(null);
     const [loading, setLoading] = useState(true);
@@ -136,7 +138,7 @@ function AdminBookingDetailContent() {
                     name: booking.payment.payment_type?.replace('manual_', '')
                 } : null
             };
-            await generateInvoicePDF(invoiceBooking, booking.booking_code);
+            await generateInvoicePDF(invoiceBooking, booking.booking_code, settings);
             toast.success('Invoice PDF berhasil diunduh.');
 
             // 2. Format details

@@ -29,6 +29,7 @@ import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { useSettings } from '@/context/SettingsContext';
 
 interface Booking {
     id: number;
@@ -55,6 +56,7 @@ interface Booking {
 
 export default function ProfilePage() {
     const { user, loading: authLoading, logout } = useAuth();
+    const { settings } = useSettings();
     const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [bookingsLoading, setBookingsLoading] = useState(true);
@@ -278,7 +280,7 @@ export default function ProfilePage() {
                                                                 <button
                                                                     onClick={async () => {
                                                                         try {
-                                                                            await generateInvoicePDF(booking, booking.booking_code);
+                                                                            await generateInvoicePDF(booking, booking.booking_code, settings);
                                                                             toast.success('Invoice berhasil didownload!');
                                                                         } catch (error) {
                                                                             console.error('Failed to generate PDF:', error);

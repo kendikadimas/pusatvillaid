@@ -42,17 +42,15 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Check if user is admin
-        if ($user->role !== 'admin') {
+        // Check if user is admin or super_admin
+        if (! in_array($user->role, ['admin', 'super_admin'])) {
             return response()->json([
                 'message' => 'Akses ditolak. Akun ini bukan administrator.',
             ], 403);
         }
 
-        // Revoke all existing admin tokens for this user (single active session)
-        $user->tokens()->where('name', 'admin-token')->delete();
-
         // Generate Sanctum token with admin-only ability
+        // Multi-device sessions are allowed — no existing tokens revoked
         $token = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
 
         return response()->json([
@@ -62,6 +60,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'permissions' => $user->permissions ?? [],
             ],
             'message' => 'Login berhasil.',
         ]);
@@ -94,7 +93,7 @@ class AuthController extends Controller
         }
 
         // Block admin accounts from logging in via the user login endpoint
-        if ($user->role === 'admin') {
+        if (in_array($user->role, ['admin', 'super_admin'])) {
             return response()->json([
                 'message' => 'Akun administrator harus login melalui portal admin.',
             ], 403);
@@ -186,6 +185,7 @@ class AuthController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'role' => $user->role,
+            'permissions' => $user->permissions ?? [],
         ]);
     }
 
