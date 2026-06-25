@@ -27,8 +27,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const { admin, loading, logout } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    console.log('[AdminLayout] Render:', { pathname, loading, admin: admin ? { id: admin.id, role: admin.role } : null });
+
     useEffect(() => {
         if (!loading && (!admin || admin.role !== 'admin') && pathname !== '/admin/login') {
+            console.log('[AdminLayout] Not authenticated, redirecting to /admin/login');
             router.push('/admin/login');
         }
     }, [loading, admin, pathname, router]);

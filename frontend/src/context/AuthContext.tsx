@@ -185,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Combined initial loading
     useEffect(() => {
         const initAuth = async () => {
-            console.log('[Auth] initAuth started');
+            console.log('[Auth] initAuth started at', new Date().toISOString());
             setLoading(true);
             try {
                 const timeoutPromise = new Promise<never>((_, reject) =>
@@ -195,12 +195,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     Promise.all([refreshAdmin(), refreshUser()]),
                     timeoutPromise,
                 ]);
-                console.log('[Auth] initAuth completed');
+                console.log('[Auth] initAuth completed at', new Date().toISOString());
             } catch (err) {
                 console.error('[Auth] initAuth error:', err);
             }
             setLoading(false);
-            console.log('[Auth] Loading set to false');
+            console.log('[Auth] Loading set to false at', new Date().toISOString());
         };
         initAuth();
     }, []);
@@ -216,13 +216,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Handle Admin Route Protection
     useEffect(() => {
-        if (loading) return;
+        console.log('[Auth Route Protection] Effect triggered:', { loading, pathname, admin: admin ? { id: admin.id, role: admin.role } : null });
+        
+        if (loading) {
+            console.log('[Auth Route Protection] Still loading, skipping');
+            return;
+        }
 
         const isAdminRoute = pathname.startsWith('/admin');
         const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
         const isLoginRoute = normalizedPathname === '/admin/login';
 
-        console.log('[Auth Route Protection]', {
+        console.log('[Auth Route Protection] Evaluating:', {
             pathname,
             normalizedPathname,
             isAdminRoute,
@@ -241,7 +246,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else if (isLoginRoute) {
                 console.log('[Auth Route Protection] Is admin on login page, redirecting to dashboard');
                 router.push('/admin/dashboard');
+            } else {
+                console.log('[Auth Route Protection] Admin on admin route, no action needed');
             }
+        } else {
+            console.log('[Auth Route Protection] Not admin route, no action needed');
         }
     }, [admin, loading, pathname, router]);
 
@@ -251,37 +260,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
             const targetIsAdmin = isAdmin !== undefined ? isAdmin : isCurrentPathAdmin;
             
+            console.log('[Auth login()] Starting login:', { isAdmin, targetIsAdmin, isCurrentPathAdmin });
+            
             const endpoint = targetIsAdmin ? '/admin/login' : '/login';
+            console.log('[Auth login()] Calling endpoint:', endpoint);
             const response = await axiosClient.post(endpoint, credentials);
             const { token, user: userData } = response.data;
             const isAdminUser = userData?.role === 'admin';
             
+            console.log('[Auth login()] API response received:', { 
+                hasToken: !!token, 
+                userId: userData?.id, 
+                role: userData?.role,
+                isAdminUser,
+                targetIsAdmin 
+            });
+            
             if (typeof window !== 'undefined') {
+                console.log('[Auth login()] Before flushSync — admin state:', admin);
                 flushSync(() => {
                     if (targetIsAdmin || isAdminUser) {
                         localStorage.setItem('admin_token', token);
                         setAdmin(userData);
+                        console.log('[Auth login()] flushSync: set admin_token + setAdmin');
                     } else {
                         localStorage.setItem('user_token', token);
                         setUser(userData);
+                        console.log('[Auth login()] flushSync: set user_token + setUser');
                     }
                 });
+                console.log('[Auth login()] After flushSync — admin state:', userData);
             }
             
             if (targetIsAdmin || isAdminUser) {
+                console.log('[Auth login()] Navigating to /admin/dashboard');
                 router.push('/admin/dashboard');
             } else {
                 const searchParams = new URLSearchParams(window.location.search);
                 const redirect = searchParams.get('redirect');
-                if (redirect) {
-                    router.push(redirect);
-                } else {
-                    router.push('/profile');
-                }
+                const target = redirect || '/profile';
+                console.log('[Auth login()] Navigating to:', target);
+                router.push(target);
             }
             
             return response.data;
         } catch (err: any) {
+            console.error('[Auth login()] Login failed:', err.response?.status, err.response?.data);
             setError(err.response?.data?.message || 'Email atau password salah.');
             throw err;
         }

@@ -29,18 +29,29 @@ export default function LoginPage() {
 
         try {
             // First try user login; if the account is admin, retry with admin endpoint
+            console.log('[LoginPage] Attempting user login for:', email);
             await login({ email, password, remember: remember ? 'on' : '' });
+            console.log('[LoginPage] User login succeeded');
         } catch (err: any) {
             const message: string = err.response?.data?.message || '';
             const isAdminAccount = err.response?.status === 403 &&
                 message.includes('administrator');
 
+            console.log('[LoginPage] First login attempt failed:', {
+                status: err.response?.status,
+                message,
+                isAdminAccount,
+            });
+
             if (isAdminAccount) {
                 // Retry as admin login
+                console.log('[LoginPage] Detected admin account, retrying with admin endpoint...');
                 try {
                     await login({ email, password, remember: remember ? 'on' : '' }, true);
+                    console.log('[LoginPage] Admin login retry succeeded');
                     return;
                 } catch (adminErr: any) {
+                    console.error('[LoginPage] Admin login retry failed:', adminErr.response?.status, adminErr.response?.data);
                     if (adminErr.response?.data?.errors) {
                         const apiErrors: Record<string, string> = {};
                         Object.keys(adminErr.response.data.errors).forEach((key) => {
