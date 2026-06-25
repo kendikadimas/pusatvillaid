@@ -42,6 +42,7 @@ class BookingController extends Controller
             'utm_medium' => 'nullable|string|max:100',
             'utm_campaign' => 'nullable|string|max:100',
             'is_refundable' => 'nullable|boolean',
+            'ktp_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -73,7 +74,14 @@ class BookingController extends Controller
         // Wrap availability check and database record insertion in a transaction
         // to prevent race conditions (two people booking the same dates simultaneously)
         try {
-            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request) {
+            // Upload KTP image before transaction
+            $ktpImageUrl = null;
+            if ($request->hasFile('ktp_image')) {
+                $path = $request->file('ktp_image')->store('ktp-images', 'public');
+                $ktpImageUrl = asset('storage/' . $path);
+            }
+
+            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImageUrl) {
                 // 1. Lock existing bookings check
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
                     ->where('status', '!=', 'cancelled')
@@ -186,6 +194,7 @@ class BookingController extends Controller
                     'utm_source' => $request->utm_source,
                     'utm_medium' => $request->utm_medium,
                     'utm_campaign' => $request->utm_campaign,
+                    'ktp_image' => $ktpImageUrl,
                 ]);
 
                 return $booking;

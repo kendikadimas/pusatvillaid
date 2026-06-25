@@ -35,6 +35,7 @@ class Booking extends Model
         'utm_campaign',
         'cancel_reason',
         'cancelled_at',
+        'ktp_image',
     ];
 
     protected $casts = [
