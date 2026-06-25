@@ -41,7 +41,7 @@ class SettingAdminController extends Controller
             'settings_address' => 'required|string|max:1000',
             'settings_checkin' => 'required|string|max:5',
             'settings_checkout' => 'required|string|max:5',
-            'settings_midtrans' => 'required|string|in:sandbox,production',
+            'settings_midtrans' => 'sometimes|string|in:sandbox,production',
             'tax_percentage' => 'required|integer|min:0|max:100',
         ];
 
