@@ -12,20 +12,6 @@ interface RecentSearch {
     datesLabel: string;
 }
 
-interface FlexPreset {
-    label: string;
-    value: number;
-}
-
-const flexibilityPresets: FlexPreset[] = [
-    { label: 'Tanggal pasti', value: 0 },
-    { label: '± 1 hari', value: 1 },
-    { label: '± 2 hari', value: 2 },
-    { label: '± 3 hari', value: 3 },
-    { label: '± 7 hari', value: 7 },
-    { label: '± 14 hari', value: 14 },
-];
-
 interface HeroSectionProps {
     headerSolid: boolean;
     searchParams: { location: string; checkIn: string; checkOut: string };
@@ -43,8 +29,6 @@ interface HeroSectionProps {
     getNextMonthDate: (date: Date) => Date;
     prevCalendarMonth: (e: React.MouseEvent) => void;
     nextCalendarMonth: (e: React.MouseEvent) => void;
-    selectedFlexibility: number;
-    setSelectedFlexibility: (value: number) => void;
     adults: number;
     childrenCount: number;
     infants: number;
@@ -70,8 +54,6 @@ export default function HeroSection({
     getNextMonthDate,
     prevCalendarMonth,
     nextCalendarMonth,
-    selectedFlexibility,
-    setSelectedFlexibility,
     adults,
     childrenCount,
     infants,
@@ -253,34 +235,6 @@ export default function HeroSection({
                                                 <ChevronRight className="w-4 h-4" />
                                             </button>
                                         </div>
-                                    </div>
-
-                                    <div className="border-t border-slate-100 mt-6 pt-4 flex justify-between items-center">
-                                        <div className="flex items-center space-x-2 overflow-x-auto scrollbar-none py-1">
-                                            {flexibilityPresets.map((preset, i) => (
-                                                <button
-                                                    key={i}
-                                                    type="button"
-                                                    onClick={() => setSelectedFlexibility(preset.value)}
-                                                    className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold border transition-all whitespace-nowrap active:scale-95 ${
-                                                        selectedFlexibility === preset.value
-                                                            ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900'
-                                                    }`}
-                                                >
-                                                    {preset.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setSearchParams({ ...searchParams, checkIn: '', checkOut: '' });
-                                            }}
-                                            className="text-xs font-bold text-slate-600 hover:text-slate-900 underline shrink-0 px-2 active:scale-95"
-                                        >
-                                            Hapus tanggal
-                                        </button>
                                     </div>
                                 </div>
                             )}

@@ -54,7 +54,6 @@ export default function HomePage() {
     const [childrenCount, setChildrenCount] = useState(0);
     const [infants, setInfants] = useState(0);
     const [pets, setPets] = useState(0);
-    const [selectedFlexibility, setSelectedFlexibility] = useState(0);
     const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
     const [recentSearches, setRecentSearches] = useState<{location: string, checkIn: string, checkOut: string, guestsLabel: string, datesLabel: string}[]>([]);
     const [headerSolid, setHeaderSolid] = useState(false);
@@ -429,8 +428,6 @@ export default function HomePage() {
                     getNextMonthDate={getNextMonthDate}
                     prevCalendarMonth={prevCalendarMonth}
                     nextCalendarMonth={nextCalendarMonth}
-                    selectedFlexibility={selectedFlexibility}
-                    setSelectedFlexibility={setSelectedFlexibility}
                     adults={adults}
                     childrenCount={childrenCount}
                     infants={infants}
@@ -456,8 +453,6 @@ export default function HomePage() {
                     getNextMonthDate={getNextMonthDate}
                     prevCalendarMonth={prevCalendarMonth}
                     nextCalendarMonth={nextCalendarMonth}
-                    selectedFlexibility={selectedFlexibility}
-                    setSelectedFlexibility={setSelectedFlexibility}
                     adults={adults}
                     childrenCount={childrenCount}
                     infants={infants}

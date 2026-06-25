@@ -15,18 +15,6 @@ interface RecentSearch {
     datesLabel: string;
 }
 
-interface FlexPreset {
-    label: string;
-    value: number;
-}
-
-const flexibilityPresets: FlexPreset[] = [
-    { label: 'Tanggal pasti', value: 0 },
-    { label: '± 1 hari', value: 1 },
-    { label: '± 2 hari', value: 2 },
-    { label: '± 3 hari', value: 3 },
-];
-
 interface HomeHeaderProps {
     headerSolid: boolean;
     searchParams: { location: string; checkIn: string; checkOut: string };
@@ -44,8 +32,6 @@ interface HomeHeaderProps {
     getNextMonthDate: (date: Date) => Date;
     prevCalendarMonth: (e: React.MouseEvent) => void;
     nextCalendarMonth: (e: React.MouseEvent) => void;
-    selectedFlexibility: number;
-    setSelectedFlexibility: (value: number) => void;
     adults: number;
     childrenCount: number;
     infants: number;
@@ -71,8 +57,6 @@ export default function HomeHeader({
     getNextMonthDate,
     prevCalendarMonth,
     nextCalendarMonth,
-    selectedFlexibility,
-    setSelectedFlexibility,
     adults,
     childrenCount,
     infants,
@@ -230,22 +214,6 @@ export default function HomeHeader({
                                                             <ChevronRight className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
-                                                </div>
-                                                <div className="border-t border-[#EAEAEA] mt-4 pt-3 flex justify-between items-center">
-                                                    <div className="flex items-center space-x-1.5 overflow-x-auto scrollbar-none py-1">
-                                                        {flexibilityPresets.map((preset, i) => (
-                                                            <button key={i} type="button" onClick={() => setSelectedFlexibility(preset.value)} className={`px-3 py-1 rounded-full text-[10px] font-medium border transition-all whitespace-nowrap active:scale-95 ${
-                                                                selectedFlexibility === preset.value
-                                                                    ? 'bg-[#111111] border-[#111111] text-white'
-                                                                    : 'bg-white border-[#EAEAEA] text-[#787774] hover:border-[#111111] hover:text-[#111111]'
-                                                            }`}>
-                                                                {preset.label}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                    <button type="button" onClick={() => setSearchParams({ ...searchParams, checkIn: '', checkOut: '' })} className="text-[10px] font-medium text-[#787774] hover:text-[#111111] underline shrink-0 px-2 active:scale-95">
-                                                        Hapus tanggal
-                                                    </button>
                                                 </div>
                                             </div>
                                         )}
