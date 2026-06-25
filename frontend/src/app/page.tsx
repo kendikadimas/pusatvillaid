@@ -376,6 +376,19 @@ export default function HomePage() {
         fetchVillas();
     }, []);
 
+    // Re-fetch villas when user returns to this tab (e.g., after opening villa in new tab)
+    useEffect(() => {
+        const handleVisibility = () => {
+            if (document.visibilityState === 'visible') {
+                axiosClient.get('/villas?per_page=50')
+                    .then(res => setVillas(res.data.data || []))
+                    .catch(() => {});
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+        return () => document.removeEventListener('visibilitychange', handleVisibility);
+    }, []);
+
     initScrollReveal([loading]);
 
     const filteredByCategory = villas.filter(v => {
