@@ -22,6 +22,7 @@ const sidebarNavItems = [
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const pathname = usePathname();
+    const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
     return (
         <div className="min-h-screen bg-white">
@@ -40,7 +41,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                             aria-label="Settings"
                         >
                             {sidebarNavItems.map((item, index) => {
-                                const isActive = pathname === item.href;
+                                const isActive = normalizedPathname === item.href;
                                 return (
                                     <Button
                                         key={`${item.href}-${index}`}

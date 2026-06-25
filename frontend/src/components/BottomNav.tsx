@@ -9,8 +9,9 @@ import { useAuth } from '@/context/AuthContext';
 export default function BottomNav() {
     const pathname = usePathname();
     const { user, admin } = useAuth();
+    const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
-    const isActive = (path: string) => pathname === path;
+    const isActive = (path: string) => normalizedPathname === path;
 
     // Decide link and label for account tab dynamically
     const getAccountLink = () => {
