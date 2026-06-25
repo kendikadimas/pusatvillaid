@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Villa } from '@/types';
 import VillaCard from '@/components/VillaCard';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -38,8 +38,21 @@ export default function VillaSection({
     return (
         <>
             {loading ? (
-                <section className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-24 w-full flex justify-center reveal">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#787774]" />
+                <section className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-8 w-full reveal">
+                    <div className="mb-8">
+                        <div className="h-7 bg-slate-100 rounded-lg w-64 animate-pulse mb-2" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-x-4 gap-y-12">
+                        {[...Array(7)].map((_, i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="aspect-[20/19] w-full bg-slate-100 rounded-[12px]" />
+                                <div className="pt-3 space-y-2">
+                                    <div className="h-4 bg-slate-100 rounded w-3/4" />
+                                    <div className="h-3 bg-slate-100 rounded w-1/2" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </section>
             ) : (
                 <div className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-2 w-full space-y-8">
