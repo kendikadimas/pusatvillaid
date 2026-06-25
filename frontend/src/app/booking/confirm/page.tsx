@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/bookingStore';
 import axiosClient from '@/lib/axios';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, formatPriceOrLoading } from '@/lib/format';
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import PublicHeader from '@/components/PublicHeader';
@@ -55,6 +55,7 @@ export default function BookingConfirmPage() {
 
     const [loading, setLoading] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [dataMissing, setDataMissing] = useState(false);
     const navigatingAway = useRef(false);
     
     // Payment Method selection
@@ -118,7 +119,9 @@ export default function BookingConfirmPage() {
 
     // Enforce login
     useEffect(() => {
+        if (navigatingAway.current) return;
         if (mounted && !authLoading && !user) {
+            navigatingAway.current = true;
             toast.error('Silakan masuk (login) terlebih dahulu untuk melanjutkan pembayaran.');
             router.push('/login?redirect=/booking/confirm');
         }
@@ -135,10 +138,8 @@ export default function BookingConfirmPage() {
 
     useEffect(() => {
         if (!mounted || navigatingAway.current) return;
-        // Guard check: redirect if booking details are missing
         if (!selectedVilla || !checkIn || !checkOut || totalNights <= 0) {
-            toast.error('Data sewa tidak lengkap. Silakan pilih tanggal kembali.');
-            router.push('/villas');
+            setDataMissing(true);
         }
     }, [mounted, selectedVilla, checkIn, checkOut, totalNights]);
 
@@ -204,7 +205,32 @@ export default function BookingConfirmPage() {
     const taxAmount = Math.round((taxPercentage / 100) * baseTotal);
     const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
     const adminFee = selectedMethod?.admin_fee || 0;
-    const finalTotalAmount = baseTotal + taxAmount + adminFee;
+    const finalTotalAmount = methodsLoading ? null : Math.round(baseTotal + taxAmount + adminFee);
+
+    if (dataMissing) {
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center min-h-screen">
+                <div className="max-w-md space-y-4">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+                        <span className="text-2xl">⚠️</span>
+                    </div>
+                    <h2 className="text-lg font-bold text-slate-900">Data Pemesanan Tidak Ditemukan</h2>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                        Sepertinya Anda refresh halaman ini atau data pemesanan telah kedaluwarsa.
+                        Silakan pilih villa dan tanggal terlebih dahulu.
+                    </p>
+                    <div className="flex gap-3 justify-center pt-2">
+                        <button
+                            onClick={() => router.push('/villas')}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all"
+                        >
+                            Cari Villa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (!mounted || authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
         return <LoadingSpinner />;
@@ -308,14 +334,9 @@ export default function BookingConfirmPage() {
 
             navigatingAway.current = true;
 
-            // Redirect directly to payment checkout page before clearing store
-            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
+            resetStore();
 
-            // Delay store reset so redirect has time to complete — immediate reset causes
-            // selectedVilla to become null which triggers the guard and shows LoadingSpinner
-            setTimeout(() => {
-                resetStore();
-            }, 3000);
+            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
@@ -395,10 +416,11 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
+        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
-            toast.error('Silakan periksa kembali isian kontak Anda.');
+            toast.error('Silakan periksa kembali isian kontak dan KTP Anda.');
             return;
         }
         
@@ -804,10 +826,12 @@ export default function BookingConfirmPage() {
                                     <h4 className="text-[10px] font-black text-slate-955 uppercase tracking-widest">Perincian Harga</h4>
                                     
                                     <div className="space-y-3 text-xs font-semibold text-slate-550">
-                                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
-                                            <span className="break-words">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
-                                            <span className="text-slate-800 font-bold font-sans whitespace-nowrap">{formatPrice(priceBreakdown.weekdays.total)}</span>
-                                        </div>
+                                        {priceBreakdown.weekdays.count > 0 && (
+                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                                                <span className="break-words">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                                <span className="text-slate-800 font-bold font-sans whitespace-nowrap">{formatPrice(priceBreakdown.weekdays.total)}</span>
+                                            </div>
+                                        )}
                                         {priceBreakdown.weekends.count > 0 && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
                                                 <span className="break-words">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
@@ -836,7 +860,7 @@ export default function BookingConfirmPage() {
  
                                     <div className="border-t border-slate-150 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 font-black text-slate-950 text-sm">
                                         <span>Total Biaya</span>
-                                        <span className="text-blue-500 font-sans">{formatPrice(finalTotalAmount)}</span>
+                                        <span className="text-blue-500 font-sans">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                     </div>
                                 </div>
 
@@ -1198,10 +1222,12 @@ export default function BookingConfirmPage() {
                                         Rincian Harga
                                     </h3>
                                     <div className="space-y-3 text-xs font-semibold text-slate-605">
-                                        <div className="flex justify-between items-start gap-4">
-                                            <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
-                                            <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
-                                        </div>
+                                        {priceBreakdown.weekdays.count > 0 && (
+                                            <div className="flex justify-between items-start gap-4">
+                                                <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
+                                            </div>
+                                        )}
                                         {priceBreakdown.weekends.count > 0 && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
@@ -1229,7 +1255,7 @@ export default function BookingConfirmPage() {
                                         
                                         <div className="border-t border-slate-150 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                             <span>Total Biaya</span>
-                                            <span className="text-blue-600 font-sans text-base">{formatPrice(finalTotalAmount)}</span>
+                                            <span className="text-blue-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1260,7 +1286,7 @@ export default function BookingConfirmPage() {
                             <div>
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Total Biaya</div>
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-sm font-black text-slate-900 font-sans">{formatPrice(finalTotalAmount)}</span>
+                                    <span className="text-sm font-black text-slate-900 font-sans">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                     <button 
                                         onClick={() => setIsPriceDetailOpen(true)}
                                         className="text-[10px] font-bold text-blue-500 hover:underline cursor-pointer"
@@ -1431,10 +1457,12 @@ export default function BookingConfirmPage() {
                         </div>
                         
                         <div className="space-y-4 text-xs font-semibold text-slate-600">
-                            <div className="flex justify-between items-start gap-4">
-                                <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
-                                <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
-                            </div>
+                            {priceBreakdown.weekdays.count > 0 && (
+                                <div className="flex justify-between items-start gap-4">
+                                    <span className="text-left">{priceBreakdown.weekdays.count} malam x {formatPrice(selectedVilla.price_per_night)} (Weekday)</span>
+                                    <span className="text-slate-800 font-bold font-sans flex-shrink-0">{formatPrice(priceBreakdown.weekdays.total)}</span>
+                                </div>
+                            )}
                             {priceBreakdown.weekends.count > 0 && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">{priceBreakdown.weekends.count} malam x {formatPrice(selectedVilla.weekend_price || selectedVilla.price_per_night)} (Weekend)</span>
@@ -1462,7 +1490,7 @@ export default function BookingConfirmPage() {
                             
                             <div className="border-t border-slate-100 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                 <span>Total</span>
-                                <span className="text-blue-600 font-sans text-base">{formatPrice(finalTotalAmount)}</span>
+                                <span className="text-blue-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                             </div>
                         </div>
                         

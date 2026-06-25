@@ -163,7 +163,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         totalAmount,
         priceBreakdown,
         isRefundable,
-        setRefundable
     } = useBookingStore();
 
     // Date Picker Local State
@@ -277,6 +276,11 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     }, []);
 
     useEffect(() => {
+        setStoreDates(null, null);
+        setDateRange(undefined);
+    }, [slug]);
+
+    useEffect(() => {
         const fetchVillaDetails = async () => {
             if (!slug || slug === 'placeholder') {
                 setLoading(false);
@@ -294,6 +298,9 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 setReviews(res.data.reviews || []);
                 setAvgRating(res.data.stats?.rating_avg || 0);
                 setStoreVilla(res.data.villa);
+                if (storeNumGuests > res.data.villa.max_guests) {
+                    setNumGuests(res.data.villa.max_guests);
+                }
                 setDisabledDates(availRes.data.disabled_dates || []);
 
                 // Initialize dates from URL query params or booking store
@@ -621,10 +628,12 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             {/* Price Breakdown Calculations */}
             {totalNights > 0 && (
                 <div className="border-t border-slate-100 pt-3 lg:pt-4 space-y-2 lg:space-y-3 text-xs font-bold">
-                    <div className="flex justify-between text-slate-500 font-semibold">
-                        <span className="underline">Weekday <br className="lg:hidden" /> ({formatPrice(priceBreakdown.weekdays.price)} x {priceBreakdown.weekdays.count} malam)</span>
-                        <span className="font-sans">{formatPrice(priceBreakdown.weekdays.total)}</span>
-                    </div>
+                    {priceBreakdown.weekdays.count > 0 && (
+                        <div className="flex justify-between text-slate-500 font-semibold">
+                            <span className="underline">Weekday <br className="lg:hidden" /> ({formatPrice(priceBreakdown.weekdays.price)} x {priceBreakdown.weekdays.count} malam)</span>
+                            <span className="font-sans">{formatPrice(priceBreakdown.weekdays.total)}</span>
+                        </div>
+                    )}
                     {priceBreakdown.weekends.count > 0 && (
                         <div className="flex justify-between text-slate-500 font-semibold">
                             <span className="underline">Weekend <br className="lg:hidden" /> ({formatPrice(priceBreakdown.weekends.price)} x {priceBreakdown.weekends.count} malam)</span>
@@ -1222,27 +1231,18 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
                             </div>
 
-                            {/* Ratings Breakdown Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 bg-slate-50 border border-slate-200 p-6 rounded-2xl">
-                                {[
-                                    { label: 'Kebersihan', score: 4.9 },
-                                    { label: 'Akurasi', score: 5.0 },
-                                    { label: 'Komunikasi', score: 4.9 },
-                                    { label: 'Check-in', score: 5.0 },
-                                    { label: 'Lokasi', score: 4.8 },
-                                    { label: 'Nilai Harga', score: 4.7 }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between text-[13px] font-bold">
-                                        <span className="text-slate-600 font-semibold">{item.label}</span>
+                            {/* Actual overall rating */}
+                            {avgRating > 0 && (
+                                <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl">
+                                    <div className="flex items-center justify-between text-[13px] font-bold">
+                                        <span className="text-slate-600 font-semibold">Rating Keseluruhan</span>
                                         <div className="flex items-center space-x-2">
                                             <div className="flex items-center space-x-0.5">
                                                 {[1, 2, 3, 4, 5].map((star) => {
-                                                    const fillPercent = Math.min(100, Math.max(0, (item.score - (star - 1)) * 100));
+                                                    const fillPercent = Math.min(100, Math.max(0, (avgRating - (star - 0.5)) * 100));
                                                     return (
                                                         <div key={star} className="relative w-4 h-4">
-                                                            {/* Empty star (outline) */}
                                                             <Star className="w-4 h-4 text-slate-200 fill-slate-200 absolute inset-0" />
-                                                            {/* Filled portion */}
                                                             <div className="absolute inset-0 overflow-hidden" style={{ width: `${fillPercent}%` }}>
                                                                 <Star className="w-4 h-4 text-slate-800 fill-slate-800" />
                                                             </div>
@@ -1250,11 +1250,11 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                                     );
                                                 })}
                                             </div>
-                                            <span className="text-slate-800 text-[11px] font-sans font-bold">{item.score.toFixed(1)}</span>
+                                            <span className="text-slate-800 text-[11px] font-sans font-bold">{avgRating.toFixed(1)}</span>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            )}
 
                             {/* Keyword Tags pills */}
                             {reviews.length > 0 && (

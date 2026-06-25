@@ -168,8 +168,7 @@ export default function SearchOverlay({
 
         const qs = params.toString();
         
-        // Use window.location to force dynamic reload/sync of search catalog state
-        window.location.href = qs ? `/villas?${qs}` : '/villas';
+        router.push(qs ? `/villas?${qs}` : '/villas');
         onClose();
     };
 
