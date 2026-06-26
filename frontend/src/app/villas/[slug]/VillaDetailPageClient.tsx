@@ -996,10 +996,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         margin: 0;
         width: 100%;
         min-width: 280px;
-        --rdp-day-width: 40px;
-        --rdp-day-height: 40px;
-        --rdp-day_button-width: 40px;
-        --rdp-day_button-height: 40px;
+    }
+    .rdp-month {
+        width: 100%;
+        flex: 1 1 0%;
     }
     .rdp-months {
         display: flex;
@@ -1010,32 +1010,39 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         gap: 16px;
     }
     .rdp-month_grid {
+        table-layout: fixed;
         width: 100%;
         border-collapse: collapse;
     }
     .rdp-weekday {
+        width: 14.2857%;
         text-align: center;
         font-size: 13px;
         font-weight: 600;
         color: #64748b;
         padding: 8px 0;
     }
+    .rdp-day {
+        width: 14.2857%;
+    }
     .rdp-day_button {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto;
         font-size: 14px;
         touch-action: manipulation;
     }
 
     @media (max-width: 639px) {
         .rdp-root {
-            --rdp-day-width: 32px;
-            --rdp-day-height: 32px;
-            --rdp-day_button-width: 32px;
-            --rdp-day_button-height: 32px;
+            min-width: 0;
         }
         .rdp-months {
             flex-direction: column;
         }
         .rdp-day_button {
+            width: 32px;
+            height: 32px;
             font-size: 13px;
         }
         .rdp-weekday {
@@ -1433,6 +1440,47 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             )}
                                         </div>
                                         <div className="w-full overflow-x-auto pb-2">
+                                            <style dangerouslySetInnerHTML={{
+                                                __html: `
+    .rdp-root {
+        margin: 0;
+        width: 100%;
+        min-width: 0;
+    }
+    .rdp-month {
+        width: 100%;
+        flex: 1 1 0%;
+    }
+    .rdp-months {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+    }
+    .rdp-month_grid {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .rdp-weekday {
+        width: 14.2857%;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        padding: 6px 0;
+    }
+    .rdp-day {
+        width: 14.2857%;
+    }
+    .rdp-day_button {
+        width: 32px;
+        height: 32px;
+        margin: 0 auto;
+        font-size: 13px;
+        touch-action: manipulation;
+    }
+`}} />
                                             <DayPicker
                                                 mode="range"
                                                 selected={dateRange}
