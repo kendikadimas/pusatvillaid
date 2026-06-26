@@ -334,9 +334,10 @@ export default function BookingConfirmPage() {
 
             navigatingAway.current = true;
 
-            resetStore();
-
             router.push(`/booking/payment?code=${response.data.booking_code}`);
+
+            // Reset store after navigation has started to prevent LoadingSpinner flash
+            setTimeout(() => resetStore(), 200);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
