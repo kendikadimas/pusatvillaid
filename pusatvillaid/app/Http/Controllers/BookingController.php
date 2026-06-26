@@ -75,14 +75,13 @@ class BookingController extends Controller
         // Wrap availability check and database record insertion in a transaction
         // to prevent race conditions (two people booking the same dates simultaneously)
         try {
-            // Upload KTP image before transaction
-            $ktpImageUrl = null;
+            // Upload KTP image to private disk (not publicly accessible)
+            $ktpImagePath = null;
             if ($request->hasFile('ktp_image')) {
-                $path = $request->file('ktp_image')->store('ktp-images', 'public');
-                $ktpImageUrl = asset('storage/'.$path);
+                $ktpImagePath = $request->file('ktp_image')->store('ktp-images', 'private');
             }
 
-            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImageUrl) {
+            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImagePath) {
                 // 1. Check overlapping bookings (confirmed/completed, or pending with proof uploaded)
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
                     ->where(function ($q) {
@@ -148,14 +147,14 @@ class BookingController extends Controller
                 // Final total amount
                 $totalAmount = $baseAmount + $taxAmount + $adminFee;
 
-                // 4. Generate sequential booking code (VB-YYYY-XXXX) — atomic with lock and retry
+                // 4. Generate random booking code (VB-YYYY-XXXXXX) — atomic with lock and retry
                 $year = now()->year;
-                $maxRetries = 5;
+                $maxRetries = 10;
                 $bookingCode = null;
 
                 for ($retry = 0; $retry < $maxRetries; $retry++) {
-                    $count = Booking::whereYear('created_at', $year)->lockForUpdate()->count();
-                    $candidateCode = 'VB-'.$year.'-'.str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+                    $randomPart = strtoupper(Str::random(6));
+                    $candidateCode = 'VB-'.$year.'-'.$randomPart;
 
                     // Check if this code already exists (collision check)
                     if (! Booking::where('booking_code', $candidateCode)->exists()) {
@@ -201,7 +200,7 @@ class BookingController extends Controller
                     'utm_source' => $request->utm_source,
                     'utm_medium' => $request->utm_medium,
                     'utm_campaign' => $request->utm_campaign,
-                    'ktp_image' => $ktpImageUrl,
+                    'ktp_image' => $ktpImagePath,
                 ]);
 
                 return $booking;
@@ -299,14 +298,13 @@ class BookingController extends Controller
             return response()->json(['message' => 'Metode pembayaran tidak aktif.'], 422);
         }
 
-        // Handle file upload
-        $proofUrl = null;
+        // Handle file upload to private disk
+        $proofPath = null;
         if ($request->hasFile('payment_proof')) {
-            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
-            $proofUrl = asset('storage/'.$path);
+            $proofPath = $request->file('payment_proof')->store('payment-proofs', 'private');
         }
 
-        if (! $proofUrl) {
+        if (! $proofPath) {
             return response()->json(['message' => 'Gagal mengunggah bukti pembayaran.'], 400);
         }
 
@@ -314,18 +312,15 @@ class BookingController extends Controller
         $payment = $booking->payment;
 
         if ($payment) {
-            // Delete old proof if it was a local file
-            $oldProof = $payment->payment_proof;
-            $pathPrefix = asset('storage/');
-            if ($oldProof && Str::startsWith($oldProof, $pathPrefix)) {
-                $relativePath = Str::after($oldProof, $pathPrefix);
-                Storage::disk('public')->delete($relativePath);
+            // Delete old proof if it exists
+            if ($payment->payment_proof && Storage::disk('private')->exists($payment->payment_proof)) {
+                Storage::disk('private')->delete($payment->payment_proof);
             }
 
             $payment->update([
                 'payment_type' => 'manual_'.$paymentMethod->code,
                 'status' => 'pending',
-                'payment_proof' => $proofUrl,
+                'payment_proof' => $proofPath,
                 'rejection_reason' => null,
                 'rejected_at' => null,
             ]);
@@ -336,7 +331,7 @@ class BookingController extends Controller
                 'amount' => $booking->total_amount,
                 'status' => 'pending',
                 'payment_type' => 'manual_'.$paymentMethod->code,
-                'payment_proof' => $proofUrl,
+                'payment_proof' => $proofPath,
             ]);
         }
 
@@ -428,5 +423,71 @@ class BookingController extends Controller
             ->get();
 
         return response()->json($bookings);
+    }
+
+    /**
+     * Serve KTP image securely (authenticated access only).
+     */
+    public function showKtp(string $code, Request $request)
+    {
+        $user = auth('sanctum')->user() ?? $request->user('sanctum');
+
+        $query = Booking::where('booking_code', $code);
+
+        if ($user) {
+            if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+                $query->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('guest_email', $user->email);
+                });
+            }
+        } else {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $booking = $query->first();
+
+        if (! $booking || ! $booking->ktp_image) {
+            return response()->json(['message' => 'KTP tidak ditemukan.'], 404);
+        }
+
+        if (! Storage::disk('private')->exists($booking->ktp_image)) {
+            return response()->json(['message' => 'File KTP tidak tersedia.'], 404);
+        }
+
+        return Storage::disk('private')->response($booking->ktp_image);
+    }
+
+    /**
+     * Serve payment proof image securely (authenticated access only).
+     */
+    public function showPaymentProof(string $code, Request $request)
+    {
+        $user = auth('sanctum')->user() ?? $request->user('sanctum');
+
+        $query = Booking::where('booking_code', $code);
+
+        if ($user) {
+            if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+                $query->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('guest_email', $user->email);
+                });
+            }
+        } else {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $booking = $query->with('payment')->first();
+
+        if (! $booking || ! $booking->payment || ! $booking->payment->payment_proof) {
+            return response()->json(['message' => 'Bukti pembayaran tidak ditemukan.'], 404);
+        }
+
+        if (! Storage::disk('private')->exists($booking->payment->payment_proof)) {
+            return response()->json(['message' => 'File bukti pembayaran tidak tersedia.'], 404);
+        }
+
+        return Storage::disk('private')->response($booking->payment->payment_proof);
     }
 }

@@ -11,7 +11,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::prefix('auth')->group(function () {
     Route::get('/google/redirect', [OAuthController::class, 'redirectToGoogle']);
-    Route::match(['get', 'post'], '/google/callback', [OAuthController::class, 'handleGoogleCallback']);
+    Route::get('/google/callback', [OAuthController::class, 'handleGoogleCallback']);
 });
+
+Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode']);
 
 require __DIR__.'/settings.php';

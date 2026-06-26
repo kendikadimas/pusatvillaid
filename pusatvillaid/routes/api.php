@@ -60,12 +60,12 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     // iCal Feed Export (public — OTAs subscribe to this URL)
     Route::get('/villas/{id}/ical.ics', [IcalController::class, 'export']);
 
-    // Auth Public Endpoints
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'userLogin']);
-    Route::post('/admin/login', [AuthController::class, 'login']);
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    // Auth Public Endpoints (rate-limited)
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+    Route::post('/login', [AuthController::class, 'userLogin'])->middleware('throttle:5,1');
+    Route::post('/admin/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:3,1');
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('api.verification.verify');
 
     // ==========================================
@@ -76,6 +76,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
+        Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp']);
+        Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof']);
 
         // User Settings (Profile, Security, Password)
         Route::get('/settings/profile', [ProfileController::class, 'edit']);

@@ -30,7 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->statefulApi();
 
         $middleware->validateCsrfTokens(except: [
-            'auth/google/callback',
             'api/*',
             'login',
             'register',

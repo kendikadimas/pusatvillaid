@@ -63,6 +63,7 @@ class BookingAdminController extends Controller
         // Sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
         if (in_array($sortBy, ['booking_code', 'check_in', 'check_out', 'total_amount', 'status', 'created_at'])) {
             $query->orderBy($sortBy, $sortOrder);

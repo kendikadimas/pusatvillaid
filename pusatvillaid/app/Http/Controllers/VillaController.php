@@ -63,6 +63,7 @@ class VillaController extends Controller
         // Sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
         if (in_array($sortBy, ['price_per_night', 'created_at', 'bedrooms', 'max_guests'])) {
             $query->orderBy($sortBy, $sortOrder);

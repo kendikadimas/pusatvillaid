@@ -191,30 +191,24 @@ class AuthController extends Controller
     public function forgotPassword(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
         ], [
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'email.exists' => 'Email tidak terdaftar di sistem kami.',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Always return success to prevent email enumeration
         $status = Password::broker()->sendResetLink(
             $request->only('email')
         );
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return response()->json([
-                'status' => 'Link reset password telah dikirim ke email Anda.',
-            ]);
-        }
-
         return response()->json([
-            'message' => 'Gagal mengirim link reset password.',
-        ], 500);
+            'status' => 'Jika email terdaftar di sistem kami, link reset password telah dikirim.',
+        ]);
     }
 
     /**

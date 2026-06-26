@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/AuthContext';
+import axiosClient from '@/lib/axios';
 
 function CallbackContent() {
     const router = useRouter();
@@ -12,7 +13,7 @@ function CallbackContent() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const token = searchParams.get('token');
+        const code = searchParams.get('code');
         const errorMsg = searchParams.get('error');
 
         if (errorMsg) {
@@ -20,16 +21,25 @@ function CallbackContent() {
             return;
         }
 
-        if (token) {
-            localStorage.setItem('user_token', token);
-            refreshUser()
+        if (code) {
+            // Exchange the one-time authorization code for a token
+            axiosClient.post('/auth/exchange-code', { code })
+                .then((response) => {
+                    const { token } = response.data;
+                    if (token) {
+                        localStorage.setItem('user_token', token);
+                        return refreshUser();
+                    } else {
+                        throw new Error('No token received');
+                    }
+                })
                 .then(() => router.replace('/profile'))
                 .catch((err) => {
-                    console.error('refreshUser failed:', err);
-                    router.replace('/profile');
+                    console.error('Token exchange failed:', err);
+                    setError('Gagal menyelesaikan autentikasi. Silakan coba lagi.');
                 });
         } else {
-            setError('No authentication token received. Please try again.');
+            setError('Kode otorisasi tidak ditemukan. Silakan coba lagi.');
         }
     }, []);
 

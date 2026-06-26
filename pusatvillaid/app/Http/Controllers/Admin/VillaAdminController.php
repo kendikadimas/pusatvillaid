@@ -523,7 +523,9 @@ class VillaAdminController extends Controller
                 'message' => 'iCal feed verified successfully.',
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Gagal menghubungi server iCal: '.$e->getMessage()], 400);
+            Log::error('iCal verification failed: '.$e->getMessage());
+
+            return response()->json(['message' => 'Gagal memverifikasi feed iCal. Pastikan URL valid dan dapat diakses.'], 400);
         }
     }
 
@@ -611,7 +613,7 @@ class VillaAdminController extends Controller
             'host_avatar' => $villa->host_avatar,
             'message' => 'Avatar tuan rumah berhasil diunggah.',
         ]);
-     }
+    }
 
     /**
      * Upload a general image for bedrooms or accessibility features.
