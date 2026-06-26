@@ -1156,7 +1156,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             )}
                                         </div>
                                     </div>
-                                    {/* ARCHIVED: Maps Embed
                                     <div className="aspect-[4/3] sm:aspect-[16/10] md:aspect-square lg:aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm">
                                         {(() => {
                                             let cleanMapsUrl = villa.maps_url || '';
@@ -1179,7 +1178,6 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             );
                                         })()}
                                     </div>
-                                    */}
                                 </div>
                             </div>
                         )}
