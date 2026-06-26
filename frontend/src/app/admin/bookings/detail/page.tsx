@@ -13,6 +13,7 @@ import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import PageHeader from '@/components/ui/PageHeader';
+import AuthImage from '@/components/ui/AuthImage';
 import { formatPrice } from '@/lib/format';
 import { 
     ArrowLeft, 
@@ -346,21 +347,12 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
 
                         {booking.ktp_image ? (
                             <div className="space-y-4">
-                                <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64 group">
-                                    <img
-                                        src={booking.ktp_image}
+                                <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64">
+                                    <AuthImage
+                                        src={`/bookings/${booking.booking_code}/ktp`}
                                         alt="KTP Tamu"
                                         className="max-h-full max-w-full object-contain"
                                     />
-                                    <a
-                                        href={booking.ktp_image}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="absolute bottom-4 right-4 bg-slate-900/80 hover:bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px] flex items-center space-x-1 backdrop-blur-sm transition-all"
-                                    >
-                                        <span>Lihat Gambar Penuh</span>
-                                        <ExternalLink className="w-3 h-3" />
-                                    </a>
                                 </div>
                                 <div className="bg-violet-50 border border-violet-200/60 rounded-[10px] p-3 text-[10px] text-violet-800 font-semibold leading-relaxed">
                                     KTP diunggah oleh tamu saat booking. Verifikasi kesesuaian nama di KTP dengan nama pemesan.
@@ -471,21 +463,12 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                     </div>
                                 )}
 
-                                <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64 md:h-80 group">
-                                    <img 
-                                        src={booking.payment.payment_proof} 
-                                        alt="Bukti Transfer" 
+                                <div className="relative border border-[#dddddd] rounded-[14px] overflow-hidden bg-slate-100 flex justify-center items-center h-48 sm:h-64 md:h-80">
+                                    <AuthImage
+                                        src={`/bookings/${booking.booking_code}/payment-proof`}
+                                        alt="Bukti Transfer"
                                         className="max-h-full max-w-full object-contain"
                                     />
-                                    <a 
-                                        href={booking.payment.payment_proof}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="absolute bottom-4 right-4 bg-slate-900/80 hover:bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px] flex items-center space-x-1 backdrop-blur-sm transition-all"
-                                    >
-                                        <span>Lihat Gambar Penuh</span>
-                                        <ExternalLink className="w-3 h-3" />
-                                    </a>
                                 </div>
 
                                 {booking.payment_status !== 'paid' && (
