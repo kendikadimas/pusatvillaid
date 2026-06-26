@@ -117,6 +117,15 @@ export default function BookingConfirmPage() {
         setMounted(true);
     }, []);
 
+    // Reset zustand store when navigating away after successful booking
+    useEffect(() => {
+        return () => {
+            if (navigatingAway.current) {
+                resetStore();
+            }
+        };
+    }, []);
+
     // Enforce login
     useEffect(() => {
         if (navigatingAway.current) return;
@@ -335,9 +344,6 @@ export default function BookingConfirmPage() {
             navigatingAway.current = true;
 
             router.push(`/booking/payment?code=${response.data.booking_code}`);
-
-            // Reset store after navigation has started to prevent LoadingSpinner flash
-            setTimeout(() => resetStore(), 200);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
