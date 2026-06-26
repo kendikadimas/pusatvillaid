@@ -150,6 +150,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     const [isMobile, setIsMobile] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [isMobileDetailsOpen, setIsMobileDetailsOpen] = useState(false);
+    const [showMobileCalendar, setShowMobileCalendar] = useState(false);
 
     // Zustand Booking Store Actions
     const {
@@ -398,6 +399,18 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         router.push('/booking/confirm');
     };
 
+    const handleDateClick = () => {
+        if (isMobile) {
+            if (isMobileDetailsOpen) {
+                setShowMobileCalendar(true);
+            } else {
+                setIsMobileDetailsOpen(true);
+            }
+        } else {
+            scrollToSection('calendar');
+        }
+    };
+
     const toggleWishlist = (id: number, e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -579,7 +592,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             <div className="border border-slate-300 rounded-xl lg:rounded-2xl overflow-hidden divide-y divide-slate-200">
                 <div className="grid grid-cols-2 divide-x divide-slate-200">
                     <div
-                        onClick={() => isMobile ? setIsMobileDetailsOpen(true) : scrollToSection('calendar')}
+                        onClick={handleDateClick}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-IN</label>
@@ -588,7 +601,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </span>
                     </div>
                     <div
-                        onClick={() => isMobile ? setIsMobileDetailsOpen(true) : scrollToSection('calendar')}
+                        onClick={handleDateClick}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-OUT</label>
@@ -1403,7 +1416,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             {/* Backdrop */}
                             <div
                                 className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-xs transition-opacity duration-300"
-                                onClick={() => setIsMobileDetailsOpen(false)}
+                                onClick={() => { setIsMobileDetailsOpen(false); setShowMobileCalendar(false); }}
                             />
 
                             {/* Bottom Sheet Container */}
@@ -1415,7 +1428,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                         <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Rincian Reservasi</h3>
                                     </div>
                                     <button
-                                        onClick={() => setIsMobileDetailsOpen(false)}
+                                        onClick={() => { setIsMobileDetailsOpen(false); setShowMobileCalendar(false); }}
                                         className="text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-100 py-1.5 px-3 rounded-lg"
                                     >
                                         Tutup
@@ -1423,25 +1436,30 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
 
                                 <div className="space-y-4">
-                                    {/* Mobile Date Picker inline inside bottom sheet */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="text-sm font-bold text-slate-900">Pilih Tanggal Menginap</h4>
-                                            {(storeCheckIn || storeCheckOut) && (
+                                    {showMobileCalendar ? (
+                                        <>
+                                            <div className="flex items-center justify-between">
                                                 <button
-                                                    onClick={() => {
-                                                        setStoreDates(null, null);
-                                                        setDateRange(undefined);
-                                                    }}
-                                                    className="text-[11px] font-bold text-blue-600 hover:underline"
+                                                    onClick={() => setShowMobileCalendar(false)}
+                                                    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
                                                 >
-                                                    Hapus tanggal
+                                                    &larr; Kembali
                                                 </button>
-                                            )}
-                                        </div>
-                                        <div className="w-full overflow-x-auto pb-2">
-                                            <style dangerouslySetInnerHTML={{
-                                                __html: `
+                                                {(storeCheckIn || storeCheckOut) && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setStoreDates(null, null);
+                                                            setDateRange(undefined);
+                                                        }}
+                                                        className="text-[11px] font-bold text-blue-600 hover:underline"
+                                                    >
+                                                        Hapus tanggal
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="w-full overflow-x-auto pb-2">
+                                                <style dangerouslySetInnerHTML={{
+                                                    __html: `
     .rdp-root {
         margin: 0;
         width: 100%;
@@ -1481,25 +1499,27 @@ export default function VillaDetailPageClient({ params }: PageProps) {
         touch-action: manipulation;
     }
 `}} />
-                                            <DayPicker
-                                                mode="range"
-                                                selected={dateRange}
-                                                onSelect={handleSelectRange}
-                                                disabled={[{ before: new Date() }, ...disabledDays]}
-                                                numberOfMonths={2}
-                                                locale={localeID}
-                                                startMonth={new Date()}
-                                                classNames={{
-                                                    selected: "bg-blue-600 text-white hover:bg-blue-700",
-                                                    range_middle: "bg-blue-100 text-blue-900",
-                                                    range_start: "bg-blue-600 text-white",
-                                                    range_end: "bg-blue-600 text-white",
-                                                    today: "text-blue-600 font-bold",
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    {bookingWidgetContent}
+                                                <DayPicker
+                                                    mode="range"
+                                                    selected={dateRange}
+                                                    onSelect={handleSelectRange}
+                                                    disabled={[{ before: new Date() }, ...disabledDays]}
+                                                    numberOfMonths={2}
+                                                    locale={localeID}
+                                                    startMonth={new Date()}
+                                                    classNames={{
+                                                        selected: "bg-blue-600 text-white hover:bg-blue-700",
+                                                        range_middle: "bg-blue-100 text-blue-900",
+                                                        range_start: "bg-blue-600 text-white",
+                                                        range_end: "bg-blue-600 text-white",
+                                                        today: "text-blue-600 font-bold",
+                                                    }}
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        bookingWidgetContent
+                                    )}
                                 </div>
                             </div>
                         </>
