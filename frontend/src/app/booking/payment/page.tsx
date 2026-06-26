@@ -141,6 +141,11 @@ function BookingPaymentContent() {
                     return;
                 }
 
+                // Auto-select payment method from booking
+                if (b.payment_method_id) {
+                    setSelectedMethodId(b.payment_method_id);
+                }
+
             } catch (err) {
                 console.error('Failed to fetch booking:', err);
                 toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
@@ -440,105 +445,17 @@ function BookingPaymentContent() {
                     </div>
 
                     {paymentType === 'manual' && (() => {
-                        const qrisMethods = paymentMethods.filter(m => m.code === 'qris');
-                        const bankMethods = paymentMethods.filter(m => m.code !== 'qris');
+                        const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
+                        if (!selectedMethod) {
+                            return (
+                                <div className="text-center py-4 text-xs text-slate-400 font-medium">
+                                    Memuat informasi pembayaran...
+                                </div>
+                            );
+                        }
+                        const isQris = selectedMethod.code === 'qris';
                         return (
                         <div className="text-left space-y-4 animate-in fade-in duration-200">
-                            {qrisMethods.length > 0 && (
-                                <div>
-                                    <label className="text-[10px] font-extrabold text-slate-400 block mb-2 uppercase tracking-wider">
-                                        Pembayaran via QRIS
-                                    </label>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {qrisMethods.map((method) => (
-                                            <button
-                                                key={method.id}
-                                                type="button"
-                                                onClick={() => setSelectedMethodId(method.id)}
-                                                className={`flex items-center justify-between p-4 rounded-2xl border text-left transition-all duration-350 cursor-pointer ${
-                                                    selectedMethodId === method.id
-                                                        ? 'border-blue-900 bg-blue-50/20 ring-1 ring-blue-900/30 shadow-md shadow-blue-900/5'
-                                                        : 'border-slate-200 bg-white hover:border-slate-350'
-                                                }`}
-                                            >
-                                                <div className="flex items-center space-x-3.5">
-                                                    {method.logo_url ? (
-                                                        <img 
-                                                            src={method.logo_url} 
-                                                            alt={method.name} 
-                                                            className="w-10 h-6 object-contain rounded border border-slate-100 bg-white"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-10 h-6 bg-slate-100 rounded flex items-center justify-center border border-slate-150">
-                                                            <Smartphone className="w-4 h-4 text-slate-400" />
-                                                        </div>
-                                                    )}
-                                                    <div>
-                                                        <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
-                                                        <span className="text-[10px] text-slate-500">Scan QRIS</span>
-                                                    </div>
-                                                </div>
-                                                {selectedMethodId === method.id && (
-                                                    <div className="w-5 h-5 bg-blue-900 rounded-full flex items-center justify-center shadow-sm">
-                                                        <Check className="w-3 h-3 text-white stroke-[2.5]" />
-                                                    </div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            {bankMethods.length > 0 && (
-                                <div>
-                                    <label className="text-[10px] font-extrabold text-slate-400 block mb-2 uppercase tracking-wider">
-                                        Pilih Bank Transfer
-                                    </label>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {bankMethods.map((method) => (
-                                            <button
-                                                key={method.id}
-                                                type="button"
-                                                onClick={() => setSelectedMethodId(method.id)}
-                                                className={`flex items-center justify-between p-4 rounded-2xl border text-left transition-all duration-350 cursor-pointer ${
-                                                    selectedMethodId === method.id
-                                                        ? 'border-blue-900 bg-blue-50/20 ring-1 ring-blue-900/30 shadow-md shadow-blue-900/5'
-                                                        : 'border-slate-200 bg-white hover:border-slate-350'
-                                                }`}
-                                            >
-                                                <div className="flex items-center space-x-3.5">
-                                                    {method.logo_url ? (
-                                                        <img 
-                                                            src={method.logo_url} 
-                                                            alt={method.name} 
-                                                            className="w-10 h-6 object-contain rounded border border-slate-100 bg-white"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-10 h-6 bg-slate-100 rounded flex items-center justify-center border border-slate-150">
-                                                            <Building className="w-4 h-4 text-slate-400" />
-                                                        </div>
-                                                    )}
-                                                    <div>
-                                                        <span className="font-bold text-slate-900 text-xs block">{method.name}</span>
-                                                        <span className="text-[10px] text-slate-500">Manual Transfer</span>
-                                                    </div>
-                                                </div>
-                                                {selectedMethodId === method.id && (
-                                                    <div className="w-5 h-5 bg-blue-900 rounded-full flex items-center justify-center shadow-sm">
-                                                        <Check className="w-3 h-3 text-white stroke-[2.5]" />
-                                                    </div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Show payment details for selected method */}
-                            {(() => {
-                                const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
-                                if (!selectedMethod) return null;
-                                const isQris = selectedMethod.code === 'qris';
-                                return (
                                     <div className="bg-slate-50/60 border border-slate-250/60 rounded-2xl p-5 space-y-4 shadow-inner">
                                         {isQris ? (
                                                 <>  
@@ -617,8 +534,6 @@ function BookingPaymentContent() {
                                             </>
                                         )}
                                     </div>
-                                );
-                            })()}
 
                             {/* Proof Upload Input */}
                             <div className="space-y-2">
