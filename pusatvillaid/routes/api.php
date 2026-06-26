@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BookingAdminController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DestinationAdminController;
 use App\Http\Controllers\Admin\PaymentMethodAdminController;
 use App\Http\Controllers\Admin\ReviewAdminController;
+use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Admin\VillaAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
@@ -15,17 +16,16 @@ use App\Http\Controllers\IcalController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\VillaController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use App\Http\Controllers\VillaController;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
 use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
-use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,71 +102,73 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     // ==========================================
     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
 
-        // Admin Profile Actions
+        // Admin Profile Actions (always accessible)
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/dashboard', [DashboardController::class, 'index']);
-        Route::get('/settings', [SettingAdminController::class, 'index']);
-        Route::post('/settings', [SettingAdminController::class, 'update']);
 
-        // Bookings Management
-        Route::get('/bookings', [BookingAdminController::class, 'index']);
-        Route::get('/bookings/{id}', [BookingAdminController::class, 'show']);
-        Route::patch('/bookings/{id}/status', [BookingAdminController::class, 'updateStatus']);
-        Route::post('/bookings/{id}/approve-manual-payment', [BookingAdminController::class, 'approveManualPayment']);
-        Route::post('/bookings/{id}/reject-manual-payment', [BookingAdminController::class, 'rejectManualPayment']);
-        Route::post('/bookings/{id}/resend-email', [BookingAdminController::class, 'resendEmail']);
+        // ── Dashboard (requires analytics.view) ──
+        Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:analytics.view');
 
-        // Villas Management
-        Route::get('/villas', [VillaAdminController::class, 'index']);
-        Route::post('/villas', [VillaAdminController::class, 'store']);
-        Route::post('/villas/upload-image', [VillaAdminController::class, 'uploadImage']);
-        Route::get('/villas/{id}', [VillaAdminController::class, 'show']);
-        Route::put('/villas/{id}', [VillaAdminController::class, 'update']);
-        Route::delete('/villas/{id}', [VillaAdminController::class, 'destroy']);
-        Route::post('/villas/{id}/photos', [VillaAdminController::class, 'uploadPhotos']);
-        Route::post('/villas/{id}/host-avatar', [VillaAdminController::class, 'uploadHostAvatar']);
-        Route::delete('/villas/{id}/photos', [VillaAdminController::class, 'deletePhoto']);
+        // ── Settings (requires settings.view / settings.manage) ──
+        Route::get('/settings', [SettingAdminController::class, 'index'])->middleware('permission:settings.view');
+        Route::post('/settings', [SettingAdminController::class, 'update'])->middleware('permission:settings.manage');
 
-        // Destinations Management
-        Route::get('/destinations', [DestinationAdminController::class, 'index']);
-        Route::post('/destinations', [DestinationAdminController::class, 'store']);
-        Route::post('/destinations/upload-image', [DestinationAdminController::class, 'uploadImage']);
-        Route::get('/destinations/{id}', [DestinationAdminController::class, 'show']);
-        Route::put('/destinations/{id}', [DestinationAdminController::class, 'update']);
-        Route::delete('/destinations/{id}', [DestinationAdminController::class, 'destroy']);
+        // ── Bookings (requires bookings.view / bookings.manage) ──
+        Route::get('/bookings', [BookingAdminController::class, 'index'])->middleware('permission:bookings.view');
+        Route::get('/bookings/{id}', [BookingAdminController::class, 'show'])->middleware('permission:bookings.view');
+        Route::patch('/bookings/{id}/status', [BookingAdminController::class, 'updateStatus'])->middleware('permission:bookings.manage');
+        Route::post('/bookings/{id}/approve-manual-payment', [BookingAdminController::class, 'approveManualPayment'])->middleware('permission:bookings.manage');
+        Route::post('/bookings/{id}/reject-manual-payment', [BookingAdminController::class, 'rejectManualPayment'])->middleware('permission:bookings.manage');
+        Route::post('/bookings/{id}/resend-email', [BookingAdminController::class, 'resendEmail'])->middleware('permission:bookings.manage');
 
-        // Blocked Dates Management
-        Route::get('/blocked-dates', [VillaAdminController::class, 'listBlockedDates']);
-        Route::post('/blocked-dates', [VillaAdminController::class, 'blockDate']);
-        Route::delete('/blocked-dates/{id}', [VillaAdminController::class, 'unblockDate']);
+        // ── Villas (requires villas.view / villas.manage) ──
+        Route::get('/villas', [VillaAdminController::class, 'index'])->middleware('permission:villas.view');
+        Route::get('/villas/{id}', [VillaAdminController::class, 'show'])->middleware('permission:villas.view');
+        Route::post('/villas', [VillaAdminController::class, 'store'])->middleware('permission:villas.manage');
+        Route::post('/villas/upload-image', [VillaAdminController::class, 'uploadImage'])->middleware('permission:villas.manage');
+        Route::put('/villas/{id}', [VillaAdminController::class, 'update'])->middleware('permission:villas.manage');
+        Route::delete('/villas/{id}', [VillaAdminController::class, 'destroy'])->middleware('permission:villas.manage');
+        Route::post('/villas/{id}/photos', [VillaAdminController::class, 'uploadPhotos'])->middleware('permission:villas.manage');
+        Route::post('/villas/{id}/host-avatar', [VillaAdminController::class, 'uploadHostAvatar'])->middleware('permission:villas.manage');
+        Route::delete('/villas/{id}/photos', [VillaAdminController::class, 'deletePhoto'])->middleware('permission:villas.manage');
 
-        // Reviews Moderation
-        Route::get('/reviews', [ReviewAdminController::class, 'index']);
-        Route::post('/reviews', [ReviewAdminController::class, 'store']);
-        Route::post('/reviews/upload-avatar', [ReviewAdminController::class, 'uploadAvatar']);
-        Route::put('/reviews/{id}', [ReviewAdminController::class, 'update']);
-        Route::patch('/reviews/{id}/approve', [ReviewAdminController::class, 'approve']);
-        Route::delete('/reviews/{id}', [ReviewAdminController::class, 'destroy']);
+        // ── Blocked Dates & iCal (requires villas.manage) ──
+        Route::get('/blocked-dates', [VillaAdminController::class, 'listBlockedDates'])->middleware('permission:villas.manage');
+        Route::post('/blocked-dates', [VillaAdminController::class, 'blockDate'])->middleware('permission:villas.manage');
+        Route::delete('/blocked-dates/{id}', [VillaAdminController::class, 'unblockDate'])->middleware('permission:villas.manage');
+        Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks'])->middleware('permission:villas.manage');
+        Route::post('/villas/{villaId}/ical-links', [VillaAdminController::class, 'storeIcalLink'])->middleware('permission:villas.manage');
+        Route::delete('/ical-links/{id}', [VillaAdminController::class, 'destroyIcalLink'])->middleware('permission:villas.manage');
+        Route::post('/ical-links/{linkId}/sync', [VillaAdminController::class, 'syncIcalLinks'])->middleware('permission:villas.manage');
+        Route::post('/ical/verify', [VillaAdminController::class, 'verifyIcal'])->middleware('permission:villas.manage');
 
-        // Analytics & Exports
-        Route::get('/analytics', [AnalyticsController::class, 'index']);
-        Route::get('/analytics/export', [AnalyticsController::class, 'export']);
+        // ── Destinations (requires destinations.view / destinations.manage) ──
+        Route::get('/destinations', [DestinationAdminController::class, 'index'])->middleware('permission:destinations.view');
+        Route::get('/destinations/{id}', [DestinationAdminController::class, 'show'])->middleware('permission:destinations.view');
+        Route::post('/destinations', [DestinationAdminController::class, 'store'])->middleware('permission:destinations.manage');
+        Route::post('/destinations/upload-image', [DestinationAdminController::class, 'uploadImage'])->middleware('permission:destinations.manage');
+        Route::put('/destinations/{id}', [DestinationAdminController::class, 'update'])->middleware('permission:destinations.manage');
+        Route::delete('/destinations/{id}', [DestinationAdminController::class, 'destroy'])->middleware('permission:destinations.manage');
 
-        // iCal Links Management (per villa)
-        Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks']);
-        Route::post('/villas/{villaId}/ical-links', [VillaAdminController::class, 'storeIcalLink']);
-        Route::delete('/ical-links/{id}', [VillaAdminController::class, 'destroyIcalLink']);
-        Route::post('/ical-links/{linkId}/sync', [VillaAdminController::class, 'syncIcalLinks']);
-        Route::post('/ical/verify', [VillaAdminController::class, 'verifyIcal']);
+        // ── Reviews (requires reviews.view / reviews.manage) ──
+        Route::get('/reviews', [ReviewAdminController::class, 'index'])->middleware('permission:reviews.view');
+        Route::post('/reviews', [ReviewAdminController::class, 'store'])->middleware('permission:reviews.manage');
+        Route::post('/reviews/upload-avatar', [ReviewAdminController::class, 'uploadAvatar'])->middleware('permission:reviews.manage');
+        Route::put('/reviews/{id}', [ReviewAdminController::class, 'update'])->middleware('permission:reviews.manage');
+        Route::patch('/reviews/{id}/approve', [ReviewAdminController::class, 'approve'])->middleware('permission:reviews.manage');
+        Route::delete('/reviews/{id}', [ReviewAdminController::class, 'destroy'])->middleware('permission:reviews.manage');
 
-        // Payment Methods Config CRUD
-        Route::get('/payment-methods', [PaymentMethodAdminController::class, 'index']);
-        Route::post('/payment-methods', [PaymentMethodAdminController::class, 'store']);
-        Route::get('/payment-methods/{id}', [PaymentMethodAdminController::class, 'show']);
-        Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update']);
-        Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy']);
-        Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo']);
+        // ── Analytics (requires analytics.view) ──
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->middleware('permission:analytics.view');
+        Route::get('/analytics/export', [AnalyticsController::class, 'export'])->middleware('permission:analytics.view');
+
+        // ── Payment Methods (requires payment_methods.view / payment_methods.manage) ──
+        Route::get('/payment-methods', [PaymentMethodAdminController::class, 'index'])->middleware('permission:payment_methods.view');
+        Route::get('/payment-methods/{id}', [PaymentMethodAdminController::class, 'show'])->middleware('permission:payment_methods.view');
+        Route::post('/payment-methods', [PaymentMethodAdminController::class, 'store'])->middleware('permission:payment_methods.manage');
+        Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update'])->middleware('permission:payment_methods.manage');
+        Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy'])->middleware('permission:payment_methods.manage');
+        Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo'])->middleware('permission:payment_methods.manage');
 
         // ==========================================
         // Super Admin Only — Admin User Management

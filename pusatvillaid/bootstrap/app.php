@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RequirePasswordCustom;
 use App\Http\Middleware\SuperAdminMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'super_admin' => SuperAdminMiddleware::class,
-            'password.confirm' => \App\Http\Middleware\RequirePasswordCustom::class,
+            'permission' => PermissionMiddleware::class,
+            'password.confirm' => RequirePasswordCustom::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

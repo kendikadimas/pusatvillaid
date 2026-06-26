@@ -57,4 +57,20 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => now(),
         ]);
     }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'permissions' => \App\Models\User::PERMISSIONS,
+        ]);
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+            'permissions' => \App\Models\User::PERMISSIONS,
+        ]);
+    }
 }
