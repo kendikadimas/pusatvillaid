@@ -57,6 +57,7 @@ export default function BookingConfirmPage() {
     const [mounted, setMounted] = useState(false);
     const [dataMissing, setDataMissing] = useState(false);
     const navigatingAway = useRef(false);
+    const bookingCompleted = useRef(false);
     
     // Payment Method selection
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -120,7 +121,7 @@ export default function BookingConfirmPage() {
     // Reset zustand store when navigating away after successful booking
     useEffect(() => {
         return () => {
-            if (navigatingAway.current) {
+            if (bookingCompleted.current) {
                 resetStore();
             }
         };
@@ -342,6 +343,7 @@ export default function BookingConfirmPage() {
             toast.success(response.data.message || 'Booking berhasil dibuat.');
 
             navigatingAway.current = true;
+            bookingCompleted.current = true;
 
             router.push(`/booking/payment?code=${response.data.booking_code}`);
 
