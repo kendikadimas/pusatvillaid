@@ -83,9 +83,15 @@ class BookingController extends Controller
             }
 
             $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImageUrl) {
-                // 1. Check overlapping bookings with active payment (proof uploaded or already paid)
+                // 1. Check overlapping bookings (confirmed/completed, or pending with proof uploaded)
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
-                    ->whereIn('payment_status', ['pending', 'paid'])
+                    ->where(function ($q) {
+                        $q->whereIn('status', ['confirmed', 'completed'])
+                            ->orWhere(function ($q2) {
+                                $q2->where('status', 'pending')
+                                    ->where('payment_status', 'pending');
+                            });
+                    })
                     ->where(function ($query) use ($checkIn, $checkOut) {
                         $query->where(function ($q) use ($checkIn, $checkOut) {
                             $q->where('check_in', '>=', $checkIn)
