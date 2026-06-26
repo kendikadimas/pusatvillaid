@@ -4,6 +4,7 @@ import { id as localeID } from 'date-fns/locale';
 
 interface InvoiceSettings {
     settings_prop_name?: string;
+    settings_website?: string;
     settings_email?: string;
     settings_wa?: string;
 }
@@ -35,6 +36,7 @@ interface InvoiceBooking {
 
 export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: string, invoiceSettings?: InvoiceSettings) {
     const propName = invoiceSettings?.settings_prop_name || 'PusatVilla.id';
+    const websiteUrl = invoiceSettings?.settings_website || 'https://pusatvillaid.com';
     const email = invoiceSettings?.settings_email || 'support@pusatvilla.id';
     const wa = invoiceSettings?.settings_wa || '+62 812-3456-7890';
   const pdf = new jsPDF('p', 'mm', 'a4');
@@ -298,7 +300,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   pdf.text(`${propName} - Platform Sewa Villa Premium`, 20, footerY + 7);
   pdf.text(`Email: ${email}`, 20, footerY + 12);
   pdf.text(`WhatsApp: ${wa}`, 20, footerY + 17);
-  pdf.text(`Website: https://${propName.toLowerCase().replace(/[^a-z0-9]/g, '')}.id`, 20, footerY + 22);
+  pdf.text(`Website: ${websiteUrl}`, 20, footerY + 22);
   
   // Page number
   pdf.setTextColor(150, 150, 150);

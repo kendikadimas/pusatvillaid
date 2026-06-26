@@ -39,6 +39,7 @@ export default function AdminSettingsPage() {
     const [activeTab, setActiveTab] = useState<'identity' | 'policies' | 'tax_fees' | 'payment' | 'payment_methods'>('identity');
 
     const [propertyName, setPropertyName] = useState('PusatVilla.id');
+    const [websiteUrl, setWebsiteUrl] = useState('https://pusatvillaid.com');
     const [whatsappNumber, setWhatsappNumber] = useState('+62 812-3456-7890');
     const [propertyEmail, setPropertyEmail] = useState('support@pusatvilla.id');
     const [address, setAddress] = useState('Cisarua, Puncak, Bogor, Jawa Barat');
@@ -201,6 +202,7 @@ export default function AdminSettingsPage() {
                 const response = await axiosClient.get('/admin/settings');
                 const data = response.data;
                 if (data.settings_prop_name) setPropertyName(data.settings_prop_name);
+                if (data.settings_website) setWebsiteUrl(data.settings_website);
                 if (data.settings_wa) setWhatsappNumber(data.settings_wa);
                 if (data.settings_email) setPropertyEmail(data.settings_email);
                 if (data.settings_address) setAddress(data.settings_address);
@@ -221,6 +223,8 @@ export default function AdminSettingsPage() {
                     const savedTax = localStorage.getItem('tax_percentage');
 
                     if (savedName) setPropertyName(savedName);
+                    const savedWebsite = localStorage.getItem('settings_website');
+                    if (savedWebsite) setWebsiteUrl(savedWebsite);
                     if (savedWA) setWhatsappNumber(savedWA);
                     if (savedEmail) setPropertyEmail(savedEmail);
                     if (savedAddr) setAddress(savedAddr);
@@ -243,6 +247,7 @@ export default function AdminSettingsPage() {
         try {
             await axiosClient.post('/admin/settings', {
                 settings_prop_name: propertyName,
+                settings_website: websiteUrl,
                 settings_wa: whatsappNumber,
                 settings_email: propertyEmail,
                 settings_address: address,
@@ -379,6 +384,18 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={propertyEmail}
                                                     onChange={(e) => setPropertyEmail(e.target.value)}
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-500 mb-1.5">Website URL</label>
+                                                <input 
+                                                    type="url"
+                                                    required
+                                                    value={websiteUrl}
+                                                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                                                    placeholder="https://pusatvillaid.com"
                                                     className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
                                                 />
                                             </div>

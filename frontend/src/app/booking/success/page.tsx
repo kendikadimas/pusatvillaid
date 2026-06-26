@@ -87,7 +87,7 @@ function BookingSuccessContent() {
         const checkOutDate = format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID });
         const totalAmountText = Number(booking.total_amount).toLocaleString('id-ID');
         
-        const host = typeof window !== 'undefined' ? window.location.origin : `https://${settings.settings_prop_name}`;
+        const host = typeof window !== 'undefined' ? window.location.origin : settings.settings_website;
         const invoiceUrl = `${host}/booking/status?code=${codeText}`;
 
         const message = `*INVOICE PEMESANAN VILLA - ${settings.settings_prop_name.toUpperCase()}*\n` +

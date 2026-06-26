@@ -17,6 +17,7 @@ class SettingAdminController extends Controller
     {
         $settings = [
             'settings_prop_name' => Setting::getValue('settings_prop_name', 'PusatVilla.id'),
+            'settings_website' => Setting::getValue('settings_website', 'https://pusatvillaid.com'),
             'settings_wa' => Setting::getValue('settings_wa', '081234567890'),
             'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvilla.id'),
             'settings_address' => Setting::getValue('settings_address', 'Cisarua, Puncak, Bogor, Jawa Barat'),
@@ -36,6 +37,7 @@ class SettingAdminController extends Controller
     {
         $rules = [
             'settings_prop_name' => 'required|string|max:255',
+            'settings_website' => 'required|string|max:255',
             'settings_wa' => 'required|string|max:50',
             'settings_email' => 'required|email|max:255',
             'settings_address' => 'required|string|max:1000',

@@ -5,6 +5,7 @@ import axiosClient from '@/lib/axios';
 
 interface Settings {
     settings_prop_name: string;
+    settings_website: string;
     settings_wa: string;
     settings_email: string;
     settings_address: string;
@@ -15,6 +16,7 @@ interface Settings {
 
 const DEFAULT_SETTINGS: Settings = {
     settings_prop_name: 'PusatVilla.id',
+    settings_website: 'https://pusatvillaid.com',
     settings_wa: '081234567890',
     settings_email: 'noreply@pusatvilla.id',
     settings_address: 'Cisarua, Puncak, Bogor, Jawa Barat',
