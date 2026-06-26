@@ -144,6 +144,8 @@ function BookingPaymentContent() {
                 // Auto-select payment method from booking
                 if (b.payment_method_id) {
                     setSelectedMethodId(b.payment_method_id);
+                } else if (paymentMethods.length > 0) {
+                    setSelectedMethodId(paymentMethods[0].id);
                 }
 
             } catch (err) {
@@ -183,9 +185,6 @@ function BookingPaymentContent() {
             try {
                 const response = await axiosClient.get('/payment-methods');
                 setPaymentMethods(response.data);
-                if (response.data.length > 0) {
-                    setSelectedMethodId(response.data[0].id);
-                }
             } catch (err) {
                 console.error('Failed to fetch payment methods:', err);
             }
