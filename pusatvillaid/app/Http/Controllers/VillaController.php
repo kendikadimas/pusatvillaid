@@ -133,9 +133,9 @@ class VillaController extends Controller
 
         $disabledDates = [];
 
-        // 1. Get dates from confirmed/completed bookings only (pending does not block)
+        // 1. Get dates from bookings with payment pending (proof uploaded) or paid/confirmed
         $bookings = $villa->bookings()
-            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereIn('payment_status', ['pending', 'paid'])
             ->where('check_out', '>=', now()->toDateString())
             ->get(['check_in', 'check_out']);
 
