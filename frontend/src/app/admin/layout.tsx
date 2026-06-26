@@ -18,7 +18,8 @@ import {
     X,
     User,
     Loader2,
-    MapPin
+    MapPin,
+    Shield
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -67,6 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Ulasan tamu', href: '/admin/reviews', icon: Star },
         { name: 'Analisis keuangan', href: '/admin/analytics', icon: BarChart3 },
         { name: 'Pengaturan', href: '/admin/settings', icon: Settings },
+        { name: 'Admin', href: '/admin/users', icon: Shield },
     ];
 
     return (

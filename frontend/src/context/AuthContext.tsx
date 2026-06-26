@@ -237,7 +237,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         if (isAdminRoute) {
-            if (!admin || admin.role !== 'admin') {
+            if (!admin || (admin.role !== 'admin' && admin.role !== 'super_admin')) {
                 console.log('[Auth Route Protection] Not admin, should redirect to login');
                 if (!isLoginRoute) {
                     console.log('[Auth Route Protection] Redirecting to /admin/login');
@@ -266,7 +266,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log('[Auth login()] Calling endpoint:', endpoint);
             const response = await axiosClient.post(endpoint, credentials);
             const { token, user: userData } = response.data;
-            const isAdminUser = userData?.role === 'admin';
+            const isAdminUser = userData?.role === 'admin' || userData?.role === 'super_admin';
             
             console.log('[Auth login()] API response received:', { 
                 hasToken: !!token, 
