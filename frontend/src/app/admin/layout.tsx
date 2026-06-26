@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     console.log('[AdminLayout] Render:', { pathname, normalizedPathname, isLoginPage, loading, admin: admin ? { id: admin.id, role: admin.role } : null });
 
     useEffect(() => {
-        if (!loading && (!admin || admin.role !== 'admin') && !isLoginPage) {
+        if (!loading && (!admin || (admin.role !== 'admin' && admin.role !== 'super_admin')) && !isLoginPage) {
             console.log('[AdminLayout] Not authenticated, redirecting to /admin/login');
             router.push('/admin/login');
         }
@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || (admin.role !== 'admin' && admin.role !== 'super_admin')) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-[#f7f7f7]">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    const navigation = [
+    let navigation = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Pemesanan', href: '/admin/bookings', icon: BookOpen },
         { name: 'Katalog villa', href: '/admin/villas', icon: Home },
@@ -68,8 +68,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Ulasan tamu', href: '/admin/reviews', icon: Star },
         { name: 'Analisis keuangan', href: '/admin/analytics', icon: BarChart3 },
         { name: 'Pengaturan', href: '/admin/settings', icon: Settings },
-        { name: 'Admin', href: '/admin/users', icon: Shield },
     ];
+
+    if (admin?.role === 'super_admin') {
+        navigation = [...navigation, { name: 'Admin', href: '/admin/users', icon: Shield }];
+    }
 
     return (
         <div className="h-screen flex bg-slate-50 text-[#222222] font-sans antialiased selection:bg-blue-100 selection:text-blue-700">
