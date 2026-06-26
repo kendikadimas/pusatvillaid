@@ -304,18 +304,22 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                 }
                 setDisabledDates(availRes.data.disabled_dates || []);
 
-                // Initialize dates from URL query params or booking store
+                // Initialize dates from URL query params or booking store (read fresh from store, not stale closure)
                 if (checkInQuery && checkOutQuery) {
                     setDateRange({
                         from: parseISO(checkInQuery),
                         to: parseISO(checkOutQuery)
                     });
                     setStoreDates(checkInQuery, checkOutQuery);
-                } else if (storeCheckIn && storeCheckOut) {
-                    setDateRange({
-                        from: parseISO(storeCheckIn),
-                        to: parseISO(storeCheckOut)
-                    });
+                } else {
+                    const currentCheckIn = useBookingStore.getState().checkIn;
+                    const currentCheckOut = useBookingStore.getState().checkOut;
+                    if (currentCheckIn && currentCheckOut) {
+                        setDateRange({
+                            from: parseISO(currentCheckIn),
+                            to: parseISO(currentCheckOut)
+                        });
+                    }
                 }
             } catch (err: any) {
                 console.error('Failed to fetch details:', err);
