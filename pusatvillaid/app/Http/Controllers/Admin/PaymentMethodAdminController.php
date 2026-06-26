@@ -148,7 +148,7 @@ class PaymentMethodAdminController extends Controller
     public function uploadLogo(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048', // Max 2MB
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120', // Max 5MB
         ]);
 
         if ($validator->fails()) {

@@ -114,7 +114,9 @@ export default function AdminSettingsPage() {
         formData.append('logo', file);
 
         try {
-            const response = await axiosClient.post('/admin/payment-methods/upload-logo', formData);
+            const response = await axiosClient.post('/admin/payment-methods/upload-logo', formData, {
+                headers: { 'Content-Type': undefined },
+            });
             setLogoUrl(response.data.logo_url);
             toast.success('Logo berhasil diunggah.');
         } catch (err: any) {
