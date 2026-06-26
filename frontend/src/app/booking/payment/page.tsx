@@ -548,10 +548,10 @@ function BookingPaymentContent() {
                                                             <img
                                                                 src={selectedMethod.logo_url}
                                                                 alt="QRIS QR Code"
-                                                                className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 object-contain mx-auto"
+                                                                className="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain mx-auto"
                                                             />
                                                         ) : (
-                                                            <div className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                                                            <div className="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400">
                                                                 <Smartphone className="w-16 h-16 mb-3 stroke-[1.5]" />
                                                                 <span className="text-xs font-bold tracking-wider">QRIS Code</span>
                                                             </div>
