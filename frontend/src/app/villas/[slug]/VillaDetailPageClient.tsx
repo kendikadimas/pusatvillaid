@@ -579,7 +579,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             <div className="border border-slate-300 rounded-xl lg:rounded-2xl overflow-hidden divide-y divide-slate-200">
                 <div className="grid grid-cols-2 divide-x divide-slate-200">
                     <div
-                        onClick={() => scrollToSection('calendar')}
+                        onClick={() => isMobile ? setIsMobileDetailsOpen(true) : scrollToSection('calendar')}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-IN</label>
@@ -588,7 +588,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </span>
                     </div>
                     <div
-                        onClick={() => scrollToSection('calendar')}
+                        onClick={() => isMobile ? setIsMobileDetailsOpen(true) : scrollToSection('calendar')}
                         className="p-2 lg:p-3 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         <label className="text-[9px] font-black text-slate-700 block tracking-wider">CHECK-OUT</label>
