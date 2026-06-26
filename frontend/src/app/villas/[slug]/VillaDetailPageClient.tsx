@@ -1416,6 +1416,41 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                 </div>
 
                                 <div className="space-y-4">
+                                    {/* Mobile Date Picker inline inside bottom sheet */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-bold text-slate-900">Pilih Tanggal Menginap</h4>
+                                            {(storeCheckIn || storeCheckOut) && (
+                                                <button
+                                                    onClick={() => {
+                                                        setStoreDates(null, null);
+                                                        setDateRange(undefined);
+                                                    }}
+                                                    className="text-[11px] font-bold text-blue-600 hover:underline"
+                                                >
+                                                    Hapus tanggal
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="w-full overflow-x-auto pb-2">
+                                            <DayPicker
+                                                mode="range"
+                                                selected={dateRange}
+                                                onSelect={handleSelectRange}
+                                                disabled={[{ before: new Date() }, ...disabledDays]}
+                                                numberOfMonths={2}
+                                                locale={localeID}
+                                                startMonth={new Date()}
+                                                classNames={{
+                                                    selected: "bg-blue-600 text-white hover:bg-blue-700",
+                                                    range_middle: "bg-blue-100 text-blue-900",
+                                                    range_start: "bg-blue-600 text-white",
+                                                    range_end: "bg-blue-600 text-white",
+                                                    today: "text-blue-600 font-bold",
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
                                     {bookingWidgetContent}
                                 </div>
                             </div>

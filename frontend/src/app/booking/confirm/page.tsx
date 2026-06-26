@@ -416,11 +416,10 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
-        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
-            toast.error('Silakan periksa kembali isian kontak dan KTP Anda.');
+            toast.error('Silakan periksa kembali isian kontak Anda.');
             return;
         }
         
