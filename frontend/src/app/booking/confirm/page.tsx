@@ -75,12 +75,14 @@ export default function BookingConfirmPage() {
     // KTP Upload State
     const [ktpFile, setKtpFile] = useState<File | null>(null);
     const [ktpPreview, setKtpPreview] = useState<string | null>(null);
+    const [ktpLoading, setKtpLoading] = useState(false);
     const ktpInputRef = useRef<HTMLInputElement>(null);
 
     const handleKtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(file.type)) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/heic', 'image/heif'];
+        if (!allowedTypes.includes(file.type)) {
             toast.error('Format file KTP tidak valid. Gunakan JPG, PNG, atau WebP.');
             return;
         }
@@ -88,11 +90,18 @@ export default function BookingConfirmPage() {
             toast.error('Ukuran file KTP maksimal 5MB.');
             return;
         }
+        setKtpLoading(true);
         setKtpFile(file);
         const reader = new FileReader();
-        reader.onload = (ev) => setKtpPreview(ev.target?.result as string);
+        reader.onload = (ev) => {
+            setKtpPreview(ev.target?.result as string);
+            setKtpLoading(false);
+        };
+        reader.onerror = () => {
+            setKtpLoading(false);
+            toast.error('Gagal membaca file KTP. Silakan coba lagi.');
+        };
         reader.readAsDataURL(file);
-        // Clear error
         setFormErrors((prev: any) => ({ ...prev, ktp_image: undefined }));
     };
 
@@ -697,7 +706,7 @@ export default function BookingConfirmPage() {
                                     <input
                                         ref={ktpInputRef}
                                         type="file"
-                                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                                        accept="image/*"
                                         className="hidden"
                                         onChange={handleKtpChange}
                                         id="ktp-upload-desktop"
@@ -723,6 +732,11 @@ export default function BookingConfirmPage() {
                                                 KTP Terunggah
                                             </div>
                                         </div>
+                                    ) : ktpLoading ? (
+                                        <div className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl border-blue-200 bg-blue-50/20">
+                                            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                                            <p className="text-xs font-bold text-slate-600">Memproses file KTP...</p>
+                                        </div>
                                     ) : (
                                         <label
                                             htmlFor="ktp-upload-desktop"
@@ -744,11 +758,13 @@ export default function BookingConfirmPage() {
                                         </p>
                                     )}
 
-                                    <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-3 flex items-start gap-2.5">
-                                        <FileText className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                                        <p className="text-[11px] text-amber-800 font-semibold leading-relaxed">
+                                    <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-4 flex items-start space-x-3">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <div className="text-[11px] text-slate-550 font-medium leading-relaxed">
                                             Foto KTP harus jelas dan terbaca. Data KTP hanya digunakan untuk keperluan verifikasi identitas dan tidak akan dibagikan kepada pihak ketiga.
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -984,13 +1000,18 @@ export default function BookingConfirmPage() {
 
                                     <input
                                         type="file"
-                                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                                        accept="image/*"
                                         className="hidden"
                                         onChange={handleKtpChange}
                                         id="ktp-upload-mobile"
                                     />
 
-                                    {ktpPreview ? (
+                                    {ktpLoading ? (
+                                        <div className="flex items-center gap-3 p-4 border-2 border-dashed rounded-xl border-blue-200 bg-blue-50/20">
+                                            <Loader2 className="w-6 h-6 animate-spin text-blue-500 shrink-0" />
+                                            <p className="text-xs font-bold text-slate-600">Memproses...</p>
+                                        </div>
+                                    ) : ktpPreview ? (
                                         <div className="relative rounded-xl overflow-hidden border border-slate-200">
                                             <img
                                                 src={ktpPreview}
