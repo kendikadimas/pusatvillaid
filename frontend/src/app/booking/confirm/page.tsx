@@ -336,7 +336,7 @@ export default function BookingConfirmPage() {
 
             resetStore();
 
-            router.push(`/booking/payment?code=${response.data.booking_code}&token=${response.data.snap_token}`);
+            router.push(`/booking/payment?code=${response.data.booking_code}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);

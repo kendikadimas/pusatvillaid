@@ -1107,7 +1107,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                             </div>
                         </div>
 
-                        {/* ARCHIVED: Villa Location Map
+                        {/* Villa Location Map */}
                         {villa.maps_url && (
                             <div id="location-section" className="space-y-6 pb-8 border-b border-slate-200/80 scroll-mt-32">
                                 <h3 className="text-xl font-bold text-slate-900">Lokasi Properti</h3>
@@ -1132,6 +1132,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             )}
                                         </div>
                                     </div>
+                                    {/* ARCHIVED: Maps Embed
                                     <div className="aspect-[4/3] sm:aspect-[16/10] md:aspect-square lg:aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm">
                                         {(() => {
                                             let cleanMapsUrl = villa.maps_url || '';
@@ -1154,10 +1155,10 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                                             );
                                         })()}
                                     </div>
+                                    */}
                                 </div>
                             </div>
                         )}
-                        */}
 
                         {/* Things to Know */}
                         <div className="space-y-6 py-8 border-b border-slate-200/80">

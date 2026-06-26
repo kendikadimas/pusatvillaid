@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminNewBookingMail;
 use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
-use App\Models\Villa;
 use App\Models\Setting;
+use App\Models\User;
+use App\Models\Villa;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -15,11 +17,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use App\Mail\AdminNewBookingMail;
-use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -78,13 +79,13 @@ class BookingController extends Controller
             $ktpImageUrl = null;
             if ($request->hasFile('ktp_image')) {
                 $path = $request->file('ktp_image')->store('ktp-images', 'public');
-                $ktpImageUrl = asset('storage/' . $path);
+                $ktpImageUrl = asset('storage/'.$path);
             }
 
             $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImageUrl) {
-                // 1. Lock existing bookings check
+                // 1. Check overlapping bookings (only confirmed/completed block)
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
-                    ->where('status', '!=', 'cancelled')
+                    ->whereIn('status', ['confirmed', 'completed'])
                     ->where(function ($query) use ($checkIn, $checkOut) {
                         $query->where(function ($q) use ($checkIn, $checkOut) {
                             $q->where('check_in', '>=', $checkIn)
@@ -200,36 +201,22 @@ class BookingController extends Controller
                 return $booking;
             });
 
-            // Request Midtrans Snap Token
-            $snapToken = $this->getMidtransSnapToken($bookingData, $villa);
-
-            // Create payment record
-            Payment::create([
-                'booking_id' => $bookingData->id,
-                'midtrans_order_id' => $bookingData->booking_code.'-'.time(),
-                'amount' => $bookingData->total_amount,
-                'status' => 'pending',
-                'snap_token' => $snapToken,
-                'expired_at' => now()->addHour(),
-            ]);
-
             // Send notification email to admin(s)
             try {
-                $adminEmails = \App\Models\User::where('role', 'admin')->pluck('email')->toArray();
+                $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
                 if (empty($adminEmails)) {
                     $adminEmails = ['admin@example.com'];
                 }
                 Mail::to($adminEmails)->send(new AdminNewBookingMail($bookingData));
-                Log::info("Email notifikasi booking baru berhasil dikirim ke admin: " . implode(', ', $adminEmails));
+                Log::info('Email notifikasi booking baru berhasil dikirim ke admin: '.implode(', ', $adminEmails));
             } catch (\Exception $mailEx) {
-                Log::error("Gagal mengirim email notifikasi booking baru ke admin: " . $mailEx->getMessage());
+                Log::error('Gagal mengirim email notifikasi booking baru ke admin: '.$mailEx->getMessage());
             }
 
             return response()->json([
                 'booking_code' => $bookingData->booking_code,
-                'snap_token' => $snapToken,
                 'total_amount' => $bookingData->total_amount,
-                'message' => 'Booking berhasil dibuat. Silakan selesaikan pembayaran.',
+                'message' => 'Booking berhasil dibuat. Silakan unggah bukti pembayaran.',
             ], 201);
 
         } catch (\Exception $e) {
@@ -243,7 +230,7 @@ class BookingController extends Controller
     public function show(string $code, Request $request): JsonResponse
     {
         $email = $request->query('email');
-        
+
         // Retrieve authenticated user using sanctum guard (if token header exists)
         $user = auth('sanctum')->user() ?? $request->user('sanctum');
 
