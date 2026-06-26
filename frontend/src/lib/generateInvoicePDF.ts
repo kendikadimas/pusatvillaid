@@ -290,7 +290,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   yPos += 10;
   
   // Footer Section
-  const footerY = pageHeight - 40;
+  const footerY = pageHeight - 30;
   pdf.setDrawColor(226, 232, 240);
   pdf.line(20, footerY, pageWidth - 20, footerY);
   
@@ -308,7 +308,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   pdf.text(`Halaman 1 dari 1`, pageWidth - 40, footerY + 22);
   
   // Important note box
-  if (yPos < footerY - 30) {
+  if (yPos < footerY - 20) {
     pdf.setFillColor(254, 249, 195);
     pdf.setDrawColor(234, 179, 8);
     pdf.rect(20, yPos, pageWidth - 40, 25, 'FD');
