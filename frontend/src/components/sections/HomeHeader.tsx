@@ -136,7 +136,7 @@ export default function HomeHeader({
                                                     <div className="mb-4">
                                                         <h4 className="text-[9px] font-medium text-[#787774] mb-2">Pencarian terkini</h4>
                                                         <div className="space-y-2">
-                                                            {recentSearches.map((search, i) => (
+                                                            {(recentSearches || []).map((search, i) => (
                                                                 <div
                                                                     key={i}
                                                                     onClick={(e) => {
@@ -162,7 +162,7 @@ export default function HomeHeader({
                                                 <div>
                                                     <h4 className="text-[9px] font-medium text-[#787774] mb-2">Destinasi yang disarankan</h4>
                                                     <div className="space-y-1">
-                                                        {destinations.slice(0, 5).map((dest, idx) => (
+                                                        {(destinations || []).slice(0, 5).map((dest, idx) => (
                                                             <div
                                                                 key={dest.id || idx}
                                                                 onClick={(e) => {

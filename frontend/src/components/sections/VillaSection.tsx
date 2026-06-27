@@ -65,7 +65,7 @@ export default function VillaSection({
                             Pilih dan sewa unit villa mandiri secara langsung. Setiap properti dilengkapi detail harga per malam, foto asli, dan fasilitas lengkap.
                         </p> */}
                     {/* </div> */}
-                    {groupedByLocation.map((group, gi) => (
+                    {(groupedByLocation || []).map((group, gi) => (
                         <section key={group.query} data-reveal className="reveal reveal-delay-1">
                             <div className="flex items-end justify-between mb-5">
                                 <div>

@@ -383,13 +383,16 @@ export default function HomePage() {
 
     initScrollReveal([loading]);
 
-    const filteredByCategory = villas.filter(v => {
+    const safeVillas = villas || [];
+    const safeDestinations = destinations || [];
+
+    const filteredByCategory = safeVillas.filter(v => {
         const cat = categories.find(c => c.id === selectedCategory);
         if (!cat || cat.id === 'all') return true;
         return cat.filter ? cat.filter(v) : true;
     });
 
-    const groupedByLocation = destinations
+    const groupedByLocation = safeDestinations
         .map(d => ({
             ...d,
             villas: filteredByCategory.filter(v =>
@@ -400,7 +403,7 @@ export default function HomePage() {
         .filter(g => g.villas.length > 0);
 
     const unmatchedVillas = filteredByCategory.filter(v =>
-        !destinations.some(d =>
+        !safeDestinations.some(d =>
             v.destination_id === d.id ||
             (v.location && v.location.toLowerCase().includes(d.query.toLowerCase()))
         )

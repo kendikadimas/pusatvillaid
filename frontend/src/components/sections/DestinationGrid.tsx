@@ -61,7 +61,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
                 ref={scrollRef}
                 className="flex overflow-x-auto gap-4 scroll-smooth scrollbar-none pb-4 snap-x snap-mandatory"
             >
-                {destinations.map((dest, idx) => {
+                {(destinations || []).map((dest, idx) => {
                     const group = groupedByLocation.find(g => g.query === dest.query);
                     const count = group?.villas.length ?? 0;
                     return (

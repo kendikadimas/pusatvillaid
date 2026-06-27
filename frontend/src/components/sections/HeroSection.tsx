@@ -127,7 +127,7 @@ export default function HeroSection({
                                         <div className="mb-6">
                                             <h4 className="text-[10px] font-medium text-slate-400 mb-3">Pencarian terkini</h4>
                                             <div className="space-y-3">
-                                                {recentSearches.map((search, i) => (
+                                                {(recentSearches || []).map((search, i) => (
                                                     <div
                                                         key={i}
                                                         onClick={(e) => {
@@ -154,7 +154,7 @@ export default function HeroSection({
                                     <div>
                                         <h4 className="text-[10px] font-medium text-slate-400 mb-3">Destinasi yang disarankan</h4>
                                         <div className="space-y-1">
-                                            {destinations.slice(0, 5).map((dest, idx) => (
+                                            {(destinations || []).slice(0, 5).map((dest, idx) => (
                                                 <div
                                                     key={dest.id || idx}
                                                     onClick={(e) => {
