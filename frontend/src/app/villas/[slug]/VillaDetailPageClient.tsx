@@ -462,7 +462,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                     {/* Gallery skeleton */}
                     <div className="grid grid-cols-[2fr_1fr] gap-4" style={{ height: 'min(460px, 50vh)' }}>
                         <div className="bg-slate-100 rounded-2xl w-full h-full" />
-                        <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                        <div className="grid grid-cols-2 gap-4 h-full" style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                             {[...Array(4)].map((_, i) => (
                                 <div key={i} className="bg-slate-100 rounded-2xl" />
                             ))}
@@ -772,7 +772,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
                         </div>
 
                         {/* Nested Thumbnails Grid */}
-                        <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                        <div className="grid grid-cols-2 gap-4 h-full" style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                             {thumbPhotos.map((photo, i) => {
                                 const isLastCell = i === 3 || (i === thumbPhotos.length - 1 && thumbPhotos.length < 4);
                                 return (

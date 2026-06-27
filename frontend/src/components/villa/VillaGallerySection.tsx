@@ -27,7 +27,7 @@ export default function VillaGallerySection({ photos, villaName }: VillaGalleryS
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
                     </div>
 
-                    <div className="md:col-span-2 grid grid-cols-2 grid-rows-2 gap-3 h-full">
+                    <div className="md:col-span-2 grid grid-cols-2 gap-3 h-full" style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                         {thumbPhotos.map((photo, i) => {
                             let cornerClass = "";
                             if (i === 1) cornerClass = "md:rounded-tr-2xl";
