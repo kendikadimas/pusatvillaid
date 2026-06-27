@@ -11,11 +11,11 @@ class DestinationController extends Controller
     public function index(): JsonResponse
     {
         $destinations = Cache::remember('destinations_all', 300, function () {
-            return Destination::all();
+            return Destination::all()->toArray();
         });
 
         return response()->json([
-            'data' => $destinations,
+            'data' => array_values($destinations),
         ]);
     }
 }

@@ -85,15 +85,15 @@ class VillaController extends Controller
 
                 $villas->through(function ($villa) use ($reviewStats) {
                     $stats = $reviewStats->get($villa->id);
-                    $villa->reviews_avg_rating = $stats ? (float) $stats->avg_rating : 0;
-                    $villa->reviews_count = $stats ? (int) $stats->review_count : 0;
+                    $villa->setAttribute('reviews_avg_rating', $stats ? (float) $stats->avg_rating : 0);
+                    $villa->setAttribute('reviews_count', $stats ? (int) $stats->review_count : 0);
 
                     return $villa;
                 });
             }
 
             return [
-                'data' => $villas->items(),
+                'data' => array_values(array_map(fn($v) => $v->toArray(), $villas->items())),
                 'meta' => [
                     'current_page' => $villas->currentPage(),
                     'last_page' => $villas->lastPage(),
