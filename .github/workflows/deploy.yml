@@ -57,7 +57,7 @@ jobs:
           retention-days: 1
 
   # ============================================================
-  # JOB 2: Deploy Backend (via appleboy actions)
+  # JOB 2: Deploy Backend (via native OpenSSH)
   # ============================================================
   deploy-backend:
     runs-on: ubuntu-latest
@@ -70,94 +70,82 @@ jobs:
         with:
           name: backend-build
 
+      - name: Setup SSH Key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
       - name: Backup .env on Server
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            # Backup .env SEBELUM extract (bukan sesudah)
-            if [ -f ${{ secrets.CPANEL_BACKEND_PATH }}/.env ]; then
-              cp ${{ secrets.CPANEL_BACKEND_PATH }}/.env ${{ secrets.CPANEL_BACKEND_PATH }}/.env.deploy-backup
-              echo "=== .env backed up ==="
-            else
-              echo "=== No .env on server, will generate ==="
-            fi
+        shell: bash
+        run: |
+          ssh -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+            -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "if [ -f ${{ secrets.CPANEL_BACKEND_PATH }}/.env ]; then \
+               cp ${{ secrets.CPANEL_BACKEND_PATH }}/.env ${{ secrets.CPANEL_BACKEND_PATH }}/.env.deploy-backup; \
+               echo '=== .env backed up ==='; \
+             else \
+               echo '=== No .env on server ==='; \
+             fi"
 
       - name: Upload Backend to Server
         shell: bash
         run: |
-          ssh_file=$(mktemp)
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$ssh_file"
-          chmod 600 "$ssh_file"
           for i in 1 2 3; do
-            scp -o StrictHostKeyChecking=no \
-                -o ConnectTimeout=30 \
-                -o ServerAliveInterval=15 \
-                -P ${{ secrets.SSH_PORT }} \
-                -i "$ssh_file" \
+            scp -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+                -P ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
                 backend-deploy.tar.gz \
                 ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_BACKEND_PATH }}/backend-deploy.tar.gz && break
-            echo "SCP attempt $i failed, retrying in 5s..."
-            sleep 5
+            echo "SCP attempt $i failed, retrying in 5s..." && sleep 5
           done
-          rm -f "$ssh_file"
+
+      - name: Upload .env Fallback
+        shell: bash
+        run: |
+          echo "${{ secrets.BACKEND_ENV }}" > .env.fallback
+          scp -o ConnectTimeout=60 -P ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            .env.fallback \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_BACKEND_PATH }}/.env.fallback
+          rm -f .env.fallback
 
       - name: Post-Deploy Backend
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd ${{ secrets.CPANEL_BACKEND_PATH }}
+        shell: bash
+        run: |
+          ssh -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+            -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ secrets.CPANEL_BACKEND_PATH }} && \
+             tar -xzf backend-deploy.tar.gz && rm -f backend-deploy.tar.gz && \
+             if [ -f .env.deploy-backup ]; then \
+               cp .env.deploy-backup .env && rm .env.deploy-backup; \
+               echo '.env restored'; \
+             fi && \
+             if [ ! -f .env ] || [ ! -s .env ]; then \
+               mv .env.fallback .env 2>/dev/null; \
+               echo '.env from secret fallback'; \
+             else \
+               rm -f .env.fallback; \
+             fi && \
+             if ! grep -q 'APP_KEY=base64:' .env 2>/dev/null; then \
+               php artisan key:generate --force; \
+             fi && \
+             chmod -R 775 storage bootstrap/cache && \
+             php artisan config:cache && \
+             php artisan route:cache && \
+             php artisan view:cache && \
+             php artisan event:cache && \
+             php artisan migrate --force && \
+             php artisan storage:link --force && \
+             php artisan queue:restart 2>/dev/null; \
+             echo '=== Backend deploy COMPLETE ==='"
 
-            # Extract tar.gz (kecuali .env)
-            tar -xzf backend-deploy.tar.gz
-            rm -f backend-deploy.tar.gz
-
-            # Restore .env dari backup
-            if [ -f .env.deploy-backup ]; then
-              cp .env.deploy-backup .env
-              rm .env.deploy-backup
-              echo "=== .env restored ==="
-            fi
-
-            # Kalau .env masih nggak ada, generate dari BACKEND_ENV secret
-            if [ ! -f .env ] || [ ! -s .env ]; then
-              echo "=== .env missing, generating from secret ==="
-              echo '${{ secrets.BACKEND_ENV }}' > .env
-            fi
-
-            # Generate APP_KEY jika belum ada
-            if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-              php artisan key:generate --force
-              echo "=== APP_KEY generated ==="
-            fi
-
-            # Set permissions
-            chmod -R 775 storage bootstrap/cache
-
-            # Clear & cache Laravel
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan event:cache
-
-            # Run migrations
-            php artisan migrate --force
-
-            # Storage link
-            php artisan storage:link --force
-
-            # Queue restart
-            php artisan queue:restart 2>/dev/null || true
-
-            echo "=== Backend deploy COMPLETE ==="
-            ls -la
+      - name: Cleanup SSH Key
+        if: always()
+        shell: bash
+        run: rm -f ~/.ssh/deploy_key
 
   # ============================================================
   # JOB 3: Build Frontend (Next.js)
@@ -195,7 +183,7 @@ jobs:
           retention-days: 1
 
   # ============================================================
-  # JOB 4: Deploy Frontend (via SSH + tar, clean old files)
+  # JOB 4: Deploy Frontend (via native OpenSSH)
   # ============================================================
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -209,76 +197,65 @@ jobs:
           name: frontend-build
           path: frontend-out
 
-      - name: Clear Old Frontend Files on Server
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            FRONTEND="${{ secrets.CPANEL_FRONTEND_PATH }}"
-            BACKEND="/home/${{ secrets.SSH_USERNAME }}/backend-laravel/public"
+      - name: Setup SSH Key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
-            # Remove all old frontend files EXCEPT the api symlink and .htaccess
-            echo "=== Clearing old frontend files ==="
-            find "${FRONTEND}" -mindepth 1 -maxdepth 1 \
-              ! -name 'api.pusatvillaid.com' \
-              ! -name '.htaccess' \
-              ! -name '.user.ini' \
-              -exec rm -rf {} + 2>/dev/null || true
-            echo "=== Old files cleared ==="
+      - name: Clear Old Frontend Files on Server
+        shell: bash
+        run: |
+          ssh -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+            -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "FRONTEND=${{ secrets.CPANEL_FRONTEND_PATH }} && \
+             echo '=== Clearing old frontend files ===' && \
+             find \"\${FRONTEND}\" -mindepth 1 -maxdepth 1 \
+               ! -name 'api.pusatvillaid.com' \
+               ! -name '.htaccess' \
+               ! -name '.user.ini' \
+               -exec rm -rf {} + 2>/dev/null || true && \
+             echo '=== Old files cleared ==='"
 
       - name: Upload & Deploy Frontend
         shell: bash
         run: |
-          ssh_file=$(mktemp)
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$ssh_file"
-          chmod 600 "$ssh_file"
-          # tar frontend-out, scp it, then extract on server
           tar czf frontend-out.tar.gz -C frontend-out .
           for i in 1 2 3; do
-            scp -o StrictHostKeyChecking=no \
-                -o ConnectTimeout=30 \
-                -o ServerAliveInterval=15 \
-                -P ${{ secrets.SSH_PORT }} \
-                -i "$ssh_file" \
+            scp -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+                -P ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
                 frontend-out.tar.gz \
                 ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_FRONTEND_PATH }}/frontend-out.tar.gz && break
-            echo "SCP attempt $i failed, retrying in 5s..."
-            sleep 5
+            echo "SCP attempt $i failed, retrying in 5s..." && sleep 5
           done
-          # Extract on remote via SSH
-          ssh -o StrictHostKeyChecking=no \
-              -o ConnectTimeout=30 \
-              -P ${{ secrets.SSH_PORT }} \
-              -i "$ssh_file" \
-              ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+          ssh -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+            -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
             "cd ${{ secrets.CPANEL_FRONTEND_PATH }} && tar xzf frontend-out.tar.gz && rm -f frontend-out.tar.gz"
-          rm -f "$ssh_file" frontend-out.tar.gz
+          rm -f frontend-out.tar.gz
 
       - name: Fix Symlink & Verify
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            FRONTEND="${{ secrets.CPANEL_FRONTEND_PATH }}"
-            BACKEND="/home/${{ secrets.SSH_USERNAME }}/backend-laravel/public"
+        shell: bash
+        run: |
+          ssh -o ConnectTimeout=60 -o ServerAliveInterval=15 \
+            -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "FRONTEND=${{ secrets.CPANEL_FRONTEND_PATH }} && \
+             BACKEND=/home/${{ secrets.SSH_USERNAME }}/backend-laravel/public && \
+             rm -rf \"\${FRONTEND}api.pusatvillaid.com\" && \
+             ln -s \"\${BACKEND}\" \"\${FRONTEND}api.pusatvillaid.com\" && \
+             echo '=== API symlink re-created ===' && \
+             ls -la \"\${FRONTEND}\" && \
+             ls \"\${FRONTEND}villas/\" 2>&1 | head -10 && \
+             ls -la \"\${FRONTEND}api.pusatvillaid.com\""
 
-            # Pastikan symlink API selalu ada (hapus & recreate biar nggak corrupt)
-            rm -rf "${FRONTEND}api.pusatvillaid.com"
-            ln -s "${BACKEND}" "${FRONTEND}api.pusatvillaid.com"
-            echo "=== API symlink re-created ==="
-
-            echo "=== public_html contents ==="
-            ls -la "${FRONTEND}"
-            echo "=== villas ==="
-            ls "${FRONTEND}villas/" 2>&1 | head -10
-            echo "=== symlink ==="
-            ls -la "${FRONTEND}api.pusatvillaid.com"
+      - name: Cleanup SSH Key
+        if: always()
+        shell: bash
+        run: rm -f ~/.ssh/deploy_key
 
   # ============================================================
   # JOB 5: Final Health Check
