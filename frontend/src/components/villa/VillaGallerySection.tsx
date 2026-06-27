@@ -27,20 +27,20 @@ export default function VillaGallerySection({ photos, villaName }: VillaGalleryS
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
                     </div>
 
-                    <div className="md:col-span-2 grid grid-cols-2 gap-3">
+                    <div className="md:col-span-2 grid grid-cols-2 grid-rows-2 gap-3 h-full">
                         {thumbPhotos.map((photo, i) => {
                             let cornerClass = "";
                             if (i === 1) cornerClass = "md:rounded-tr-2xl";
                             if (i === 3) cornerClass = "md:rounded-br-2xl";
                             return (
-                                <div key={i} onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }} className={`aspect-[4/3] overflow-hidden cursor-pointer relative group ${cornerClass}`}>
+                                <div key={i} onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }} className={`overflow-hidden cursor-pointer relative group min-h-0 ${cornerClass}`}>
                                     <img src={getPhotoUrl(photo)} alt={getPhotoDesc(photo) || `Thumbnail ${i}`} className="w-full h-full object-cover group-hover:brightness-90 transition duration-300" />
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
                                 </div>
                             );
                         })}
                         {[...Array(Math.max(0, 4 - thumbPhotos.length))].map((_, idx) => (
-                            <div key={`empty-${idx}`} className="bg-slate-50 border border-dashed border-slate-200 aspect-[4/3] flex items-center justify-center">
+                            <div key={`empty-${idx}`} className="bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center min-h-0">
                                 <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">PusatVilla.id</span>
                             </div>
                         ))}
