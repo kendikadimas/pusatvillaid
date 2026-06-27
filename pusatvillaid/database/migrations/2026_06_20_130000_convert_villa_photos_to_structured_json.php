@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Models\Villa;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,7 +14,7 @@ return new class extends Migration
         Villa::chunk(100, function ($villas) {
             foreach ($villas as $villa) {
                 $photos = $villa->photos;
-                if (!is_array($photos)) {
+                if (! is_array($photos)) {
                     continue;
                 }
 
@@ -28,16 +26,16 @@ return new class extends Migration
                         $updatedPhotos[] = [
                             'url' => $photo,
                             'description' => '',
-                            'category' => 'Lainnya'
+                            'category' => 'Lainnya',
                         ];
                         $changed = true;
                     } elseif (is_array($photo)) {
                         $updatedPhoto = $photo;
-                        if (!isset($photo['category'])) {
+                        if (! isset($photo['category'])) {
                             $updatedPhoto['category'] = 'Lainnya';
                             $changed = true;
                         }
-                        if (!isset($photo['description'])) {
+                        if (! isset($photo['description'])) {
                             $updatedPhoto['description'] = '';
                             $changed = true;
                         }

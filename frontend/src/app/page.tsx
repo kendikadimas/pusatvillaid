@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axiosClient from '@/lib/axios';
 import { Villa, Destination } from '@/types';
 import { toast } from 'sonner';
@@ -349,38 +349,30 @@ export default function HomePage() {
     }, []);
 
     useEffect(() => {
-        const fetchDestinations = async () => {
+        const fetchHomepageData = async () => {
             try {
-                const response = await axiosClient.get('/destinations');
-                if (response.data && response.data.data) {
-                    setDestinations(response.data.data);
-                }
+                const [villaRes, destRes] = await Promise.all([
+                    axiosClient.get('/villas?per_page=20'),
+                    axiosClient.get('/destinations'),
+                ]);
+                if (villaRes.data?.data) setVillas(villaRes.data.data);
+                if (destRes.data?.data) setDestinations(destRes.data.data);
             } catch (err) {
-                console.error('Failed to fetch destinations:', err);
-            }
-        };
-        fetchDestinations();
-    }, []);
-
-    useEffect(() => {
-        const fetchVillas = async () => {
-            try {
-                const response = await axiosClient.get('/villas?per_page=50');
-                setVillas(response.data.data || []);
-            } catch (err) {
-                console.error('Failed to fetch villas:', err);
+                console.error('Failed to fetch homepage data:', err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchVillas();
+        fetchHomepageData();
     }, []);
 
-    // Re-fetch villas when user returns to this tab (e.g., after opening villa in new tab)
+    // Gentle re-fetch only if data is stale (>5 min since mount)
+    const lastFetchRef = useRef(Date.now());
     useEffect(() => {
         const handleVisibility = () => {
-            if (document.visibilityState === 'visible') {
-                axiosClient.get('/villas?per_page=50')
+            if (document.visibilityState === 'visible' && Date.now() - lastFetchRef.current > 300000) {
+                lastFetchRef.current = Date.now();
+                axiosClient.get('/villas?per_page=20')
                     .then(res => setVillas(res.data.data || []))
                     .catch(() => {});
             }

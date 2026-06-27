@@ -20,7 +20,7 @@ class RequirePasswordCustom
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $confirmedAt = Cache::get('auth.password_confirmed_at.' . $user->id, 0);
+        $confirmedAt = Cache::get('auth.password_confirmed_at.'.$user->id, 0);
         $timeout = config('auth.password_timeout', 10800);
 
         if (time() - $confirmedAt > $timeout) {

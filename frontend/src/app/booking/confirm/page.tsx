@@ -77,6 +77,7 @@ export default function BookingConfirmPage() {
     const [ktpPreview, setKtpPreview] = useState<string | null>(null);
     const [ktpLoading, setKtpLoading] = useState(false);
     const ktpInputRef = useRef<HTMLInputElement>(null);
+    const ktpMobileInputRef = useRef<HTMLInputElement>(null);
 
     const handleKtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -109,6 +110,7 @@ export default function BookingConfirmPage() {
         setKtpFile(null);
         setKtpPreview(null);
         if (ktpInputRef.current) ktpInputRef.current.value = '';
+        if (ktpMobileInputRef.current) ktpMobileInputRef.current.value = '';
     };
 
     // Mobile Wizard States
@@ -710,6 +712,7 @@ export default function BookingConfirmPage() {
                                         className="hidden"
                                         onChange={handleKtpChange}
                                         id="ktp-upload-desktop"
+                                        onClick={(e) => { e.currentTarget.value = ''; }}
                                     />
 
                                     {ktpPreview ? (
@@ -999,11 +1002,13 @@ export default function BookingConfirmPage() {
                                     </div>
 
                                     <input
+                                        ref={ktpMobileInputRef}
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
                                         onChange={handleKtpChange}
                                         id="ktp-upload-mobile"
+                                        onClick={(e) => { e.currentTarget.value = ''; }}
                                     />
 
                                     {ktpLoading ? (

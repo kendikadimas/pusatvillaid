@@ -62,7 +62,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => 'admin',
-            'permissions' => \App\Models\User::PERMISSIONS,
+            'permissions' => User::PERMISSIONS,
         ]);
     }
 
@@ -70,7 +70,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => 'super_admin',
-            'permissions' => \App\Models\User::PERMISSIONS,
+            'permissions' => User::PERMISSIONS,
         ]);
     }
 }

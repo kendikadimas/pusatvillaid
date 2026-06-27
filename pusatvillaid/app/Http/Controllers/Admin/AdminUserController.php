@@ -60,7 +60,7 @@ class AdminUserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'permissions' => 'nullable|array',
-            'permissions.*' => 'string|in:' . implode(',', User::PERMISSIONS),
+            'permissions.*' => 'string|in:'.implode(',', User::PERMISSIONS),
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -148,10 +148,10 @@ class AdminUserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $admin->id,
+            'email' => 'sometimes|email|unique:users,email,'.$admin->id,
             'password' => 'sometimes|string|min:8|confirmed',
             'permissions' => 'sometimes|array',
-            'permissions.*' => 'string|in:' . implode(',', User::PERMISSIONS),
+            'permissions.*' => 'string|in:'.implode(',', User::PERMISSIONS),
         ], [
             'email.unique' => 'Email sudah digunakan.',
             'password.min' => 'Password minimal 8 karakter.',
@@ -178,7 +178,7 @@ class AdminUserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Admin berhasil diperbarui.' .
+            'message' => 'Admin berhasil diperbarui.'.
                 ($request->has('permissions') ? ' Semua sesi admin ini telah diakhiri.' : ''),
             'data' => [
                 'id' => $admin->id,
