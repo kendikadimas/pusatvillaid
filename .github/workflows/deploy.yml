@@ -87,14 +87,23 @@ jobs:
             fi
 
       - name: Upload Backend to Server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "backend-deploy.tar.gz"
-          target: ${{ secrets.CPANEL_BACKEND_PATH }}
+        shell: bash
+        run: |
+          ssh_file=$(mktemp)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$ssh_file"
+          chmod 600 "$ssh_file"
+          for i in 1 2 3; do
+            scp -o StrictHostKeyChecking=no \
+                -o ConnectTimeout=30 \
+                -o ServerAliveInterval=15 \
+                -P ${{ secrets.SSH_PORT }} \
+                -i "$ssh_file" \
+                backend-deploy.tar.gz \
+                ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_BACKEND_PATH }}/backend-deploy.tar.gz && break
+            echo "SCP attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+          rm -f "$ssh_file"
 
       - name: Post-Deploy Backend
         uses: appleboy/ssh-action@v1.2.2
@@ -221,15 +230,32 @@ jobs:
             echo "=== Old files cleared ==="
 
       - name: Upload & Deploy Frontend
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "frontend-out"
-          target: ${{ secrets.CPANEL_FRONTEND_PATH }}
-          strip_components: 1
+        shell: bash
+        run: |
+          ssh_file=$(mktemp)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$ssh_file"
+          chmod 600 "$ssh_file"
+          # tar frontend-out, scp it, then extract on server
+          tar czf frontend-out.tar.gz -C frontend-out .
+          for i in 1 2 3; do
+            scp -o StrictHostKeyChecking=no \
+                -o ConnectTimeout=30 \
+                -o ServerAliveInterval=15 \
+                -P ${{ secrets.SSH_PORT }} \
+                -i "$ssh_file" \
+                frontend-out.tar.gz \
+                ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.CPANEL_FRONTEND_PATH }}/frontend-out.tar.gz && break
+            echo "SCP attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+          # Extract on remote via SSH
+          ssh -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
+              -P ${{ secrets.SSH_PORT }} \
+              -i "$ssh_file" \
+              ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ secrets.CPANEL_FRONTEND_PATH }} && tar xzf frontend-out.tar.gz && rm -f frontend-out.tar.gz"
+          rm -f "$ssh_file" frontend-out.tar.gz
 
       - name: Fix Symlink & Verify
         uses: appleboy/ssh-action@v1.2.2
