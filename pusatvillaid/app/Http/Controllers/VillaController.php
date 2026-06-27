@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\Villa;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class VillaController extends Controller
 {
@@ -15,75 +17,93 @@ class VillaController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Villa::where('is_active', true)
-            ->with('destination')
-            ->withAvg(['reviews' => function ($q) {
-                $q->where('is_approved', true);
-            }], 'rating')
-            ->withCount(['reviews' => function ($q) {
-                $q->where('is_approved', true);
-            }]);
+        $cacheKey = 'villas_index_'.md5(json_encode($request->all()));
 
-        // Filter by location / destination
-        if ($request->filled('location')) {
-            $location = $request->location;
-            $query->where(function ($q) use ($location) {
-                $q->where('location', 'like', '%'.$location.'%')
-                    ->orWhereHas('destination', function ($dq) use ($location) {
-                        $dq->where('name', 'like', '%'.$location.'%')
-                            ->orWhere('city', 'like', '%'.$location.'%')
-                            ->orWhere('query', 'like', '%'.$location.'%');
-                    });
-            });
-        }
+        $data = Cache::remember($cacheKey, 300, function () use ($request) {
+            $query = Villa::where('is_active', true)
+                ->with('destination');
 
-        // Strict filter by destination_id
-        if ($request->filled('destination_id')) {
-            $query->where('destination_id', $request->destination_id);
-        }
+            // Filter by location / destination
+            if ($request->filled('location')) {
+                $location = $request->location;
+                $query->where(function ($q) use ($location) {
+                    $q->where('location', 'like', '%'.$location.'%')
+                        ->orWhereHas('destination', function ($dq) use ($location) {
+                            $dq->where('name', 'like', '%'.$location.'%')
+                                ->orWhere('city', 'like', '%'.$location.'%')
+                                ->orWhere('query', 'like', '%'.$location.'%');
+                        });
+                });
+            }
 
-        // Filter by bedrooms
-        if ($request->filled('bedrooms')) {
-            $query->where('bedrooms', '>=', (int) $request->bedrooms);
-        }
+            // Strict filter by destination_id
+            if ($request->filled('destination_id')) {
+                $query->where('destination_id', $request->destination_id);
+            }
 
-        // Filter by guest capacity
-        if ($request->filled('guests')) {
-            $query->where('max_guests', '>=', (int) $request->guests);
-        }
+            // Filter by bedrooms
+            if ($request->filled('bedrooms')) {
+                $query->where('bedrooms', '>=', (int) $request->bedrooms);
+            }
 
-        // Filter by price range
-        if ($request->filled('min_price')) {
-            $query->where('price_per_night', '>=', (float) $request->min_price);
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price_per_night', '<=', (float) $request->max_price);
-        }
+            // Filter by guest capacity
+            if ($request->filled('guests')) {
+                $query->where('max_guests', '>=', (int) $request->guests);
+            }
 
-        // Sorting
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
-        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+            // Filter by price range
+            if ($request->filled('min_price')) {
+                $query->where('price_per_night', '>=', (float) $request->min_price);
+            }
+            if ($request->filled('max_price')) {
+                $query->where('price_per_night', '<=', (float) $request->max_price);
+            }
 
-        if (in_array($sortBy, ['price_per_night', 'created_at', 'bedrooms', 'max_guests'])) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
+            // Sorting
+            $sortBy = $request->input('sort_by', 'created_at');
+            $sortOrder = $request->input('sort_order', 'desc');
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
-        $perPage = $request->input('per_page', 50);
-        $villas = $query->paginate(min((int) $perPage, 50));
+            if (in_array($sortBy, ['price_per_night', 'created_at', 'bedrooms', 'max_guests'])) {
+                $query->orderBy($sortBy, $sortOrder);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
 
-        // Format pagination metadata
-        return response()->json([
-            'data' => $villas->items(),
-            'meta' => [
-                'current_page' => $villas->currentPage(),
-                'last_page' => $villas->lastPage(),
-                'per_page' => $villas->perPage(),
-                'total' => $villas->total(),
-            ],
-        ]);
+            $perPage = $request->input('per_page', 50);
+            $villas = $query->paginate(min((int) $perPage, 50));
+
+            // Single grouped query for review stats (replaces N*2 subqueries)
+            $villaIds = $villas->pluck('id');
+            if ($villaIds->isNotEmpty()) {
+                $reviewStats = Review::whereIn('villa_id', $villaIds)
+                    ->where('is_approved', true)
+                    ->selectRaw('villa_id, AVG(rating) as avg_rating, COUNT(*) as review_count')
+                    ->groupBy('villa_id')
+                    ->get()
+                    ->keyBy('villa_id');
+
+                $villas->through(function ($villa) use ($reviewStats) {
+                    $stats = $reviewStats->get($villa->id);
+                    $villa->reviews_avg_rating = $stats ? (float) $stats->avg_rating : 0;
+                    $villa->reviews_count = $stats ? (int) $stats->review_count : 0;
+
+                    return $villa;
+                });
+            }
+
+            return [
+                'data' => $villas->items(),
+                'meta' => [
+                    'current_page' => $villas->currentPage(),
+                    'last_page' => $villas->lastPage(),
+                    'per_page' => $villas->perPage(),
+                    'total' => $villas->total(),
+                ],
+            ];
+        });
+
+        return response()->json($data);
     }
 
     /**
