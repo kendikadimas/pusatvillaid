@@ -27,7 +27,8 @@ class VillaController extends Controller
             if ($request->filled('location')) {
                 $location = $request->location;
                 $query->where(function ($q) use ($location) {
-                    $q->where('location', 'like', '%'.$location.'%')
+                    $q->where('name', 'like', '%'.$location.'%')
+                        ->orWhere('location', 'like', '%'.$location.'%')
                         ->orWhereHas('destination', function ($dq) use ($location) {
                             $dq->where('name', 'like', '%'.$location.'%')
                                 ->orWhere('city', 'like', '%'.$location.'%')
@@ -93,7 +94,7 @@ class VillaController extends Controller
             }
 
             return [
-                'data' => array_values(array_map(fn($v) => $v->toArray(), $villas->items())),
+                'data' => array_values(array_map(fn ($v) => $v->toArray(), $villas->items())),
                 'meta' => [
                     'current_page' => $villas->currentPage(),
                     'last_page' => $villas->lastPage(),
