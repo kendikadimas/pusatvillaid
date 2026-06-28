@@ -82,7 +82,11 @@ function ResetPasswordForm() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                    className={`h-10 rounded-lg border-slate-200 transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:placeholder:text-slate-500 ${
+                        initialEmail
+                            ? 'bg-slate-50 text-slate-500 cursor-not-allowed dark:bg-slate-900/50 dark:text-slate-400'
+                            : 'bg-white dark:bg-slate-800'
+                    }`}
                     readOnly={!!initialEmail}
                 />
                 <InputError message={errors.email} />
