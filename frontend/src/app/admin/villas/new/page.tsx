@@ -290,8 +290,14 @@ export default function AdminNewVillaPage() {
 
             const response = await axiosClient.post('/admin/villas', payload);
             toast.success(response.data.message || 'Villa berhasil ditambahkan!');
+            const villaId = response.data?.villa?.id;
+            if (!villaId) {
+                toast.error('Data villa tersimpan, namun ID tidak ditemukan. Silakan buka dari daftar villa.');
+                router.push('/admin/villas');
+                return;
+            }
             // Redirect to edit page to allow uploading photos
-            router.push(`/admin/villas/edit?id=${response.data.villa.id}&tab=photos`);
+            router.push(`/admin/villas/edit?id=${villaId}&tab=photos`);
 
         } catch (err: any) {
             console.error('Failed to create villa:', err);
@@ -915,19 +921,26 @@ export default function AdminNewVillaPage() {
                                         )}
                                     </div>
                                     <div className="space-y-1.5">
-                                        <div className="flex items-center space-x-2">
-                                            <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all" title="Unggah Foto Kamar">
-                                                <Upload className="w-3.5 h-3.5" />
-                                                <span className="hidden sm:inline">{uploadingBrImage ? 'Mengunggah...' : 'Pilih Foto'}</span>
-                                                <span className="sm:hidden">{uploadingBrImage ? '...' : 'Pilih'}</span>
-                                                <input 
-                                                    type="file" 
-                                                    accept="image/*" 
-                                                    onChange={handleBrImageUpload} 
-                                                    className="hidden" 
-                                                    disabled={uploadingBrImage} 
-                                                />
-                                            </label>
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('br-image-upload')?.click()}
+                                            disabled={uploadingBrImage}
+                                            className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all disabled:opacity-50"
+                                            title="Unggah Foto Kamar"
+                                        >
+                                            <Upload className="w-3.5 h-3.5" />
+                                            <span className="hidden sm:inline">{uploadingBrImage ? 'Mengunggah...' : 'Pilih Foto'}</span>
+                                            <span className="sm:hidden">{uploadingBrImage ? '...' : 'Pilih'}</span>
+                                        </button>
+                                        <input 
+                                            id="br-image-upload"
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleBrImageUpload} 
+                                            className="hidden" 
+                                            disabled={uploadingBrImage} 
+                                        />
                                             {brImage && (
                                                 <button
                                                     type="button"

@@ -1336,18 +1336,25 @@ function AdminEditVillaContent() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <div className="flex items-center space-x-2">
-                                            <label className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all" title="Unggah Foto Kamar">
+                                            <button
+                                                type="button"
+                                                onClick={() => document.getElementById('edit-br-image-upload')?.click()}
+                                                disabled={uploadingBrImage}
+                                                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-2 sm:px-4 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-95 transition-all disabled:opacity-50"
+                                                title="Unggah Foto Kamar"
+                                            >
                                                 <Upload className="w-3.5 h-3.5" />
                                                 <span className="hidden sm:inline">{uploadingBrImage ? 'Mengunggah...' : 'Pilih Foto'}</span>
                                                 <span className="sm:hidden">{uploadingBrImage ? '...' : 'Pilih'}</span>
-                                                <input 
-                                                    type="file" 
-                                                    accept="image/*" 
-                                                    onChange={handleBrImageUpload} 
-                                                    className="hidden" 
-                                                    disabled={uploadingBrImage} 
-                                                />
-                                            </label>
+                                            </button>
+                                            <input 
+                                                id="edit-br-image-upload"
+                                                type="file" 
+                                                accept="image/*" 
+                                                onChange={handleBrImageUpload} 
+                                                className="hidden" 
+                                                disabled={uploadingBrImage} 
+                                            />
                                             {brImage && (
                                                 <button
                                                     type="button"

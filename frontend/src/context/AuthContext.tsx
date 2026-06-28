@@ -17,7 +17,7 @@ interface AuthContextType {
     user: any | null;
     loading: boolean;
     error: any;
-    login: (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean) => Promise<any>;
+    login: (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean, redirectTo?: string) => Promise<any>;
     logout: () => Promise<void>;
     refreshAdmin: () => Promise<void>;
     forgotPassword: (email: string) => Promise<any>;
@@ -254,58 +254,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [admin, loading, pathname, router]);
 
-    const login = async (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean) => {
+    const login = async (credentials: { email: string; password: string; remember?: string }, isAdmin?: boolean, redirectTo?: string) => {
         setError(null);
         try {
             const isCurrentPathAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
             const targetIsAdmin = isAdmin !== undefined ? isAdmin : isCurrentPathAdmin;
             
-            console.log('[Auth login()] Starting login:', { isAdmin, targetIsAdmin, isCurrentPathAdmin });
-            
             const endpoint = targetIsAdmin ? '/admin/login' : '/login';
-            console.log('[Auth login()] Calling endpoint:', endpoint);
             const response = await axiosClient.post(endpoint, credentials);
             const { token, user: userData } = response.data;
             const isAdminUser = userData?.role === 'admin' || userData?.role === 'super_admin';
             
-            console.log('[Auth login()] API response received:', { 
-                hasToken: !!token, 
-                userId: userData?.id, 
-                role: userData?.role,
-                isAdminUser,
-                targetIsAdmin 
-            });
-            
             if (typeof window !== 'undefined') {
-                console.log('[Auth login()] Before flushSync — admin state:', admin);
                 flushSync(() => {
                     if (targetIsAdmin || isAdminUser) {
                         localStorage.setItem('admin_token', token);
                         setAdmin(userData);
-                        console.log('[Auth login()] flushSync: set admin_token + setAdmin');
                     } else {
                         localStorage.setItem('user_token', token);
                         setUser(userData);
-                        console.log('[Auth login()] flushSync: set user_token + setUser');
                     }
                 });
-                console.log('[Auth login()] After flushSync — admin state:', userData);
             }
             
             if (targetIsAdmin || isAdminUser) {
-                console.log('[Auth login()] Navigating to /admin/dashboard');
                 router.push('/admin/dashboard');
             } else {
-                const searchParams = new URLSearchParams(window.location.search);
-                const redirect = searchParams.get('redirect');
-                const target = redirect || '/profile';
-                console.log('[Auth login()] Navigating to:', target);
+                const target = redirectTo || '/profile';
                 router.push(target);
             }
             
             return response.data;
         } catch (err: any) {
-            console.error('[Auth login()] Login failed:', err.response?.status, err.response?.data);
             setError(err.response?.data?.message || 'Email atau password salah.');
             throw err;
         }
