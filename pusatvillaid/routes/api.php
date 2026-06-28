@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\VillaAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\IcalController;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ReviewController;
@@ -67,7 +68,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:3,1');
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('api.verification.verify');
-    Route::post('/auth/exchange-code', [\App\Http\Controllers\OAuthController::class, 'exchangeCode']);
+    Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode']);
 
     // ==========================================
     // Protected User/Guest Endpoints (Sanctum Token Required)

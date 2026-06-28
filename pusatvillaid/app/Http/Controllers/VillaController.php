@@ -72,7 +72,7 @@ class VillaController extends Controller
             }
 
             $perPage = $request->input('per_page', 50);
-            $villas = $query->paginate(min((int) $perPage, 50));
+            $villas = $query->paginate(min((int) $perPage, 200));
 
             // Single grouped query for review stats (replaces N*2 subqueries)
             $villaIds = $villas->pluck('id');
