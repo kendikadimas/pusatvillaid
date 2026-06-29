@@ -124,6 +124,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/bookings/{id}/approve-manual-payment', [BookingAdminController::class, 'approveManualPayment'])->middleware('permission:bookings.manage');
         Route::post('/bookings/{id}/reject-manual-payment', [BookingAdminController::class, 'rejectManualPayment'])->middleware('permission:bookings.manage');
         Route::post('/bookings/{id}/resend-email', [BookingAdminController::class, 'resendEmail'])->middleware('permission:bookings.manage');
+        Route::delete('/bookings/{id}', [BookingAdminController::class, 'destroy']);
 
         // ── Villas (requires villas.view / villas.manage) ──
         Route::get('/villas', [VillaAdminController::class, 'index'])->middleware('permission:villas.view');

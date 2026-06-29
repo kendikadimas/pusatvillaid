@@ -312,6 +312,47 @@ class BookingAdminController extends Controller
     }
 
     /**
+     * Delete a booking (super admin only).
+     */
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'super_admin') {
+            return response()->json(['message' => 'Hanya super admin yang dapat menghapus booking.'], 403);
+        }
+
+        $booking = Booking::with('villa:id,name')->find($id);
+
+        if (! $booking) {
+            return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        $bookingCode = $booking->booking_code;
+        $villaName = $booking->villa?->name;
+        $guestName = $booking->guest_name;
+        $checkIn = $booking->check_in;
+        $checkOut = $booking->check_out;
+        $totalAmount = $booking->total_amount;
+
+        $booking->delete();
+
+        Log::info("Booking {$bookingCode} telah dihapus oleh super admin {$user->name} ({$user->email}).", [
+            'deleted_by' => $user->id,
+            'booking_code' => $bookingCode,
+            'villa' => $villaName,
+            'guest_name' => $guestName,
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'total_amount' => $totalAmount,
+        ]);
+
+        return response()->json([
+            'message' => "Booking {$bookingCode} berhasil dihapus.",
+        ]);
+    }
+
+    /**
      * Resend booking confirmation email.
      */
     public function resendEmail(int $id): JsonResponse

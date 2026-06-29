@@ -20,14 +20,21 @@ import {
     ChevronRight,
     ArrowUpDown,
     Eye,
-    BookOpen
+    BookOpen,
+    Trash2
 } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AdminBookingsPage() {
+    const { admin } = useAuth();
+    const isSuperAdmin = admin?.role === 'super_admin';
+
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
     
     // Search, Filter & Sort params
     const [search, setSearch] = useState('');
@@ -98,6 +105,21 @@ export default function AdminBookingsPage() {
             setSortOrder('desc');
         }
         setCurrentPage(1);
+    };
+
+    const handleDelete = async () => {
+        if (!confirmDeleteId) return;
+        setDeletingId(confirmDeleteId);
+        try {
+            await axiosClient.delete(`/admin/bookings/${confirmDeleteId}`);
+            toast.success('Booking berhasil dihapus.');
+            setBookings(prev => prev.filter(b => b.id !== confirmDeleteId));
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Gagal menghapus booking.');
+        } finally {
+            setDeletingId(null);
+            setConfirmDeleteId(null);
+        }
     };
 
     const handleExport = async () => {
@@ -291,6 +313,12 @@ export default function AdminBookingsPage() {
                                             <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
                                         </div>
                                     </th>
+                                    <th onClick={() => toggleSort('created_at')} className="py-4 px-4 cursor-pointer hover:bg-slate-50/20 transition-colors">
+                                        <div className="flex items-center space-x-1 justify-between">
+                                            <span>Dibooking</span>
+                                            <ArrowUpDown className="w-3 h-3 text-[#6a6a6a]" />
+                                        </div>
+                                    </th>
                                     <th className="py-4 px-6 text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -321,8 +349,21 @@ export default function AdminBookingsPage() {
                                             <td className="py-3.5 px-4 font-black text-[#222222]">
                                                 {formatPrice(b.total_amount)}
                                             </td>
+                                            <td className="py-3.5 px-4 text-[#222222] font-semibold whitespace-nowrap">
+                                                {b.created_at ? format(parseISO(b.created_at), 'dd MMM yyyy HH:mm', { locale: localeID }) : '-'}
+                                            </td>
                                             <td className="py-3.5 px-6 text-right">
                                                 <div className="flex items-center justify-end space-x-1.5">
+                                                    {isSuperAdmin && (
+                                                        <button
+                                                            onClick={() => setConfirmDeleteId(b.id)}
+                                                            disabled={deletingId === b.id}
+                                                            className="bg-white hover:bg-red-50 text-red-500 hover:text-red-600 p-2 rounded-[8px] border border-[#dddddd] hover:border-red-200 transition-all duration-250 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 cursor-pointer"
+                                                            title="Hapus Booking"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                     <a 
                                                         href={waUrl}
                                                         target="_blank"
@@ -385,8 +426,22 @@ export default function AdminBookingsPage() {
                                             <span className="text-[#6a6a6a] font-medium">Total</span>
                                             <span className="font-black text-[#222222]">{formatPrice(b.total_amount)}</span>
                                         </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-[#6a6a6a] font-medium">Dibooking</span>
+                                            <span className="text-[#222222] font-semibold">{b.created_at ? format(parseISO(b.created_at), 'dd MMM HH:mm', { locale: localeID }) : '-'}</span>
+                                        </div>
                                     </div>
                                     <div className="flex items-center justify-end space-x-1.5 pt-2 border-t border-[#dddddd]">
+                                        {isSuperAdmin && (
+                                            <button
+                                                onClick={() => setConfirmDeleteId(b.id)}
+                                                disabled={deletingId === b.id}
+                                                className="bg-white hover:bg-red-50 text-red-500 hover:text-red-600 p-2 rounded-[8px] border border-[#dddddd] hover:border-red-200 transition-all duration-250 active:scale-95 cursor-pointer"
+                                                title="Hapus Booking"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        )}
                                         <a 
                                             href={waUrl}
                                             target="_blank"
@@ -446,6 +501,44 @@ export default function AdminBookingsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {confirmDeleteId !== null && (
+                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="absolute inset-0" onClick={() => setConfirmDeleteId(null)} />
+                    <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-5 z-10">
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Trash2 className="w-6 h-6 text-red-500" />
+                            </div>
+                            <h3 className="font-bold text-[#222222] text-base">Hapus Booking</h3>
+                            <p className="text-xs text-[#6a6a6a] mt-2 leading-relaxed">
+                                Apakah Anda yakin ingin menghapus booking ini? Tindakan ini tidak dapat dibatalkan.
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setConfirmDeleteId(null)}
+                                disabled={deletingId !== null}
+                                className="flex-1 bg-white hover:bg-slate-50 border border-[#dddddd] text-[#6a6a6a] font-bold py-2.5 rounded-xl text-xs transition-all cursor-pointer disabled:opacity-50"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={deletingId !== null}
+                                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                            >
+                                {deletingId !== null ? (
+                                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Menghapus...</>
+                                ) : (
+                                    'Ya, Hapus'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
