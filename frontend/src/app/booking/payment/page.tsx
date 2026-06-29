@@ -7,6 +7,7 @@ import axiosClient from '@/lib/axios';
 import { Booking, PaymentMethod } from '@/types';
 import PublicHeader from '@/components/PublicHeader';
 import BookingSummaryCard from '@/components/BookingSummaryCard';
+import AuthImage from '@/components/ui/AuthImage';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { formatPrice } from '@/lib/format';
 import { 
@@ -318,15 +319,13 @@ function BookingPaymentContent() {
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500 font-medium">Bukti Transfer:</span>
-                                <a 
-                                    href={booking.payment.payment_proof} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="font-bold text-blue-900 hover:text-blue-950 hover:underline flex items-center space-x-1"
-                                >
-                                    <span>Lihat Gambar</span>
-                                    <ExternalLink className="w-3.5 h-3.5" />
-                                </a>
+                                    <div className="w-full h-40 rounded-xl overflow-hidden border border-slate-200 bg-white">
+                                        <AuthImage
+                                            src={`/bookings/${booking.booking_code}/payment-proof`}
+                                            alt="Bukti Transfer"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
                             </div>
                         </div>
 

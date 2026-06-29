@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axiosClient from '@/lib/axios';
 
 interface AuthImageProps {
     src: string;
@@ -19,9 +18,18 @@ export default function AuthImage({ src, alt, className, onError }: AuthImagePro
         setBlobUrl(null);
         setError(false);
 
-        axiosClient.get(src, { responseType: 'blob' })
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_BACKEND_URL + '/api/v1');
+        const token = typeof window !== 'undefined' ? (localStorage.getItem('admin_token') || localStorage.getItem('user_token')) : null;
+
+        fetch(`${baseUrl}${src}`, {
+            headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : { Accept: 'application/json' },
+        })
             .then(res => {
-                if (!cancelled) setBlobUrl(URL.createObjectURL(res.data));
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.blob();
+            })
+            .then(blob => {
+                if (!cancelled) setBlobUrl(URL.createObjectURL(blob));
             })
             .catch(() => {
                 if (!cancelled) { setError(true); onError?.(); }
