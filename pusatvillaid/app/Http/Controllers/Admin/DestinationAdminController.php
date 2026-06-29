@@ -12,13 +12,12 @@ class DestinationAdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $destinations = Destination::orderBy('created_at', 'desc')->get();
+        $perPage = $request->input('per_page', 50);
+        $destinations = Destination::orderBy('created_at', 'desc')->paginate(min($perPage, 100));
 
-        return response()->json([
-            'data' => $destinations,
-        ]);
+        return response()->json($destinations);
     }
 
     /**

@@ -75,10 +75,21 @@ export default function AdminNewVillaPage() {
             return;
         }
 
-        const match = destinations.find(d => d.name.toLowerCase() === newDestName.trim().toLowerCase());
-        if (match) {
+        const matchName = destinations.find(d => d.name.toLowerCase() === newDestName.trim().toLowerCase());
+        if (matchName) {
             toast.info(`"${newDestName.trim()}" sudah tersedia, menggunakan destinasi yang sudah ada.`);
-            setDestinationId(String(match.id));
+            setDestinationId(String(matchName.id));
+            setNewDestName('');
+            setNewDestCity('');
+            setNewDestImage('');
+            setShowNewDestination(false);
+            return;
+        }
+
+        const matchCity = destinations.find(d => d.city.toLowerCase() === newDestCity.trim().toLowerCase());
+        if (matchCity) {
+            toast.info(`Kota "${newDestCity.trim()}" sudah terdaftar di "${matchCity.name}". Gunakan destinasi yang sudah ada.`);
+            setDestinationId(String(matchCity.id));
             setNewDestName('');
             setNewDestCity('');
             setNewDestImage('');
@@ -407,7 +418,17 @@ export default function AdminNewVillaPage() {
                             </div>
 
                             <div className="min-w-0">
-                                <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Destinasi Wilayah *</label>
+                                <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">
+                                    Destinasi Wilayah *
+                                    <span
+                                        className="inline-flex items-center ml-1.5 text-[10px] text-slate-400 cursor-help"
+                                        title="Pilih kota/kabupaten dan provinsi tempat villa berada, misal: Cilacap, Jawa Tengah"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+                                            <path fillRule="evenodd" d="M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0ZM9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6.75 8a.75.75 0 0 0 0 1.5h.75v1.75a.75.75 0 0 0 1.5 0v-2.5A.75.75 0 0 0 8.25 8h-1.5Z" clipRule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </label>
                                 {!showNewDestination ? (
                                     <div className="space-y-2">
                                         <select 
@@ -419,7 +440,7 @@ export default function AdminNewVillaPage() {
                                         >
                                             <option value="">-- Pilih Destinasi --</option>
                                             {destinations.map((dest) => (
-                                                <option key={dest.id} value={dest.id}>{dest.name} ({dest.city})</option>
+                                                <option key={dest.id} value={dest.id}>{dest.name}</option>
                                             ))}
                                         </select>
                                         <button
@@ -445,9 +466,18 @@ export default function AdminNewVillaPage() {
                                         </div>
                                         <input
                                             type="text"
-                                            placeholder="Nama destinasi *"
+                                            placeholder="Nama destinasi (misal: Cilacap, Jawa Tengah) *"
                                             value={newDestName}
-                                            onChange={(e) => setNewDestName(e.target.value)}
+                                            onChange={(e) => {
+                                                setNewDestName(e.target.value);
+                                                // Auto-suggest: cek apakah ada destinasi dengan kota yang sama
+                                                const cityMatch = destinations.find(d =>
+                                                    d.city.toLowerCase() === e.target.value.split(',')[0]?.trim().toLowerCase()
+                                                );
+                                                if (cityMatch) {
+                                                    setNewDestCity(cityMatch.city);
+                                                }
+                                            }}
                                             className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                         />
                                         <input
@@ -457,6 +487,30 @@ export default function AdminNewVillaPage() {
                                             onChange={(e) => setNewDestCity(e.target.value)}
                                             className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                         />
+                                        {newDestCity.trim() && (() => {
+                                            const existing = destinations.find(d =>
+                                                d.city.toLowerCase() === newDestCity.trim().toLowerCase() &&
+                                                d.name.toLowerCase() !== newDestName.trim().toLowerCase()
+                                            );
+                                            if (!existing) return null;
+                                            return (
+                                                <p className="text-[10px] text-amber-600 font-semibold bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                                                    Kota "{existing.city}" sudah terdaftar di destinasi "{existing.name}". 
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setDestinationId(String(existing.id));
+                                                            setNewDestName('');
+                                                            setNewDestCity('');
+                                                            setShowNewDestination(false);
+                                                        }}
+                                                        className="ml-1 text-blue-600 hover:text-blue-700 underline font-bold"
+                                                    >
+                                                        Gunakan yang sudah ada
+                                                    </button>
+                                                </p>
+                                            );
+                                        })()}
                                         <button
                                             type="button"
                                             onClick={handleCreateDestination}

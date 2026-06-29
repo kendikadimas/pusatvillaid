@@ -24,6 +24,8 @@ export default function AdminDestinationsPage() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,11 +41,20 @@ export default function AdminDestinationsPage() {
     const [uploadingImage, setUploadingImage] = useState(false);
 
     // Fetch destinations
-    const fetchDestinations = async () => {
+    const fetchDestinations = async (page = 1) => {
         setLoading(true);
+        setCurrentPage(page);
         try {
-            const response = await axiosClient.get('/admin/destinations');
-            setDestinations(response.data.data || []);
+            const response = await axiosClient.get('/admin/destinations', {
+                params: { page, per_page: 50 }
+            });
+            if (Array.isArray(response.data)) {
+                setDestinations(response.data);
+                setTotalPages(1);
+            } else {
+                setDestinations(response.data.data || []);
+                setTotalPages(response.data.meta?.last_page || 1);
+            }
         } catch (err) {
             console.error('Failed to load destinations:', err);
             toast.error('Gagal memuat daftar destinasi wisata.');
@@ -53,7 +64,7 @@ export default function AdminDestinationsPage() {
     };
 
     useEffect(() => {
-        fetchDestinations();
+        fetchDestinations(1);
     }, []);
 
     // Open modal for creation
@@ -309,6 +320,39 @@ export default function AdminDestinationsPage() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-center space-x-1.5 pt-6 border-t border-[#dddddd] mt-6">
+                            <button
+                                onClick={() => fetchDestinations(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95"
+                            >
+                                Sebelumnya
+                            </button>
+                            {[...Array(totalPages)].map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => fetchDestinations(i + 1)}
+                                    className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold transition-all cursor-pointer active:scale-95 ${
+                                        currentPage === i + 1
+                                            ? 'bg-blue-500 text-white'
+                                            : 'border border-[#dddddd] text-[#6a6a6a] hover:bg-slate-50 bg-white'
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => fetchDestinations(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95"
+                            >
+                                Selanjutnya
+                            </button>
                         </div>
                     )}
                 </div>
