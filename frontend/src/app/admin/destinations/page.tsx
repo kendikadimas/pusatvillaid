@@ -48,13 +48,13 @@ export default function AdminDestinationsPage() {
             const response = await axiosClient.get('/admin/destinations', {
                 params: { page, per_page: 50 }
             });
-            if (Array.isArray(response.data)) {
-                setDestinations(response.data);
-                setTotalPages(1);
-            } else {
-                setDestinations(response.data.data || []);
-                setTotalPages(response.data.meta?.last_page || 1);
-            }
+        if (Array.isArray(response.data)) {
+            setDestinations(response.data);
+            setTotalPages(1);
+        } else {
+            setDestinations(response.data.data || []);
+            setTotalPages(response.data.last_page || 1);
+        }
         } catch (err) {
             console.error('Failed to load destinations:', err);
             toast.error('Gagal memuat daftar destinasi wisata.');
