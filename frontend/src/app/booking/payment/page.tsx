@@ -26,6 +26,7 @@ import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { useResilientBooking } from '@/hooks/useResilientBooking';
 
 function BookingPaymentContent() {
     const router = useRouter();
@@ -35,9 +36,21 @@ function BookingPaymentContent() {
     const code = searchParams.get('code') || '';
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
-    const [booking, setBooking] = useState<Booking | null>(null);
-    // Start loading only if we have a code — avoids premature spinner/redirect during static hydration
-    const [loading, setLoading] = useState(Boolean(code));
+    const email = typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email;
+    // Fallback: cek localStorage anchor untuk email (disimpan saat confirm) — penting saat tab di-kill & sessionStorage hilang
+    const anchorEmail = (() => {
+        if (typeof window === 'undefined' || email) return null;
+        try {
+            const raw = localStorage.getItem('pusatvilla-active-booking');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                return parsed.email || null;
+            }
+        } catch {}
+        return null;
+    })();
+    const { booking, status, isFromCache, refetch } = useResilientBooking(code, email || anchorEmail || undefined);
+    const loading = status === 'loading' || status === 'idle';
     // const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam); // ARCHIVED: Midtrans
     // const [scriptLoaded, setScriptLoaded] = useState(false); // ARCHIVED: Midtrans
 
@@ -101,64 +114,36 @@ function BookingPaymentContent() {
     // );
     const isOnlineEnabled = false;
 
+    // Email guard: jika tidak ada email sama sekali, redirect ke status page
     useEffect(() => {
-        // 1. Fetch booking details to verify unpaid status
-        const fetchBooking = async () => {
-            // Guard: code is empty during static-export hydration — wait for URL params to be available
-            if (!code) {
-                setLoading(false);
-                return;
-            }
+        if (!code || authLoading) return;
+        if (!email && !anchorEmail && !user) {
+            toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
+            router.push(`/booking/status?code=${code}`);
+        }
+    }, [code, email, anchorEmail, user, authLoading]);
 
-            if (authLoading) return;
+    // Redirect logic dari hook — dipindah dari fetch manual ke sini
+    useEffect(() => {
+        if (!booking) return;
 
-            try {
-                // To fetch details we need the email. We retrieve it from sessionStorage (saved during confirm checkout) or use user's email
-                const email = sessionStorage.getItem(`checkout_email_${code}`) || user?.email;
-                if (!email && !user) {
-                    // If no email, redirect back to home or request check status
-                    toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
-                    router.push(`/booking/status?code=${code}`);
-                    return;
-                }
+        // Auto-select payment method from booking
+        if (booking.payment_method_id) {
+            setSelectedMethodId(booking.payment_method_id);
+        }
 
-                const response = await axiosClient.get(`/bookings/${code}`, {
-                    params: email ? { email } : {}
-                });
-                
-                const b = response.data;
-                setBooking(b);
-                
-                if (b.payment_status === 'paid' || b.status === 'confirmed') {
-                    toast.success('Pemesanan ini sudah dibayar.');
-                    router.push(`/booking/success?code=${code}`);
-                    return;
-                }
+        if (booking.payment_status === 'paid' || booking.status === 'confirmed') {
+            toast.success('Pemesanan ini sudah dibayar.');
+            router.push(`/booking/success?code=${booking.booking_code}`);
+            return;
+        }
 
-                if (b.status === 'cancelled') {
-                    toast.error('Pemesanan ini sudah dibatalkan.');
-                    router.push(`/booking/failed?code=${code}`);
-                    return;
-                }
-
-                // Auto-select payment method from booking
-                if (b.payment_method_id) {
-                    setSelectedMethodId(b.payment_method_id);
-                } else if (paymentMethods.length > 0) {
-                    setSelectedMethodId(paymentMethods[0].id);
-                }
-
-            } catch (err) {
-                console.error('Failed to fetch booking:', err);
-                toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
-                router.push(`/booking/status?code=${code}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBooking();
-    }, [code, user, authLoading]);
+        if (booking.status === 'cancelled') {
+            toast.error('Pemesanan ini sudah dibatalkan.');
+            router.push(`/booking/failed?code=${booking.booking_code}`);
+            return;
+        }
+    }, [booking]);
 
     /* ARCHIVED: Midtrans Snap.js loader (belum diaktifkan)
     useEffect(() => {
@@ -249,21 +234,35 @@ function BookingPaymentContent() {
     const uniqid = () => Math.random().toString(36).substring(2, 9);
     */
 
-    if (loading) {
+    // Loading state — render spinner
+    if (loading && !booking) {
         return <LoadingSpinner message="Menyiapkan halaman pembayaran..." />;
     }
 
-    if (!booking) {
+    // Error state — tampilkan retry, jangan redirect paksa
+    if (!booking && status === 'error') {
         return (
             <div className="text-center py-64 min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col justify-center items-center px-4 animate-in fade-in duration-300">
                 <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-sm w-full shadow-lg space-y-4">
-                    <p className="text-slate-655 text-sm font-medium">Transaksi tidak ditemukan.</p>
-                    <Link href="/villas" className="w-full inline-flex items-center justify-center bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs">
+                    <p className="text-slate-655 text-sm font-medium">Gagal memuat data booking.</p>
+                    <p className="text-xs text-slate-400 font-medium">Periksa koneksi internet Anda, lalu coba lagi.</p>
+                    <button
+                        onClick={refetch}
+                        className="w-full inline-flex items-center justify-center bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
+                    >
+                        Coba Lagi
+                    </button>
+                    <Link href="/villas" className="block text-xs text-slate-500 hover:text-slate-700 underline text-center">
                         Kembali ke Katalog Villa
                     </Link>
                 </div>
             </div>
         );
+    }
+
+    // Masih loading tapi belum ada data — spinner
+    if (!booking) {
+        return <LoadingSpinner message="Menyiapkan halaman pembayaran..." />;
     }
 
     if (booking.payment?.status === 'pending' && booking.payment?.payment_proof) {
@@ -377,6 +376,12 @@ function BookingPaymentContent() {
                             <span className="text-[10px] font-bold text-slate-550 tracking-wider uppercase">Kode Booking:</span>
                             <span className="text-xs font-extrabold text-blue-900 tracking-wide font-mono">{code}</span>
                         </div>
+                        {isFromCache && status === 'error' && (
+                            <div className="text-xs text-amber-600 flex items-center justify-center gap-2 mt-2">
+                                <span>Gagal sinkronisasi data terbaru — menampilkan data tersimpan.</span>
+                                <button onClick={refetch} className="underline font-bold cursor-pointer">Coba lagi</button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Rejected payment notice */}

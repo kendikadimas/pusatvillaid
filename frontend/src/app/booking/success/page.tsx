@@ -15,43 +15,25 @@ import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
+import { useResilientBooking } from '@/hooks/useResilientBooking';
 
 function BookingSuccessContent() {
     const searchParams = useSearchParams();
-    const code = searchParams.get('code');
+    const code = searchParams.get('code') || '';
     const { settings } = useSettings();
 
-    const [booking, setBooking] = useState<Booking | null>(null);
-    const [loading, setLoading] = useState(true);
+    const email = typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) : null;
+    const { booking, status, isFromCache, refetch } = useResilientBooking(code, email || undefined);
+    const loading = status === 'loading' || status === 'idle';
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        if (!code) {
-            setLoading(false);
-            return;
-        }
-
-        const fetchBooking = async () => {
+        if (booking?.payment_status === 'paid') {
             try {
-                const email = sessionStorage.getItem(`checkout_email_${code}`);
-                if (!email) {
-                    setLoading(false);
-                    return; // Cannot load details without validation email
-                }
-
-                const response = await axiosClient.get(`/bookings/${code}`, {
-                    params: { email }
-                });
-                setBooking(response.data);
-            } catch (err) {
-                console.error('Failed to fetch booking details for receipt:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBooking();
-    }, [code]);
+                localStorage.removeItem('pusatvilla-active-booking');
+            } catch {}
+        }
+    }, [booking]);
 
     const handleCopyCode = () => {
         if (!code) return;
@@ -117,7 +99,31 @@ function BookingSuccessContent() {
         }
     };
 
-    if (loading) {
+    if (loading && !booking) {
+        return <LoadingSpinner message="Memuat rincian booking..." />;
+    }
+
+    if (!booking && status === 'error') {
+        return (
+            <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850 min-h-screen items-center justify-center px-4">
+                <div className="bg-white border border-slate-200 rounded-[32px] p-8 max-w-sm w-full shadow-lg text-center space-y-4">
+                    <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto">
+                        <span className="text-2xl">⚠️</span>
+                    </div>
+                    <p className="text-slate-655 text-sm font-medium">Gagal memuat rincian booking.</p>
+                    <p className="text-xs text-slate-400">Periksa koneksi internet Anda.</p>
+                    <button
+                        onClick={refetch}
+                        className="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
+                    >
+                        Coba Lagi
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!booking) {
         return <LoadingSpinner message="Memuat rincian booking..." />;
     }
 
@@ -131,6 +137,13 @@ function BookingSuccessContent() {
             <main className="max-w-xl mx-auto px-4 py-16 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                 <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden print:border-0 print:shadow-none print:p-0">
                     <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-900 print:hidden" />
+
+                    {isFromCache && status === 'error' && (
+                        <div className="text-xs text-amber-600 flex items-center justify-center gap-2 bg-amber-50/50 border border-amber-200/60 rounded-xl px-4 py-2">
+                            <span>Gagal sinkronisasi — menampilkan data tersimpan.</span>
+                            <button onClick={refetch} className="underline font-bold cursor-pointer">Coba lagi</button>
+                        </div>
+                    )}
                     
                     {/* Success Icon (hidden on print) */}
                     <div className="w-16 h-16 bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-2xl flex items-center justify-center mx-auto border border-emerald-250/50 shadow-sm print:hidden animate-pulse">

@@ -351,6 +351,21 @@ export default function BookingConfirmPage() {
             // Save email used for checkout in sessionStorage to allow verification access to checking status
             sessionStorage.setItem(`checkout_email_${response.data.booking_code}`, email);
 
+            // BARU: simpan anchor & cache instan, sebelum redirect
+            try {
+                const code = response.data.booking_code;
+                localStorage.setItem('pusatvilla-active-booking', JSON.stringify({
+                    code,
+                    email: email,
+                    createdAt: Date.now(),
+                }));
+                if (response.data.booking) {
+                    localStorage.setItem(`pusatvilla-booking-cache-${code}`, JSON.stringify(response.data.booking));
+                }
+            } catch (e) {
+                console.warn('Gagal menyimpan booking cache:', e);
+            }
+
             toast.success(response.data.message || 'Booking berhasil dibuat.');
 
             navigatingAway.current = true;

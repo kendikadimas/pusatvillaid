@@ -218,10 +218,13 @@ class BookingController extends Controller
                 Log::error('Gagal mengirim email notifikasi booking baru ke admin: '.$mailEx->getMessage());
             }
 
+            $bookingData->load(['villa', 'payment', 'paymentMethod']);
+
             return response()->json([
                 'booking_code' => $bookingData->booking_code,
                 'total_amount' => $bookingData->total_amount,
                 'message' => 'Booking berhasil dibuat. Silakan unggah bukti pembayaran.',
+                'booking' => $bookingData,
             ], 201);
 
         } catch (\Exception $e) {

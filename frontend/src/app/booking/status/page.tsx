@@ -28,6 +28,7 @@ import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { useResilientBooking } from '@/hooks/useResilientBooking';
 
 function BookingStatusContent() {
     const { settings } = useSettings();
@@ -37,65 +38,56 @@ function BookingStatusContent() {
     const code = searchParams.get('code') || '';
     const emailParam = searchParams.get('email');
 
-    const [booking, setBooking] = useState<Booking | null>(null);
-    const [loading, setLoading] = useState(true);
     const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
-    
+    const [resolvingInitial, setResolvingInitial] = useState(true);
     // Form Input state
     const [emailInput, setEmailInput] = useState(emailParam || '');
     const [verifying, setVerifying] = useState(false);
 
+    const { booking, status, isFromCache, refetch } = useResilientBooking(code, verifiedEmail || undefined);
+    const loading = status === 'loading' || status === 'idle';
+
     useEffect(() => {
         if (authLoading) return;
 
-        // Attempt to find verified email from query param, state, or sessionStorage, or logged-in user
         const savedEmail = emailParam || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) : null) || user?.email;
         if (savedEmail) {
             setVerifiedEmail(savedEmail);
-            fetchBookingStatus(savedEmail);
         } else if (user) {
-            // If logged in but email isn't verified yet, try to fetch without email param
-            // since backend allows it if user is owner / admin
             const fetchWithoutEmail = async () => {
                 try {
                     const response = await axiosClient.get(`/bookings/${code}`);
-                    setBooking(response.data);
-                    setVerifiedEmail(response.data.guest_email);
                     if (typeof window !== 'undefined') {
                         sessionStorage.setItem(`checkout_email_${code}`, response.data.guest_email);
                     }
+                    setVerifiedEmail(response.data.guest_email);
                 } catch (err) {
                     console.warn('Failed to fetch booking status without email:', err);
-                    // Just let them verify manually
-                } finally {
-                    setLoading(false);
                 }
             };
             fetchWithoutEmail();
-        } else {
-            setLoading(false);
         }
+        setResolvingInitial(false);
     }, [code, emailParam, user, authLoading]);
 
-    const fetchBookingStatus = async (email: string) => {
-        setLoading(true);
-        try {
-            const response = await axiosClient.get(`/bookings/${code}`, {
-                params: { email }
-            });
-            setBooking(response.data);
-            if (typeof window !== 'undefined') {
-                sessionStorage.setItem(`checkout_email_${code}`, email);
-            }
-        } catch (err: any) {
-            console.error('Failed to verify booking status:', err);
-            toast.error(err.response?.data?.message || 'Gagal memuat status booking. Periksa kembali email Anda.');
-            setVerifiedEmail(null); // Reset verification state
-        } finally {
-            setLoading(false);
+    // Pastikan resolvingInitial jadi false walau authLoading tetap true
+    useEffect(() => {
+        if (!authLoading) return;
+        const timer = setTimeout(() => setResolvingInitial(false), 5000);
+        return () => clearTimeout(timer);
+    }, [authLoading]);
+
+    // Reaksi terhadap perubahan status hook setelah user submit email
+    useEffect(() => {
+        if (!verifying || !verifiedEmail) return;
+        if (status === 'success') {
             setVerifying(false);
+        } else if (status === 'error') {
+            setVerifying(false);
+            setVerifiedEmail(null);
+            toast.error('Gagal memuat status booking. Periksa kembali email Anda.');
         }
-    };
+    }, [status, verifying, verifiedEmail]);
 
     const handleVerifySubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,14 +97,57 @@ function BookingStatusContent() {
         }
         setVerifying(true);
         setVerifiedEmail(emailInput);
-        fetchBookingStatus(emailInput);
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem(`checkout_email_${code}`, emailInput);
+        }
     };
 
-    if (loading) {
+    if (resolvingInitial || (loading && verifiedEmail && !booking)) {
         return <LoadingSpinner message="Memeriksa status pemesanan..." />;
     }
 
-    // Security Gate Form: if not verified, ask for the guest email
+    if (!booking && status === 'error' && verifiedEmail) {
+        return (
+            <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
+                <PublicHeader>
+                    <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-550 bg-slate-100/80 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span>Status Booking</span>
+                    </div>
+                </PublicHeader>
+                <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
+                    <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
+                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl flex items-center justify-center mx-auto border border-red-200/50 shadow-sm">
+                            <AlertTriangle className="w-8 h-8 text-red-600" />
+                        </div>
+                        <div>
+                            <h1 className="font-serif text-2xl sm:text-3xl font-normal text-slate-900 tracking-tight">Gagal Memuat Data</h1>
+                            <p className="text-slate-500 text-xs mt-2.5 leading-relaxed px-4">
+                                Tidak dapat memuat status booking. Periksa koneksi internet Anda.
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <button
+                                onClick={refetch}
+                                className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer"
+                            >
+                                Coba Lagi
+                            </button>
+                            <button
+                                onClick={() => setVerifiedEmail(null)}
+                                className="w-full text-xs text-slate-500 hover:text-slate-700 underline"
+                            >
+                                Gunakan email berbeda
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    // Initial load (no verifiedEmail yet, not loading) — show verification form
     if (!verifiedEmail || !booking) {
         return (
             <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
@@ -235,6 +270,13 @@ function BookingStatusContent() {
                         <StatusBadge variant={booking.status as any} className="animate-pulse shadow-sm" />
                     </div>
                 </div>
+
+                {isFromCache && status === 'error' && (
+                    <div className="text-xs text-amber-600 flex items-center gap-2 bg-amber-50/50 border border-amber-200/60 rounded-xl px-4 py-3">
+                        <span>Gagal sinkronisasi data terbaru — menampilkan data tersimpan.</span>
+                        <button onClick={refetch} className="underline font-bold whitespace-nowrap cursor-pointer">Coba lagi</button>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Left Columns (Booking receipt and details) */}
