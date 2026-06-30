@@ -129,6 +129,7 @@ function VillasCatalogContent() {
     const handleApplyFilters = (e: React.FormEvent) => {
         e.preventDefault();
         setCurrentPage(1);
+        fetchVillas();
         setSelectedVillaId(null);
     };
 
