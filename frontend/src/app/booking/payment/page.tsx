@@ -39,10 +39,13 @@ function BookingPaymentContent() {
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
     const [manualEmail, setManualEmail] = useState('');
-    const email = manualEmail || emailFromUrl || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
+    const [ignoreAnchor, setIgnoreAnchor] = useState(false);
+    // Saat ignoreAnchor=true (user pilih "Gunakan email berbeda"), pakai manualEmail SAJA
+    const email = ignoreAnchor ? manualEmail : (manualEmail || emailFromUrl || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email));
     // Fallback: cek localStorage anchor untuk email (disimpan saat confirm) — penting saat tab di-kill & sessionStorage hilang
+    // Tapi skip saat ignoreAnchor=true — user ingin input manual
     const anchorEmail = (() => {
-        if (typeof window === 'undefined' || email) return null;
+        if (typeof window === 'undefined' || email || ignoreAnchor) return null;
         try {
             const raw = localStorage.getItem('pusatvilla-active-booking');
             if (raw) {
@@ -301,7 +304,7 @@ function BookingPaymentContent() {
                         Coba Lagi
                     </button>
                     <button
-                        onClick={() => setManualEmail('')}
+                        onClick={() => { setManualEmail(''); setIgnoreAnchor(true); }}
                         className="w-full inline-flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-bold py-3 rounded-xl shadow-sm transition-all text-xs cursor-pointer"
                     >
                         Gunakan email berbeda
