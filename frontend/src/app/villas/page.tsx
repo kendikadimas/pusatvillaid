@@ -1,18 +1,23 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import { Villa } from '@/types';
 import { 
     SlidersHorizontal,
-    Map as MapIcon,
-    List as ListIcon
+    Star,
+    MapPin,
+    BedDouble,
+    Bath,
+    Users,
+    ArrowRight,
+    X
 } from 'lucide-react';
+import { formatPrice } from '@/lib/format';
+import { getPhotoUrl } from '@/lib/villaUtils';
+import Link from 'next/link';
 import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
-
-const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false });
 
 import PublicHeader from '@/components/PublicHeader';
 import CategoryFilter, { categories } from '@/components/CategoryFilter';
@@ -27,66 +32,8 @@ import SearchOverlay from '@/components/SearchOverlay';
 import MobileSearchPill from '@/components/MobileSearchPill';
 import MobilePropertyCard from '@/components/MobilePropertyCard';
 
-interface LatLng {
-    lat: number;
-    lng: number;
-}
-
-// Function to resolve villa coordinates based on maps_url or general location matching
-const getCoordinates = (villa: Villa): LatLng => {
-    // 1. Try parsing from Google Maps embed URL
-    if (villa.maps_url) {
-        const embedMatch = villa.maps_url.match(/!2d(-?\d+\.\d+)!3d(-?\d+\.\d+)/);
-        if (embedMatch) {
-            return { lat: parseFloat(embedMatch[2]), lng: parseFloat(embedMatch[1]) };
-        }
-        
-        const queryMatch = villa.maps_url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if (queryMatch) {
-            return { lat: parseFloat(queryMatch[1]), lng: parseFloat(queryMatch[2]) };
-        }
-    }
-
-    // 2. Predefined mock coordinates based on seeded villa slugs for absolute stability
-    const fallbackCoords: Record<string, LatLng> = {
-        'pulas-private-villa-prawiro-oleh-fulton': { lat: -7.8155986, lng: 110.3707788 },
-        'villa-kencana-cilember': { lat: -6.685419, lng: 106.931720 },
-        'puncak-vista-cabin': { lat: -6.702717, lng: 106.983944 },
-        'ubud-sanctuary-pool-villa': { lat: -8.519227, lng: 115.247291 },
-    };
-
-    if (fallbackCoords[villa.slug]) {
-        return fallbackCoords[villa.slug];
-    }
-
-    // 3. Stable offset resolver based on general location text
-    const loc = villa.location.toLowerCase();
-    
-    // Stable pseudo-random generator based on villa ID so coordinates don't change on render
-    const pseudoRandom = (seed: number) => {
-        const x = Math.sin(seed) * 10000;
-        return x - Math.floor(x);
-    };
-
-    const seedVal = villa.id;
-    const latOffset = (pseudoRandom(seedVal) - 0.5) * 0.04;
-    const lngOffset = (pseudoRandom(seedVal + 1) - 0.5) * 0.04;
-
-    if (loc.includes('yogyakarta') || loc.includes('sleman') || loc.includes('bantul') || loc.includes('mergangsan')) {
-        return { lat: -7.79558 + latOffset, lng: 110.36949 + lngOffset };
-    }
-    if (loc.includes('bogor') || loc.includes('cilember') || loc.includes('cisarua') || loc.includes('puncak')) {
-        return { lat: -6.6888 + latOffset, lng: 106.9294 + lngOffset };
-    }
-    if (loc.includes('bali') || loc.includes('ubud') || loc.includes('gianyar') || loc.includes('sayan')) {
-        return { lat: -8.5069 + latOffset, lng: 115.2625 + lngOffset };
-    }
-
-    // Default to central Yogyakarta area
-    return { lat: -7.79558 + latOffset, lng: 110.36949 + lngOffset };
-};
-
 function VillasCatalogContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const checkInParam = searchParams.get('checkIn') || '';
     const checkOutParam = searchParams.get('checkOut') || '';
@@ -100,7 +47,6 @@ function VillasCatalogContent() {
     // Interactive syncing states
     const [hoveredVillaId, setHoveredVillaId] = useState<number | null>(null);
     const [selectedVillaId, setSelectedVillaId] = useState<number | null>(null);
-    const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
     const [showFilters, setShowFilters] = useState(false);
     
     // Mobile search overlay state
@@ -391,8 +337,8 @@ function VillasCatalogContent() {
             {/* Main Split Screen Container */}
             <div className={`flex-grow flex flex-row overflow-hidden relative w-full ${showFilters ? 'h-[calc(100vh-240px)]' : 'h-[calc(100vh-180px)]'}`}>
                 
-                {/* Left Side: Scrollable Listing (Desktop Only) */}
-                <div className="hidden lg:flex w-[46%] xl:w-[46%] h-full overflow-y-auto bg-white flex-col border-r border-slate-100">
+                {/* Left Side: Scrollable Listing */}
+                <div className="flex lg:w-[46%] xl:w-[46%] h-full overflow-y-auto bg-white flex-col lg:border-r border-slate-100">
                     <main className="flex-1 px-4 lg:px-8 py-6 w-full">
                         {/* Heading & Price Tag Banner resembling Airbnb */}
                         <div className="flex flex-col space-y-3 mb-6">
@@ -446,59 +392,122 @@ function VillasCatalogContent() {
                     </main>
                 </div>
 
-                {/* Right Side: Interactive Map (Desktop & Mobile) */}
-                <div className="w-full lg:w-[54%] xl:w-[54%] h-full bg-slate-100 relative">
-                    <MapComponent
-                        villas={filteredVillas}
-                        hoveredVillaId={hoveredVillaId}
-                        selectedVillaId={selectedVillaId}
-                        onHoverVilla={setHoveredVillaId}
-                        onSelectVilla={setSelectedVillaId}
-                        getCoordinates={getCoordinates}
-                        wishlist={wishlist}
-                        toggleWishlist={toggleWishlist}
-                    />
-                </div>
+                {/* Right Side: Villa Detail Panel (Desktop) */}
+                <div className="hidden lg:flex w-[54%] xl:w-[54%] h-full bg-white flex-col">
+                    {selectedVillaId ? (() => {
+                        const villa = filteredVillas.find(v => v.id === selectedVillaId);
+                        if (!villa) return (
+                            <div className="flex-1 flex items-center justify-center text-slate-400 text-sm font-medium">
+                                Pilih villa dari daftar
+                            </div>
+                        );
+                        const photos = villa.photos && villa.photos.length > 0
+                            ? villa.photos
+                            : ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80'];
+                        const ratingVal = villa.reviews_avg_rating
+                            ? parseFloat(villa.reviews_avg_rating.toString())
+                            : 4.5 + (villa.id % 5) * 0.1;
+                        return (
+                            <div className="flex-1 overflow-y-auto">
+                                {/* Photo */}
+                                <div className="relative w-full aspect-[16/9] bg-slate-100 overflow-hidden">
+                                    <img
+                                        src={getPhotoUrl(photos[0])}
+                                        alt={villa.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        onClick={() => setSelectedVillaId(null)}
+                                        className="absolute top-4 right-4 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all cursor-pointer"
+                                    >
+                                        <X className="w-4 h-4 text-slate-700" />
+                                    </button>
+                                </div>
 
-                {/* Mobile Bottom Sheet Overlay (Scrollable to expand) */}
-                <div className="lg:hidden absolute inset-0 z-30 overflow-y-auto snap-y snap-proximity scrollbar-hide pointer-events-none">
-                    {/* Transparent spacer to let the map show through and be interactive */}
-                    <div className="h-[45%] w-full shrink-0 snap-start" />
-                    
-                    {/* The expanding white bottom sheet */}
-                    <div className="min-h-full pointer-events-auto bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] flex flex-col relative snap-start">
-                        {/* Header & Grabber */}
-                        <div className="sticky top-0 bg-white rounded-t-3xl pt-3 pb-4 flex justify-center z-10 border-b border-slate-50">
-                            <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+                                {/* Content */}
+                                <div className="p-6 space-y-6">
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div>
+                                            <h2 className="font-serif text-xl font-bold text-slate-900 leading-tight">{villa.name}</h2>
+                                            <div className="flex items-center text-slate-500 text-xs mt-1.5">
+                                                <MapPin className="w-3.5 h-3.5 mr-1" />
+                                                <span>{villa.location}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center text-sm font-bold text-slate-900 shrink-0">
+                                            <Star className="w-4 h-4 fill-amber-400 text-amber-400 mr-1" />
+                                            <span>{ratingVal.toFixed(1).replace('.', ',')}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick specs */}
+                                    <div className="flex items-center gap-4 text-xs text-slate-600 border-y border-slate-100 py-3">
+                                        <div className="flex items-center gap-1.5">
+                                            <BedDouble className="w-4 h-4 text-slate-400" />
+                                            <span>{villa.bedrooms} kamar</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Bath className="w-4 h-4 text-slate-400" />
+                                            <span>{villa.bathrooms} kamar mandi</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Users className="w-4 h-4 text-slate-400" />
+                                            <span>{villa.max_guests} tamu</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Description */}
+                                    <p className="text-sm text-slate-600 leading-relaxed line-clamp-4">
+                                        {villa.description || 'Tidak ada deskripsi yang tersedia untuk villa ini.'}
+                                    </p>
+
+                                    {/* Amenities */}
+                                    {villa.amenities && villa.amenities.length > 0 && (
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Fasilitas</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {villa.amenities.slice(0, 6).map((a, i) => (
+                                                    <span key={i} className="text-[11px] bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg font-medium text-slate-600">
+                                                        {typeof a === 'string' ? a : a.name}
+                                                    </span>
+                                                ))}
+                                                {villa.amenities.length > 6 && (
+                                                    <span className="text-[11px] text-slate-400 font-medium">+{villa.amenities.length - 6} lainnya</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Price & CTA */}
+                                    <div className="border-t border-slate-100 pt-4 flex items-center justify-between">
+                                        <div>
+                                            <span className="text-lg font-bold text-slate-900">{formatPrice(villa.price_per_night)}</span>
+                                            <span className="text-sm text-slate-500"> / malam</span>
+                                        </div>
+                                        <Link
+                                            href={`/villas/${villa.slug}${checkInParam && checkOutParam ? `?checkIn=${checkInParam}&checkOut=${checkOutParam}` : ''}`}
+                                            className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95"
+                                        >
+                                            <span>Lihat Detail</span>
+                                            <ArrowRight className="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })() : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-8 text-center">
+                            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg className="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                            <p className="text-sm font-medium">Pilih villa dari daftar</p>
+                            <p className="text-xs mt-1">Klik salah satu villa untuk melihat detailnya</p>
                         </div>
-
-                        {/* Scrollable Cards */}
-                        <div className="px-4 pb-24 pt-2 space-y-6">
-                        {loading ? (
-                            <LoadingSpinner fullPage={false} message="Memuat villa..." />
-                        ) : filteredVillas.length === 0 ? (
-                            <EmptyState
-                                title="Unit Villa Tidak Ditemukan"
-                                description="Coba sesuaikan lokasi pencarian Anda."
-                                action={{ label: 'Reset Pencarian', onClick: handleResetFilters }}
-                            />
-                        ) : (
-                            filteredVillas.map((villa) => (
-                                <MobilePropertyCard
-                                    key={villa.id}
-                                    villa={villa}
-                                    searchParams={{ checkIn: checkInParam, checkOut: checkOutParam }}
-                                />
-                            ))
-                        )}
-
-                        {/* Pagination */}
-                        {totalPages > 1 && !loading && (
-                            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-                        )}
-                    </div>
+                    )}
                 </div>
-            </div>
+
             </div>
 
             {/* Mobile Bottom Navigation */}
@@ -513,7 +522,6 @@ function VillasCatalogContent() {
                 initialCheckOut={checkOutParam}
                 initialGuests={Number(guests) || 0}
             />
-
 
         </div>
     );
