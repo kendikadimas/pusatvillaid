@@ -38,7 +38,8 @@ function BookingPaymentContent() {
     const emailFromUrl = searchParams.get('email') || '';
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
-    const email = emailFromUrl || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
+    const [manualEmail, setManualEmail] = useState('');
+    const email = emailFromUrl || manualEmail || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
     // Fallback: cek localStorage anchor untuk email (disimpan saat confirm) — penting saat tab di-kill & sessionStorage hilang
     const anchorEmail = (() => {
         if (typeof window === 'undefined' || email) return null;
@@ -51,8 +52,10 @@ function BookingPaymentContent() {
         } catch {}
         return null;
     })();
-    const { booking, status, isFromCache, refetch } = useResilientBooking(code, email || anchorEmail || undefined);
+    const resolvedEmail = email || anchorEmail || undefined;
+    const { booking, status, isFromCache, refetch } = useResilientBooking(code, resolvedEmail);
     const loading = status === 'loading' || status === 'idle';
+    const needsEmail = !resolvedEmail && !user;
     // const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam); // ARCHIVED: Midtrans
     // const [scriptLoaded, setScriptLoaded] = useState(false); // ARCHIVED: Midtrans
 
@@ -116,14 +119,14 @@ function BookingPaymentContent() {
     // );
     const isOnlineEnabled = false;
 
-    // Email guard: jika tidak ada email sama sekali, redirect ke status page
-    useEffect(() => {
-        if (!code || authLoading) return;
-        if (!email && !anchorEmail && !user) {
-            toast.error('Otorisasi pembayaran diperlukan. Silakan verifikasi email Anda.');
-            router.push(`/booking/status?code=${code}`);
+    const handleEmailSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!manualEmail.trim()) {
+            toast.error('Silakan masukkan email Anda.');
+            return;
         }
-    }, [code, email, anchorEmail, user, authLoading]);
+        setManualEmail(manualEmail.trim());
+    };
 
     // Redirect logic dari hook — dipindah dari fetch manual ke sini
     useEffect(() => {
@@ -235,6 +238,49 @@ function BookingPaymentContent() {
     const simulateMockPayment = async () => { ... };
     const uniqid = () => Math.random().toString(36).substring(2, 9);
     */
+
+    // Email diperlukan — tampilkan form input email inline, jangan redirect
+    if (needsEmail && !booking) {
+        return (
+            <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
+                <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center">
+                    <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-lg text-center space-y-6">
+                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto border border-blue-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-blue-600">
+                                <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                                <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 className="font-serif text-2xl font-normal text-slate-900 tracking-tight">Verifikasi Email</h1>
+                            <p className="text-slate-500 text-xs mt-2 leading-relaxed">
+                                Masukkan email yang Anda gunakan saat melakukan pemesanan untuk kode <strong className="font-mono">{code}</strong>.
+                            </p>
+                        </div>
+                        <form onSubmit={handleEmailSubmit} className="space-y-4">
+                            <input
+                                type="email"
+                                required
+                                placeholder="email@contoh.com"
+                                value={manualEmail}
+                                onChange={(e) => setManualEmail(e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white font-semibold transition-all"
+                            />
+                            <button
+                                type="submit"
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer active:scale-[0.98]"
+                            >
+                                Cari Pemesanan
+                            </button>
+                        </form>
+                        <p className="text-[10px] text-slate-400 leading-relaxed">
+                            Email ini digunakan untuk memverifikasi kepemilikan pemesanan. Data Anda aman dan tidak akan dibagikan.
+                        </p>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     // Loading state — render spinner
     if (loading && !booking) {
