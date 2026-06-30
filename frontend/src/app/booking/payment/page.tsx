@@ -35,9 +35,10 @@ function BookingPaymentContent() {
     const { whatsappNumber } = useSettings();
     const { user, loading: authLoading } = useAuth();
     const code = searchParams.get('code') || '';
+    const emailFromUrl = searchParams.get('email') || '';
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
-    const email = typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email;
+    const email = emailFromUrl || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
     // Fallback: cek localStorage anchor untuk email (disimpan saat confirm) — penting saat tab di-kill & sessionStorage hilang
     const anchorEmail = (() => {
         if (typeof window === 'undefined' || email) return null;

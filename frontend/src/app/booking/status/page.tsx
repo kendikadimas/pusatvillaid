@@ -85,7 +85,7 @@ function BookingStatusContent() {
         } else if (status === 'error') {
             setVerifying(false);
             setVerifiedEmail(null);
-            toast.error('Gagal memuat status booking. Periksa kembali email Anda.');
+            toast.error(`Booking dengan kode ${code} tidak ditemukan untuk email "${verifiedEmail}". Periksa kembali email Anda atau gunakan email lain saat pemesanan.`);
         }
     }, [status, verifying, verifiedEmail]);
 

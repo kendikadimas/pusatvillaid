@@ -371,7 +371,7 @@ export default function BookingConfirmPage() {
             navigatingAway.current = true;
             bookingCompleted.current = true;
 
-            router.push(`/booking/payment?code=${response.data.booking_code}`);
+            router.push(`/booking/payment?code=${response.data.booking_code}&email=${encodeURIComponent(email)}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
