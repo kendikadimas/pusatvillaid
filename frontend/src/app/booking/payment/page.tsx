@@ -39,7 +39,7 @@ function BookingPaymentContent() {
     // const snapTokenParam = searchParams.get('token'); // ARCHIVED: Midtrans belum diaktifkan
 
     const [manualEmail, setManualEmail] = useState('');
-    const email = emailFromUrl || manualEmail || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
+    const email = manualEmail || emailFromUrl || (typeof window !== 'undefined' ? sessionStorage.getItem(`checkout_email_${code}`) || user?.email : user?.email);
     // Fallback: cek localStorage anchor untuk email (disimpan saat confirm) — penting saat tab di-kill & sessionStorage hilang
     const anchorEmail = (() => {
         if (typeof window === 'undefined' || email) return null;
@@ -55,7 +55,7 @@ function BookingPaymentContent() {
     const resolvedEmail = email || anchorEmail || undefined;
     const { booking, status, isFromCache, refetch } = useResilientBooking(code, resolvedEmail);
     const loading = status === 'loading' || status === 'idle';
-    const needsEmail = !resolvedEmail && !user;
+    const needsEmail = !resolvedEmail;
     // const [snapToken, setSnapToken] = useState<string | null>(snapTokenParam); // ARCHIVED: Midtrans
     // const [scriptLoaded, setScriptLoaded] = useState(false); // ARCHIVED: Midtrans
 
@@ -287,18 +287,24 @@ function BookingPaymentContent() {
         return <LoadingSpinner message="Menyiapkan halaman pembayaran..." />;
     }
 
-    // Error state — tampilkan retry, jangan redirect paksa
+    // Error state — tampilkan retry + opsi ganti email
     if (!booking && status === 'error') {
         return (
             <div className="text-center py-64 min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col justify-center items-center px-4 animate-in fade-in duration-300">
                 <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-sm w-full shadow-lg space-y-4">
                     <p className="text-slate-655 text-sm font-medium">Gagal memuat data booking.</p>
-                    <p className="text-xs text-slate-400 font-medium">Periksa koneksi internet Anda, lalu coba lagi.</p>
+                    <p className="text-xs text-slate-400 font-medium">Periksa kembali email Anda atau coba lagi.</p>
                     <button
                         onClick={refetch}
                         className="w-full inline-flex items-center justify-center bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
                     >
                         Coba Lagi
+                    </button>
+                    <button
+                        onClick={() => setManualEmail('')}
+                        className="w-full inline-flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-bold py-3 rounded-xl shadow-sm transition-all text-xs cursor-pointer"
+                    >
+                        Gunakan email berbeda
                     </button>
                     <Link href="/villas" className="block text-xs text-slate-500 hover:text-slate-700 underline text-center">
                         Kembali ke Katalog Villa
