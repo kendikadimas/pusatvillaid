@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import axiosClient from '@/lib/axios';
 import { Villa } from '@/types';
 import { 
@@ -20,20 +20,17 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 
 import PublicHeader from '@/components/PublicHeader';
-import CategoryFilter, { categories } from '@/components/CategoryFilter';
+import { categories } from '@/components/CategoryFilter';
 import VillaCard from '@/components/VillaCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 
-// New mobile components
 import BottomNav from '@/components/BottomNav';
 import SearchOverlay from '@/components/SearchOverlay';
 import MobileSearchPill from '@/components/MobileSearchPill';
-import MobilePropertyCard from '@/components/MobilePropertyCard';
 
 function VillasCatalogContent() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const checkInParam = searchParams.get('checkIn') || '';
     const checkOutParam = searchParams.get('checkOut') || '';
@@ -45,7 +42,6 @@ function VillasCatalogContent() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     
     // Interactive syncing states
-    const [hoveredVillaId, setHoveredVillaId] = useState<number | null>(null);
     const [selectedVillaId, setSelectedVillaId] = useState<number | null>(null);
     const [showFilters, setShowFilters] = useState(false);
     
@@ -133,7 +129,7 @@ function VillasCatalogContent() {
     const handleApplyFilters = (e: React.FormEvent) => {
         e.preventDefault();
         setCurrentPage(1);
-        fetchVillas();
+        setSelectedVillaId(null);
     };
 
     const handleResetFilters = () => {
@@ -147,7 +143,6 @@ function VillasCatalogContent() {
         setSortOrder('desc');
         setCurrentPage(1);
         setSelectedVillaId(null);
-        setTimeout(() => fetchVillas(), 0);
     };
 
     const handleSortChange = (value: string) => {
@@ -164,6 +159,7 @@ function VillasCatalogContent() {
             setSortBy('created_at');
             setSortOrder('desc');
         }
+        setSelectedVillaId(null);
     };
 
     const filteredVillas = villas.filter(v => {
@@ -375,8 +371,6 @@ function VillasCatalogContent() {
                                             toggleWishlist={toggleWishlist}
                                             searchParams={{ checkIn: checkInParam, checkOut: checkOutParam }}
                                             variant="catalog"
-                                            onMouseEnter={() => setHoveredVillaId(villa.id)}
-                                            onMouseLeave={() => setHoveredVillaId(null)}
                                             onClick={() => setSelectedVillaId(villa.id)}
                                             isSelected={selectedVillaId === villa.id}
                                         />
