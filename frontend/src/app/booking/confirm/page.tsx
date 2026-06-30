@@ -115,7 +115,6 @@ export default function BookingConfirmPage() {
 
     // Mobile Wizard States
     const [currentStep, setCurrentStep] = useState(1);
-    const [isEditContactOpen, setIsEditContactOpen] = useState(false);
     const [isPriceDetailOpen, setIsPriceDetailOpen] = useState(false);
 
     // Layer 4: Hold timer (30 minutes countdown)
@@ -418,7 +417,6 @@ export default function BookingConfirmPage() {
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             toast.error('Silakan lengkapi detail kontak dan foto KTP Anda terlebih dahulu.');
-            setIsEditContactOpen(true);
             return;
         }
         
@@ -435,32 +433,6 @@ export default function BookingConfirmPage() {
         }
         setCurrentStep(3);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Save Contact inside Modal
-    const handleSaveContact = () => {
-        const errors: any = {};
-        if (!name.trim()) errors.name = 'Nama lengkap wajib diisi.';
-        if (!email.trim()) {
-            errors.email = 'Email wajib diisi.';
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            errors.email = 'Format email tidak valid.';
-        }
-        if (!phone.trim()) {
-            errors.phone = 'Nomor WhatsApp wajib diisi.';
-        } else if (phone.length < 9 || phone.length > 15) {
-            errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
-        }
-        
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            toast.error('Silakan periksa kembali isian kontak Anda.');
-            return;
-        }
-        
-        setFormErrors({});
-        setIsEditContactOpen(false);
-        toast.success('Detail kontak berhasil diperbarui.');
     };
 
     return (
@@ -978,30 +950,43 @@ export default function BookingConfirmPage() {
                                 </div>
 
                                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                                        <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider">
-                                            Detail Kontak
-                                        </h3>
-                                        <button 
-                                            onClick={() => setIsEditContactOpen(true)}
-                                            className="text-xs font-bold text-blue-500 hover:underline"
-                                        >
-                                            Ubah
-                                        </button>
-                                    </div>
-                                    <div className="space-y-2 text-xs font-bold text-slate-700">
+                                    <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider border-b border-slate-100 pb-2.5">
+                                        Detail Kontak
+                                    </h3>
+                                    <div className="space-y-4">
                                         <div>
-                                            <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">Nama Lengkap</span>
-                                            <span className="text-slate-800">{name || '-'}</span>
+                                            <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest mb-1">Nama Lengkap</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Nama lengkap..."
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.name ? 'border-red-400' : 'border-slate-200'}`}
+                                            />
+                                            {formErrors.name && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.name}</p>}
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-2.5">
+                                        <div className="grid grid-cols-2 gap-3">
                                             <div>
-                                                <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">Email</span>
-                                                <span className="text-slate-800 truncate block">{email || '-'}</span>
+                                                <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest mb-1">Email</label>
+                                                <input
+                                                    type="email"
+                                                    placeholder="email@contoh.com"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.email ? 'border-red-400' : 'border-slate-200'}`}
+                                                />
+                                                {formErrors.email && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.email}</p>}
                                             </div>
                                             <div>
-                                                <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">WhatsApp</span>
-                                                <span className="text-slate-800 block">{phone || '-'}</span>
+                                                <label className="text-[9px] font-black text-slate-400 block uppercase tracking-widest mb-1">WhatsApp</label>
+                                                <input
+                                                    type="tel"
+                                                    placeholder="08xxxxx"
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.phone ? 'border-red-400' : 'border-slate-200'}`}
+                                                />
+                                                {formErrors.phone && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.phone}</p>}
                                             </div>
                                         </div>
                                     </div>
@@ -1258,7 +1243,6 @@ export default function BookingConfirmPage() {
                                     <button 
                                         onClick={() => {
                                             setCurrentStep(1);
-                                            setIsEditContactOpen(true);
                                         }}
                                         className="text-xs font-bold text-blue-500 hover:underline flex-shrink-0"
                                     >
@@ -1410,85 +1394,6 @@ export default function BookingConfirmPage() {
                     )}
                 </div>
             </main>
-
-            {/* Edit Contact Modal Overlay */}
-            {isEditContactOpen && (
-                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="absolute inset-0" onClick={() => setIsEditContactOpen(false)} />
-                    
-                    <div className="relative bg-white rounded-t-3xl sm:rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-6 z-10 animate-slideUp sm:animate-fadeIn">
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                            <h3 className="font-serif text-lg font-bold text-slate-900">Ubah Informasi Kontak</h3>
-                            <button 
-                                onClick={() => setIsEditContactOpen(false)}
-                                className="p-1.5 hover:bg-slate-100 rounded-full transition-colors"
-                            >
-                                <X className="w-5 h-5 text-slate-500" />
-                            </button>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <div className="relative border-b border-slate-205 focus-within:border-blue-500 transition-colors py-1">
-                                <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest text-left">Nama Lengkap</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Nama lengkap sesuai KTP..."
-                                    value={name}
-                                    onChange={(e) => {
-                                        setName(e.target.value);
-                                        if (formErrors.name) setFormErrors({ ...formErrors, name: null });
-                                    }}
-                                    className="w-full bg-transparent border-none px-0 py-1.5 text-sm focus:ring-0 focus:outline-none font-bold text-slate-800 text-left"
-                                />
-                                {formErrors.name && (
-                                    <p className="text-red-500 text-[10px] mt-1 font-bold text-left">{formErrors.name}</p>
-                                )}
-                            </div>
-
-                            <div className="relative border-b border-slate-205 focus-within:border-blue-500 transition-colors py-1">
-                                <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest text-left">Alamat Email</label>
-                                <input 
-                                    type="email" 
-                                    placeholder="Email Anda..."
-                                    value={email}
-                                    onChange={(e) => {
-                                        setEmail(e.target.value);
-                                        if (formErrors.email) setFormErrors({ ...formErrors, email: null });
-                                    }}
-                                    className="w-full bg-transparent border-none px-0 py-1.5 text-sm focus:ring-0 focus:outline-none font-bold text-slate-800 text-left"
-                                />
-                                {formErrors.email && (
-                                    <p className="text-red-500 text-[10px] mt-1 font-bold text-left">{formErrors.email}</p>
-                                )}
-                            </div>
-
-                            <div className="relative border-b border-slate-205 focus-within:border-blue-500 transition-colors py-1">
-                                <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest text-left">Nomor WhatsApp</label>
-                                <input 
-                                    type="tel" 
-                                    placeholder="Nomor WhatsApp..."
-                                    value={phone}
-                                    onChange={(e) => {
-                                        setPhone(e.target.value);
-                                        if (formErrors.phone) setFormErrors({ ...formErrors, phone: null });
-                                    }}
-                                    className="w-full bg-transparent border-none px-0 py-1.5 text-sm focus:ring-0 focus:outline-none font-bold text-slate-800 text-left"
-                                />
-                                {formErrors.phone && (
-                                    <p className="text-red-500 text-[10px] mt-1 font-bold text-left">{formErrors.phone}</p>
-                                )}
-                            </div>
-                        </div>
-                        
-                        <button
-                            onClick={handleSaveContact}
-                            className="w-full py-3.5 bg-blue-600 hover:bg-blue-750 text-white font-bold rounded-xl transition-all active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider"
-                        >
-                            Simpan Perubahan
-                        </button>
-                    </div>
-                </div>
-            )}
 
             {/* Price Detail Bottom Sheet */}
             {isPriceDetailOpen && (
