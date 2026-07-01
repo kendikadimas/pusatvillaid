@@ -3,6 +3,18 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
+vi.mock('@/context/SettingsContext', () => ({
+    useSettings: () => ({
+        whatsappNumber: '6281234567890',
+        loading: false,
+        settings: {
+            settings_prop_name: 'pusatvilla.id',
+            settings_email: 'support@pusatvilla.id',
+            settings_address: 'Yogyakarta, Indonesia',
+        },
+    }),
+}));
+
 import PublicFooter from '@/components/PublicFooter';
 import CTASection from '@/components/sections/CTASection';
 

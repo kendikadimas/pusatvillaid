@@ -30,6 +30,32 @@ it('can list active villas', function () {
         ->assertJsonCount(5, 'data');
 });
 
+it('can list active villas in slim mode', function () {
+    $villa = Villa::factory()->create([
+        'is_active' => true,
+        'description' => 'A very long description that should be excluded in slim mode.',
+        'amenities' => ['wifi', 'pool', 'kitchen'],
+    ]);
+
+    $response = $this->getJson('/api/v1/villas?fields=slim');
+
+    $response->assertOk();
+    $data = $response->json('data');
+    expect($data)->toHaveCount(1);
+    
+    // Assert included fields
+    expect($data[0])->toHaveKey('id')
+        ->toHaveKey('name')
+        ->toHaveKey('slug')
+        ->toHaveKey('location')
+        ->toHaveKey('photos');
+
+    // Assert excluded fields
+    expect($data[0])->not->toHaveKey('description')
+        ->not->toHaveKey('amenities')
+        ->not->toHaveKey('rules');
+});
+
 it('can filter villas by location', function () {
     Villa::factory()->create(['location' => 'Bogor, Puncak', 'is_active' => true]);
     Villa::factory()->create(['location' => 'Yogyakarta, Sleman', 'is_active' => true]);

@@ -444,10 +444,18 @@ export default function VillaDetailPageClient({ params }: PageProps) {
             const elementPosition = elementRect - bodyRect;
             const offsetPosition = elementPosition - offset;
 
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
+            try {
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            } catch (e) {
+                try {
+                    window.scrollTo(0, offsetPosition);
+                } catch (err) {
+                    console.error('scrollTo position fallback failed:', err);
+                }
+            }
         }
     };
 

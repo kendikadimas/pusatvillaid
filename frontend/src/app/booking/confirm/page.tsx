@@ -90,6 +90,19 @@ export default function BookingConfirmPage() {
     const [copiedMethodId, setCopiedMethodId] = useState<number | null>(null);
     const proofInputRef = useRef<HTMLInputElement>(null);
 
+    // Safe scroll to top helper to prevent crashes in mobile webviews / older browsers
+    const safeScrollToTop = () => {
+        try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (e) {
+            try {
+                window.scrollTo(0, 0);
+            } catch (err) {
+                console.error('scrollTo top fallback failed:', err);
+            }
+        }
+    };
+
     const handleKtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -490,10 +503,10 @@ export default function BookingConfirmPage() {
             router.back();
         } else if (currentStep === 2) {
             setCurrentStep(1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            safeScrollToTop();
         } else if (currentStep === 3) {
             setCurrentStep(2);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            safeScrollToTop();
         }
     };
 
@@ -521,7 +534,7 @@ export default function BookingConfirmPage() {
         
         setFormErrors({});
         setCurrentStep(2);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        safeScrollToTop();
     };
 
     // Step 2 validation and navigation
@@ -531,7 +544,7 @@ export default function BookingConfirmPage() {
             return;
         }
         setCurrentStep(3);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        safeScrollToTop();
     };
 
     return (
@@ -1623,7 +1636,7 @@ export default function BookingConfirmPage() {
                             <button
                                 onClick={() => {
                                     setCurrentStep(1);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    safeScrollToTop();
                                 }}
                                 className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors py-3 px-1"
                             >
@@ -1645,7 +1658,7 @@ export default function BookingConfirmPage() {
                             <button
                                 onClick={() => {
                                     setCurrentStep(2);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    safeScrollToTop();
                                 }}
                                 className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors py-3 px-1"
                             >

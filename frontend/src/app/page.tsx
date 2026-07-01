@@ -352,7 +352,7 @@ export default function HomePage() {
         const fetchHomepageData = async () => {
             try {
                 const [villaRes, destRes] = await Promise.all([
-                    axiosClient.get('/villas?per_page=200'),
+                    axiosClient.get('/villas', { params: { per_page: 200, fields: 'slim' } }),
                     axiosClient.get('/destinations'),
                 ]);
                 if (villaRes.data?.data) setVillas(villaRes.data.data);
@@ -372,7 +372,7 @@ export default function HomePage() {
         const handleVisibility = () => {
             if (document.visibilityState === 'visible' && Date.now() - lastFetchRef.current > 300000) {
                 lastFetchRef.current = Date.now();
-                axiosClient.get('/villas?per_page=200')
+                axiosClient.get('/villas', { params: { per_page: 200, fields: 'slim' } })
                     .then(res => setVillas(res.data.data || []))
                     .catch(() => {});
             }

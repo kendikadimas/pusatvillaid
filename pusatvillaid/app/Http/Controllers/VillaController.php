@@ -17,11 +17,28 @@ class VillaController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        // "slim" mode: only load the lightweight columns needed for villa cards.
+        // Avoids fetching massive JSON blobs (description, amenities, bedrooms_info, etc.)
+        // which can bust cache column limits and slow down the homepage significantly.
+        $isSlim = $request->input('fields') === 'slim';
+
+        $slimColumns = [
+            'id', 'name', 'slug', 'location', 'photos',
+            'price_per_night', 'weekend_price', 'min_nights',
+            'bedrooms', 'bathrooms', 'max_guests', 'beds',
+            'cleaning_fee', 'destination_id', 'is_active',
+            'created_at',
+        ];
+
         $cacheKey = 'villas_index_'.md5(json_encode($request->all()));
 
-        $data = Cache::remember($cacheKey, 300, function () use ($request) {
+        $builder = function () use ($request, $isSlim, $slimColumns) {
             $query = Villa::where('is_active', true)
-                ->with('destination');
+                ->with('destination:id,name,city,query');
+
+            if ($isSlim) {
+                $query->select($slimColumns);
+            }
 
             // Filter by location / destination
             if ($request->filled('location')) {
@@ -102,7 +119,16 @@ class VillaController extends Controller
                     'total' => $villas->total(),
                 ],
             ];
-        });
+        };
+
+        // Wrap cache in try-catch: if the cache store is unavailable (e.g. missing
+        // `cache` table in production), fall back gracefully to a direct DB query.
+        try {
+            $data = Cache::remember($cacheKey, 300, $builder);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('VillaController cache miss fallback: '.$e->getMessage());
+            $data = $builder();
+        }
 
         return response()->json($data);
     }
