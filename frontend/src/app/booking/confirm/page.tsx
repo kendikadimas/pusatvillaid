@@ -79,6 +79,15 @@ export default function BookingConfirmPage() {
     const ktpInputRef = useRef<HTMLInputElement>(null);
     const ktpMobileInputRef = useRef<HTMLInputElement>(null);
 
+    // Payment Proof Upload State
+    const [proofFile, setProofFile] = useState<File | null>(null);
+    const [proofPreview, setProofPreview] = useState<string | null>(null);
+    const [proofCompressing, setProofCompressing] = useState(false);
+    const [uploadTapAnim, setUploadTapAnim] = useState(false);
+    const [submittingProof, setSubmittingProof] = useState(false);
+    const [copiedMethodId, setCopiedMethodId] = useState<number | null>(null);
+    const proofInputRef = useRef<HTMLInputElement>(null);
+
     const handleKtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -111,6 +120,43 @@ export default function BookingConfirmPage() {
         setKtpPreview(null);
         if (ktpInputRef.current) ktpInputRef.current.value = '';
         if (ktpMobileInputRef.current) ktpMobileInputRef.current.value = '';
+    };
+
+    // Compress image before preview & upload
+    const compressImage = (file: File): Promise<{ file: File; preview: string }> => {
+        return new Promise((resolve, reject) => {
+            const MAX_SIZE = 1200;
+            const QUALITY = 0.82;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let { width, height } = img;
+                    if (width > MAX_SIZE || height > MAX_SIZE) {
+                        if (width > height) { height = Math.round((height * MAX_SIZE) / width); width = MAX_SIZE; }
+                        else { width = Math.round((width * MAX_SIZE) / height); height = MAX_SIZE; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                    canvas.toBlob(
+                        (blob) => {
+                            if (!blob) { reject(new Error('Compression failed')); return; }
+                            const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+                            const preview = URL.createObjectURL(compressed);
+                            resolve({ file: compressed, preview });
+                        },
+                        'image/jpeg',
+                        QUALITY
+                    );
+                };
+                img.onerror = reject;
+                img.src = ev.target?.result as string;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     };
 
     // Mobile Wizard States
@@ -367,10 +413,33 @@ export default function BookingConfirmPage() {
 
             toast.success(response.data.message || 'Booking berhasil dibuat.');
 
+            // If payment proof is uploaded, submit it immediately
+            const bookingCode = response.data.booking_code;
+            if (proofFile) {
+                try {
+                    setSubmittingProof(true);
+                    const proofFormData = new FormData();
+                    proofFormData.append('payment_method_id', String(selectedMethodId));
+                    proofFormData.append('payment_proof', proofFile);
+                    await axiosClient.post(
+                        `/bookings/${bookingCode}/confirm-manual-payment`,
+                        proofFormData,
+                        { headers: { 'Content-Type': 'multipart/form-data' } }
+                    );
+                } catch (proofErr: any) {
+                    console.warn('Gagal mengirim bukti pembayaran:', proofErr);
+                    toast.warning('Booking berhasil, tapi gagal mengirim bukti pembayaran. Silakan upload ulang.');
+                    navigatingAway.current = true;
+                    bookingCompleted.current = true;
+                    router.push(`/booking/status?code=${bookingCode}`);
+                    return;
+                }
+            }
+
             navigatingAway.current = true;
             bookingCompleted.current = true;
 
-            router.push(`/booking/payment?code=${response.data.booking_code}&email=${encodeURIComponent(email)}`);
+            router.push(`/booking/status?code=${bookingCode}`);
 
         } catch (err: any) {
             console.error('Submit booking failed:', err);
@@ -476,7 +545,7 @@ export default function BookingConfirmPage() {
                     <div className="flex items-center flex-wrap gap-y-1.5 space-x-2.5 text-[8px] sm:text-[9px] text-slate-400 font-black uppercase tracking-widest mb-10">
                         <span>1. Pilih Tanggal</span>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                        <span className="text-blue-500">2. Konfirmasi & Bayar</span>
+                        <span className="text-blue-500">2. Upload Bukti Pembayaran</span>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                         <span>3. Selesai</span>
                     </div>
@@ -1229,6 +1298,96 @@ export default function BookingConfirmPage() {
                                     );
                                 })()}
 
+                                {/* Payment Method Details (Bank/QRIS Info) */}
+                                {(() => {
+                                    const method = paymentMethods.find(m => m.id === selectedMethodId);
+                                    if (!method) return null;
+                                    const isQris = method.code === 'qris';
+                                    return (
+                                        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                                            <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider border-b border-slate-100 pb-2.5">
+                                                Informasi Pembayaran
+                                            </h3>
+                                            {isQris ? (
+                                                <div className="space-y-4">
+                                                    <div className="text-center space-y-3">
+                                                        <div className="w-fit mx-auto bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                                                            {method.logo_url ? (
+                                                                <img
+                                                                    src={method.logo_url}
+                                                                    alt="QRIS QR Code"
+                                                                    className="w-60 h-60 object-contain mx-auto"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-60 h-60 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                                                                    <Smartphone className="w-16 h-16 mb-3 stroke-[1.5]" />
+                                                                    <span className="text-xs font-bold tracking-wider">QRIS Code</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-left">
+                                                            <p className="text-xs text-blue-900 font-bold mb-1">Cara Pembayaran:</p>
+                                                            <ol className="text-[11px] text-blue-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
+                                                                <li>Buka aplikasi e-wallet atau mobile banking</li>
+                                                                <li>Pilih menu Scan QR / QRIS</li>
+                                                                <li>Arahkan kamera ke QR code di atas</li>
+                                                                <li>Konfirmasi pembayaran sesuai nominal</li>
+                                                            </ol>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Merchant:</span>
+                                                        <span className="font-bold text-slate-800">{method.account_name}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Total Pembayaran:</span>
+                                                        <span className="font-extrabold text-blue-900 text-sm">
+                                                            {formatPriceOrLoading(finalTotalAmount, methodsLoading)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Bank Tujuan:</span>
+                                                        <span className="font-bold text-slate-800">{method.name}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Nomor Rekening:</span>
+                                                        <div className="flex items-center space-x-1.5">
+                                                            <span className="font-mono font-bold text-slate-900 text-sm tracking-wider bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                                                {method.account_number}
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(method.account_number);
+                                                                    setCopiedMethodId(method.id);
+                                                                    toast.success('Nomor rekening berhasil disalin!');
+                                                                    setTimeout(() => setCopiedMethodId(null), 2000);
+                                                                }}
+                                                                className="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg border border-blue-200 transition-all cursor-pointer active:scale-95"
+                                                            >
+                                                                {copiedMethodId === method.id ? 'Tersalin' : 'Salin'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Atas Nama:</span>
+                                                        <span className="font-bold text-slate-800">{method.account_name}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-500 font-semibold">Jumlah Transfer:</span>
+                                                        <span className="font-extrabold text-blue-900 text-sm">
+                                                            {formatPriceOrLoading(finalTotalAmount, methodsLoading)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+
                                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                                     <div className="flex items-center space-x-3 min-w-0">
                                         <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
@@ -1290,6 +1449,97 @@ export default function BookingConfirmPage() {
                                             <span>Total Biaya</span>
                                             <span className="text-blue-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* Upload Bukti Pembayaran */}
+                                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                                    <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider border-b border-slate-100 pb-2.5">
+                                        Upload Bukti Pembayaran
+                                    </h3>
+                                    <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                                        Upload bukti transfer/pembayaran Anda untuk mempercepat proses verifikasi oleh admin.
+                                    </p>
+                                    <input
+                                        ref={proofInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            e.target.value = '';
+                                            if (!file) return;
+                                            if (file.size > 10 * 1024 * 1024) {
+                                                toast.error('Ukuran file maksimal adalah 10MB.');
+                                                return;
+                                            }
+                                            setProofCompressing(true);
+                                            try {
+                                                const { file: compressed, preview } = await compressImage(file);
+                                                setProofFile(compressed);
+                                                setProofPreview(preview);
+                                            } catch {
+                                                setProofFile(file);
+                                                setProofPreview(URL.createObjectURL(file));
+                                            } finally {
+                                                setProofCompressing(false);
+                                            }
+                                        }}
+                                    />
+                                    <div
+                                        className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer relative group transition-all duration-200 ${
+                                            uploadTapAnim
+                                                ? 'border-blue-500 bg-blue-50/40 scale-[0.97]'
+                                                : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30 bg-slate-50/20'
+                                        }`}
+                                        onClick={() => {
+                                            if (proofCompressing) return;
+                                            setUploadTapAnim(true);
+                                            setTimeout(() => setUploadTapAnim(false), 400);
+                                            proofInputRef.current?.click();
+                                        }}
+                                    >
+                                        {proofCompressing ? (
+                                            <div className="py-4 flex flex-col items-center space-y-2.5">
+                                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                                                <span className="text-xs font-bold text-blue-600">Memproses gambar...</span>
+                                            </div>
+                                        ) : proofPreview ? (
+                                            <div className="space-y-3">
+                                                <div className="relative w-full h-44 mx-auto rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+                                                    <img
+                                                        src={proofPreview}
+                                                        alt="Preview bukti"
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                </div>
+                                                <div className="text-xs text-slate-600 font-medium flex items-center justify-center space-x-1.5">
+                                                    <div className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center shadow-sm">
+                                                        <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                                                    </div>
+                                                    <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
+                                                </div>
+                                                <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm active:scale-95">
+                                                    Ganti Bukti Transfer
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="py-2 space-y-2.5 flex flex-col items-center">
+                                                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm ${
+                                                    uploadTapAnim
+                                                        ? 'bg-blue-600 border-blue-600 text-white scale-110'
+                                                        : 'bg-white border-slate-200 text-slate-400 group-hover:text-blue-600 group-hover:border-blue-400 group-hover:shadow-md'
+                                                }`}>
+                                                    <Upload className={`w-5 h-5 stroke-[1.5] ${uploadTapAnim ? 'animate-bounce' : ''}`} />
+                                                </div>
+                                                <div>
+                                                    <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-blue-600' : 'text-slate-700 group-hover:text-blue-600'}`}>
+                                                        {uploadTapAnim ? 'Buka galeri...' : 'Pilih file gambar'}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400 block mt-1">JPG, PNG, WEBP (Maks 10MB, dikompres otomatis)</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -1385,7 +1635,7 @@ export default function BookingConfirmPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <span>Konfirmasi & Bayar</span>
+                                        <span>Upload Bukti Pembayaran</span>
                                         <Check className="w-4 h-4" />
                                     </>
                                 )}
