@@ -33,11 +33,13 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { useSettings } from '@/context/SettingsContext';
 import { PaymentMethod } from '@/types';
 
 export default function BookingConfirmPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
+    const { whatsappNumber } = useSettings();
     const { 
         selectedVilla, 
         checkIn, 
@@ -416,22 +418,50 @@ export default function BookingConfirmPage() {
             // If payment proof is uploaded, submit it immediately
             const bookingCode = response.data.booking_code;
             if (proofFile) {
-                try {
-                    setSubmittingProof(true);
-                    const proofFormData = new FormData();
-                    proofFormData.append('payment_method_id', String(selectedMethodId));
-                    proofFormData.append('payment_proof', proofFile);
-                    await axiosClient.post(
-                        `/bookings/${bookingCode}/confirm-manual-payment`,
-                        proofFormData,
-                        { headers: { 'Content-Type': 'multipart/form-data' } }
-                    );
-                } catch (proofErr: any) {
-                    console.warn('Gagal mengirim bukti pembayaran:', proofErr);
-                    toast.warning('Booking berhasil, tapi gagal mengirim bukti pembayaran. Silakan upload ulang.');
+                const MAX_RETRIES = 3;
+                const RETRY_DELAY = 1500;
+                let uploadSuccess = false;
+
+                const proofFormData = new FormData();
+                proofFormData.append('payment_method_id', String(selectedMethodId));
+                proofFormData.append('payment_proof', proofFile);
+
+                setSubmittingProof(true);
+
+                for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                    try {
+                        await axiosClient.post(
+                            `/bookings/${bookingCode}/confirm-manual-payment`,
+                            proofFormData,
+                            { headers: { 'Content-Type': 'multipart/form-data' } }
+                        );
+                        uploadSuccess = true;
+                        break;
+                    } catch (proofErr: any) {
+                        console.warn(`Gagal mengirim bukti pembayaran (Attempt ${attempt}/${MAX_RETRIES}):`, proofErr);
+                        
+                        const status = proofErr.response?.status;
+                        const isValidationError = status >= 400 && status < 500 && status !== 408 && status !== 429;
+                        
+                        if (isValidationError || attempt === MAX_RETRIES) {
+                            break;
+                        }
+
+                        toast.loading(`Koneksi terputus. Mencoba mengirim kembali bukti transfer (${attempt}/${MAX_RETRIES})...`, {
+                            id: 'upload-confirm-retry-toast',
+                            duration: 1500
+                        });
+                        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+                    }
+                }
+
+                setSubmittingProof(false);
+
+                if (!uploadSuccess) {
+                    toast.warning('Booking berhasil dibuat, tapi gagal mengirim bukti pembayaran. Silakan upload ulang atau hubungi admin.');
                     navigatingAway.current = true;
                     bookingCompleted.current = true;
-                    router.push(`/booking/status?code=${bookingCode}`);
+                    router.push(`/booking/payment?code=${bookingCode}&upload_error=1`);
                     return;
                 }
             }

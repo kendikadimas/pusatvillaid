@@ -74,7 +74,15 @@ function BookingPaymentContent() {
     const [copiedMethodId, setCopiedMethodId] = useState<number | null>(null);
     const [uploadTapAnim, setUploadTapAnim] = useState(false);
     const [compressing, setCompressing] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    // Initialize upload error if redirected from checkout with error flag
+    useEffect(() => {
+        if (searchParams.get('upload_error')) {
+            setUploadError('Gagal mengunggah bukti pembayaran saat menyelesaikan pesanan. Silakan unggah kembali bukti transfer Anda di bawah ini atau kirim langsung ke Admin via WhatsApp.');
+        }
+    }, [searchParams]);
 
     // Compress image client-side before preview & upload (max 1200px, quality 0.82)
     const compressImage = (file: File): Promise<{ file: File; preview: string }> => {
@@ -185,8 +193,8 @@ function BookingPaymentContent() {
         fetchPaymentMethods();
     }, []);
 
-    const handleManualPaymentSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleManualPaymentSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         if (!selectedMethodId) {
             toast.error('Silakan pilih bank transfer.');
             return;
@@ -198,42 +206,62 @@ function BookingPaymentContent() {
 
         setSubmittingProof(true);
         setUploadProgress(0);
-        try {
-            const formData = new FormData();
-            formData.append('payment_method_id', String(selectedMethodId));
-            formData.append('payment_proof', proofFile);
+        setUploadError(null);
 
-            const response = await axiosClient.post(
-                `/bookings/${code}/confirm-manual-payment`, 
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    onUploadProgress: (progressEvent) => {
-                        if (progressEvent.total) {
-                            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                            setUploadProgress(percent);
+        const formData = new FormData();
+        formData.append('payment_method_id', String(selectedMethodId));
+        formData.append('payment_proof', proofFile);
+
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 1500;
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                const response = await axiosClient.post(
+                    `/bookings/${code}/confirm-manual-payment`, 
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        onUploadProgress: (progressEvent) => {
+                            if (progressEvent.total) {
+                                const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                setUploadProgress(percent);
+                            }
                         }
                     }
-                }
-            );
+                );
 
-            toast.success('Bukti Pembayaran Terkirim! Pembayaran Anda sedang direview oleh admin. Silakan cek status booking secara berkala.', {
-                duration: 5000,
-            });
-            
-            // Navigate to status page — avoids static-cache stale reload issue
-            setTimeout(() => {
-                router.push(`/booking/status?code=${code}`);
-            }, 2000);
-        } catch (err: any) {
-            console.error('Failed to submit manual payment:', err);
-            const errMsg = err.response?.data?.message || 'Gagal mengirim bukti pembayaran.';
-            toast.error(errMsg);
-        } finally {
-            setSubmittingProof(false);
+                toast.success('Bukti Pembayaran Terkirim! Pembayaran Anda sedang direview oleh admin. Silakan cek status booking secara berkala.', {
+                    duration: 5000,
+                });
+                
+                // Navigate to status page — avoids static-cache stale reload issue
+                setTimeout(() => {
+                    router.push(`/booking/status?code=${code}`);
+                }, 2000);
+                return;
+            } catch (err: any) {
+                console.error(`Failed to submit manual payment (Attempt ${attempt}/${MAX_RETRIES}):`, err);
+                const status = err.response?.status;
+                const isValidationError = status >= 400 && status < 500 && status !== 408 && status !== 429;
+                
+                if (isValidationError || attempt === MAX_RETRIES) {
+                    const errMsg = err.response?.data?.message || 'Gagal mengirim bukti pembayaran.';
+                    setUploadError(errMsg);
+                    toast.error(errMsg);
+                    break;
+                }
+                
+                toast.loading(`Koneksi terputus. Mencoba mengunggah kembali (${attempt}/${MAX_RETRIES})...`, {
+                    id: 'upload-retry-toast',
+                    duration: 1500
+                });
+                await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+            }
         }
+        setSubmittingProof(false);
     };
 
     /* ARCHIVED: Midtrans triggerPayment & simulateMockPayment (belum diaktifkan)
@@ -614,6 +642,7 @@ function BookingPaymentContent() {
                                              toast.error('Ukuran file maksimal adalah 10MB.');
                                              return;
                                          }
+                                         setUploadError(null);
                                          setCompressing(true);
                                          try {
                                              const { file: compressed, preview } = await compressImage(file);
@@ -731,6 +760,36 @@ function BookingPaymentContent() {
                                 <div className="flex justify-between items-center text-[11px] text-slate-500 font-semibold">
                                     <span>Mengupload bukti transfer...</span>
                                     <span className="text-blue-700 font-bold">{uploadProgress}%</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {uploadError && !submittingProof && (
+                            <div className="bg-red-50/60 border border-red-200/80 rounded-2xl p-5 text-left space-y-4 animate-in fade-in duration-200 shadow-sm mt-4">
+                                <div className="flex items-start space-x-3 text-xs">
+                                    <AlertCircle className="w-5 h-5 text-red-650 flex-shrink-0 mt-0.5" />
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-red-900">Gagal Mengunggah Bukti</p>
+                                        <p className="text-slate-650 leading-relaxed text-[11px] font-medium">{uploadError}</p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleManualPaymentSubmit()}
+                                        className="flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
+                                    >
+                                        Coba Lagi
+                                    </button>
+                                    <a
+                                        href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%20Admin%20Pusat%20Villa%20ID%2C%20saya%20ingin%20mengirimkan%20bukti%20pembayaran%20untuk%20kode%20booking%20*${code}*.`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs text-center transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                                    >
+                                        <WhatsAppIcon className="w-4 h-4 text-white" />
+                                        <span>Kirim via WhatsApp</span>
+                                    </a>
                                 </div>
                             </div>
                         )}

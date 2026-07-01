@@ -278,7 +278,7 @@ class BookingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'payment_method_id' => 'required|exists:payment_methods,id',
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
         ]);
 
         if ($validator->fails()) {
