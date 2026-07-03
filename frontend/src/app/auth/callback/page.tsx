@@ -33,7 +33,13 @@ function CallbackContent() {
                         throw new Error('No token received');
                     }
                 })
-                .then(() => router.replace('/profile'))
+                .then(() => {
+                    // Lanjutkan ke halaman yang dituju sebelum OAuth (misal /booking/confirm)
+                    // jika tidak ada, fallback ke /profile
+                    const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
+                    sessionStorage.removeItem('oauth_redirect');
+                    router.replace(redirectTo);
+                })
                 .catch((err) => {
                     console.error('Token exchange failed:', err);
                     setError('Gagal menyelesaikan autentikasi. Silakan coba lagi.');

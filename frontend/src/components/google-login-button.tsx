@@ -1,14 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function GoogleLoginButton() {
     const [loading, setLoading] = useState(false);
+    const searchParams = useSearchParams();
 
     const handleGoogleLogin = () => {
         setLoading(true);
+        // Simpan redirect destination ke sessionStorage supaya callback bisa lanjut
+        // ke halaman yang benar setelah OAuth selesai (misalnya /booking/confirm)
+        const redirect = searchParams.get('redirect');
+        if (redirect) {
+            sessionStorage.setItem('oauth_redirect', redirect);
+        } else {
+            sessionStorage.removeItem('oauth_redirect');
+        }
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
         window.location.href = `${backendUrl}/auth/google/redirect`;
     };

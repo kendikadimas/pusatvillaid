@@ -33,7 +33,7 @@ function LoginContent() {
         setStatus(null);
 
         try {
-            await login({ email, password, remember: remember ? 'on' : '' }, false, redirect || '');
+            await login({ email, password, remember: remember ? 'on' : '' }, false, redirect ?? undefined);
         } catch (err: any) {
             const message: string = err.response?.data?.message || '';
             const isAdminAccount = err.response?.status === 403 &&
@@ -41,7 +41,7 @@ function LoginContent() {
 
             if (isAdminAccount) {
                 try {
-                    await login({ email, password, remember: remember ? 'on' : '' }, true, redirect || '');
+                    await login({ email, password, remember: remember ? 'on' : '' }, true, redirect ?? undefined);
                     return;
                 } catch (adminErr: any) {
                     if (adminErr.response?.data?.errors) {
