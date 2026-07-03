@@ -279,6 +279,7 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     useEffect(() => {
         setStoreDates(null, null);
         setDateRange(undefined);
+        setStoreVilla(null);
     }, [slug]);
 
     useEffect(() => {
@@ -395,11 +396,17 @@ export default function VillaDetailPageClient({ params }: PageProps) {
     };
 
     const handleBookingSubmit = () => {
+        if (!villa) {
+            toast.error('Data villa belum termuat. Silakan tunggu sebentar.');
+            return;
+        }
         if (!storeCheckIn || !storeCheckOut) {
             scrollToSection('calendar');
             toast.error('Silakan tentukan tanggal check-in dan check-out Anda.');
             return;
         }
+        // Pastikan store selalu pakai villa yang sedang dibuka, bukan data lama
+        setStoreVilla(villa);
         router.push('/booking/confirm');
     };
 

@@ -52,6 +52,10 @@ class BookingController extends Controller
 
         $villa = Villa::find($request->villa_id);
 
+        if (! $villa) {
+            return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
+        }
+
         if (! $villa->is_active) {
             return response()->json(['message' => 'Villa ini sedang tidak aktif.'], 422);
         }
