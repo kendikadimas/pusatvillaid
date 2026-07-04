@@ -24,7 +24,8 @@ import {
     Download,
     Loader2
 } from 'lucide-react';
-import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+// generateInvoicePDF diimport secara dynamic saat dibutuhkan untuk menghindari
+// crash pada mobile browser yang tidak support jsPDF saat module load awal.
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -461,6 +462,7 @@ function BookingStatusContent() {
                                 <button
                                     onClick={async () => {
                                         try {
+                                            const { generateInvoicePDF } = await import('@/lib/generateInvoicePDF');
                                             await generateInvoicePDF(booking, code, settings);
                                             toast.success('Invoice berhasil didownload!');
                                         } catch (error) {

@@ -81,7 +81,10 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
 
     const fetchBooking = useCallback(async (maxRetries = 3) => {
         if (!anchor.code || !anchor.email) {
-            setStatus('error');
+            // Jangan langsung set error — email mungkin masih loading dari authContext
+            // atau sedang di-resolve dari localStorage. Set idle supaya caller tahu
+            // fetch belum bisa jalan, tapi tidak menampilkan error screen.
+            setStatus('idle');
             return;
         }
 

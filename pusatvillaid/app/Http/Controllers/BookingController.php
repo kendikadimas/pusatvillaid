@@ -29,6 +29,36 @@ class BookingController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Log::info('[Booking.store] Request received', [
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'villa_id' => $request->villa_id,
+            'guest_email' => $request->guest_email,
+            'check_in' => $request->check_in,
+            'check_out' => $request->check_out,
+            'has_ktp' => $request->hasFile('ktp_image'),
+            'ktp_mime' => $request->hasFile('ktp_image') ? $request->file('ktp_image')->getMimeType() : null,
+            'ktp_size' => $request->hasFile('ktp_image') ? $request->file('ktp_image')->getSize() : null,
+            'payment_method_id' => $request->payment_method_id,
+        ]);
+
+        // HEIC/HEIF dari iPhone: browser mengirim sebagai image/heic atau image/heif
+        // Laravel 'mimes' rule menolaknya karena tidak ada di daftar. Kita tangani sebelum validasi
+        // dengan mengkonversi mime type check secara manual — file tetap disimpan as-is karena
+        // PHP GD tidak support HEIC, tapi file sudah pasti gambar dari iPhone.
+        $ktpFile = $request->file('ktp_image');
+        $isHeic = false;
+        if ($ktpFile) {
+            $mime = $ktpFile->getMimeType();
+            if (in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])) {
+                $isHeic = true;
+                Log::info('[Booking.store] HEIC/HEIF KTP detected, bypassing mime validation', [
+                    'mime' => $mime,
+                    'size' => $ktpFile->getSize(),
+                ]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'villa_id' => 'required|exists:villas,id',
             'payment_method_id' => 'sometimes|nullable|exists:payment_methods,id',
@@ -43,10 +73,19 @@ class BookingController extends Controller
             'utm_medium' => 'nullable|string|max:100',
             'utm_campaign' => 'nullable|string|max:100',
             'is_refundable' => 'nullable|boolean',
-            'ktp_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            // HEIC/HEIF dari iPhone dihandle manual di atas, skip mime check jika isHeic
+            'ktp_image' => $isHeic
+                ? 'required|file|max:10240'
+                : 'required|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         if ($validator->fails()) {
+            Log::warning('[Booking.store] Validation failed', [
+                'errors' => $validator->errors()->toArray(),
+                'guest_email' => $request->guest_email,
+                'ktp_mime' => $ktpFile ? $ktpFile->getMimeType() : null,
+            ]);
+
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
@@ -232,6 +271,17 @@ class BookingController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+            Log::error('[Booking.store] Exception during booking creation', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'guest_email' => $request->guest_email,
+                'villa_id' => $request->villa_id,
+                'check_in' => $request->check_in,
+                'check_out' => $request->check_out,
+            ]);
+
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
@@ -280,12 +330,28 @@ class BookingController extends Controller
      */
     public function confirmManualPayment(Request $request, string $code): JsonResponse
     {
+        Log::info('[Booking.confirmManualPayment] Request received', [
+            'code' => $code,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'has_proof' => $request->hasFile('payment_proof'),
+            'proof_mime' => $request->hasFile('payment_proof') ? $request->file('payment_proof')->getMimeType() : null,
+            'proof_size' => $request->hasFile('payment_proof') ? $request->file('payment_proof')->getSize() : null,
+            'payment_method_id' => $request->payment_method_id,
+        ]);
+
         $validator = Validator::make($request->all(), [
             'payment_method_id' => 'required|exists:payment_methods,id',
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
         ]);
 
         if ($validator->fails()) {
+            Log::warning('[Booking.confirmManualPayment] Validation failed', [
+                'code' => $code,
+                'errors' => $validator->errors()->toArray(),
+                'proof_mime' => $request->hasFile('payment_proof') ? $request->file('payment_proof')->getMimeType() : null,
+            ]);
+
             return response()->json(['errors' => $validator->errors()], 422);
         }
 

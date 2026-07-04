@@ -101,7 +101,14 @@ function BookingPaymentContent() {
                     }
                     canvas.width = width;
                     canvas.height = height;
-                    canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                    // getContext('2d') bisa return null di mobile browser tertentu
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        const preview = URL.createObjectURL(file);
+                        resolve({ file, preview });
+                        return;
+                    }
+                    ctx.drawImage(img, 0, 0, width, height);
                     canvas.toBlob(
                         (blob) => {
                             if (!blob) { reject(new Error('Compression failed')); return; }

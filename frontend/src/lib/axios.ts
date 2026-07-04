@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const axiosClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_BACKEND_URL + '/api/v1'),
-    timeout: 30000,
+    // Default 60s — upload KTP 5MB di koneksi mobile 3G bisa butuh waktu lebih dari 30s.
+    // Untuk request upload file gunakan timeout per-request yang lebih besar via config.
+    timeout: 60000,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'Accept': 'application/json',

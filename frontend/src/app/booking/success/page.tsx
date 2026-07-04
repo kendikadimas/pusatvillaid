@@ -12,7 +12,8 @@ import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { CheckCircle2, MapPin, Copy, Printer, Home, Check, Download } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
-import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+// generateInvoicePDF diimport secara dynamic saat dibutuhkan untuk menghindari
+// crash pada mobile browser yang tidak support jsPDF saat module load awal.
 import { useSettings } from '@/context/SettingsContext';
 import { toast } from 'sonner';
 import { useResilientBooking } from '@/hooks/useResilientBooking';
@@ -53,6 +54,7 @@ function BookingSuccessContent() {
         if (!booking || !code) return;
         
         try {
+            const { generateInvoicePDF } = await import('@/lib/generateInvoicePDF');
             await generateInvoicePDF(booking, code, settings);
             toast.success('Invoice berhasil didownload!');
         } catch (error) {

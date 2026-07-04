@@ -154,7 +154,16 @@ export default function BookingConfirmPage() {
                     }
                     canvas.width = width;
                     canvas.height = height;
-                    canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                    // getContext('2d') bisa return null di beberapa mobile browser (Samsung Internet lama,
+                    // WebView dengan hardware acceleration disabled, atau canvas limit tercapai)
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        // Fallback: pakai file asli tanpa kompresi
+                        const preview = URL.createObjectURL(file);
+                        resolve({ file, preview });
+                        return;
+                    }
+                    ctx.drawImage(img, 0, 0, width, height);
                     canvas.toBlob(
                         (blob) => {
                             if (!blob) { reject(new Error('Compression failed')); return; }
@@ -406,6 +415,8 @@ export default function BookingConfirmPage() {
 
             const response = await axiosClient.post('/bookings', payload, {
                 headers: { 'Content-Type': 'multipart/form-data' },
+                // Timeout lebih besar untuk upload KTP di koneksi mobile lemah (5MB di 3G bisa > 30s)
+                timeout: 120000,
             });
             
             // Save email used for checkout in sessionStorage to allow verification access to checking status
