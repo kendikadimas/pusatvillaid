@@ -48,13 +48,21 @@ class BookingController extends Controller
         // PHP GD tidak support HEIC, tapi file sudah pasti gambar dari iPhone.
         $ktpFile = $request->file('ktp_image');
         $isHeic = false;
-        if ($ktpFile) {
-            $mime = $ktpFile->getMimeType();
-            if (in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])) {
-                $isHeic = true;
-                Log::info('[Booking.store] HEIC/HEIF KTP detected, bypassing mime validation', [
-                    'mime' => $mime,
-                    'size' => $ktpFile->getSize(),
+        if ($ktpFile && $ktpFile->isValid() && $ktpFile->getPath() !== '') {
+            try {
+                $mime = $ktpFile->getMimeType();
+                if (in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])) {
+                    $isHeic = true;
+                    Log::info('[Booking.store] HEIC/HEIF KTP detected, bypassing mime validation', [
+                        'mime' => $mime,
+                        'size' => $ktpFile->getSize(),
+                    ]);
+                }
+            } catch (\Exception $mimeEx) {
+                // getMimeType() bisa gagal jika file temp sudah expired atau tidak readable
+                Log::warning('[Booking.store] Failed to get KTP mime type', [
+                    'error' => $mimeEx->getMessage(),
+                    'path' => $ktpFile->getPathname(),
                 ]);
             }
         }
