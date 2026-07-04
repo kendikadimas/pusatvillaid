@@ -111,23 +111,34 @@ export default function BookingConfirmPage() {
             toast.error('Format file KTP tidak valid. Gunakan JPG, PNG, atau WebP.');
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error('Ukuran file KTP maksimal 5MB.');
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error('Ukuran file KTP maksimal 10MB.');
             return;
         }
         setKtpLoading(true);
-        setKtpFile(file);
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            setKtpPreview(ev.target?.result as string);
-            setKtpLoading(false);
-        };
-        reader.onerror = () => {
-            setKtpLoading(false);
-            toast.error('Gagal membaca file KTP. Silakan coba lagi.');
-        };
-        reader.readAsDataURL(file);
         setFormErrors((prev: any) => ({ ...prev, ktp_image: undefined }));
+        // Compress KTP image sebelum upload — max 1200px, quality 0.82
+        // Ini penting untuk mobile karena kamera HP bisa menghasilkan file 4-8MB
+        compressImage(file)
+            .then(({ file: compressed, preview }) => {
+                setKtpFile(compressed);
+                setKtpPreview(preview);
+                setKtpLoading(false);
+            })
+            .catch(() => {
+                // Fallback: pakai file asli jika kompresi gagal
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    setKtpFile(file);
+                    setKtpPreview(ev.target?.result as string);
+                    setKtpLoading(false);
+                };
+                reader.onerror = () => {
+                    setKtpLoading(false);
+                    toast.error('Gagal membaca file KTP. Silakan coba lagi.');
+                };
+                reader.readAsDataURL(file);
+            });
     };
 
     const removeKtp = () => {
