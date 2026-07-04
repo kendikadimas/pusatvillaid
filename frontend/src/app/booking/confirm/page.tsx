@@ -339,7 +339,8 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
-        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
+        if (ktpLoading) errors.ktp_image = 'Foto KTP masih diproses, harap tunggu sebentar.';
+        else if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         if (!agree) errors.agree = 'Anda harus menyetujui syarat & ketentuan.';
 
         setFormErrors(errors);
@@ -535,7 +536,8 @@ export default function BookingConfirmPage() {
         } else if (phone.length < 9 || phone.length > 15) {
             errors.phone = 'Nomor telepon minimal 9 digit dan maksimal 15 digit.';
         }
-        if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
+        if (ktpLoading) errors.ktp_image = 'Foto KTP masih diproses, harap tunggu sebentar.';
+        else if (!ktpFile) errors.ktp_image = 'Foto KTP wajib diunggah untuk verifikasi identitas.';
         
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
