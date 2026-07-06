@@ -304,6 +304,15 @@ class BookingController extends Controller
         // Retrieve authenticated user using sanctum guard (if token header exists)
         $user = auth('sanctum')->user() ?? $request->user('sanctum');
 
+        Log::info('[Booking.show] Request received', [
+            'code' => $code,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'user_id' => $user?->id,
+            'user_role' => $user?->role,
+            'email_param' => $email ? '***provided***' : null,
+        ]);
+
         $query = Booking::where('booking_code', $code);
 
         if ($user) {
@@ -319,6 +328,11 @@ class BookingController extends Controller
             }
         } else {
             if (! $email) {
+                Log::warning('[Booking.show] Unauthenticated request without email param', [
+                    'code' => $code,
+                    'ip' => $request->ip(),
+                ]);
+
                 return response()->json(['message' => 'Email verifikasi diperlukan.'], 400);
             }
             $query->where('guest_email', $email);
@@ -327,8 +341,24 @@ class BookingController extends Controller
         $booking = $query->with(['villa', 'payment', 'paymentMethod'])->first();
 
         if (! $booking) {
+            Log::warning('[Booking.show] Booking not found or access denied', [
+                'code' => $code,
+                'ip' => $request->ip(),
+                'user_id' => $user?->id,
+                'user_role' => $user?->role,
+                'email_param_provided' => ! empty($email),
+            ]);
+
             return response()->json(['message' => 'Booking tidak ditemukan atau Anda tidak memiliki akses.'], 404);
         }
+
+        Log::info('[Booking.show] Booking found', [
+            'code' => $code,
+            'booking_id' => $booking->id,
+            'status' => $booking->status,
+            'payment_status' => $booking->payment_status,
+            'user_id' => $user?->id,
+        ]);
 
         return response()->json($booking);
     }
@@ -498,10 +528,22 @@ class BookingController extends Controller
     public function userBookings(Request $request): JsonResponse
     {
         $user = $request->user();
+
+        Log::info('[Booking.userBookings] Request received', [
+            'user_id' => $user->id,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         $bookings = Booking::where('user_id', $user->id)
             ->with(['villa', 'payment'])
             ->orderBy('created_at', 'desc')
             ->get();
+
+        Log::info('[Booking.userBookings] Returning bookings', [
+            'user_id' => $user->id,
+            'count' => $bookings->count(),
+        ]);
 
         return response()->json($bookings);
     }
@@ -513,6 +555,13 @@ class BookingController extends Controller
     {
         $user = auth('sanctum')->user() ?? $request->user('sanctum');
 
+        Log::info('[Booking.showKtp] Request received', [
+            'code' => $code,
+            'ip' => $request->ip(),
+            'user_id' => $user?->id,
+            'user_role' => $user?->role,
+        ]);
+
         $query = Booking::where('booking_code', $code);
 
         if ($user) {
@@ -523,18 +572,42 @@ class BookingController extends Controller
                 });
             }
         } else {
+            Log::warning('[Booking.showKtp] Unauthenticated access attempt', [
+                'code' => $code,
+                'ip' => $request->ip(),
+            ]);
+
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $booking = $query->first();
 
         if (! $booking || ! $booking->ktp_image) {
+            Log::warning('[Booking.showKtp] KTP not found', [
+                'code' => $code,
+                'booking_found' => ! is_null($booking),
+                'has_ktp_image' => $booking?->ktp_image ? true : false,
+                'user_id' => $user->id,
+            ]);
+
             return response()->json(['message' => 'KTP tidak ditemukan.'], 404);
         }
 
         if (! Storage::disk('private')->exists($booking->ktp_image)) {
+            Log::error('[Booking.showKtp] KTP file missing from storage', [
+                'code' => $code,
+                'booking_id' => $booking->id,
+                'ktp_path' => $booking->ktp_image,
+            ]);
+
             return response()->json(['message' => 'File KTP tidak tersedia.'], 404);
         }
+
+        Log::info('[Booking.showKtp] Serving KTP file', [
+            'code' => $code,
+            'booking_id' => $booking->id,
+            'user_id' => $user->id,
+        ]);
 
         return Storage::disk('private')->response($booking->ktp_image);
     }
@@ -546,6 +619,13 @@ class BookingController extends Controller
     {
         $user = auth('sanctum')->user() ?? $request->user('sanctum');
 
+        Log::info('[Booking.showPaymentProof] Request received', [
+            'code' => $code,
+            'ip' => $request->ip(),
+            'user_id' => $user?->id,
+            'user_role' => $user?->role,
+        ]);
+
         $query = Booking::where('booking_code', $code);
 
         if ($user) {
@@ -556,18 +636,44 @@ class BookingController extends Controller
                 });
             }
         } else {
+            Log::warning('[Booking.showPaymentProof] Unauthenticated access attempt', [
+                'code' => $code,
+                'ip' => $request->ip(),
+            ]);
+
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $booking = $query->with('payment')->first();
 
         if (! $booking || ! $booking->payment || ! $booking->payment->payment_proof) {
+            Log::warning('[Booking.showPaymentProof] Payment proof not found', [
+                'code' => $code,
+                'booking_found' => ! is_null($booking),
+                'has_payment' => ! is_null($booking?->payment),
+                'has_proof' => $booking?->payment?->payment_proof ? true : false,
+                'user_id' => $user->id,
+            ]);
+
             return response()->json(['message' => 'Bukti pembayaran tidak ditemukan.'], 404);
         }
 
         if (! Storage::disk('private')->exists($booking->payment->payment_proof)) {
+            Log::error('[Booking.showPaymentProof] Payment proof file missing from storage', [
+                'code' => $code,
+                'booking_id' => $booking->id,
+                'payment_id' => $booking->payment->id,
+                'proof_path' => $booking->payment->payment_proof,
+            ]);
+
             return response()->json(['message' => 'File bukti pembayaran tidak tersedia.'], 404);
         }
+
+        Log::info('[Booking.showPaymentProof] Serving payment proof file', [
+            'code' => $code,
+            'booking_id' => $booking->id,
+            'user_id' => $user->id,
+        ]);
 
         return Storage::disk('private')->response($booking->payment->payment_proof);
     }

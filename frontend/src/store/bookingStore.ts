@@ -16,6 +16,9 @@ interface BookingState {
         weekdays: { count: number; price: number; total: number };
         weekends: { count: number; price: number; total: number };
     };
+    // true setelah Zustand selesai rehidrasi dari localStorage
+    _hasHydrated: boolean;
+    setHasHydrated: (value: boolean) => void;
     setVilla: (villa: Villa | null) => void;
     setDates: (checkIn: string | null, checkOut: string | null) => void;
     setNumGuests: (guests: number) => void;
@@ -40,6 +43,8 @@ export const useBookingStore = create<BookingState>()(
                 weekdays: { count: 0, price: 0, total: 0 },
                 weekends: { count: 0, price: 0, total: 0 },
             },
+            _hasHydrated: false,
+            setHasHydrated: (value) => set({ _hasHydrated: value }),
 
             setVilla: (villa) => {
                 set({ selectedVilla: villa });
@@ -153,6 +158,9 @@ export const useBookingStore = create<BookingState>()(
         }),
         {
             name: 'pusatvilla-booking-store',
+            onRehydrateStorage: () => (state) => {
+                if (state) state.setHasHydrated(true);
+            },
         }
     )
 );

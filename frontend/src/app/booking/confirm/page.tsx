@@ -52,7 +52,8 @@ export default function BookingConfirmPage() {
         setNumGuests,
         setNotes,
         resetStore,
-        isRefundable
+        isRefundable,
+        _hasHydrated,
     } = useBookingStore();
 
     const [loading, setLoading] = useState(false);
@@ -238,11 +239,14 @@ export default function BookingConfirmPage() {
     }, [user]);
 
     useEffect(() => {
-        if (!mounted || navigatingAway.current) return;
+        // Tunggu sampai mounted DAN Zustand selesai rehidrasi dari localStorage.
+        // Tanpa _hasHydrated, race condition menyebabkan store masih null saat
+        // effect ini jalan pertama kali, sehingga dataMissing = true secara salah.
+        if (!mounted || !_hasHydrated || navigatingAway.current) return;
         if (!selectedVilla || !checkIn || !checkOut || totalNights <= 0) {
             setDataMissing(true);
         }
-    }, [mounted, selectedVilla, checkIn, checkOut, totalNights]);
+    }, [mounted, _hasHydrated, selectedVilla, checkIn, checkOut, totalNights]);
 
     // Layer 4: Start countdown timer
     useEffect(() => {
@@ -333,7 +337,7 @@ export default function BookingConfirmPage() {
         );
     }
 
-    if (!mounted || authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
+    if (!mounted || !_hasHydrated || authLoading || !user || !selectedVilla || !checkIn || !checkOut) {
         return <LoadingSpinner />;
     }
 
