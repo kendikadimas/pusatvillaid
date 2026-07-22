@@ -140,6 +140,23 @@ export interface BlockedDate {
     };
 }
 
+export interface Voucher {
+    id: number;
+    code: string;
+    description: string | null;
+    discount_type: 'percentage' | 'fixed';
+    discount_value: number;
+    max_discount: number | null;
+    min_booking_amount: number;
+    usage_limit: number | null;
+    used_count: number;
+    valid_from: string | null;
+    valid_until: string | null;
+    is_active: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface Destination {
     id: number;
     name: string;

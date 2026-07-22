@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PaymentMethodAdminController;
 use App\Http\Controllers\Admin\ReviewAdminController;
 use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Admin\VillaAdminController;
+use App\Http\Controllers\Admin\VoucherAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\IcalController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\VillaController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
@@ -51,6 +53,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'indexPublic']);
     Route::get('/settings/public', [SettingController::class, 'indexPublic']);
+    Route::post('/vouchers/validate', [VoucherController::class, 'validate'])->middleware('throttle:20,1');
 
     Route::post('/payment/notification', [PaymentController::class, 'notification']);
 
@@ -154,6 +157,14 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/destinations/upload-image', [DestinationAdminController::class, 'uploadImage'])->middleware('permission:destinations.manage');
         Route::put('/destinations/{id}', [DestinationAdminController::class, 'update'])->middleware('permission:destinations.manage');
         Route::delete('/destinations/{id}', [DestinationAdminController::class, 'destroy'])->middleware('permission:destinations.manage');
+
+        // ── Vouchers ──
+        Route::get('/vouchers', [VoucherAdminController::class, 'index']);
+        Route::post('/vouchers', [VoucherAdminController::class, 'store']);
+        Route::get('/vouchers/{id}', [VoucherAdminController::class, 'show']);
+        Route::put('/vouchers/{id}', [VoucherAdminController::class, 'update']);
+        Route::delete('/vouchers/{id}', [VoucherAdminController::class, 'destroy']);
+        Route::patch('/vouchers/{id}/toggle-active', [VoucherAdminController::class, 'toggleActive']);
 
         // ── Reviews (requires reviews.view / reviews.manage) ──
         Route::get('/reviews', [ReviewAdminController::class, 'index'])->middleware('permission:reviews.view');

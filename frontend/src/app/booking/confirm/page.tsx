@@ -14,7 +14,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { getMainPhoto } from '@/lib/villaUtils';
 import FormField from '@/components/ui/FormField';
 import CountdownTimer from '@/components/ui/CountdownTimer';
-import { 
+import {
     ChevronRight,
     Loader2,
     Smartphone,
@@ -30,6 +30,7 @@ import {
     Upload,
     ImagePlus,
     FileText,
+    Tag,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -67,6 +68,17 @@ export default function BookingConfirmPage() {
     const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
     const [methodsLoading, setMethodsLoading] = useState(true);
     const [taxPercentage, setTaxPercentage] = useState<number>(0);
+
+    // Voucher State
+    const [voucherCode, setVoucherCode] = useState('');
+    const [appliedVoucher, setAppliedVoucher] = useState<{
+        id: number;
+        code: string;
+        description: string | null;
+        discount_amount: number;
+    } | null>(null);
+    const [voucherLoading, setVoucherLoading] = useState(false);
+    const [voucherError, setVoucherError] = useState<string | null>(null);
 
     // Form States
     const [name, setName] = useState('');
@@ -306,11 +318,53 @@ export default function BookingConfirmPage() {
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
+    // Voucher validate & remove
+    const handleApplyVoucher = async () => {
+        const code = voucherCode.trim().toUpperCase();
+        if (!code) {
+            setVoucherError('Masukkan kode voucher terlebih dahulu.');
+            return;
+        }
+
+        setVoucherLoading(true);
+        setVoucherError(null);
+
+        try {
+            const response = await axiosClient.post('/vouchers/validate', {
+                code,
+                booking_amount: baseTotal,
+            });
+
+            setAppliedVoucher({
+                id: response.data.voucher.id,
+                code: response.data.voucher.code,
+                description: response.data.voucher.description,
+                discount_amount: response.data.discount_amount,
+            });
+            setVoucherCode('');
+            toast.success(response.data.message || 'Voucher berhasil diterapkan!');
+        } catch (err: any) {
+            const errMsg = err.response?.data?.message || 'Kode voucher tidak valid.';
+            setVoucherError(errMsg);
+            setAppliedVoucher(null);
+        } finally {
+            setVoucherLoading(false);
+        }
+    };
+
+    const handleRemoveVoucher = () => {
+        setAppliedVoucher(null);
+        setVoucherCode('');
+        setVoucherError(null);
+    };
+
     const baseTotal = totalAmount;
-    const taxAmount = Math.round((taxPercentage / 100) * baseTotal);
+    const voucherDiscount = appliedVoucher?.discount_amount || 0;
+    const discountedBase = Math.max(0, baseTotal - voucherDiscount);
+    const taxAmount = Math.round((taxPercentage / 100) * discountedBase);
     const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
     const adminFee = selectedMethod?.admin_fee || 0;
-    const finalTotalAmount = methodsLoading ? null : Math.round(baseTotal + taxAmount + adminFee);
+    const finalTotalAmount = methodsLoading ? null : Math.round(discountedBase + taxAmount + adminFee);
 
     if (dataMissing) {
         return (
@@ -427,6 +481,7 @@ export default function BookingConfirmPage() {
             if (utm_source) payload.append('utm_source', utm_source);
             if (utm_medium) payload.append('utm_medium', utm_medium);
             if (utm_campaign) payload.append('utm_campaign', utm_campaign);
+            if (appliedVoucher) payload.append('voucher_code', appliedVoucher.code);
             if (ktpFile) payload.append('ktp_image', ktpFile);
 
             const response = await axiosClient.post('/bookings', payload, {
@@ -763,6 +818,70 @@ export default function BookingConfirmPage() {
                                     )}
                                 </div>
 
+                                {/* Voucher / Promo Code */}
+                                <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-4">
+                                    <div className="border-b border-slate-100 pb-4">
+                                        <h2 className="font-serif text-lg font-bold text-slate-900">Voucher Diskon</h2>
+                                        <p className="text-xs text-slate-500 mt-1 font-medium">Masukkan kode promo untuk mendapatkan potongan harga.</p>
+                                    </div>
+
+                                    {appliedVoucher ? (
+                                        <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-emerald-100 rounded-[10px] flex items-center justify-center">
+                                                    <Tag className="w-5 h-5 text-emerald-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-emerald-800 font-mono text-sm">{appliedVoucher.code}</p>
+                                                    {appliedVoucher.description && (
+                                                        <p className="text-xs text-emerald-600">{appliedVoucher.description}</p>
+                                                    )}
+                                                    <p className="text-xs font-bold text-emerald-700 mt-0.5">
+                                                        Diskon {formatPrice(appliedVoucher.discount_amount)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={handleRemoveVoucher}
+                                                className="p-2 hover:bg-emerald-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                                                aria-label="Hapus voucher"
+                                            >
+                                                <X className="w-4 h-4 text-emerald-600" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative flex-1">
+                                                <input
+                                                    type="text"
+                                                    value={voucherCode}
+                                                    onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyVoucher(); } }}
+                                                    placeholder="Masukkan kode voucher"
+                                                    className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-2xl px-4 py-3 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase`}
+                                                    disabled={voucherLoading}
+                                                />
+                                                {voucherError && (
+                                                    <p className="text-red-500 text-[10px] mt-1.5 font-bold flex items-center gap-1 ml-1">
+                                                        <X className="w-3 h-3" />{voucherError}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={handleApplyVoucher}
+                                                disabled={voucherLoading || !voucherCode.trim()}
+                                                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-2xl transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
+                                            >
+                                                {voucherLoading ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    'Pakai'
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Step 2: Guest Details */}
                                 <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
                                     <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">2. Detail Tamu</h2>
@@ -996,6 +1115,12 @@ export default function BookingConfirmPage() {
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
                                                 <span>Pilihan tarif (Bisa dikembalikan +11.1%)</span>
                                                 <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                            </div>
+                                        )}
+                                        {voucherDiscount > 0 && (
+                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                                                <span className="text-emerald-600">Diskon voucher ({appliedVoucher?.code})</span>
+                                                <span className="text-emerald-600 font-bold font-sans whitespace-nowrap">-{formatPrice(voucherDiscount)}</span>
                                             </div>
                                         )}
                                         {taxPercentage > 0 && (
@@ -1335,8 +1460,64 @@ export default function BookingConfirmPage() {
                                         })()}
                                     </div>
                                 )}
-                            </>
-                        )}
+
+                            {/* Mobile Voucher */}
+                            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <h3 className="font-serif font-bold text-slate-900 text-xs uppercase tracking-wider">Voucher Diskon</h3>
+                                </div>
+                                {appliedVoucher ? (
+                                    <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                                <Tag className="w-4 h-4 text-emerald-600" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-emerald-800 font-mono text-xs">{appliedVoucher.code}</p>
+                                                <p className="text-[10px] font-bold text-emerald-700">
+                                                    Diskon {formatPrice(appliedVoucher.discount_amount)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleRemoveVoucher}
+                                            className="p-1.5 hover:bg-emerald-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                                        >
+                                            <X className="w-3.5 h-3.5 text-emerald-600" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative flex-1">
+                                            <input
+                                                type="text"
+                                                value={voucherCode}
+                                                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyVoucher(); } }}
+                                                placeholder="Kode promo"
+                                                className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-xl px-3.5 py-2.5 text-xs font-bold font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase`}
+                                                disabled={voucherLoading}
+                                            />
+                                            {voucherError && (
+                                                <p className="text-red-500 text-[10px] mt-1 font-bold flex items-center gap-1">{voucherError}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={handleApplyVoucher}
+                                            disabled={voucherLoading || !voucherCode.trim()}
+                                            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
+                                        >
+                                            {voucherLoading ? (
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            ) : (
+                                                'Pakai'
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
 
                         {currentStep === 3 && (
                             <>
@@ -1501,6 +1682,12 @@ export default function BookingConfirmPage() {
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
                                                 <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                            </div>
+                                        )}
+                                        {voucherDiscount > 0 && (
+                                            <div className="flex justify-between items-start gap-4">
+                                                <span className="text-left text-emerald-600">Diskon voucher ({appliedVoucher?.code})</span>
+                                                <span className="text-emerald-600 font-bold font-sans flex-shrink-0">-{formatPrice(voucherDiscount)}</span>
                                             </div>
                                         )}
                                         {taxPercentage > 0 && (
@@ -1748,6 +1935,12 @@ export default function BookingConfirmPage() {
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
                                     <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                </div>
+                            )}
+                            {voucherDiscount > 0 && (
+                                <div className="flex justify-between items-start gap-4">
+                                    <span className="text-left text-emerald-600">Diskon voucher ({appliedVoucher?.code})</span>
+                                    <span className="text-emerald-600 font-bold font-sans flex-shrink-0">-{formatPrice(voucherDiscount)}</span>
                                 </div>
                             )}
                             {taxPercentage > 0 && (

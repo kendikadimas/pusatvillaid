@@ -9,6 +9,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VillaController extends Controller
 {
@@ -126,7 +127,7 @@ class VillaController extends Controller
         try {
             $data = Cache::remember($cacheKey, 300, $builder);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('VillaController cache miss fallback: '.$e->getMessage());
+            Log::warning('VillaController cache miss fallback: '.$e->getMessage());
             $data = $builder();
         }
 

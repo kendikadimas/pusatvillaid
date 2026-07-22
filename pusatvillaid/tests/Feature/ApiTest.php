@@ -42,7 +42,7 @@ it('can list active villas in slim mode', function () {
     $response->assertOk();
     $data = $response->json('data');
     expect($data)->toHaveCount(1);
-    
+
     // Assert included fields
     expect($data[0])->toHaveKey('id')
         ->toHaveKey('name')

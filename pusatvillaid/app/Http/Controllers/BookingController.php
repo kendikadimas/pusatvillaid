@@ -10,6 +10,7 @@ use App\Models\PaymentMethod;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Villa;
+use App\Models\Voucher;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -195,8 +196,28 @@ class BookingController extends Controller
                 $paymentMethod = PaymentMethod::find($request->payment_method_id);
                 $adminFee = $paymentMethod ? $paymentMethod->admin_fee : 0;
 
-                // Final total amount
-                $totalAmount = $baseAmount + $taxAmount + $adminFee;
+                // Apply voucher discount if provided
+                $voucherId = null;
+                $voucherCode = null;
+                $discountAmount = 0;
+
+                if ($request->filled('voucher_code')) {
+                    $voucher = Voucher::where('code', Str::upper(trim($request->voucher_code)))
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($voucher && $voucher->isValid() && $baseAmount >= $voucher->min_booking_amount) {
+                        $discountAmount = $voucher->calculateDiscount((int) $baseAmount);
+                        $voucherId = $voucher->id;
+                        $voucherCode = $voucher->code;
+                        $voucher->increment('used_count');
+                    }
+                }
+
+                // Final total amount (discount applied before tax and fee)
+                $discountedBase = max(0, $baseAmount - $discountAmount);
+                $taxAmount = round(($taxPercentage / 100) * $discountedBase);
+                $totalAmount = $discountedBase + $taxAmount + $adminFee;
 
                 // 4. Generate random booking code (VB-YYYY-XXXXXX) — atomic with lock and retry
                 $year = now()->year;
@@ -234,6 +255,9 @@ class BookingController extends Controller
                     'villa_id' => $villa->id,
                     'user_id' => $request->user()?->id,
                     'payment_method_id' => $request->payment_method_id,
+                    'voucher_id' => $voucherId,
+                    'voucher_code' => $voucherCode,
+                    'discount_amount' => $discountAmount,
                     'guest_name' => $request->guest_name,
                     'guest_email' => $request->guest_email,
                     'guest_phone' => $request->guest_phone,

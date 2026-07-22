@@ -5,13 +5,13 @@ import { Toaster } from 'sonner';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { 
-    LayoutDashboard, 
-    CalendarDays, 
-    Home, 
-    BookOpen, 
-    Star, 
-    BarChart3, 
+import {
+    LayoutDashboard,
+    CalendarDays,
+    Home,
+    BookOpen,
+    Star,
+    BarChart3,
     Settings,
     LogOut,
     Menu,
@@ -19,7 +19,8 @@ import {
     User,
     Loader2,
     MapPin,
-    Shield
+    Shield,
+    Tag,
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -64,6 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Pemesanan', href: '/admin/bookings', icon: BookOpen },
         { name: 'Katalog villa', href: '/admin/villas', icon: Home },
         { name: 'Destinasi wisata', href: '/admin/destinations', icon: MapPin },
+        { name: 'Voucher diskon', href: '/admin/vouchers', icon: Tag },
         { name: 'Kalender jadwal', href: '/admin/calendar', icon: CalendarDays },
         { name: 'Ulasan tamu', href: '/admin/reviews', icon: Star },
         { name: 'Analisis keuangan', href: '/admin/analytics', icon: BarChart3 },
