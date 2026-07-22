@@ -1,6 +1,12 @@
+# Disable directory listing globally
+Options -Indexes
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+
+    # Block direct access to /admin root (no index.html there) - redirect to dashboard
+    RewriteRule ^admin/?$ /admin/dashboard/index.html [L]
 
     # Villa detail pages: serve pre-built static HTML if the slug folder exists.
     # For new villas not yet in the static build, fall through to placeholder.
