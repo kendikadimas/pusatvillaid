@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Mail, Heart } from 'lucide-react';
+import { MapPin, Mail } from 'lucide-react';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { useSettings } from '@/context/SettingsContext';
 
@@ -137,9 +137,6 @@ export default function PublicFooter() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                     <p className="text-blue-300">
                         &copy; {new Date().getFullYear()} {settings.settings_prop_name} &mdash; Semua hak cipta dilindungi.
-                    </p>
-                    <p className="text-blue-400 flex items-center gap-1">
-                        Dibuat dengan <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400" /> oleh KalanaLabs
                     </p>
                 </div>
             </div>
