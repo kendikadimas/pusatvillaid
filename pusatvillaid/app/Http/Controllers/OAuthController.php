@@ -20,12 +20,13 @@ class OAuthController extends Controller
 
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
-        $frontendUrl = config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000'));
+        // Frontend is Next.js static export (separate domain). Prefer FRONTEND_URL.
+        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
 
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect($frontendUrl.'/auth/callback?error='.urlencode('Gagal autentikasi dengan Google.'));
+            return redirect($frontendUrl.'/auth/callback/?error='.urlencode('Gagal autentikasi dengan Google.'));
         }
 
         $user = User::where('email', $googleUser->getEmail())->first();
@@ -50,7 +51,8 @@ class OAuthController extends Controller
         $code = Str::random(64);
         Cache::put('oauth_code:'.$code, $user->id, 60);
 
-        return redirect($frontendUrl.'/auth/callback?code='.$code);
+        // Trailing slash required for Next.js static export (auth/callback/index.html)
+        return redirect($frontendUrl.'/auth/callback/?code='.$code);
     }
 
     /**
