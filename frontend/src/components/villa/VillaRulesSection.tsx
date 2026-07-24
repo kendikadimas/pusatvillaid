@@ -29,7 +29,7 @@ export default function VillaRulesSection({ rules, safetyList, cancellationPolic
                         <div className="space-y-2.5 text-slate-600 font-medium leading-relaxed">
                             {rulesList.map((rule, idx) => (
                                 <div key={idx} className="flex items-start space-x-2">
-                                    <Check className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                    <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
                                     <span>{rule}</span>
                                 </div>
                             ))}
@@ -46,7 +46,7 @@ export default function VillaRulesSection({ rules, safetyList, cancellationPolic
                                 const isNotReported = safety.toLowerCase().includes('tidak dilaporkan') || safety.toLowerCase().includes('tidak ada');
                                 return (
                                     <div key={idx} className="flex items-start space-x-2">
-                                        {isNotReported ? <X className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /> : <Check className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />}
+                                        {isNotReported ? <X className="w-4 h-4 text-green-500 shrink-0 mt-0.5" /> : <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />}
                                         <span>{safety}</span>
                                     </div>
                                 );

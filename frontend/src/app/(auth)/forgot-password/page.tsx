@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
                             autoFocus
                             placeholder="nama@email.com"
                             required
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
                         />
                     </div>
                     <InputError message={errors.email} />
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
 
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
                     disabled={processing}
                 >
                     {processing && <Spinner className="mr-2 w-4 h-4 text-white" />}
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="text-center text-xs text-slate-500 font-semibold pt-2">
                     Atau kembali ke{' '}
-                    <TextLink href="/login" className="text-blue-500 hover:underline font-bold">
+                    <TextLink href="/login" className="text-green-500 hover:underline font-bold">
                         masuk
                     </TextLink>
                 </div>

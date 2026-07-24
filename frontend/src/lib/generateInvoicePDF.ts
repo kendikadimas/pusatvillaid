@@ -44,7 +44,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
   const pageHeight = pdf.internal.pageSize.getHeight();
   
   // Colors
-  const primaryBlue = '#3B82F6';
+  const primaryBlue = '#22c55e';
   const darkBlue = '#1E3A8A';
   const lightGray = '#F1F5F9';
   const textGray = '#475569';

@@ -187,16 +187,16 @@ function VillasCatalogContent() {
                 <PublicHeader>
                 {/* Center: Airbnb Capsule Search Bar */}
                 <div className="hidden md:flex items-center border border-slate-200 rounded-full py-2 pl-6 pr-2 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer text-[13px] font-bold text-slate-800 bg-white">
-                    <div className="pr-4 border-r border-slate-200 hover:text-blue-500 transition-colors">
+                    <div className="pr-4 border-r border-slate-200 hover:text-green-500 transition-colors">
                         {locationInput ? `Unit Villa di ${locationInput}` : 'Kemana saja'}
                     </div>
-                    <div className="px-4 border-r border-slate-200 hover:text-blue-500 transition-colors">
+                    <div className="px-4 border-r border-slate-200 hover:text-green-500 transition-colors">
                         {checkInParam && checkOutParam ? `${checkInParam} - ${checkOutParam}` : 'Minggu mana saja'}
                     </div>
-                    <div className="pl-4 pr-1 text-slate-500 hover:text-blue-500 transition-colors">
+                    <div className="pl-4 pr-1 text-slate-500 hover:text-green-500 transition-colors">
                         {guests ? `${guests} tamu` : 'Tambahkan tamu'}
                     </div>
-                    <button className="bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600 transition-colors ml-2 cursor-pointer">
+                    <button className="bg-green-500 p-2 rounded-full text-white hover:bg-green-600 transition-colors ml-2 cursor-pointer">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -222,7 +222,7 @@ function VillasCatalogContent() {
                             <SlidersHorizontal className="w-3 h-3" />
                             <span>Filter</span>
                             {(bedrooms || minPrice || maxPrice) && (
-                                <span className="w-4 h-4 rounded-full bg-blue-500 text-white text-[9px] flex items-center justify-center">
+                                <span className="w-4 h-4 rounded-full bg-green-500 text-white text-[9px] flex items-center justify-center">
                                     {[bedrooms, minPrice, maxPrice].filter(Boolean).length}
                                 </span>
                             )}
@@ -232,7 +232,7 @@ function VillasCatalogContent() {
                         <select
                             value={`${sortBy}_${sortOrder}`}
                             onChange={(e) => handleSortChange(e.target.value)}
-                            className="bg-white border border-slate-200 rounded-full px-3 py-2 sm:py-1.5 text-[11px] font-bold text-slate-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 hover:border-slate-400 transition-colors"
+                            className="bg-white border border-slate-200 rounded-full px-3 py-2 sm:py-1.5 text-[11px] font-bold text-slate-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/20 hover:border-slate-400 transition-colors"
                         >
                             <option value="created_at_desc">Terbaru</option>
                             <option value="price_asc">Harga: Rendah ke Tinggi</option>
@@ -266,7 +266,7 @@ function VillasCatalogContent() {
                                 <select
                                     value={bedrooms}
                                     onChange={(e) => setBedrooms(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 cursor-pointer"
                                 >
                                     <option value="">Semua</option>
                                     <option value="1">1+</option>
@@ -281,7 +281,7 @@ function VillasCatalogContent() {
                                 <select
                                     value={guests}
                                     onChange={(e) => setGuests(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 cursor-pointer"
                                 >
                                     <option value="">Semua</option>
                                     <option value="2">2+</option>
@@ -298,7 +298,7 @@ function VillasCatalogContent() {
                                     placeholder="0"
                                     value={minPrice}
                                     onChange={(e) => setMinPrice(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -308,7 +308,7 @@ function VillasCatalogContent() {
                                     placeholder="tak terbatas"
                                     value={maxPrice}
                                     onChange={(e) => setMaxPrice(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                             </div>
                             <div className="flex items-end gap-2">
@@ -343,7 +343,7 @@ function VillasCatalogContent() {
                                 Menampilkan {loading ? '...' : filteredVillas.length} Unit Villa di {locationInput || 'Seluruh Destinasi'}
                             </h1>
                             <div className="flex items-center space-x-2 self-start bg-slate-50 border border-slate-150 px-3.5 py-2 rounded-xl">
-                                <svg className="w-4.5 h-4.5 text-blue-500 fill-current" viewBox="0 0 24 24">
+                                <svg className="w-4.5 h-4.5 text-green-500 fill-current" viewBox="0 0 24 24">
                                     <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8 8a2 2 0 0 0 2.828 0l7.172-7.172a2 2 0 0 0 0-2.828l-8-8zM7 9a2 2 0 1 1 2-2 2 2 0 0 1-2 2z"/>
                                 </svg>
                                 <span className="text-[13px] font-semibold text-slate-700">
@@ -481,7 +481,7 @@ function VillasCatalogContent() {
                                         </div>
                                         <Link
                                             href={`/villas/${villa.slug}${checkInParam && checkOutParam ? `?checkIn=${checkInParam}&checkOut=${checkOutParam}` : ''}`}
-                                            className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95"
+                                            className="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95"
                                         >
                                             <span>Lihat Detail</span>
                                             <ArrowRight className="w-3.5 h-3.5" />

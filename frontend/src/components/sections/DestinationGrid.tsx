@@ -33,7 +33,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
         <section data-reveal className="max-w-8xl mx-auto px-4 sm:px-8 lg:px-24 py-8 lg:py-16 w-full reveal">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-3 lg:mb-6 gap-4">
                 <div className="text-left">
-                    {/* <span className="inline-block text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Pilih Wilayah</span> */}
+                    {/* <span className="inline-block text-[10px] font-bold text-green-500 uppercase tracking-widest mb-2">Pilih Wilayah</span> */}
                     <h2 className="text-xl sm:text-3xl lg:text-[2rem] font-black text-[#111111] tracking-[-0.02em] leading-[1.2]">
                        Destinasi Populer
                     </h2>
@@ -82,7 +82,7 @@ export default function DestinationGrid({ destinations, groupedByLocation }: Des
                             </div> */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/80 via-[#111111]/20 to-transparent" />
                             <div className="absolute bottom-0 left-0 right-0 p-4 text-left z-10">
-                                <h3 className="text-white font-bold text-sm leading-tight group-hover:text-blue-300 transition-colors">{dest.name}</h3>
+                                <h3 className="text-white font-bold text-sm leading-tight group-hover:text-green-300 transition-colors">{dest.name}</h3>
                                 {/* <p className="text-[11px] text-white/80 mt-1 font-medium">
                                     {count > 0 ? `${count} Villa Terdaftar` : (dest.count_fallback || 'Lihat Villa')}
                                 </p> */}

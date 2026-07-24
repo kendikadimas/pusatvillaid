@@ -238,7 +238,7 @@ export default function HomePage() {
                                 className={`h-9 flex items-center justify-center text-xs font-semibold relative ${
                                     isPast ? 'text-slate-350 cursor-not-allowed opacity-40' : 'cursor-pointer hover:bg-slate-50 rounded-full'
                                 } ${
-                                    isInRange ? 'bg-blue-50/70 text-blue-800 rounded-none' : ''
+                                    isInRange ? 'bg-green-50/70 text-green-800 rounded-none' : ''
                                 } ${
                                     isSelectedStart ? 'rounded-l-full' : ''
                                 } ${
@@ -246,7 +246,7 @@ export default function HomePage() {
                                 }`}
                             >
                                 {(isSelectedStart || isSelectedEnd) && (
-                                    <div className="absolute inset-0 bg-blue-500 rounded-full scale-90 z-0" />
+                                    <div className="absolute inset-0 bg-green-500 rounded-full scale-90 z-0" />
                                 )}
                                 <span className={`relative z-10 ${
                                     (isSelectedStart || isSelectedEnd) ? 'text-white font-bold' : ''
@@ -499,11 +499,11 @@ export default function HomePage() {
                     <div className="flex items-center gap-3 px-4 py-3">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-1.5 flex-shrink-0">
-                            <svg className="w-7 h-7 fill-current text-blue-500" viewBox="0 0 32 32">
+                            <svg className="w-7 h-7 fill-current text-green-500" viewBox="0 0 32 32">
                                 <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
                                 <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
                             </svg>
-                            <span className="text-base font-sans font-black tracking-tight text-blue-500">{settings.settings_prop_name}</span>
+                            <span className="text-base font-sans font-black tracking-tight text-green-500">{settings.settings_prop_name}</span>
                         </Link>
 
                         {/* Search pill */}
@@ -581,7 +581,7 @@ export default function HomePage() {
                             </div>
                             <Link
                                 href={`/villas?location=${group.query}`}
-                                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1"
                             >
                                 Lihat semua
                                 <ArrowRight className="w-3 h-3" />
@@ -615,7 +615,7 @@ export default function HomePage() {
 
                 {loading && (
                     <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
                     </div>
                 )}
             </div>

@@ -102,7 +102,7 @@ export default function ProfilePage() {
             case 'completed':
                 return <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Selesai</span>;
             case 'confirmed':
-                return <span className="bg-blue-50 text-blue-600 border border-blue-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Dikonfirmasi</span>;
+                return <span className="bg-green-50 text-green-600 border border-green-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Dikonfirmasi</span>;
             case 'cancelled':
                 return <span className="bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">Dibatalkan</span>;
             default:
@@ -144,7 +144,7 @@ export default function ProfilePage() {
                     {/* Left: User Profile Details Card */}
                     <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
                         <div className="flex items-center space-x-4 pb-6 border-b border-slate-100">
-                            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold uppercase shadow-sm">
+                            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center text-white text-xl font-bold uppercase shadow-sm">
                                 {user.name?.charAt(0) || 'U'}
                             </div>
                             <div>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
 
                             {bookingsLoading ? (
                                 <div className="py-12 flex justify-center">
-                                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
                                 </div>
                             ) : bookings.length === 0 ? (
                                 <div className="text-center py-12 space-y-4">
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                                     </div>
                                     <button 
                                         onClick={() => router.push('/villas')}
-                                        className="py-2.5 px-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer inline-flex items-center space-x-1.5"
+                                        className="py-2.5 px-5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer inline-flex items-center space-x-1.5"
                                     >
                                         <span>Cari Villa Sekarang</span>
                                         <ArrowRight className="w-3.5 h-3.5" />
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                                                         </div>
                                                         <div>
                                                             <span className="text-[8px] text-slate-400 block font-black uppercase tracking-widest">Total Biaya</span>
-                                                            <span className="text-blue-600 font-bold">{formatPrice(booking.total_amount)}</span>
+                                                            <span className="text-green-600 font-bold">{formatPrice(booking.total_amount)}</span>
                                                         </div>
                                                     </div>
 
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                                                                             toast.error('Gagal membuat invoice PDF.');
                                                                         }
                                                                     }}
-                                                                    className="py-2 px-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 active:scale-95 text-white font-bold rounded-xl text-xs shadow-sm hover:shadow transition-all cursor-pointer flex items-center space-x-1.5"
+                                                                    className="py-2 px-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 active:scale-95 text-white font-bold rounded-xl text-xs shadow-sm hover:shadow transition-all cursor-pointer flex items-center space-x-1.5"
                                                                     title="Download Invoice"
                                                                 >
                                                                     <Download className="w-3.5 h-3.5" />

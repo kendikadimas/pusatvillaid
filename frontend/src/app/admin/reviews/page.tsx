@@ -232,7 +232,7 @@ export default function AdminReviewsPage() {
                 </div>
                 <button
                     onClick={openCreateModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-all duration-300 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
+                    className="bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-all duration-300 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
                     title="Tambah Ulasan Manual"
                 >
                     <Plus className="w-4 h-4" />
@@ -246,7 +246,7 @@ export default function AdminReviewsPage() {
                     onClick={() => { setStatus('pending'); setCurrentPage(1); }}
                     className={`flex-1 sm:flex-none px-4 py-2 rounded-[8px] text-xs font-bold transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer text-center whitespace-nowrap active:scale-95 ${
                         status === 'pending' 
-                            ? 'bg-white text-blue-600 border border-[#dddddd] font-extrabold' 
+                            ? 'bg-white text-green-600 border border-[#dddddd] font-extrabold' 
                             : 'text-slate-500 hover:text-[#222222]'
                     }`}
                 >
@@ -256,7 +256,7 @@ export default function AdminReviewsPage() {
                     onClick={() => { setStatus('approved'); setCurrentPage(1); }}
                     className={`flex-1 sm:flex-none px-4 py-2 rounded-[8px] text-xs font-bold transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer text-center whitespace-nowrap active:scale-95 ${
                         status === 'approved' 
-                            ? 'bg-white text-blue-600 border border-[#dddddd] font-extrabold' 
+                            ? 'bg-white text-green-600 border border-[#dddddd] font-extrabold' 
                             : 'text-slate-500 hover:text-[#222222]'
                     }`}
                 >
@@ -266,7 +266,7 @@ export default function AdminReviewsPage() {
                     onClick={() => { setStatus('all'); setCurrentPage(1); }}
                     className={`flex-1 sm:flex-none px-4 py-2 rounded-[8px] text-xs font-bold transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer text-center whitespace-nowrap active:scale-95 ${
                         status === 'all' 
-                            ? 'bg-white text-blue-600 border border-[#dddddd] font-extrabold' 
+                            ? 'bg-white text-green-600 border border-[#dddddd] font-extrabold' 
                             : 'text-slate-500 hover:text-[#222222]'
                     }`}
                 >
@@ -278,7 +278,7 @@ export default function AdminReviewsPage() {
             <div className="space-y-4">
                 {loading ? (
                     <div className="flex flex-col justify-center items-center py-40 space-y-4 bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)]">
-                        <Loader2 className="w-9 h-9 animate-spin text-blue-500" />
+                        <Loader2 className="w-9 h-9 animate-spin text-green-500" />
                         <p className="text-slate-500 text-xs font-semibold animate-pulse">Memuat ulasan...</p>
                     </div>
                 ) : reviews.length === 0 ? (
@@ -299,7 +299,7 @@ export default function AdminReviewsPage() {
                                     {r.guest_avatar ? (
                                         <img src={r.guest_avatar} alt={r.guest_name} className="w-11 h-11 rounded-2xl object-cover flex-shrink-0 border border-[#dddddd]" />
                                     ) : (
-                                        <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 font-extrabold flex items-center justify-center text-xs flex-shrink-0 uppercase">
+                                        <div className="w-11 h-11 rounded-2xl bg-green-50 border border-green-100 text-green-600 font-extrabold flex items-center justify-center text-xs flex-shrink-0 uppercase">
                                             {r.guest_name.substring(0, 2)}
                                         </div>
                                     )}
@@ -337,7 +337,7 @@ export default function AdminReviewsPage() {
                             <div className="flex items-center justify-end md:flex-col md:items-end gap-2.5 flex-wrap border-t md:border-t-0 border-[#dddddd] pt-4 md:pt-0">
                                 <button
                                     onClick={() => openEditModal(r)}
-                                    className="bg-white hover:bg-[#f7f7f7] border border-[#dddddd] text-[#222222] font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    className="bg-white hover:bg-[#f7f7f7] border border-[#dddddd] text-[#222222] font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                                     aria-label="Edit ulasan"
                                 >
                                     <Eye className="w-3.5 h-3.5 text-slate-500" />
@@ -346,7 +346,7 @@ export default function AdminReviewsPage() {
                                 {!r.is_approved && (
                                     <button
                                         onClick={() => handleApprove(r.id)}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        className="bg-green-500 hover:bg-green-600 text-white font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                                         aria-label="Setujui ulasan"
                                     >
                                         <ThumbsUp className="w-3.5 h-3.5" />
@@ -355,7 +355,7 @@ export default function AdminReviewsPage() {
                                 )}
                                 <button
                                     onClick={() => handleDelete(r.id)}
-                                    className="bg-white hover:bg-blue-50 border border-[#dddddd] hover:border-blue-200 text-blue-600 hover:text-blue-700 font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    className="bg-white hover:bg-green-50 border border-[#dddddd] hover:border-green-200 text-green-600 hover:text-green-700 font-extrabold text-[11px] p-2 sm:py-2 sm:px-3.5 rounded-[8px] flex items-center space-x-1.5 cursor-pointer transition-all duration-200 active:scale-95  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                                     aria-label={r.is_approved ? 'Hapus ulasan' : 'Tolak ulasan'}
                                 >
                                     <Trash className="w-3.5 h-3.5" />
@@ -373,7 +373,7 @@ export default function AdminReviewsPage() {
                     <button
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
-                        className="p-2.5 rounded-[8px] border border-[#dddddd] text-slate-500 hover:bg-[#f7f7f7] hover:text-[#222222] disabled:opacity-40 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        className="p-2.5 rounded-[8px] border border-[#dddddd] text-slate-500 hover:bg-[#f7f7f7] hover:text-[#222222] disabled:opacity-40 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                         aria-label="Halaman sebelumnya"
                     >
                         <ChevronLeft className="w-4 h-4" />
@@ -382,9 +382,9 @@ export default function AdminReviewsPage() {
                         <button
                             key={i}
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`w-9 h-9 rounded-[8px] text-xs font-bold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                            className={`w-9 h-9 rounded-[8px] text-xs font-bold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                                 currentPage === i + 1
-                                    ? 'bg-blue-600 text-white border border-blue-600 '
+                                    ? 'bg-green-600 text-white border border-green-600 '
                                     : 'border border-[#dddddd] text-slate-500 hover:bg-[#f7f7f7] hover:text-[#222222]'
                              }`}
                         >
@@ -394,7 +394,7 @@ export default function AdminReviewsPage() {
                     <button
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
-                        className="p-2.5 rounded-[8px] border border-[#dddddd] text-slate-500 hover:bg-[#f7f7f7] hover:text-[#222222] disabled:opacity-40 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        className="p-2.5 rounded-[8px] border border-[#dddddd] text-slate-500 hover:bg-[#f7f7f7] hover:text-[#222222] disabled:opacity-40 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                         aria-label="Halaman berikutnya"
                     >
                         <ChevronRight className="w-4 h-4" />
@@ -409,8 +409,8 @@ export default function AdminReviewsPage() {
                         {/* Modal Header */}
                         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-[#dddddd] bg-[#f7f7f7] shrink-0">
                             <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                                    <Star className="w-4 h-4 text-blue-600" />
+                                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                                    <Star className="w-4 h-4 text-green-600" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-[#222222]">
@@ -448,7 +448,7 @@ export default function AdminReviewsPage() {
                                                     }}
                                                     onFocus={() => setShowVillaSuggestions(true)}
                                                     onBlur={() => setTimeout(() => setShowVillaSuggestions(false), 200)}
-                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                                 />
                                                 {showVillaSuggestions && villaSearch.trim() && filteredVillas.length > 0 && (
                                                     <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-36 overflow-y-auto">
@@ -461,7 +461,7 @@ export default function AdminReviewsPage() {
                                                                     setFormVillaId(String(v.id));
                                                                     setShowVillaSuggestions(false);
                                                                 }}
-                                                                className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 font-semibold text-slate-700 border-b border-slate-50 last:border-0"
+                                                                className="w-full text-left px-3 py-2 text-xs hover:bg-green-50 font-semibold text-slate-700 border-b border-slate-50 last:border-0"
                                                             >
                                                                 {v.name}
                                                                 <span className="text-slate-400 ml-1 font-normal">({v.location})</span>
@@ -482,7 +482,7 @@ export default function AdminReviewsPage() {
                                                 placeholder="Nama tamu"
                                                 value={formGuestName}
                                                 onChange={(e) => setFormGuestName(e.target.value)}
-                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                             />
                                         </div>
 
@@ -493,7 +493,7 @@ export default function AdminReviewsPage() {
                                                     required
                                                     value={formRating}
                                                     onChange={(e) => setFormRating(e.target.value)}
-                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                                 >
                                                     <option value="5">★ 5</option>
                                                     <option value="4">★ 4</option>
@@ -508,7 +508,7 @@ export default function AdminReviewsPage() {
                                                     type="date" required
                                                     value={formCreatedAt}
                                                     onChange={(e) => setFormCreatedAt(e.target.value)}
-                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                                 />
                                             </div>
                                         </div>
@@ -520,7 +520,7 @@ export default function AdminReviewsPage() {
                                                 placeholder="Contoh: Tamu Airbnb"
                                                 value={formGuestSubtitle}
                                                 onChange={(e) => setFormGuestSubtitle(e.target.value)}
-                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                             />
                                         </div>
 
@@ -547,7 +547,7 @@ export default function AdminReviewsPage() {
                                                         placeholder="atau URL..."
                                                         value={formGuestAvatar}
                                                         onChange={(e) => setFormGuestAvatar(e.target.value)}
-                                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-2.5 py-1.5 text-[10px] font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                                        className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-2.5 py-1.5 text-[10px] font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                                     />
                                                 </div>
                                             </div>
@@ -558,7 +558,7 @@ export default function AdminReviewsPage() {
                                                 type="checkbox" id="formIsApproved"
                                                 checked={formIsApproved}
                                                 onChange={(e) => setFormIsApproved(e.target.checked)}
-                                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                                                className="w-4 h-4 text-green-600 rounded focus:ring-green-500 cursor-pointer"
                                             />
                                             <label htmlFor="formIsApproved" className="text-[10px] font-semibold text-slate-600 cursor-pointer select-none">
                                                 Setujui langsung (approved)
@@ -575,7 +575,7 @@ export default function AdminReviewsPage() {
                                             placeholder="Tulis ulasan tamu di sini..."
                                             value={formComment}
                                             onChange={(e) => setFormComment(e.target.value)}
-                                            className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 h-full min-h-[220px]"
+                                            className="w-full bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 h-full min-h-[220px]"
                                         />
                                     </div>
                                 </div>
@@ -593,7 +593,7 @@ export default function AdminReviewsPage() {
                                 <button 
                                     type="submit"
                                     disabled={saving}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold py-2 px-5 transition-all flex items-center space-x-1.5 disabled:opacity-50 active:scale-95 cursor-pointer"
+                                    className="bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold py-2 px-5 transition-all flex items-center space-x-1.5 disabled:opacity-50 active:scale-95 cursor-pointer"
                                 >
                                     {saving ? (
                                         <>

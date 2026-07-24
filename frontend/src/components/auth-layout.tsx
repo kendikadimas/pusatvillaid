@@ -19,8 +19,8 @@ export default function AuthLayout({
             >
                 {/* Dark glassmorphic backdrop for contrast */}
                 <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[1px]" />
-                <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
-                <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
+                <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-green-500/10 blur-3xl" />
+                <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-green-500/10 blur-3xl" />
 
                 {/* Grid pattern overlay */}
                 <div
@@ -44,7 +44,7 @@ export default function AuthLayout({
                     <h2 className="font-serif text-4xl md:text-5xl font-medium leading-tight tracking-tight text-white">
                         Temukan villa
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-sky-200">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-green-200">
                             impianmu
                         </span>
                     </h2>
@@ -82,10 +82,10 @@ export default function AuthLayout({
                 <div className="w-full max-w-sm space-y-8">
                     <div className="flex flex-col items-center gap-4 lg:hidden">
                         <Link href="/" className="flex flex-col items-center gap-2 font-medium">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-500/10">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 shadow-lg shadow-green-500/10">
                                 <AppLogoIcon className="size-7 fill-current text-white" />
                             </div>
-                            <span className="text-lg font-sans font-black tracking-tight text-blue-600 mt-1">pusatvilla.id</span>
+                            <span className="text-lg font-sans font-black tracking-tight text-green-600 mt-1">pusatvilla.id</span>
                         </Link>
                     </div>
 

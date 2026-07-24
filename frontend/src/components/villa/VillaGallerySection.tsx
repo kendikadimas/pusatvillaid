@@ -75,7 +75,7 @@ export default function VillaGallerySection({ photos, villaName }: VillaGalleryS
                     </div>
                     <div className="flex justify-center space-x-2 overflow-x-auto max-w-2xl mx-auto pb-4 scrollbar-none">
                         {photos.map((ph, idx) => (
-                            <img key={idx} src={getPhotoUrl(ph)} alt="Thumb" onClick={() => setCurrentImageIndex(idx)} className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-blue-500 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'}`} />
+                            <img key={idx} src={getPhotoUrl(ph)} alt="Thumb" onClick={() => setCurrentImageIndex(idx)} className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-green-500 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'}`} />
                         ))}
                     </div>
                 </div>

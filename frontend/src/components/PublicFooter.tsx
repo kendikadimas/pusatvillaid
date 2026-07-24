@@ -16,13 +16,13 @@ export default function PublicFooter() {
     const whatsappDisplay = formatWhatsAppDisplay(whatsappNumber);
     
     return (
-        <footer className="bg-gradient-to-b from-blue-800 to-blue-950 text-white">
+        <footer className="bg-gradient-to-b from-green-800 to-green-950 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-16 sm:py-20">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                     {/* Brand */}
                     <div className="space-y-4">
                         <Link href="/" className="flex items-center space-x-2">
-                            <svg className="w-9 h-9 fill-current text-blue-300" viewBox="0 0 32 32">
+                            <svg className="w-9 h-9 fill-current text-green-300" viewBox="0 0 32 32">
                                 <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
                                 <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
                             </svg>
@@ -30,33 +30,33 @@ export default function PublicFooter() {
                                 {settings.settings_prop_name}
                             </span>
                         </Link>
-                        <p className="text-sm leading-relaxed text-blue-200/80 max-w-xs">
+                        <p className="text-sm leading-relaxed text-green-200/80 max-w-xs">
                             Platform persewaan villa premium terpercaya di Indonesia. Akomodasi berkualitas dengan reservasi modern, instan, dan aman.
                         </p>
                     </div>
 
                     {/* Jelajahi */}
                     <div className="space-y-4">
-                        <h3 className="text-xs font-bold text-blue-300 uppercase tracking-wider">Jelajahi</h3>
+                        <h3 className="text-xs font-bold text-green-300 uppercase tracking-wider">Jelajahi</h3>
                         <ul className="space-y-2.5">
-                            <li><Link href="/villas" className="text-sm text-blue-200/80 hover:text-white transition-colors">Cari Villa</Link></li>
-                            <li><Link href="/villas?location=Bogor" className="text-sm text-blue-200/80 hover:text-white transition-colors">Villa di Puncak</Link></li>
-                            <li><Link href="/villas?location=Bandung" className="text-sm text-blue-200/80 hover:text-white transition-colors">Villa di Bandung</Link></li>
-                            <li><Link href="/villas?location=Yogyakarta" className="text-sm text-blue-200/80 hover:text-white transition-colors">Villa di Yogyakarta</Link></li>
-                            <li><Link href="/villas?location=Bali" className="text-sm text-blue-200/80 hover:text-white transition-colors">Villa di Bali</Link></li>
+                            <li><Link href="/villas" className="text-sm text-green-200/80 hover:text-white transition-colors">Cari Villa</Link></li>
+                            <li><Link href="/villas?location=Bogor" className="text-sm text-green-200/80 hover:text-white transition-colors">Villa di Puncak</Link></li>
+                            <li><Link href="/villas?location=Bandung" className="text-sm text-green-200/80 hover:text-white transition-colors">Villa di Bandung</Link></li>
+                            <li><Link href="/villas?location=Yogyakarta" className="text-sm text-green-200/80 hover:text-white transition-colors">Villa di Yogyakarta</Link></li>
+                            <li><Link href="/villas?location=Bali" className="text-sm text-green-200/80 hover:text-white transition-colors">Villa di Bali</Link></li>
                         </ul>
                     </div>
 
                     {/* Panduan */}
                     <div className="space-y-4">
-                        <h3 className="text-xs font-bold text-blue-300 uppercase tracking-wider">Panduan</h3>
+                        <h3 className="text-xs font-bold text-green-300 uppercase tracking-wider">Panduan</h3>
                         <ul className="space-y-2.5">
                             <li>
                                 <a
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20cara%20memesan%20villa`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-sm text-green-200/80 hover:text-white transition-colors"
                                 >
                                     Cara Memesan
                                 </a>
@@ -66,7 +66,7 @@ export default function PublicFooter() {
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20syarat%20dan%20ketentuan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-sm text-green-200/80 hover:text-white transition-colors"
                                 >
                                     Syarat & Ketentuan
                                 </a>
@@ -76,7 +76,7 @@ export default function PublicFooter() {
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20privasi`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-sm text-green-200/80 hover:text-white transition-colors"
                                 >
                                     Kebijakan Privasi
                                 </a>
@@ -86,7 +86,7 @@ export default function PublicFooter() {
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20pembatalan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-sm text-green-200/80 hover:text-white transition-colors"
                                 >
                                     Kebijakan Pembatalan
                                 </a>
@@ -96,7 +96,7 @@ export default function PublicFooter() {
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20butuh%20bantuan`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-sm text-green-200/80 hover:text-white transition-colors"
                                 >
                                     Pusat Bantuan
                                 </a>
@@ -106,23 +106,23 @@ export default function PublicFooter() {
 
                     {/* Kontak */}
                     <div className="space-y-4">
-                        <h3 className="text-xs font-bold text-blue-300 uppercase tracking-wider">Hubungi Kami</h3>
-                        <ul className="space-y-3 text-sm text-blue-200/80">
+                        <h3 className="text-xs font-bold text-green-300 uppercase tracking-wider">Hubungi Kami</h3>
+                        <ul className="space-y-3 text-sm text-green-200/80">
                             <li className="flex items-start space-x-2.5">
-                                <MapPin className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <MapPin className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
                                 <span>{settings.settings_address}</span>
                             </li>
                             <li className="flex items-start space-x-2.5">
-                                <Mail className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <Mail className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
                                 <span>{settings.settings_email}</span>
                             </li>
                             <li className="flex items-start space-x-2.5">
-                                <WhatsAppIcon className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <WhatsAppIcon className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
                                 <a
                                     href={`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20villa`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-blue-200/80 hover:text-white transition-colors"
+                                    className="text-green-200/80 hover:text-white transition-colors"
                                 >
                                     {whatsappDisplay}
                                 </a>
@@ -133,9 +133,9 @@ export default function PublicFooter() {
             </div>
 
             {/* Bottom bar */}
-            <div className="border-t border-blue-700/50">
+            <div className="border-t border-green-700/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                    <p className="text-blue-300">
+                    <p className="text-green-300">
                         &copy; {new Date().getFullYear()} {settings.settings_prop_name} &mdash; Semua hak cipta dilindungi.
                     </p>
                 </div>

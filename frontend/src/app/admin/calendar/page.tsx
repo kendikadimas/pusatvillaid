@@ -291,7 +291,7 @@ export default function AdminCalendarPage() {
     if (loadingVillas) {
         return (
             <div className="flex justify-center items-center py-32">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
         );
     }
@@ -316,7 +316,7 @@ export default function AdminCalendarPage() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Cari nama atau lokasi..."
-                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] pl-9 pr-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] pl-9 pr-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold"
                             />
                             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
                             {searchQuery && (
@@ -347,12 +347,12 @@ export default function AdminCalendarPage() {
                                         }}
                                         className={`w-full flex items-center space-x-3 p-3 rounded-[8px] border text-left transition-all duration-300 active:scale-[0.98] cursor-pointer ${
                                             isSelected 
-                                                ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20 font-bold' 
+                                                ? 'border-green-500 bg-green-50/20 ring-1 ring-green-500/20 font-bold' 
                                                 : 'border-[#dddddd] bg-slate-50/50 hover:bg-slate-50 hover:border-[#dddddd]'
                                         }`}
                                     >
                                         <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${
-                                            isSelected ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-500'
+                                            isSelected ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'
                                         }`}>
                                             <CalendarIcon className="w-4 h-4" />
                                         </div>
@@ -373,7 +373,7 @@ export default function AdminCalendarPage() {
                     {/* Calendar Nav bar */}
                     <div className="flex items-center justify-between border-b border-[#dddddd] pb-3 flex-wrap gap-2">
                         <div className="flex items-center space-x-2">
-                            <CalendarIcon className="w-4.5 h-4.5 text-blue-600 animate-[pulse_3s_infinite]" />
+                            <CalendarIcon className="w-4.5 h-4.5 text-green-600 animate-[pulse_3s_infinite]" />
                             <h2 className="text-base font-bold text-slate-800 capitalize">
                                 {format(currentMonth, 'MMMM yyyy', { locale: localeID })}
                             </h2>
@@ -384,7 +384,7 @@ export default function AdminCalendarPage() {
                                 onClick={toggleBulkSelectMode}
                                 className={`text-[10px] font-bold px-3 py-1.5 rounded-[8px] border transition-all duration-300 active:scale-[0.98] cursor-pointer ${
                                     isBulkSelectMode 
-                                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
+                                        ? 'bg-green-600 border-green-600 text-white shadow-sm' 
                                         : 'bg-white border-[#dddddd] text-slate-700 hover:bg-slate-50'
                                 }`}
                             >
@@ -419,7 +419,7 @@ export default function AdminCalendarPage() {
                     {/* Calendar Days */}
                     {loadingData ? (
                         <div className="flex justify-center items-center py-24">
-                            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                            <Loader2 className="w-6 h-6 animate-spin text-green-500" />
                         </div>
                     ) : (
                         <div className="grid grid-cols-7 gap-1">
@@ -458,7 +458,7 @@ export default function AdminCalendarPage() {
                                     textClass = "text-white font-extrabold";
                                     labelText = matchedBooking.guest_name;
                                     if (matchedBooking.status === 'confirmed') {
-                                        cellClass = "bg-blue-500 border-blue-500";
+                                        cellClass = "bg-green-500 border-green-500";
                                     } else if (matchedBooking.status === 'pending') {
                                         cellClass = "bg-amber-500 border-amber-500";
                                     } else if (matchedBooking.status === 'completed') {
@@ -511,14 +511,14 @@ export default function AdminCalendarPage() {
                                         key={dateStr}
                                         onClick={handleCellClick}
                                         className={`h-14 sm:h-16 rounded-[8px] p-1.5 flex flex-col justify-between cursor-pointer transition-all duration-300 active:scale-[0.98] ease-[cubic-bezier(0.32,0.72,0,1)] relative overflow-hidden border ${cellClass} ${
-                                            isBulkSelectMode && isChecked ? 'ring-2 ring-blue-500 ring-offset-1 z-10' : ''
+                                            isBulkSelectMode && isChecked ? 'ring-2 ring-green-500 ring-offset-1 z-10' : ''
                                         }`}
                                     >
                                         <div className="flex items-center justify-between w-full">
                                             <span className={`text-[10px] sm:text-xs font-sans font-bold ${textClass}`}>{dayNum}</span>
                                             {isBulkSelectMode && !matchedBooking && (
                                                 <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
-                                                    isChecked ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300'
+                                                    isChecked ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-slate-300'
                                                 }`}>
                                                     {isChecked && <Check className="w-2.5 h-2.5" />}
                                                 </div>
@@ -538,7 +538,7 @@ export default function AdminCalendarPage() {
                     {/* Legend bar */}
                     <div className="flex flex-wrap items-center justify-start gap-3 text-[8px] font-bold text-slate-500 border-t border-[#dddddd] pt-3 uppercase tracking-wider">
                         <div className="flex items-center space-x-1.5">
-                            <div className="w-2.5 h-2.5 bg-blue-500 rounded-[4px]" />
+                            <div className="w-2.5 h-2.5 bg-green-500 rounded-[4px]" />
                             <span>Confirmed</span>
                         </div>
                         <div className="flex items-center space-x-1.5">
@@ -562,7 +562,7 @@ export default function AdminCalendarPage() {
                         <div className="bg-white rounded-[14px] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] border border-[#dddddd] space-y-4 animate-in fade-in slide-in-from-right duration-250">
                             <div className="flex items-center justify-between border-b border-[#dddddd] pb-3">
                                 <span className="text-xs font-bold text-slate-800">Aksi Massal</span>
-                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">
+                                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
                                     {selectedDates.length} Terpilih
                                 </span>
                             </div>
@@ -598,7 +598,7 @@ export default function AdminCalendarPage() {
                                                 placeholder="Contoh: Maintenance Bulanan"
                                                 value={bulkBlockReason}
                                                 onChange={(e) => setBulkBlockReason(e.target.value)}
-                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold"
                                             />
                                         </div>
 
@@ -646,7 +646,7 @@ export default function AdminCalendarPage() {
                             {selectedSlot.type === 'booking' && (
                                 <div className="space-y-4 text-xs">
                                     <div className="flex items-center space-x-2 font-bold text-slate-850 border-b border-[#dddddd] pb-2.5">
-                                        <User className="w-4 h-4 text-blue-500" />
+                                        <User className="w-4 h-4 text-green-500" />
                                         <span className="text-slate-700">Rincian Tamu</span>
                                     </div>
                                     <div className="space-y-3">
@@ -684,7 +684,7 @@ export default function AdminCalendarPage() {
                                         </div>
                                         <Link
                                             href={`/admin/bookings/detail?id=${selectedSlot.data.id}`}
-                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-extrabold py-2.5 rounded-[8px] text-center flex items-center justify-center space-x-1.5 mt-4 text-xs active:scale-[0.98] transition-all duration-300"
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-2.5 rounded-[8px] text-center flex items-center justify-center space-x-1.5 mt-4 text-xs active:scale-[0.98] transition-all duration-300"
                                         >
                                             <Eye className="w-4 h-4" />
                                             <span>Lihat Selengkapnya</span>
@@ -713,7 +713,7 @@ export default function AdminCalendarPage() {
                                         
                                         <button
                                             onClick={() => handleUnblockDate(selectedSlot.data.id)}
-                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-extrabold py-2.5 rounded-[8px] text-center flex items-center justify-center space-x-1.5 mt-6 cursor-pointer active:scale-[0.98] transition-all duration-300"
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-2.5 rounded-[8px] text-center flex items-center justify-center space-x-1.5 mt-6 cursor-pointer active:scale-[0.98] transition-all duration-300"
                                         >
                                             <X className="w-4 h-4" />
                                             <span>Buka Kunci Tanggal</span>
@@ -725,7 +725,7 @@ export default function AdminCalendarPage() {
                             {selectedSlot.type === 'free' && (
                                 <div className="space-y-4 text-xs">
                                     <div className="flex items-center space-x-2 font-bold text-slate-855 border-b border-[#dddddd] pb-2.5">
-                                        <Lock className="w-4 h-4 text-blue-500" />
+                                        <Lock className="w-4 h-4 text-green-500" />
                                         <span className="text-slate-700">Blokir Tanggal Sewa</span>
                                     </div>
                                     <div className="space-y-3">
@@ -745,7 +745,7 @@ export default function AdminCalendarPage() {
                                                     placeholder="Contoh: Perbaikan AC"
                                                     value={quickBlockReason}
                                                     onChange={(e) => setQuickBlockReason(e.target.value)}
-                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                    className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold"
                                                 />
                                             </div>
                                             
@@ -764,7 +764,7 @@ export default function AdminCalendarPage() {
                         </div>
                     ) : (
                         <div className="bg-white rounded-[14px] p-5 text-center py-12 shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] border border-[#dddddd] space-y-3 text-xs leading-normal text-slate-500 animate-in fade-in duration-200">
-                            <Info className="w-8 h-8 text-blue-500/50 mx-auto" />
+                            <Info className="w-8 h-8 text-green-500/50 mx-auto" />
                             <p className="font-extrabold text-slate-850 text-sm">Detail Ketersediaan</p>
                             <p className="px-2 leading-relaxed">Klik pada baris tanggal di kalender untuk menampilkan detail reservasi tamu, rincian pemeliharaan, atau memblokir tanggal secara langsung.</p>
                         </div>

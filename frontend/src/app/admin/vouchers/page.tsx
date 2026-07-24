@@ -218,7 +218,7 @@ export default function AdminVouchersPage() {
                 </div>
                 <button
                     onClick={openCreateModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-colors flex items-center justify-center space-x-1.5 cursor-pointer shrink-0"
+                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-colors flex items-center justify-center space-x-1.5 cursor-pointer shrink-0"
                 >
                     <Plus className="w-4.5 h-4.5" />
                     <span className="hidden sm:inline">Tambah Voucher Baru</span>
@@ -231,13 +231,13 @@ export default function AdminVouchersPage() {
                     <LoadingSpinner fullPage={false} />
                 ) : vouchers.length === 0 ? (
                     <div className="py-20 text-center">
-                        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Tag className="w-7 h-7 text-blue-500" />
+                        <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Tag className="w-7 h-7 text-green-500" />
                         </div>
                         <p className="text-slate-500 text-sm mb-4">Belum ada voucher diskon.</p>
                         <button
                             onClick={openCreateModal}
-                            className="inline-flex bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-[8px] cursor-pointer"
+                            className="inline-flex bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-[8px] cursor-pointer"
                         >
                             Buat Voucher Pertama
                         </button>
@@ -252,8 +252,8 @@ export default function AdminVouchersPage() {
                                     <div key={v.id} className="p-4 space-y-3">
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-10 h-10 bg-blue-50 rounded-[10px] flex items-center justify-center">
-                                                    <Tag className="w-5 h-5 text-blue-600" />
+                                                <div className="w-10 h-10 bg-green-50 rounded-[10px] flex items-center justify-center">
+                                                    <Tag className="w-5 h-5 text-green-600" />
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-[#222222] text-sm font-mono">{v.code}</p>
@@ -268,7 +268,7 @@ export default function AdminVouchersPage() {
                                         </div>
 
                                         <div className="flex items-center gap-3 text-xs">
-                                            <span className="font-bold text-blue-600">
+                                            <span className="font-bold text-green-600">
                                                 {v.discount_type === 'percentage'
                                                     ? `${v.discount_value}%`
                                                     : formatPrice(v.discount_value)}
@@ -300,7 +300,7 @@ export default function AdminVouchersPage() {
                                                 title={v.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                                             >
                                                 {v.is_active ? (
-                                                    <ToggleRight className="w-9 h-6 text-blue-600" />
+                                                    <ToggleRight className="w-9 h-6 text-green-600" />
                                                 ) : (
                                                     <ToggleLeft className="w-9 h-6 text-slate-300" />
                                                 )}
@@ -315,10 +315,10 @@ export default function AdminVouchersPage() {
                                                 </button>
                                                 <button
                                                     onClick={() => openEditModal(v)}
-                                                    className="p-1.5 rounded-[8px] bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all active:scale-90 cursor-pointer"
+                                                    className="p-1.5 rounded-[8px] bg-green-50 hover:bg-green-100 border border-green-200 transition-all active:scale-90 cursor-pointer"
                                                     title="Edit"
                                                 >
-                                                    <Edit className="w-3.5 h-3.5 text-blue-600" />
+                                                    <Edit className="w-3.5 h-3.5 text-green-600" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(v)}
@@ -356,8 +356,8 @@ export default function AdminVouchersPage() {
                                             <tr key={v.id} className="border-b border-[#dddddd] hover:bg-[#f7f7f7] transition-colors">
                                                 <td className="py-4 px-6">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-8 h-8 bg-blue-50 rounded-[8px] flex items-center justify-center">
-                                                            <Tag className="w-4 h-4 text-blue-600" />
+                                                        <div className="w-8 h-8 bg-green-50 rounded-[8px] flex items-center justify-center">
+                                                            <Tag className="w-4 h-4 text-green-600" />
                                                         </div>
                                                         <span className="font-bold text-[#222222] font-mono text-sm">{v.code}</span>
                                                     </div>
@@ -366,7 +366,7 @@ export default function AdminVouchersPage() {
                                                     <span className="text-sm text-slate-600">{v.description || '—'}</span>
                                                 </td>
                                                 <td className="py-4 px-6">
-                                                    <span className="font-bold text-blue-600">
+                                                    <span className="font-bold text-green-600">
                                                         {v.discount_type === 'percentage' ? `${v.discount_value}%` : formatPrice(v.discount_value)}
                                                     </span>
                                                     {v.discount_type === 'percentage' && v.max_discount && (
@@ -414,7 +414,7 @@ export default function AdminVouchersPage() {
                                                             title={v.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                                                         >
                                                             {v.is_active ? (
-                                                                <ToggleRight className="w-4 h-4 text-blue-600" />
+                                                                <ToggleRight className="w-4 h-4 text-green-600" />
                                                             ) : (
                                                                 <ToggleLeft className="w-4 h-4 text-slate-400" />
                                                             )}
@@ -428,10 +428,10 @@ export default function AdminVouchersPage() {
                                                         </button>
                                                         <button
                                                             onClick={() => openEditModal(v)}
-                                                            className="p-1.5 rounded-[8px] bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all active:scale-90 cursor-pointer"
+                                                            className="p-1.5 rounded-[8px] bg-green-50 hover:bg-green-100 border border-green-200 transition-all active:scale-90 cursor-pointer"
                                                             title="Edit"
                                                         >
-                                                            <Edit className="w-3.5 h-3.5 text-blue-600" />
+                                                            <Edit className="w-3.5 h-3.5 text-green-600" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(v)}
@@ -458,8 +458,8 @@ export default function AdminVouchersPage() {
                     <div className="bg-white rounded-[20px] shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-6 border-b border-[#dddddd]">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-50 rounded-[10px] flex items-center justify-center">
-                                    <Gift className="w-5 h-5 text-blue-600" />
+                                <div className="w-10 h-10 bg-green-50 rounded-[10px] flex items-center justify-center">
+                                    <Gift className="w-5 h-5 text-green-600" />
                                 </div>
                                 <div>
                                     <h2 className="font-bold text-[#222222] text-lg">
@@ -489,7 +489,7 @@ export default function AdminVouchersPage() {
                                     value={formCode}
                                     onChange={(e) => setFormCode(e.target.value.toUpperCase())}
                                     placeholder="CONTOH50"
-                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                                 {formErrors.code && <p className="text-red-500 text-[10px] mt-1 font-bold">{formErrors.code}</p>}
                             </div>
@@ -502,7 +502,7 @@ export default function AdminVouchersPage() {
                                     value={formDescription}
                                     onChange={(e) => setFormDescription(e.target.value)}
                                     placeholder="Diskon spesial untuk pengguna baru"
-                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                             </div>
 
@@ -515,7 +515,7 @@ export default function AdminVouchersPage() {
                                     <select
                                         value={formDiscountType}
                                         onChange={(e) => setFormDiscountType(e.target.value as 'percentage' | 'fixed')}
-                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                     >
                                         <option value="percentage">Persentase (%)</option>
                                         <option value="fixed">Nominal (Rp)</option>
@@ -532,7 +532,7 @@ export default function AdminVouchersPage() {
                                             onChange={(e) => setFormDiscountValue(e.target.value)}
                                             placeholder={formDiscountType === 'percentage' ? '10' : '50000'}
                                             min="1"
-                                            className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                            className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                         />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-bold">
                                             {formDiscountType === 'percentage' ? '%' : 'Rp'}
@@ -554,7 +554,7 @@ export default function AdminVouchersPage() {
                                         onChange={(e) => setFormMaxDiscount(e.target.value)}
                                         placeholder="100000"
                                         min="0"
-                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                     />
                                     <p className="text-[10px] text-slate-400 mt-1">Batas maksimal nominal diskon. Biarkan kosong untuk tanpa batas.</p>
                                 </div>
@@ -571,7 +571,7 @@ export default function AdminVouchersPage() {
                                     onChange={(e) => setFormMinBooking(e.target.value)}
                                     placeholder="200000"
                                     min="0"
-                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                             </div>
 
@@ -586,7 +586,7 @@ export default function AdminVouchersPage() {
                                     onChange={(e) => setFormUsageLimit(e.target.value)}
                                     placeholder="100"
                                     min="1"
-                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                 />
                             </div>
 
@@ -600,7 +600,7 @@ export default function AdminVouchersPage() {
                                         type="datetime-local"
                                         value={formValidFrom}
                                         onChange={(e) => setFormValidFrom(e.target.value)}
-                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                     />
                                 </div>
                                 <div>
@@ -611,7 +611,7 @@ export default function AdminVouchersPage() {
                                         type="datetime-local"
                                         value={formValidUntil}
                                         onChange={(e) => setFormValidUntil(e.target.value)}
-                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className="w-full border border-[#dddddd] rounded-[10px] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                                     />
                                     {formErrors.valid_until && <p className="text-red-500 text-[10px] mt-1 font-bold">{formErrors.valid_until}</p>}
                                 </div>
@@ -629,7 +629,7 @@ export default function AdminVouchersPage() {
                                     className="cursor-pointer active:scale-90 transition-transform"
                                 >
                                     {formIsActive ? (
-                                        <ToggleRight className="w-10 h-6 text-blue-600" />
+                                        <ToggleRight className="w-10 h-6 text-green-600" />
                                     ) : (
                                         <ToggleLeft className="w-10 h-6 text-slate-300" />
                                     )}
@@ -647,7 +647,7 @@ export default function AdminVouchersPage() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="px-6 py-2.5 rounded-[10px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                                className="px-6 py-2.5 rounded-[10px] text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
                                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                                 {editingVoucher ? 'Simpan Perubahan' : 'Buat Voucher'}

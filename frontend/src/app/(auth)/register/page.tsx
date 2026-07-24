@@ -78,7 +78,7 @@ function RegisterContent() {
                                 autoComplete="name"
                                 name="name"
                                 placeholder="Nama Lengkap Anda"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
                             />
                         </div>
                         <InputError message={errors.name} />
@@ -101,7 +101,7 @@ function RegisterContent() {
                                 autoComplete="email"
                                 name="email"
                                 placeholder="nama@email.com"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
                             />
                         </div>
                         <InputError message={errors.email} />
@@ -123,7 +123,7 @@ function RegisterContent() {
                                 autoComplete="new-password"
                                 name="password"
                                 placeholder="Minimal 8 karakter"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
                                 inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
@@ -146,7 +146,7 @@ function RegisterContent() {
                                 autoComplete="new-password"
                                 name="password_confirmation"
                                 placeholder="Ulangi password Anda"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
                                 inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
@@ -156,7 +156,7 @@ function RegisterContent() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-2 cursor-pointer"
+                        className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-2 cursor-pointer"
                         tabIndex={5}
                         disabled={processing}
                     >
@@ -174,7 +174,7 @@ function RegisterContent() {
                 {/* Footer link */}
                 <div className="text-center text-xs text-slate-500 font-semibold pt-2">
                     Sudah memiliki akun?{' '}
-                    <TextLink href={loginUrl} className="text-blue-500 hover:underline font-bold" tabIndex={6}>
+                    <TextLink href={loginUrl} className="text-green-500 hover:underline font-bold" tabIndex={6}>
                         Masuk sekarang
                     </TextLink>
                 </div>
@@ -188,7 +188,7 @@ export default function RegisterPage() {
         <Suspense fallback={
             <AuthLayout title="Daftar Akun Baru" description="Memuat halaman pendaftaran...">
                 <div className="flex justify-center py-10">
-                    <Spinner className="w-8 h-8 text-blue-600" />
+                    <Spinner className="w-8 h-8 text-green-600" />
                 </div>
             </AuthLayout>
         }>

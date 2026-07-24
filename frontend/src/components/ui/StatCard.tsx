@@ -10,7 +10,7 @@ interface StatCardProps {
     href?: string;
 }
 
-export default function StatCard({ icon, label, value, iconBgColor = 'bg-blue-50', iconTextColor = 'text-blue-600', href }: StatCardProps) {
+export default function StatCard({ icon, label, value, iconBgColor = 'bg-green-50', iconTextColor = 'text-green-600', href }: StatCardProps) {
     const CardContent = href ? Link : 'div';
     const cardProps = href ? { href } : {};
 

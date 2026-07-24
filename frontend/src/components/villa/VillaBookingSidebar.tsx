@@ -66,14 +66,14 @@ export default function VillaBookingSidebar({
                         </div>
                     </div>
 
-                    <button onClick={onBookingSubmit} className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer">
+                    <button onClick={onBookingSubmit} className="w-full bg-[#16a34a] hover:bg-[#15803d] active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 text-base font-semibold cursor-pointer">
                         <span>Pesan</span>
                     </button>
 
                     <div className="text-xs text-slate-400 font-semibold text-center mt-2">Anda belum dikenakan biaya</div>
 
                     {/* <div className="flex items-center justify-center space-x-2 border-t border-slate-100 pt-4 text-[9px] text-slate-400 font-black uppercase tracking-widest">
-                        <ShieldCheck className="w-4 h-4 text-blue-500" />
+                        <ShieldCheck className="w-4 h-4 text-green-500" />
                         <span>Pembayaran Instan via Midtrans</span>
                     </div> */}
                 </div>
@@ -90,7 +90,7 @@ export default function VillaBookingSidebar({
                         {storeCheckIn && storeCheckOut ? `${totalNights} malam` : 'Pilih tanggal'}
                     </span>
                 </div>
-                <button onClick={onBookingSubmit} className="bg-[#2563EB] hover:bg-[#1d4ed8] active:scale-[0.98] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer">
+                <button onClick={onBookingSubmit} className="bg-[#16a34a] hover:bg-[#15803d] active:scale-[0.98] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer">
                     Pesan
                 </button>
             </div>

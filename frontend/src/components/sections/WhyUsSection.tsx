@@ -12,7 +12,7 @@ const benefits = [
 
 export default function WhyUsSection() {
     return (
-        <section data-reveal className="bg-[#2563EB] text-white mt-20 py-24 sm:py-32 px-8 sm:px-14 lg:px-24 reveal">
+        <section data-reveal className="bg-[#16a34a] text-white mt-20 py-24 sm:py-32 px-8 sm:px-14 lg:px-24 reveal">
             <div className="max-w-8xl mx-auto">
                 <div className="text-center mb-16 space-y-4">
                     <span className="inline-block text-[11px] font-medium text-white/40">Keunggulan</span>

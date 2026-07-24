@@ -32,8 +32,8 @@ export default function CategoryFilter({ selectedCategory, setSelectedCategory, 
                         onClick={() => setSelectedCategory(cat.id)}
                         className={`flex items-center space-x-1.5 px-4 py-2 text-xs font-medium border transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] whitespace-nowrap cursor-pointer active:scale-[0.98] rounded-[8px] ${
                             selectedCategory === cat.id
-                                ? 'bg-[#2563EB] border-[#2563EB] text-white'
-                                : 'bg-white border-[#EAEAEA] text-[#787774] hover:border-[#2563EB] hover:text-[#2563EB]'
+                                ? 'bg-[#16a34a] border-[#16a34a] text-white'
+                                : 'bg-white border-[#EAEAEA] text-[#787774] hover:border-[#16a34a] hover:text-[#16a34a]'
                         }`}
                     >
                         <IconComponent className="w-3.5 h-3.5" />

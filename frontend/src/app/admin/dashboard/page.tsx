@@ -87,10 +87,10 @@ export default function AdminDashboardPage() {
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {/* Stat 1 - Revenue */}
-                <div className="group cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg shadow-blue-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
+                <div className="group cursor-pointer bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                            <span className="text-[11px] text-blue-100 font-bold block mb-2 uppercase tracking-wider">Pendapatan bulan ini</span>
+                            <span className="text-[11px] text-green-100 font-bold block mb-2 uppercase tracking-wider">Pendapatan bulan ini</span>
                             <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {formatPrice(stats.revenue_this_month)}
                             </span>
@@ -102,10 +102,10 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Stat 2 - Bookings */}
-                <div className="group cursor-pointer bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-[14px] shadow-lg shadow-indigo-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5">
+                <div className="group cursor-pointer bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                            <span className="text-[11px] text-indigo-100 font-bold block mb-2 uppercase tracking-wider">Pemesanan baru (MTD)</span>
+                            <span className="text-[11px] text-green-100 font-bold block mb-2 uppercase tracking-wider">Pemesanan baru (MTD)</span>
                             <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {stats.bookings_this_month}
                             </span>
@@ -117,10 +117,10 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Stat 3 - Occupancy */}
-                <div className="group cursor-pointer bg-gradient-to-br from-sky-600 to-sky-700 rounded-[14px] shadow-lg shadow-sky-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-sky-500/30 hover:-translate-y-0.5">
+                <div className="group cursor-pointer bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-5 transition-all duration-300 active:scale-[0.98] hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                            <span className="text-[11px] text-sky-100 font-bold block mb-2 uppercase tracking-wider">Tingkat hunian</span>
+                            <span className="text-[11px] text-green-100 font-bold block mb-2 uppercase tracking-wider">Tingkat hunian</span>
                             <span className="text-2xl font-black text-white tracking-tight font-sans tabular-nums">
                                 {stats.occupancy_rate}%
                             </span>
@@ -149,7 +149,7 @@ export default function AdminDashboardPage() {
 
             {/* Quick Action Alerts */}
             {stats.pending_reviews > 0 && (
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[14px] shadow-lg shadow-blue-500/20 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div className="bg-gradient-to-r from-green-600 to-green-600 rounded-[14px] shadow-lg shadow-green-500/20 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                     <div className="flex items-center space-x-3 text-xs font-semibold text-white">
                         <div className="p-2 rounded-[8px] bg-white/15">
                             <Star className="w-4 h-4 fill-white" />
@@ -158,7 +158,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <Link 
                         href="/admin/reviews"
-                        className="bg-white hover:bg-slate-100 active:scale-95 text-blue-600 text-xs font-bold py-2 px-4 rounded-[8px] flex items-center justify-center space-x-1.5 transition-all duration-200 self-start sm:self-auto"
+                        className="bg-white hover:bg-slate-100 active:scale-95 text-green-600 text-xs font-bold py-2 px-4 rounded-[8px] flex items-center justify-center space-x-1.5 transition-all duration-200 self-start sm:self-auto"
                     >
                         <span>Moderasi</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -176,8 +176,8 @@ export default function AdminDashboardPage() {
                         <div className="px-5 pt-5 pb-0">
                             <div className="flex items-center space-x-2.5 font-bold text-[#222222] border-b border-[#dddddd] pb-3">
                                 <span className="relative flex h-2.5 w-2.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-50" />
-                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50" />
+                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
                                 </span>
                                 <span className="text-sm tracking-tight">Check-in hari ini ({todayCheckIns.length})</span>
                             </div>
@@ -225,7 +225,7 @@ export default function AdminDashboardPage() {
                     <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden">
                         <div className="px-5 pt-5 pb-0">
                             <div className="flex items-center space-x-2.5 font-bold text-[#222222] border-b border-[#dddddd] pb-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                                 <span className="text-sm tracking-tight">Check-out hari ini ({todayCheckOuts.length})</span>
                             </div>
                         </div>
@@ -274,10 +274,10 @@ export default function AdminDashboardPage() {
                     <div className="p-6">
                         <div className="flex items-center justify-between border-b border-[#dddddd] pb-3 mb-5">
                             <h3 className="font-bold text-[#222222] flex items-center space-x-2 text-sm tracking-tight">
-                                <Calendar className="w-4 h-4 text-blue-500" />
+                                <Calendar className="w-4 h-4 text-green-500" />
                                 <span>5 pemesanan terbaru</span>
                             </h3>
-                            <Link href="/admin/bookings" className="text-xs font-extrabold text-blue-500 hover:text-blue-600 transition-colors active:scale-95 inline-block">
+                            <Link href="/admin/bookings" className="text-xs font-extrabold text-green-500 hover:text-green-600 transition-colors active:scale-95 inline-block">
                                 Lihat semua
                             </Link>
                         </div>
@@ -302,7 +302,7 @@ export default function AdminDashboardPage() {
                                     {recentBookings.map((b) => (
                                         <tr key={b.id} className="border-b border-[#dddddd] hover:bg-[#f7f7f7]/30 transition-colors">
                                             <td className="py-3.5 px-2">
-                                                <Link href={`/admin/bookings/detail?id=${b.id}`} className="hover:text-blue-500 transition-colors font-sans tracking-wider font-bold text-[11px] text-[#222222]">
+                                                <Link href={`/admin/bookings/detail?id=${b.id}`} className="hover:text-green-500 transition-colors font-sans tracking-wider font-bold text-[11px] text-[#222222]">
                                                     {b.booking_code}
                                                 </Link>
                                             </td>
@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
                                 {recentBookings.map((b) => (
                                     <div key={b.id} className="bg-white border border-[#dddddd] rounded-[12px] p-4 space-y-3 shadow-sm">
                                         <div className="flex items-center justify-between">
-                                            <Link href={`/admin/bookings/detail?id=${b.id}`} className="font-sans tracking-wider font-bold text-[11px] text-blue-600 hover:text-blue-800">
+                                            <Link href={`/admin/bookings/detail?id=${b.id}`} className="font-sans tracking-wider font-bold text-[11px] text-green-600 hover:text-green-800">
                                                 {b.booking_code}
                                             </Link>
                                             <StatusBadge variant={b.status as any} />

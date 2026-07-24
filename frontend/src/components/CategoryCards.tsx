@@ -48,7 +48,7 @@ export default function CategoryCards({ activeCategory, onCategoryChange }: Cate
                     >
                         {/* NEW badge */}
                         {cat.isNew && (
-                            <span className="absolute top-2 right-2 bg-blue-900 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
+                            <span className="absolute top-2 right-2 bg-green-900 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
                                 BARU
                             </span>
                         )}

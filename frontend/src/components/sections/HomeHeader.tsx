@@ -85,13 +85,13 @@ export default function HomeHeader({
                         onClick={() => setActiveTab(null)}
                     >
                         <svg className={`w-7 sm:w-8 h-7 sm:h-8 fill-current transition-colors ${
-                            headerSolid ? 'text-blue-500' : 'text-white'
+                            headerSolid ? 'text-green-500' : 'text-white'
                         }`} viewBox="0 0 32 32">
                             <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
                             <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
                         </svg>
                         <span className={`text-lg sm:text-xl font-sans font-black tracking-tight transition-colors ${
-                            headerSolid ? 'text-blue-500' : 'text-white'
+                            headerSolid ? 'text-green-500' : 'text-white'
                         }`}>
                             {settings.settings_prop_name}
                         </span>
@@ -321,7 +321,7 @@ export default function HomeHeader({
                                         )}
                                     </div>
 
-                                    <button type="submit" className="bg-blue-500 hover:bg-blue-600 active:scale-95 text-white flex items-center justify-center font-bold rounded-full transition-all duration-300 cursor-pointer p-2.5 shrink-0 ml-2" title="Cari">
+                                    <button type="submit" className="bg-green-500 hover:bg-green-600 active:scale-95 text-white flex items-center justify-center font-bold rounded-full transition-all duration-300 cursor-pointer p-2.5 shrink-0 ml-2" title="Cari">
                                         <Search className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
                                     </button>
                                 </form>
@@ -332,7 +332,7 @@ export default function HomeHeader({
                         <Link
                             href="/villas"
                             className={`text-sm font-semibold transition-colors ${
-                                headerSolid ? 'text-slate-700 hover:text-blue-500' : 'text-white/90 hover:text-white'
+                                headerSolid ? 'text-slate-700 hover:text-green-500' : 'text-white/90 hover:text-white'
                             }`}
                             onClick={() => setActiveTab(null)}
                         >
@@ -355,7 +355,7 @@ export default function HomeHeader({
                                 href="/login"
                                 className={`text-xs font-bold px-4.5 py-2 rounded-full transition-all duration-300 active:scale-95 ${
                                     headerSolid
-                                        ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm'
+                                        ? 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
                                         : 'bg-white text-slate-900 hover:bg-slate-100'
                                 }`}
                                 onClick={() => setActiveTab(null)}

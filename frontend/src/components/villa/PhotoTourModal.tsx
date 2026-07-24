@@ -207,7 +207,7 @@ export default function PhotoTourModal({
                         >
                             <Heart
                                 className={`w-4 h-4 transition-colors ${
-                                    isSaved ? 'fill-blue-600 text-blue-600' : 'text-slate-800'
+                                    isSaved ? 'fill-green-600 text-green-600' : 'text-slate-800'
                                 }`}
                                 strokeWidth={2}
                             />
@@ -394,7 +394,7 @@ export default function PhotoTourModal({
                                 onClick={() => setSelectedPhotoIndex(idx)}
                                 className={`w-16 h-12 sm:w-20 sm:h-14 object-cover rounded-lg cursor-pointer border-2 transition-all flex-shrink-0 ${
                                     idx === selectedPhotoIndex
-                                        ? 'border-blue-500 scale-105 shadow-md brightness-100'
+                                        ? 'border-green-500 scale-105 shadow-md brightness-100'
                                         : 'border-transparent opacity-60 hover:opacity-85 brightness-90'
                                 }`}
                             />

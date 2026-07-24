@@ -236,8 +236,8 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
     if (!booking) {
         return (
             <div className="text-center py-24 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] max-w-md mx-auto p-8">
-                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                    <User className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                    <User className="w-6 h-6 text-green-600" />
                 </div>
                 <h3 className="text-[#222222] font-bold text-base mb-1">Pemesanan tidak ditemukan</h3>
                 <p className="text-[#6a6a6a] text-xs mb-6">Booking ID tidak valid atau data telah dihapus.</p>
@@ -265,7 +265,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                     </Link>
                     <div>
                         <div className="flex items-center gap-2.5 flex-wrap">
-                            <h1 className="text-lg sm:text-2xl font-black text-[#222222] tracking-tight">Pemesanan <span className="font-mono tracking-wider text-blue-600 bg-blue-50/50 border border-blue-100 px-1.5 py-0.5 rounded-[8px] text-base sm:text-lg md:text-xl">{booking.booking_code}</span></h1>
+                            <h1 className="text-lg sm:text-2xl font-black text-[#222222] tracking-tight">Pemesanan <span className="font-mono tracking-wider text-green-600 bg-green-50/50 border border-green-100 px-1.5 py-0.5 rounded-[8px] text-base sm:text-lg md:text-xl">{booking.booking_code}</span></h1>
                             <StatusBadge variant={booking.status as any} />
                             <StatusBadge variant={booking.payment_status as any} />
                         </div>
@@ -281,8 +281,8 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                     {/* Card 1: Guest Information */}
                     <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
                         <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">
-                            <div className="w-8 h-8 rounded-[8px] bg-blue-50 flex items-center justify-center">
-                                <User className="w-4.5 h-4.5 text-blue-600" />
+                            <div className="w-8 h-8 rounded-[8px] bg-green-50 flex items-center justify-center">
+                                <User className="w-4.5 h-4.5 text-green-600" />
                             </div>
                             <h2 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
                                 Informasi tamu & kontak
@@ -315,7 +315,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                 <span className="text-[10px] text-[#6a6a6a] font-bold block">Alamat email</span>
                                 <a 
                                     href={`mailto:${booking.guest_email}`}
-                                    className="font-extrabold text-[#222222] text-sm hover:text-blue-600 transition-colors flex items-center space-x-1 w-fit"
+                                    className="font-extrabold text-[#222222] text-sm hover:text-green-600 transition-colors flex items-center space-x-1 w-fit"
                                 >
                                     <Mail className="w-3.5 h-3.5 text-[#6a6a6a]" />
                                     <span>{booking.guest_email}</span>
@@ -372,8 +372,8 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                     {/* Card 2: Rental Information */}
                     <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
                         <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">
-                            <div className="w-8 h-8 rounded-[8px] bg-blue-50 flex items-center justify-center">
-                                <Calendar className="w-4.5 h-4.5 text-blue-600" />
+                            <div className="w-8 h-8 rounded-[8px] bg-green-50 flex items-center justify-center">
+                                <Calendar className="w-4.5 h-4.5 text-green-600" />
                             </div>
                             <h2 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
                                 Rincian sewa villa
@@ -421,8 +421,8 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                     {booking.payment?.payment_proof && (
                         <div className="bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 sm:p-8 transition-all duration-300">
                             <div className="flex items-center space-x-2.5 pb-3 mb-6 border-b border-[#dddddd]">
-                                <div className="w-8 h-8 rounded-[8px] bg-blue-50 flex items-center justify-center">
-                                    <FileText className="w-4.5 h-4.5 text-blue-600" />
+                                <div className="w-8 h-8 rounded-[8px] bg-green-50 flex items-center justify-center">
+                                    <FileText className="w-4.5 h-4.5 text-green-600" />
                                 </div>
                                 <h2 className="text-sm font-bold text-[#222222] uppercase tracking-wide">
                                     Bukti Pembayaran Transfer Manual
@@ -437,7 +437,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Jumlah Tagihan:</span>
-                                        <span className="font-bold text-blue-600 text-xs">{formatPrice(booking.payment.amount)}</span>
+                                        <span className="font-bold text-green-600 text-xs">{formatPrice(booking.payment.amount)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#6a6a6a] font-medium">Status Pembayaran:</span>
@@ -472,7 +472,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                 </div>
 
                                 {booking.payment_status !== 'paid' && (
-                                    <div className="bg-blue-50/50 border border-blue-100 rounded-[14px] p-4 space-y-3">
+                                    <div className="bg-green-50/50 border border-green-100 rounded-[14px] p-4 space-y-3">
                                         <div>
                                             <p className="text-xs font-bold text-[#222222]">Verifikasi pembayaran manual</p>
                                             <p className="text-[10px] text-[#6a6a6a] mt-0.5">Cek mutasi rekening Anda terlebih dahulu. Setujui jika dana sudah masuk, atau tolak dengan alasan agar tamu dapat mengunggah ulang.</p>
@@ -482,7 +482,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                                 type="button"
                                                 onClick={handleApproveManualPayment}
                                                 disabled={approvingPayment || rejectingPayment}
-                                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-[8px] transition-all cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50"
+                                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-[8px] transition-all cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50"
                                             >
                                                 {approvingPayment ? (
                                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -525,7 +525,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
-                                    className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-[#dddddd] font-semibold cursor-pointer transition-all duration-205"
+                                    className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-[#dddddd] font-semibold cursor-pointer transition-all duration-205"
                                 >
                                     <option value="pending">Pending</option>
                                     <option value="confirmed">Confirmed</option>
@@ -539,7 +539,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                 <select
                                     value={paymentStatus}
                                     onChange={(e) => setPaymentStatus(e.target.value)}
-                                    className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-[#dddddd] font-semibold cursor-pointer transition-all duration-205"
+                                    className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-[#dddddd] font-semibold cursor-pointer transition-all duration-205"
                                 >
                                     <option value="unpaid">Unpaid (belum lunas)</option>
                                     <option value="pending">Pending (menunggu verifikasi)</option>
@@ -558,7 +558,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                         placeholder="Berikan keterangan pembatalan..."
                                         value={cancelReason}
                                         onChange={(e) => setCancelReason(e.target.value)}
-                                        className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-[#dddddd] font-semibold transition-all duration-200"
+                                        className="w-full bg-slate-50/50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 hover:border-[#dddddd] font-semibold transition-all duration-200"
                                     />
                                 </div>
                             )}
@@ -566,7 +566,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                             <button
                                 type="submit"
                                 disabled={updating}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-[8px] text-xs   hover: transition-all duration-300 flex items-center justify-center space-x-1.5 disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-[8px] text-xs   hover: transition-all duration-300 flex items-center justify-center space-x-1.5 disabled:opacity-50 active:scale-[0.98] cursor-pointer"
                             >
                                 {updating ? (
                                     <>
@@ -672,8 +672,8 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                     <div className="bg-white rounded-[16px] shadow-2xl w-full max-w-lg p-6 my-8 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto flex flex-col">
                         <div className="flex items-start justify-between mb-4 pb-3 border-b border-[#dddddd] shrink-0">
                             <div className="flex items-center space-x-2.5">
-                                <div className="w-9 h-9 rounded-[8px] bg-blue-50 flex items-center justify-center">
-                                    <FileText className="w-5 h-5 text-blue-600" />
+                                <div className="w-9 h-9 rounded-[8px] bg-green-50 flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-green-600" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-[#222222] text-sm">Pratinjau Invoice Pemesanan</h3>
@@ -694,7 +694,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                             {/* Invoice Paper Card */}
                             <div className="border border-[#dddddd] rounded-xl overflow-hidden shadow-xs text-xs">
                                 {/* Header */}
-                                <div className="bg-blue-600 text-white p-4">
+                                <div className="bg-green-600 text-white p-4">
                                     <div className="flex justify-between items-center">
                                         <div>
                                             <h4 className="font-bold text-sm tracking-wide">PusatVilla.id</h4>
@@ -762,7 +762,7 @@ Terima kasih telah memesan melalui PusatVilla.id. Silakan periksa file invoice P
                                             )}
                                             <div className="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-1.5 text-xs">
                                                 <span>Total Amount</span>
-                                                <span className="font-mono text-blue-600">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
+                                                <span className="font-mono text-green-600">Rp {Number(booking.total_amount).toLocaleString('id-ID')}</span>
                                             </div>
                                         </div>
                                     </div>

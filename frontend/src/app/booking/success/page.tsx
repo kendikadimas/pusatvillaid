@@ -116,7 +116,7 @@ function BookingSuccessContent() {
                     <p className="text-xs text-slate-400">Periksa koneksi internet Anda.</p>
                     <button
                         onClick={refetch}
-                        className="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
+                        className="w-full bg-green-900 hover:bg-green-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
                     >
                         Coba Lagi
                     </button>
@@ -138,7 +138,7 @@ function BookingSuccessContent() {
 
             <main className="max-w-xl mx-auto px-4 py-16 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                 <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden print:border-0 print:shadow-none print:p-0">
-                    <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-900 print:hidden" />
+                    <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-green-900 print:hidden" />
 
                     {isFromCache && status === 'error' && (
                         <div className="text-xs text-amber-600 flex items-center justify-center gap-2 bg-amber-50/50 border border-amber-200/60 rounded-xl px-4 py-2">
@@ -254,7 +254,7 @@ function BookingSuccessContent() {
                             <>
                                 <button
                                     onClick={handleDownloadPDF}
-                                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                                 >
                                     <Download className="w-4 h-4" />
                                     <span>Download Invoice PDF</span>
@@ -277,7 +277,7 @@ function BookingSuccessContent() {
                         </button>
                         <Link
                             href="/"
-                            className="w-full sm:w-auto flex-1 bg-gradient-to-r from-blue-900 to-blue-955 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                            className="w-full sm:w-auto flex-1 bg-gradient-to-r from-green-900 to-green-955 hover:from-green-955 hover:to-green-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                         >
                             <Home className="w-4 h-4" />
                             <span>Beranda</span>

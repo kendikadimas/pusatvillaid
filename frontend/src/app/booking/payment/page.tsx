@@ -283,8 +283,8 @@ function BookingPaymentContent() {
             <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-850">
                 <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center">
                     <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-lg text-center space-y-6">
-                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto border border-blue-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-blue-600">
+                        <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto border border-green-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-green-600">
                                 <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
                                 <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
                             </svg>
@@ -302,11 +302,11 @@ function BookingPaymentContent() {
                                 placeholder="email@contoh.com"
                                 value={manualEmail}
                                 onChange={(e) => setManualEmail(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white font-semibold transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:bg-white font-semibold transition-all"
                             />
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer active:scale-[0.98]"
+                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer active:scale-[0.98]"
                             >
                                 Cari Pemesanan
                             </button>
@@ -334,7 +334,7 @@ function BookingPaymentContent() {
                     <p className="text-xs text-slate-400 font-medium">Periksa kembali email Anda atau coba lagi.</p>
                     <button
                         onClick={refetch}
-                        className="w-full inline-flex items-center justify-center bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
+                        className="w-full inline-flex items-center justify-center bg-green-900 hover:bg-green-950 text-white font-bold py-3 rounded-xl shadow-md transition-all text-xs cursor-pointer"
                     >
                         Coba Lagi
                     </button>
@@ -364,7 +364,7 @@ function BookingPaymentContent() {
                     <div className="flex items-center gap-2">
                         <Link
                             href={`/booking/status?code=${code}&email=${booking.guest_email}`}
-                            className="flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all active:scale-95"
+                            className="flex items-center space-x-1.5 text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3.5 py-1.5 rounded-full border border-green-200 shadow-sm transition-all active:scale-95"
                         >
                             <span>Lihat Status Pemesanan</span>
                         </Link>
@@ -377,23 +377,23 @@ function BookingPaymentContent() {
 
                 <main className="max-w-md mx-auto px-4 py-12 sm:py-16 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                     <div className="bg-white border border-slate-200 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
-                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
+                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-green-900 via-green-500 to-green-900" />
 
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl flex items-center justify-center mx-auto border border-blue-200/50 shadow-sm animate-pulse">
-                            <ShieldCheck className="w-8 h-8 text-blue-900" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl flex items-center justify-center mx-auto border border-green-200/50 shadow-sm animate-pulse">
+                            <ShieldCheck className="w-8 h-8 text-green-900" />
                         </div>
 
                         <div>
                             <h1 className="font-serif text-2xl sm:text-3xl font-normal text-slate-900 tracking-tight">Menunggu Verifikasi</h1>
                             <div className="inline-flex items-center space-x-1.5 bg-slate-100/80 px-2.5 py-1 rounded-full border border-slate-200/50 mt-2">
                                 <span className="text-[10px] font-bold text-slate-500 tracking-wider uppercase">Kode Booking:</span>
-                                <span className="text-xs font-extrabold text-blue-900 tracking-wide font-mono">{code}</span>
+                                <span className="text-xs font-extrabold text-green-900 tracking-wide font-mono">{code}</span>
                             </div>
                         </div>
 
-                        <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-5 text-left space-y-2 text-xs text-blue-900 leading-relaxed shadow-sm">
-                            <p className="font-bold text-blue-950 text-sm flex items-center space-x-1.5">
-                                <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping inline-block" />
+                        <div className="bg-green-50/50 border border-green-200/60 rounded-2xl p-5 text-left space-y-2 text-xs text-green-900 leading-relaxed shadow-sm">
+                            <p className="font-bold text-green-950 text-sm flex items-center space-x-1.5">
+                                <span className="w-2 h-2 rounded-full bg-green-600 animate-ping inline-block" />
                                 <span>Bukti Transfer Berhasil Dikirim!</span>
                             </p>
                             <p className="text-slate-650">Tim admin kami sedang memverifikasi pembayaran Anda. Proses ini biasanya memakan waktu kurang dari 30 menit pada jam operasional.</p>
@@ -406,7 +406,7 @@ function BookingPaymentContent() {
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500 font-medium">Total Tagihan:</span>
-                                <span className="font-bold text-blue-900 text-sm">{formatPrice(booking.total_amount)}</span>
+                                <span className="font-bold text-green-900 text-sm">{formatPrice(booking.total_amount)}</span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500 font-medium">Bukti Transfer:</span>
@@ -423,7 +423,7 @@ function BookingPaymentContent() {
                         <div className="pt-2">
                             <Link 
                                 href={`/booking/status?code=${code}`}
-                                className="w-full inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-blue-950 hover:from-blue-950 hover:to-blue-900 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 text-sm cursor-pointer active:scale-[0.98]"
+                                className="w-full inline-flex items-center justify-center bg-gradient-to-r from-green-900 to-green-950 hover:from-green-950 hover:to-green-900 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 text-sm cursor-pointer active:scale-[0.98]"
                             >
                                 Lihat Status Pemesanan
                             </Link>
@@ -441,7 +441,7 @@ function BookingPaymentContent() {
                 <div className="flex items-center gap-2">
                     <Link
                         href={`/booking/status?code=${code}&email=${booking.guest_email}`}
-                        className="flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all active:scale-95"
+                        className="flex items-center space-x-1.5 text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3.5 py-1.5 rounded-full border border-green-200 shadow-sm transition-all active:scale-95"
                     >
                         <span>Lihat Status Pemesanan</span>
                     </Link>
@@ -454,17 +454,17 @@ function BookingPaymentContent() {
 
             <main className="max-w-md mx-auto px-4 py-12 sm:py-16 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                 <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
-                    <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
+                    <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-green-900 via-green-500 to-green-900" />
 
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl flex items-center justify-center mx-auto border border-blue-200/50 shadow-sm relative transition-transform duration-350 hover:scale-105">
-                        <CreditCard className="w-8 h-8 text-blue-900" />
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl flex items-center justify-center mx-auto border border-green-200/50 shadow-sm relative transition-transform duration-350 hover:scale-105">
+                        <CreditCard className="w-8 h-8 text-green-900" />
                     </div>
 
                     <div>
                         <h1 className="font-serif text-2xl sm:text-3xl font-normal text-slate-900 tracking-tight">Selesaikan Pembayaran</h1>
                         <div className="inline-flex items-center space-x-1.5 bg-slate-100/80 px-2.5 py-1 rounded-full border border-slate-200/50 mt-2">
                             <span className="text-[10px] font-bold text-slate-550 tracking-wider uppercase">Kode Booking:</span>
-                            <span className="text-xs font-extrabold text-blue-900 tracking-wide font-mono">{code}</span>
+                            <span className="text-xs font-extrabold text-green-900 tracking-wide font-mono">{code}</span>
                         </div>
                         {isFromCache && status === 'error' && (
                             <div className="text-xs text-amber-600 flex items-center justify-center gap-2 mt-2">
@@ -494,7 +494,7 @@ function BookingPaymentContent() {
                                 onClick={() => setPaymentType('online')}
                                 className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-305 flex items-center justify-center space-x-1.5 cursor-pointer ${
                                     paymentType === 'online'
-                                        ? 'bg-white text-blue-900 shadow-sm border border-slate-200/20'
+                                        ? 'bg-white text-green-900 shadow-sm border border-slate-200/20'
                                         : 'text-slate-500 hover:text-slate-800'
                                 }`}
                             >
@@ -506,7 +506,7 @@ function BookingPaymentContent() {
                                 onClick={() => setPaymentType('manual')}
                                 className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-305 flex items-center justify-center space-x-1.5 cursor-pointer ${
                                     paymentType === 'manual'
-                                        ? 'bg-white text-blue-900 shadow-sm border border-slate-200/20'
+                                        ? 'bg-white text-green-900 shadow-sm border border-slate-200/20'
                                         : 'text-slate-500 hover:text-slate-800'
                                 }`}
                             >
@@ -532,7 +532,7 @@ function BookingPaymentContent() {
                         </div>
                         <div className="border-t border-slate-200/80 pt-3 flex justify-between items-center">
                             <span className="text-xs font-bold text-slate-900">Total Tagihan</span>
-                            <span className="text-blue-900 font-extrabold text-lg tracking-tight">
+                            <span className="text-green-900 font-extrabold text-lg tracking-tight">
                                 {formatPrice(booking.total_amount)}
                             </span>
                         </div>
@@ -568,9 +568,9 @@ function BookingPaymentContent() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mx-auto max-w-md">
-                                                        <p className="text-xs text-blue-900 font-bold mb-1">Cara Pembayaran:</p>
-                                                        <ol className="text-[11px] text-blue-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
+                                                    <div className="bg-green-50 border border-green-200 rounded-xl p-3 mx-auto max-w-md">
+                                                        <p className="text-xs text-green-900 font-bold mb-1">Cara Pembayaran:</p>
+                                                        <ol className="text-[11px] text-green-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
                                                             <li>Buka aplikasi e-wallet atau mobile banking</li>
                                                             <li>Pilih menu Scan QR / QRIS</li>
                                                             <li>Arahkan kamera ke QR code di atas</li>
@@ -584,7 +584,7 @@ function BookingPaymentContent() {
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-550 font-medium">Total Pembayaran:</span>
-                                                    <span className="font-extrabold text-blue-900 text-sm">
+                                                    <span className="font-extrabold text-green-900 text-sm">
                                                         {formatPrice(booking.total_amount)}
                                                     </span>
                                                 </div>
@@ -609,7 +609,7 @@ function BookingPaymentContent() {
                                                                 toast.success('Nomor rekening berhasil disalin!');
                                                                 setTimeout(() => setCopiedMethodId(null), 2000);
                                                             }}
-                                                            className="text-[10px] font-bold text-blue-900 hover:text-blue-800 bg-blue-50/80 hover:bg-blue-100/80 px-2.5 py-1 rounded-lg border border-blue-200/50 transition-all cursor-pointer shadow-sm active:scale-95"
+                                                            className="text-[10px] font-bold text-green-900 hover:text-green-800 bg-green-50/80 hover:bg-green-100/80 px-2.5 py-1 rounded-lg border border-green-200/50 transition-all cursor-pointer shadow-sm active:scale-95"
                                                         >
                                                             {copiedMethodId === selectedMethod.id ? 'Tersalin' : 'Salin'}
                                                         </button>
@@ -621,7 +621,7 @@ function BookingPaymentContent() {
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-555 font-medium">Jumlah Transfer:</span>
-                                                    <span className="font-extrabold text-blue-900 text-sm">
+                                                    <span className="font-extrabold text-green-900 text-sm">
                                                         {formatPrice(booking.total_amount)}
                                                     </span>
                                                 </div>
@@ -668,8 +668,8 @@ function BookingPaymentContent() {
                                  <div
                                      className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer relative group overflow-hidden transition-all duration-200 ${
                                          uploadTapAnim
-                                             ? 'border-blue-500 bg-blue-50/40 scale-[0.97]'
-                                             : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30 bg-slate-50/20'
+                                             ? 'border-green-500 bg-green-50/40 scale-[0.97]'
+                                             : 'border-slate-200 hover:border-green-400 hover:bg-slate-50/30 bg-slate-50/20'
                                      }`}
                                      onClick={() => {
                                          if (compressing) return;
@@ -680,8 +680,8 @@ function BookingPaymentContent() {
                                  >
                                      {compressing ? (
                                          <div className="py-4 flex flex-col items-center space-y-2.5">
-                                             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                                             <span className="text-xs font-bold text-blue-600">Memproses gambar...</span>
+                                             <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+                                             <span className="text-xs font-bold text-green-600">Memproses gambar...</span>
                                          </div>
                                      ) : proofPreview ? (
                                          <div className="space-y-3">
@@ -698,7 +698,7 @@ function BookingPaymentContent() {
                                                  </div>
                                                  <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
                                              </div>
-                                             <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm active:scale-95">
+                                             <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors shadow-sm active:scale-95">
                                                  Ganti Bukti Transfer
                                              </span>
                                          </div>
@@ -706,13 +706,13 @@ function BookingPaymentContent() {
                                          <div className="py-2 space-y-2.5 flex flex-col items-center">
                                              <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm ${
                                                  uploadTapAnim
-                                                     ? 'bg-blue-600 border-blue-600 text-white scale-110'
-                                                     : 'bg-white border-slate-200/80 text-slate-400 group-hover:text-blue-600 group-hover:border-blue-400 group-hover:shadow-md'
+                                                     ? 'bg-green-600 border-green-600 text-white scale-110'
+                                                     : 'bg-white border-slate-200/80 text-slate-400 group-hover:text-green-600 group-hover:border-green-400 group-hover:shadow-md'
                                              }`}>
                                                  <Upload className={`w-5 h-5 stroke-[1.5] ${uploadTapAnim ? 'animate-bounce' : ''}`} />
                                              </div>
                                              <div>
-                                                 <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-blue-600' : 'text-slate-700 group-hover:text-blue-600'}`}>
+                                                 <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-green-600' : 'text-slate-700 group-hover:text-green-600'}`}>
                                                      {uploadTapAnim ? 'Buka galeri...' : 'Pilih file gambar'}
                                                  </span>
                                                  <span className="text-[10px] text-slate-400 block mt-1">JPG, PNG, WEBP (Maks 10MB, dikompres otomatis)</span>
@@ -737,7 +737,7 @@ function BookingPaymentContent() {
                         <button
                             onClick={handleManualPaymentSubmit}
                             disabled={submittingProof || !selectedMethodId || !proofFile}
-                            className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98] relative overflow-hidden group"
+                            className="w-full bg-gradient-to-r from-green-900 via-green-800 to-green-950 hover:from-green-950 hover:to-green-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_30px_rgba(30,58,138,0.2)] hover:shadow-[0_8px_30px_rgba(30,58,138,0.25)] transition-all duration-300 flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98] relative overflow-hidden group"
                         >
                             {/* Ripple effect background */}
                             <span className="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition-opacity duration-200"></span>
@@ -760,13 +760,13 @@ function BookingPaymentContent() {
                             <div className="space-y-2 animate-in fade-in duration-200">
                                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                                     <div 
-                                        className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300 ease-out"
+                                        className="bg-gradient-to-r from-green-500 to-green-700 h-2 rounded-full transition-all duration-300 ease-out"
                                         style={{ width: `${uploadProgress}%` }}
                                     />
                                 </div>
                                 <div className="flex justify-between items-center text-[11px] text-slate-500 font-semibold">
                                     <span>Mengupload bukti transfer...</span>
-                                    <span className="text-blue-700 font-bold">{uploadProgress}%</span>
+                                    <span className="text-green-700 font-bold">{uploadProgress}%</span>
                                 </div>
                             </div>
                         )}

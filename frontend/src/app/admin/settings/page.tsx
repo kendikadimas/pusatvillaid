@@ -283,7 +283,7 @@ export default function AdminSettingsPage() {
     if (loading) {
         return (
             <div className="flex flex-col justify-center items-center py-40 space-y-4">
-                <Loader2 className="w-9 h-9 animate-spin text-blue-500" />
+                <Loader2 className="w-9 h-9 animate-spin text-green-500" />
                 <p className="text-[#6a6a6a] text-xs font-semibold animate-pulse">Memuat pengaturan...</p>
             </div>
         );
@@ -325,17 +325,17 @@ export default function AdminSettingsPage() {
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`w-auto md:w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-[8px] transition-colors group relative flex items-center md:flex-col md:items-start cursor-pointer flex-shrink-0 gap-2 md:gap-0 ${
                                         isSelected 
-                                            ? 'bg-blue-50 text-blue-600 font-bold' 
+                                            ? 'bg-green-50 text-green-600 font-bold' 
                                             : 'text-slate-500 hover:bg-slate-50 hover:text-[#222222]'
                                     }`}
                                 >
                                     <div className="flex items-center space-x-2">
-                                        <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isSelected ? 'text-blue-500' : 'text-slate-500 group-hover:text-[#222222]'}`} />
+                                        <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isSelected ? 'text-green-500' : 'text-slate-500 group-hover:text-[#222222]'}`} />
                                         <span className="text-xs font-semibold tracking-tight whitespace-nowrap">{tab.name}</span>
                                     </div>
                                     <span className="text-[10px] text-slate-500 font-medium mt-1 leading-snug transition-colors hidden md:block">{tab.desc}</span>
                                     {isSelected && (
-                                        <span className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-lg bg-blue-500" />
+                                        <span className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-lg bg-green-500" />
                                     )}
                                 </button>
                             );
@@ -352,7 +352,7 @@ export default function AdminSettingsPage() {
                                 {activeTab === 'identity' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
-                                            <Building className="w-4.5 h-4.5 text-blue-500" />
+                                            <Building className="w-4.5 h-4.5 text-green-500" />
                                             <h3 className="text-sm font-bold text-[#222222]">Identitas properti</h3>
                                         </div>
 
@@ -364,7 +364,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={propertyName}
                                                     onChange={(e) => setPropertyName(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
                                                 />
                                             </div>
 
@@ -375,7 +375,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={whatsappNumber}
                                                     onChange={(e) => setWhatsappNumber(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 font-mono tabular-nums"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 font-mono tabular-nums"
                                                 />
                                             </div>
 
@@ -386,7 +386,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={propertyEmail}
                                                     onChange={(e) => setPropertyEmail(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
                                                 />
                                             </div>
 
@@ -398,7 +398,7 @@ export default function AdminSettingsPage() {
                                                     value={websiteUrl}
                                                     onChange={(e) => setWebsiteUrl(e.target.value)}
                                                     placeholder="https://pusatvillaid.com"
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
                                                 />
                                             </div>
 
@@ -409,7 +409,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={address}
                                                     onChange={(e) => setAddress(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
                                                 />
                                             </div>
                                         </div>
@@ -419,7 +419,7 @@ export default function AdminSettingsPage() {
                                 {activeTab === 'policies' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
-                                            <Clock className="w-4.5 h-4.5 text-blue-500" />
+                                            <Clock className="w-4.5 h-4.5 text-green-500" />
                                             <h3 className="text-sm font-bold text-[#222222]">Kebijakan waktu</h3>
                                         </div>
 
@@ -431,7 +431,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={checkInTime}
                                                     onChange={(e) => setCheckInTime(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 font-mono tabular-nums"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 font-mono tabular-nums"
                                                 />
                                             </div>
 
@@ -442,7 +442,7 @@ export default function AdminSettingsPage() {
                                                     required
                                                     value={checkOutTime}
                                                     onChange={(e) => setCheckOutTime(e.target.value)}
-                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 font-mono tabular-nums"
+                                                    className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] px-3.5 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 font-mono tabular-nums"
                                                 />
                                             </div>
                                         </div>
@@ -452,7 +452,7 @@ export default function AdminSettingsPage() {
                                 {activeTab === 'tax_fees' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
-                                            <Percent className="w-4.5 h-4.5 text-blue-500" />
+                                            <Percent className="w-4.5 h-4.5 text-green-500" />
                                             <h3 className="text-sm font-bold text-[#222222]">Biaya & Pajak</h3>
                                         </div>
 
@@ -467,7 +467,7 @@ export default function AdminSettingsPage() {
                                                         max="100"
                                                         value={taxPercentage}
                                                         onChange={(e) => setTaxPercentage(Number(e.target.value))}
-                                                        className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] pl-3.5 pr-8 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 font-mono"
+                                                        className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-[8px] pl-3.5 pr-8 py-2.5 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 font-mono"
                                                     />
                                                     <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400">%</span>
                                                 </div>
@@ -481,7 +481,7 @@ export default function AdminSettingsPage() {
                                 {activeTab === 'payment' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
                                         <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center space-x-2">
-                                            <CreditCard className="w-4.5 h-4.5 text-blue-500" />
+                                            <CreditCard className="w-4.5 h-4.5 text-green-500" />
                                             <h3 className="text-sm font-bold text-[#222222]">Gateway Pembayaran</h3>
                                         </div>
                                         <div className="bg-amber-50 border border-amber-200 rounded-[8px] p-4 text-xs text-amber-800 font-medium">
@@ -496,7 +496,7 @@ export default function AdminSettingsPage() {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-5 rounded-[8px] transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
+                                    className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-3 px-5 rounded-[8px] transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
                                 >
                                     {saving ? (
                                         <>
@@ -516,13 +516,13 @@ export default function AdminSettingsPage() {
                         <div className="space-y-6 animate-in fade-in duration-200">
                             <div className="px-4 py-3 -mx-4 border-b border-[#dddddd] mb-4 flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                    <SlidersHorizontal className="w-4.5 h-4.5 text-blue-500" />
+                                    <SlidersHorizontal className="w-4.5 h-4.5 text-green-500" />
                                     <h3 className="text-sm font-bold text-[#222222]">Metode Pembayaran Manual</h3>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={handleAddMethod}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2 sm:px-3 sm:py-1.5 rounded-lg flex items-center space-x-1 transition-colors cursor-pointer shrink-0"
+                                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2 sm:px-3 sm:py-1.5 rounded-lg flex items-center space-x-1 transition-colors cursor-pointer shrink-0"
                                     title="Tambah Rekening"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
@@ -532,7 +532,7 @@ export default function AdminSettingsPage() {
 
                             {loadingMethods ? (
                                 <div className="flex justify-center items-center py-20">
-                                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                                    <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                                 </div>
                             ) : paymentMethods.length === 0 ? (
                                 <div className="text-center py-20 border border-dashed border-slate-200 rounded-[14px]">
@@ -578,7 +578,7 @@ export default function AdminSettingsPage() {
                                                     title={method.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
                                                 >
                                                     {method.is_active ? (
-                                                        <ToggleRight className="w-9 h-6 text-blue-600" />
+                                                        <ToggleRight className="w-9 h-6 text-green-600" />
                                                     ) : (
                                                         <ToggleLeft className="w-9 h-6 text-slate-300" />
                                                     )}
@@ -587,7 +587,7 @@ export default function AdminSettingsPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleEditMethod(method)}
-                                                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                                        className="p-1.5 text-slate-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
                                                         title="Edit Rekening"
                                                     >
                                                         <Edit className="w-4 h-4" />
@@ -643,7 +643,7 @@ export default function AdminSettingsPage() {
                                             value={methodName}
                                             onChange={(e) => setMethodName(e.target.value)}
                                             placeholder="Contoh: Bank Central Asia (BCA)"
-                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
                                         />
                                     </div>
 
@@ -655,7 +655,7 @@ export default function AdminSettingsPage() {
                                             value={methodCode}
                                             onChange={(e) => setMethodCode(e.target.value)}
                                             placeholder="bca"
-                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
+                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-mono"
                                         />
                                     </div>
 
@@ -668,7 +668,7 @@ export default function AdminSettingsPage() {
                                                 value={accountNumber}
                                                 onChange={(e) => setAccountNumber(e.target.value)}
                                                 placeholder="8019208392"
-                                                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
+                                                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-mono"
                                             />
                                         </div>
                                     )}
@@ -683,7 +683,7 @@ export default function AdminSettingsPage() {
                                             value={accountName}
                                             onChange={(e) => setAccountName(e.target.value)}
                                             placeholder={methodCode.trim().toLowerCase() === 'qris' ? 'MERCHANT NAMA' : 'PT PUSAT VILLA INDONESIA'}
-                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
                                         />
                                     </div>
 
@@ -696,7 +696,7 @@ export default function AdminSettingsPage() {
                                             value={adminFee}
                                             onChange={(e) => setAdminFee(Number(e.target.value))}
                                             placeholder="Contoh: 2500"
-                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
+                                            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-[#dddddd] rounded-lg px-3 py-2 text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-mono"
                                         />
                                     </div>
 
@@ -754,7 +754,7 @@ export default function AdminSettingsPage() {
                                             id="methodIsActive"
                                             checked={methodIsActive}
                                             onChange={(e) => setMethodIsActive(e.target.checked)}
-                                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                                            className="rounded border-slate-300 text-green-600 focus:ring-green-500 w-4 h-4 cursor-pointer"
                                         />
                                         <label htmlFor="methodIsActive" className="text-xs font-semibold text-[#222222] select-none cursor-pointer">
                                             Aktifkan Metode (Tampilkan langsung sebagai opsi checkout tamu)
@@ -773,7 +773,7 @@ export default function AdminSettingsPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all cursor-pointer"
+                                        className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all cursor-pointer"
                                     >
                                         {editingMethod ? 'Simpan Rekening' : 'Tambah Rekening'}
                                     </button>

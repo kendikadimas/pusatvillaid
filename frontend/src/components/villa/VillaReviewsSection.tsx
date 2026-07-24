@@ -133,7 +133,7 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Cari ulasan</label>
                                     <div className="relative">
                                         <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                                        <input type="text" placeholder="Cari kata kunci" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-800 bg-white" />
+                                        <input type="text" placeholder="Cari kata kunci" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none text-slate-800 bg-white" />
                                         {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>}
                                     </div>
                                 </div>
@@ -152,7 +152,7 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Urutkan</label>
-                                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="w-full bg-white border border-slate-200 p-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:ring-1 focus:ring-blue-500 focus:outline-none cursor-pointer">
+                                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="w-full bg-white border border-slate-200 p-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:ring-1 focus:ring-green-500 focus:outline-none cursor-pointer">
                                         <option value="relevance">Relevansi</option>
                                         <option value="newest">Terbaru</option>
                                         <option value="highest">Peringkat Tertinggi</option>
