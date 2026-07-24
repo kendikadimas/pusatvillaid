@@ -48,7 +48,7 @@ function BookingFailedContent() {
 
                     <div className="flex flex-col gap-3 pt-5 border-t border-slate-100">
                         {code && (
-                            <Link href={`/booking/status?code=${code}`} className="bg-gradient-to-r from-green-900 to-green-955 hover:from-green-955 hover:to-green-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]">
+                            <Link href={`/booking/status?code=${code}`} className="bg-gradient-to-r from-blue-900 to-blue-955 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]">
                                 <ArrowLeft className="w-4 h-4" />
                                 <span>Cek Status & Bayar Ulang</span>
                             </Link>

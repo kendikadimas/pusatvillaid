@@ -315,7 +315,7 @@ export default function HeroSection({
                                     setActiveTab('lokasi');
                                 }
                             }}
-                            className={`bg-green-500 hover:bg-green-600 active:scale-95 text-white flex items-center justify-center font-bold rounded-full transition-all duration-300 ease-in-out cursor-pointer shadow-sm ${
+                            className={`bg-blue-500 hover:bg-blue-600 active:scale-95 text-white flex items-center justify-center font-bold rounded-full transition-all duration-300 ease-in-out cursor-pointer shadow-sm ${
                                 activeTab ? 'px-5 py-3 space-x-1.5 ml-2' : 'p-3.5'
                             }`}
                             title="Cari"

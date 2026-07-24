@@ -194,7 +194,7 @@ export default function VillaCard({
                     <div className="pt-3 flex-1 flex flex-col justify-between space-y-1 bg-transparent">
                         <div>
                             <div className="flex items-center justify-between text-[14px] sm:text-[15px] text-slate-700 font-bold leading-tight">
-                                <span className="truncate group-hover:text-green-500 transition-colors">
+                                <span className="truncate group-hover:text-blue-500 transition-colors">
                                     {villa.name}
                                 </span>
                             </div>
@@ -237,7 +237,7 @@ export default function VillaCard({
             </PhotoContainer>
 
             <div className="pt-3 flex flex-col space-y-0.5 bg-transparent text-left">
-                <h3 className="text-[14px] sm:text-[15px] font-semibold text-slate-700 leading-tight tracking-tight line-clamp-1 group-hover:text-green-600 transition-colors">
+                <h3 className="text-[14px] sm:text-[15px] font-semibold text-slate-700 leading-tight tracking-tight line-clamp-1 group-hover:text-blue-600 transition-colors">
                     {villa.name}
                 </h3>
                 <div className="text-[13px] sm:text-[14px] text-slate-700 font-normal pt-0.5">

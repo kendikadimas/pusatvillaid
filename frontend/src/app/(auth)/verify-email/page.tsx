@@ -32,7 +32,7 @@ export default function VerifyEmailPage() {
             description="We sent you a verification link. Please check your email to continue."
         >
             {status === 'verification-link-sent' && (
-                <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-center text-sm font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                     A new verification link has been sent to your email.
                 </div>
             )}
@@ -45,9 +45,9 @@ export default function VerifyEmailPage() {
 
             <form onSubmit={handleResend} className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center gap-3 text-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-900/30">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/30">
                         <svg
-                            className="h-8 w-8 text-green-600 dark:text-green-400"
+                            className="h-8 w-8 text-blue-600 dark:text-blue-400"
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth="1.5"
@@ -68,7 +68,7 @@ export default function VerifyEmailPage() {
 
                 <Button
                     disabled={processing}
-                    className="h-11 w-full cursor-pointer rounded-lg bg-green-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60"
+                    className="h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                 >
                     {processing && <Spinner className="mr-2" />}
                     {processing ? 'Sending...' : 'Resend verification email'}
@@ -77,7 +77,7 @@ export default function VerifyEmailPage() {
                 <button
                     type="button"
                     onClick={logout}
-                    className="text-sm font-medium text-[#787774] underline decoration-slate-300 underline-offset-4 transition-colors duration-200 hover:text-green-600 hover:decoration-green-300 dark:text-slate-400 dark:hover:text-green-400"
+                    className="text-sm font-medium text-[#787774] underline decoration-slate-300 underline-offset-4 transition-colors duration-200 hover:text-blue-600 hover:decoration-blue-300 dark:text-slate-400 dark:hover:text-blue-400"
                 >
                     Log out
                 </button>

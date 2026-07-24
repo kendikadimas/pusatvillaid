@@ -63,7 +63,7 @@ function ResetPasswordForm() {
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {status && (
-                <div className="rounded-lg bg-green-50 px-4 py-3 text-center text-sm font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                <div className="rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                     {status}
                 </div>
             )}
@@ -82,7 +82,7 @@ function ResetPasswordForm() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`h-10 rounded-lg border-slate-200 transition-all duration-200 placeholder:text-[#787774] focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700 dark:placeholder:text-slate-500 ${
+                    className={`h-10 rounded-lg border-slate-200 transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:placeholder:text-slate-500 ${
                         initialEmail
                             ? 'bg-slate-50 text-slate-500 cursor-not-allowed dark:bg-slate-900/50 dark:text-slate-400'
                             : 'bg-white dark:bg-slate-800'
@@ -106,7 +106,7 @@ function ResetPasswordForm() {
                     autoComplete="new-password"
                     autoFocus
                     placeholder="Create a new password"
-                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                 />
                 <InputError message={errors.password} />
             </div>
@@ -124,14 +124,14 @@ function ResetPasswordForm() {
                     onChange={(e) => setPasswordConfirmation(e.target.value)}
                     autoComplete="new-password"
                     placeholder="Repeat your new password"
-                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                    inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                 />
                 <InputError message={errors.password_confirmation} />
             </div>
 
             <Button
                 type="submit"
-                className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-green-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60"
+                className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                 disabled={processing}
             >
                 {processing && <Spinner className="mr-2" />}

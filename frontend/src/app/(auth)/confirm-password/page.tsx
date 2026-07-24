@@ -65,14 +65,14 @@ export default function ConfirmPasswordPage() {
                             autoComplete="current-password"
                             autoFocus
                             required
-                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                            inputClassName="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                         />
                         <InputError message={errors.password} />
                     </div>
 
                     <Button
                         type="submit"
-                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-green-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                         disabled={processing}
                     >
                         {processing && <Spinner className="mr-2" />}

@@ -107,7 +107,7 @@ function LoginContent() {
                                 tabIndex={1}
                                 autoComplete="email"
                                 placeholder="nama@email.com"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
                             />
                         </div>
                         <InputError message={errors.email} />
@@ -121,7 +121,7 @@ function LoginContent() {
                             </Label>
                             <TextLink
                                 href="/forgot-password"
-                                className="text-xs font-bold text-green-500 hover:text-green-600 transition-colors"
+                                className="text-xs font-bold text-blue-500 hover:text-blue-600 transition-colors"
                                 tabIndex={5}
                             >
                                 Lupa password?
@@ -138,7 +138,7 @@ function LoginContent() {
                                 tabIndex={2}
                                 autoComplete="current-password"
                                 placeholder="Masukkan password"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 focus:bg-white transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-10 py-3 text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white transition-all"
                                 inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-transparent p-0 h-auto text-sm font-semibold text-slate-800 placeholder-slate-400"
                             />
                         </div>
@@ -153,7 +153,7 @@ function LoginContent() {
                             checked={remember}
                             onCheckedChange={(checked) => setRemember(!!checked)}
                             tabIndex={3}
-                            className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
                         <Label htmlFor="remember" className="text-xs text-slate-605 font-bold cursor-pointer select-none">
                             Ingat saya di perangkat ini
@@ -163,7 +163,7 @@ function LoginContent() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
                         tabIndex={4}
                         disabled={processing}
                     >
@@ -181,7 +181,7 @@ function LoginContent() {
                 {/* Footer link */}
                 <div className="text-center text-xs text-slate-500 font-semibold pt-2">
                     Belum punya akun?{' '}
-                    <TextLink href={registerUrl} className="text-green-500 hover:underline font-bold" tabIndex={5}>
+                    <TextLink href={registerUrl} className="text-blue-500 hover:underline font-bold" tabIndex={5}>
                         Daftar sekarang
                     </TextLink>
                 </div>
@@ -201,7 +201,7 @@ export default function LoginPage() {
         <Suspense fallback={
             <AuthLayout title="Masuk ke Akun Anda" description="Memuat halaman masuk...">
                 <div className="flex justify-center py-10">
-                    <Spinner className="w-8 h-8 text-green-600" />
+                    <Spinner className="w-8 h-8 text-blue-600" />
                 </div>
             </AuthLayout>
         }>

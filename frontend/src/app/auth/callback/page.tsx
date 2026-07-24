@@ -62,7 +62,7 @@ function CallbackContent() {
                     <p className="text-sm text-[#787774]">{error}</p>
                     <button
                         onClick={() => router.push('/login')}
-                        className="mt-4 rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-700"
+                        className="mt-4 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                     >
                         Back to login
                     </button>

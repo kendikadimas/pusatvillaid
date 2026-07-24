@@ -118,7 +118,7 @@ function BookingStatusContent() {
                 </PublicHeader>
                 <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                     <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
-                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-green-900 via-green-500 to-green-900" />
+                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
                         <div className="w-16 h-16 bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl flex items-center justify-center mx-auto border border-red-200/50 shadow-sm">
                             <AlertTriangle className="w-8 h-8 text-red-600" />
                         </div>
@@ -131,7 +131,7 @@ function BookingStatusContent() {
                         <div className="space-y-3">
                             <button
                                 onClick={refetch}
-                                className="w-full bg-gradient-to-r from-green-900 via-green-800 to-green-950 hover:from-green-950 hover:to-green-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer"
+                                className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-950 hover:from-blue-950 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm cursor-pointer"
                             >
                                 Coba Lagi
                             </button>
@@ -161,10 +161,10 @@ function BookingStatusContent() {
 
                 <main className="max-w-md mx-auto px-4 py-24 w-full flex-1 flex flex-col justify-center animate-in fade-in duration-300">
                     <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(30,58,138,0.04)] text-center space-y-6 relative overflow-hidden">
-                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-green-900 via-green-500 to-green-900" />
+                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-900 via-blue-500 to-indigo-900" />
 
-                        <div className="w-16 h-16 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl flex items-center justify-center mx-auto border border-green-200/50 shadow-sm">
-                            <ShieldCheck className="w-8 h-8 text-green-900" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl flex items-center justify-center mx-auto border border-blue-200/50 shadow-sm">
+                            <ShieldCheck className="w-8 h-8 text-blue-900" />
                         </div>
 
                         <div>
@@ -183,14 +183,14 @@ function BookingStatusContent() {
                                     placeholder="budi@example.com"
                                     value={emailInput}
                                     onChange={(e) => setEmailInput(e.target.value)}
-                                    className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-900/40 focus:bg-white font-semibold transition-all"
+                                    className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900/40 focus:bg-white font-semibold transition-all"
                                 />
                             </div>
 
                             <button 
                                 type="submit"
                                 disabled={verifying}
-                                className="w-full bg-gradient-to-r from-green-900 via-green-800 to-green-955 hover:from-green-955 hover:to-green-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+                                className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-955 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_30px_rgba(30,58,138,0.15)] transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50 cursor-pointer active:scale-[0.98]"
                             >
                                 {verifying ? (
                                     <>
@@ -208,7 +208,7 @@ function BookingStatusContent() {
 
                         <div className="border-t border-slate-100 pt-5 space-y-3.5 text-xs text-slate-500 text-left">
                             <details className="group">
-                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-green-900 transition-colors list-none flex items-center justify-between">
+                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-900 transition-colors list-none flex items-center justify-between">
                                     <span>Tidak ingat email yang digunakan?</span>
                                     <span className="transition-transform group-open:rotate-180">↓</span>
                                 </summary>
@@ -220,7 +220,7 @@ function BookingStatusContent() {
                             </details>
                             
                             <details className="group">
-                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-green-900 transition-colors list-none flex items-center justify-between">
+                                <summary className="font-bold text-slate-600 cursor-pointer hover:text-blue-900 transition-colors list-none flex items-center justify-between">
                                     <span>Tidak punya kode booking?</span>
                                     <span className="transition-transform group-open:rotate-180">↓</span>
                                 </summary>
@@ -242,13 +242,13 @@ function BookingStatusContent() {
         <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/30 text-slate-855">
             <PublicHeader>
                 <nav className="flex items-center space-x-2">
-                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-green-900 transition-colors border border-slate-200 bg-white/80 backdrop-blur px-3.5 py-1.5 rounded-full hover:shadow-sm active:scale-95">
+                    <Link href="/villas" className="text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-blue-900 transition-colors border border-slate-200 bg-white/80 backdrop-blur px-3.5 py-1.5 rounded-full hover:shadow-sm active:scale-95">
                         Cari Villa
                     </Link>
                     {booking.status === 'pending' && booking.payment_status === 'unpaid' && booking.payment?.snap_token && (
                         <Link
                             href={`/booking/payment?code=${code}&token=${booking.payment.snap_token}`}
-                            className="text-xs font-bold text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-3.5 py-1.5 rounded-full shadow-sm transition-all active:scale-95"
+                            className="text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-3.5 py-1.5 rounded-full shadow-sm transition-all active:scale-95"
                         >
                             Lanjut Bayar
                         </Link>
@@ -262,7 +262,7 @@ function BookingStatusContent() {
                         <h1 className="font-serif text-3xl md:text-[44px] md:leading-[48px] font-normal text-slate-900 tracking-tight">Status Pemesanan</h1>
                         <div className="inline-flex items-center space-x-1.5 bg-slate-100/80 px-2.5 py-1 rounded-full border border-slate-200/50 mt-3.5">
                             <span className="text-[10px] font-bold text-slate-550 tracking-wider uppercase">Kode Booking:</span>
-                            <span className="text-xs font-extrabold text-green-900 tracking-wide font-mono">{code}</span>
+                            <span className="text-xs font-extrabold text-blue-900 tracking-wide font-mono">{code}</span>
                         </div>
                     </div>
 
@@ -294,7 +294,7 @@ function BookingStatusContent() {
                                 </div>
                                 <Link
                                     href={`/booking/payment?code=${code}&token=${booking.payment?.snap_token || ''}`}
-                                    className="bg-gradient-to-r from-green-900 to-green-950 hover:from-green-955 hover:to-green-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all text-xs flex items-center space-x-1.5 flex-shrink-0 cursor-pointer active:scale-95"
+                                    className="bg-gradient-to-r from-blue-900 to-blue-950 hover:from-blue-955 hover:to-blue-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all text-xs flex items-center space-x-1.5 flex-shrink-0 cursor-pointer active:scale-95"
                                 >
                                     <CreditCard className="w-3.5 h-3.5" />
                                     <span>Bayar Sekarang</span>
@@ -305,8 +305,8 @@ function BookingStatusContent() {
 
                         {/* Waiting for verification alert */}
                         {booking.status === 'pending' && booking.payment_status === 'pending' && (
-                            <div className="bg-green-50/50 border border-green-200/60 rounded-2xl p-5 flex items-start space-x-3 text-xs text-green-900 font-medium shadow-sm">
-                                <ShieldCheck className="w-5 h-5 text-green-900 flex-shrink-0 mt-0.5" />
+                            <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-5 flex items-start space-x-3 text-xs text-blue-900 font-medium shadow-sm">
+                                <ShieldCheck className="w-5 h-5 text-blue-900 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <p className="font-bold text-sm text-slate-900 mb-0.5">Menunggu Verifikasi Pembayaran</p>
                                     <p className="leading-relaxed text-slate-650">Bukti pembayaran Anda telah kami terima dan sedang diverifikasi oleh tim admin. Proses ini biasanya memakan waktu kurang dari 30 menit pada jam operasional.</p>
@@ -353,7 +353,7 @@ function BookingStatusContent() {
                                 <div className="space-y-1.5">
                                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">TANGGAL CHECK-IN</span>
                                     <div className="flex items-center space-x-2">
-                                        <Calendar className="w-4.5 h-4.5 text-green-900" />
+                                        <Calendar className="w-4.5 h-4.5 text-blue-900" />
                                         <span className="font-bold text-slate-900">{format(parseISO(booking.check_in), 'dd MMMM yyyy', { locale: localeID })}</span>
                                     </div>
                                     <span className="text-xs text-slate-500 font-normal block pl-6.5">Setelah {booking.villa?.check_in_time.substring(0, 5) || '14:00'} WIB</span>
@@ -361,7 +361,7 @@ function BookingStatusContent() {
                                 <div className="space-y-1.5 border-l-0 sm:border-l border-slate-150/80 sm:pl-6 pl-0">
                                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">TANGGAL CHECK-OUT</span>
                                     <div className="flex items-center space-x-2">
-                                        <Calendar className="w-4.5 h-4.5 text-green-900" />
+                                        <Calendar className="w-4.5 h-4.5 text-blue-900" />
                                         <span className="font-bold text-slate-900">{format(parseISO(booking.check_out), 'dd MMMM yyyy', { locale: localeID })}</span>
                                     </div>
                                     <span className="text-xs text-slate-500 font-normal block pl-6.5">Sebelum {booking.villa?.check_out_time.substring(0, 5) || '12:00'} WIB</span>
@@ -453,7 +453,7 @@ function BookingStatusContent() {
 
                                 <div className="flex justify-between font-bold text-slate-900 border-t border-slate-150/80 pt-4 text-sm">
                                     <span>Total Biaya:</span>
-                                    <span className="text-green-900 text-base">{formatPrice(booking.total_amount)}</span>
+                                    <span className="text-blue-900 text-base">{formatPrice(booking.total_amount)}</span>
                                 </div>
                             </div>
 
@@ -470,7 +470,7 @@ function BookingStatusContent() {
                                             toast.error('Gagal membuat invoice PDF.');
                                         }
                                     }}
-                                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
+                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer active:scale-[0.98]"
                                 >
                                     <Download className="w-4 h-4" />
                                     <span>Download Invoice PDF</span>

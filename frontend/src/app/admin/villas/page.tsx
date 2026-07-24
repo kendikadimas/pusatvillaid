@@ -76,8 +76,8 @@ export default function AdminVillasPage() {
     const SortIcon = ({ field }: { field: string }) => {
         if (sortField !== field) return <ArrowUpDown className="w-3 h-3 ml-1 inline-block opacity-40" />;
         return sortOrder === 'asc'
-            ? <ArrowUp className="w-3 h-3 ml-1 inline-block text-green-600" />
-            : <ArrowDown className="w-3 h-3 ml-1 inline-block text-green-600" />;
+            ? <ArrowUp className="w-3 h-3 ml-1 inline-block text-blue-600" />
+            : <ArrowDown className="w-3 h-3 ml-1 inline-block text-blue-600" />;
     };
 
     const handleToggleStatus = async (villa: Villa) => {
@@ -132,7 +132,7 @@ export default function AdminVillasPage() {
                 </div>
                 <Link
                     href="/admin/villas/new"
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-colors flex items-center justify-center space-x-1.5 cursor-pointer shrink-0"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] transition-colors flex items-center justify-center space-x-1.5 cursor-pointer shrink-0"
                     title="Tambah Villa Baru"
                 >
                     <Plus className="w-4.5 h-4.5" />
@@ -149,7 +149,7 @@ export default function AdminVillasPage() {
                         <p className="text-slate-500 text-sm mb-4">Katalog villa Anda masih kosong.</p>
                         <Link 
                             href="/admin/villas/new" 
-                            className="inline-flex bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-[8px]"
+                            className="inline-flex bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-[8px]"
                         >
                             Tambah Villa Pertama Anda
                         </Link>
@@ -177,15 +177,15 @@ export default function AdminVillasPage() {
                                         </div>
                                         <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
                                             <div className="flex items-center space-x-0.5" title="Kamar Tidur">
-                                                <BedDouble className="w-3.5 h-3.5 text-green-500" />
+                                                <BedDouble className="w-3.5 h-3.5 text-blue-500" />
                                                 <span>{villa.bedrooms}</span>
                                             </div>
                                             <div className="flex items-center space-x-0.5" title="Kamar Mandi">
-                                                <Bath className="w-3.5 h-3.5 text-green-500" />
+                                                <Bath className="w-3.5 h-3.5 text-blue-500" />
                                                 <span>{villa.bathrooms}</span>
                                             </div>
                                             <div className="flex items-center space-x-0.5" title="Kapasitas Tamu">
-                                                <Users className="w-3.5 h-3.5 text-green-500" />
+                                                <Users className="w-3.5 h-3.5 text-blue-500" />
                                                 <span>{villa.max_guests}</span>
                                             </div>
                                         </div>
@@ -194,7 +194,7 @@ export default function AdminVillasPage() {
                                                 {formatPrice(villa.price_per_night)}
                                             </span>
                                             {villa.weekend_price !== null && (
-                                                <span className="text-green-600 font-semibold text-[10px]">
+                                                <span className="text-blue-600 font-semibold text-[10px]">
                                                     | Weekend {formatPrice(villa.weekend_price)}
                                                 </span>
                                             )}
@@ -206,7 +206,7 @@ export default function AdminVillasPage() {
                                                 title={villa.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
                                             >
                                                 {villa.is_active ? (
-                                                    <ToggleRight className="w-9 h-6 text-green-600" />
+                                                    <ToggleRight className="w-9 h-6 text-blue-600" />
                                                 ) : (
                                                     <ToggleLeft className="w-9 h-6 text-slate-300" />
                                                 )}
@@ -223,7 +223,7 @@ export default function AdminVillasPage() {
                                                 </a>
                                                 <Link 
                                                     href={`/admin/villas/edit?id=${villa.id}`}
-                                                    className="inline-flex bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold p-2 sm:px-2.5 sm:py-1.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200 shrink-0"
+                                                    className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold p-2 sm:px-2.5 sm:py-1.5 rounded-[8px] text-xs items-center space-x-1 transition-all duration-200 shrink-0"
                                                     title="Edit Villa"
                                                 >
                                                     <Edit className="w-3.5 h-3.5" />
@@ -241,32 +241,32 @@ export default function AdminVillasPage() {
                                 <thead>
                                     <tr className="border-b border-[#dddddd] bg-[#f7f7f7] text-slate-500 uppercase font-bold text-[11px] sm:text-xs tracking-wider">
                                         <th className="py-4 px-6 w-20">Foto</th>
-                                        <th className="py-4 px-6 cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('name')}>
+                                        <th className="py-4 px-6 cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('name')}>
                                             <div className="flex items-center gap-1">
                                                 Nama Villa <SortIcon field="name" />
                                             </div>
                                         </th>
-                                        <th className="py-4 px-6 hidden sm:table-cell cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('location')}>
+                                        <th className="py-4 px-6 hidden sm:table-cell cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('location')}>
                                             <div className="flex items-center gap-1">
                                                 Lokasi <SortIcon field="location" />
                                             </div>
                                         </th>
-                                        <th className="py-4 px-6 text-center hidden lg:table-cell cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('bedrooms')}>
+                                        <th className="py-4 px-6 text-center hidden lg:table-cell cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('bedrooms')}>
                                             <div className="flex items-center justify-center gap-1">
                                                 Spek <SortIcon field="bedrooms" />
                                             </div>
                                         </th>
-                                        <th className="py-4 px-6 text-right cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('price_per_night')}>
+                                        <th className="py-4 px-6 text-right cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('price_per_night')}>
                                             <div className="flex items-center justify-end gap-1">
                                                 Weekday / Malam <SortIcon field="price_per_night" />
                                             </div>
                                         </th>
-                                        <th className="py-4 px-6 text-right hidden sm:table-cell cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('weekend_price')}>
+                                        <th className="py-4 px-6 text-right hidden sm:table-cell cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('weekend_price')}>
                                             <div className="flex items-center justify-end gap-1">
                                                 Weekend / Malam <SortIcon field="weekend_price" />
                                             </div>
                                         </th>
-                                        <th className="py-4 px-6 text-center hidden sm:table-cell cursor-pointer select-none hover:text-green-600 transition-colors" onClick={() => handleSort('is_active')}>
+                                        <th className="py-4 px-6 text-center hidden sm:table-cell cursor-pointer select-none hover:text-blue-600 transition-colors" onClick={() => handleSort('is_active')}>
                                             <div className="flex items-center justify-center gap-1">
                                                 Status <SortIcon field="is_active" />
                                             </div>
@@ -298,15 +298,15 @@ export default function AdminVillasPage() {
                                                 <td className="py-4 px-6 text-center hidden lg:table-cell">
                                                     <div className="flex items-center justify-center gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1" title="Kamar Tidur">
-                                                            <BedDouble className="w-4 h-4 text-green-500" />
+                                                            <BedDouble className="w-4 h-4 text-blue-500" />
                                                             <span className="text-sm font-semibold text-slate-700">{villa.bedrooms}</span>
                                                         </div>
                                                         <div className="flex items-center gap-1" title="Kamar Mandi">
-                                                            <Bath className="w-4 h-4 text-green-500" />
+                                                            <Bath className="w-4 h-4 text-blue-500" />
                                                             <span className="text-sm font-semibold text-slate-700">{villa.bathrooms}</span>
                                                         </div>
                                                         <div className="flex items-center gap-1" title="Kapasitas Tamu">
-                                                            <Users className="w-4 h-4 text-green-500" />
+                                                            <Users className="w-4 h-4 text-blue-500" />
                                                             <span className="text-sm font-semibold text-slate-700">{villa.max_guests}</span>
                                                         </div>
                                                     </div>
@@ -330,7 +330,7 @@ export default function AdminVillasPage() {
                                                         title={villa.is_active ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}
                                                     >
                                                         {villa.is_active ? (
-                                                            <ToggleRight className="w-10 h-6 text-green-600" />
+                                                            <ToggleRight className="w-10 h-6 text-blue-600" />
                                                         ) : (
                                                             <ToggleLeft className="w-10 h-6 text-slate-300" />
                                                         )}
@@ -349,7 +349,7 @@ export default function AdminVillasPage() {
                                                         </a>
                                                         <Link 
                                                             href={`/admin/villas/edit?id=${villa.id}`}
-                                                            className="inline-flex bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold py-2 px-4 rounded-[10px] text-xs items-center gap-1.5 transition-all duration-200"
+                                                            className="inline-flex bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-2 px-4 rounded-[10px] text-xs items-center gap-1.5 transition-all duration-200"
                                                         >
                                                             <Edit className="w-4 h-4" />
                                                             <span>Edit</span>

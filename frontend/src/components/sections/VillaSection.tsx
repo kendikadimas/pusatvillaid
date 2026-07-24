@@ -57,7 +57,7 @@ export default function VillaSection({
             ) : (
                 <div className="max-w-8xl mx-auto px-8 sm:px-14 lg:px-24 py-2 w-full space-y-8">
                     {/* <div className="border-b border-[#EAEAEA] pb-10 text-left"> */}
-                        {/* <span className="inline-block text-[10px] font-bold text-green-500 uppercase tracking-widest mb-2">Unit Properti Tersedia</span> */}
+                        {/* <span className="inline-block text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Unit Properti Tersedia</span> */}
                         {/* <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-black text-[#111111] tracking-[-0.02em] leading-[1.2]">
                             Jelajahi Pilihan Unit Villa Terbaik
                         </h2>
@@ -76,7 +76,7 @@ export default function VillaSection({
                                 </div>
                                 <Link
                                     href={`/villas?location=${group.query}`}
-                                    className="hidden sm:inline-flex items-center text-sm font-medium text-[#111111] hover:text-[#16a34a] transition-colors border-b border-[#16a34a]/0 hover:border-[#16a34a] pb-0.5"
+                                    className="hidden sm:inline-flex items-center text-sm font-medium text-[#111111] hover:text-[#2563EB] transition-colors border-b border-[#2563EB]/0 hover:border-[#2563EB] pb-0.5"
                                 >
                                     Lihat semua <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                                 </Link>
@@ -95,7 +95,7 @@ export default function VillaSection({
                             <div className="mt-6 sm:hidden">
                                 <Link
                                     href={`/villas?location=${group.query}`}
-                                    className="inline-flex items-center text-sm font-medium text-[#16a34a] border-b border-[#16a34a] pb-0.5"
+                                    className="inline-flex items-center text-sm font-medium text-[#2563EB] border-b border-[#2563EB] pb-0.5"
                                 >
                                     Lihat semua unit villa di {group.query} <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                                 </Link>

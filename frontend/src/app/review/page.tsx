@@ -118,7 +118,7 @@ function SubmitReviewContent() {
 
                         <Link
                             href="/"
-                            className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
                         >
                             <span>Kembali ke Beranda</span>
                         </Link>
@@ -137,8 +137,8 @@ function SubmitReviewContent() {
             <main className="max-w-md mx-auto px-4 py-16 w-full flex-1 flex flex-col justify-center">
                 {submitted ? (
                     <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6">
-                        <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto border border-green-100">
-                            <CheckSquare className="w-8 h-8 text-green-600" />
+                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto border border-blue-100">
+                            <CheckSquare className="w-8 h-8 text-blue-600" />
                         </div>
 
                         <div>
@@ -150,7 +150,7 @@ function SubmitReviewContent() {
 
                         <Link
                             href="/"
-                            className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm"
                         >
                             <span>Kembali ke Beranda</span>
                         </Link>
@@ -216,13 +216,13 @@ function SubmitReviewContent() {
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     maxLength={500}
-                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold ${
+                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
                                         formErrors.comment ? 'border-red-500 focus:ring-red-200' : 'border-slate-200'
                                     }`}
                                 />
                                 <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1 font-semibold">
                                     <span>Minimal 20, Maksimal 500 karakter.</span>
-                                    <span className={comment.length < 20 ? 'text-amber-600' : 'text-green-600'}>
+                                    <span className={comment.length < 20 ? 'text-amber-600' : 'text-blue-600'}>
                                         {comment.length} / 500
                                     </span>
                                 </div>
@@ -234,7 +234,7 @@ function SubmitReviewContent() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm disabled:opacity-50"
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-sm disabled:opacity-50"
                             >
                                 {submitting ? (
                                     <>

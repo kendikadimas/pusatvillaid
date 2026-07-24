@@ -107,7 +107,7 @@ export default function WishlistPage() {
                         </p>
                         <Link
                             href="/villas"
-                            className="inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all active:scale-95"
+                            className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all active:scale-95"
                         >
                             <span>Jelajahi Villa</span>
                             <ChevronRight className="w-4 h-4" />

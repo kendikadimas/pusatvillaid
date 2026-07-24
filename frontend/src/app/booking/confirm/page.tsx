@@ -381,7 +381,7 @@ export default function BookingConfirmPage() {
                     <div className="flex gap-3 justify-center pt-2">
                         <button
                             onClick={() => router.push('/villas')}
-                            className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all"
                         >
                             Cari Villa
                         </button>
@@ -671,7 +671,7 @@ export default function BookingConfirmPage() {
                     <div className="flex items-center flex-wrap gap-y-1.5 space-x-2.5 text-[8px] sm:text-[9px] text-slate-400 font-black uppercase tracking-widest mb-10">
                         <span>1. Pilih Tanggal</span>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                        <span className="text-green-500">2. Upload Bukti Pembayaran</span>
+                        <span className="text-blue-500">2. Upload Bukti Pembayaran</span>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                         <span>3. Selesai</span>
                     </div>
@@ -717,7 +717,7 @@ export default function BookingConfirmPage() {
                                                                             onClick={() => setSelectedMethodId(method.id)}
                                                                             className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                                                                                 selectedMethodId === method.id
-                                                                                    ? 'border-green-500 bg-green-50/20 ring-1 ring-green-500/20'
+                                                                                    ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20'
                                                                                     : 'border-slate-200 bg-white hover:border-slate-300'
                                                                             }`}
                                                                         >
@@ -731,7 +731,7 @@ export default function BookingConfirmPage() {
                                                                                 </div>
                                                                             </div>
                                                                             {selectedMethodId === method.id && (
-                                                                                <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+                                                                                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
                                                                                     <Check className="w-3.5 h-3.5 text-white" />
                                                                                 </div>
                                                                             )}
@@ -751,7 +751,7 @@ export default function BookingConfirmPage() {
                                                                             onClick={() => setSelectedMethodId(method.id)}
                                                                             className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                                                                                 selectedMethodId === method.id
-                                                                                    ? 'border-green-500 bg-green-50/20 ring-1 ring-green-500/20'
+                                                                                    ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20'
                                                                                     : 'border-slate-200 bg-white hover:border-slate-300'
                                                                             }`}
                                                                         >
@@ -769,7 +769,7 @@ export default function BookingConfirmPage() {
                                                                                 </div>
                                                                             </div>
                                                                             {selectedMethodId === method.id && (
-                                                                                <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+                                                                                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
                                                                                     <Check className="w-3.5 h-3.5 text-white" />
                                                                                 </div>
                                                                             )}
@@ -779,32 +779,32 @@ export default function BookingConfirmPage() {
                                                             </div>
                                                         )}
                                                         {selectedMethod && (
-                                                            <div className="mt-3 p-4 bg-green-50 border border-green-200/80 rounded-2xl">
+                                                            <div className="mt-3 p-4 bg-blue-50 border border-blue-200/80 rounded-2xl">
                                                                 {selectedMethod.code === 'qris' ? (
                                                                     <div className="space-y-2">
-                                                                        <p className="text-xs font-bold text-green-900">Pembayaran via QRIS</p>
-                                                                        <p className="text-xs font-semibold text-green-700 leading-relaxed">
+                                                                        <p className="text-xs font-bold text-blue-900">Pembayaran via QRIS</p>
+                                                                        <p className="text-xs font-semibold text-blue-700 leading-relaxed">
                                                                             Scan kode QR yang akan ditampilkan di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking.
                                                                         </p>
                                                                     </div>
                                                                 ) : (
                                                                     <div className="space-y-3">
-                                                                        <p className="text-xs font-bold text-green-900">Detail Transfer Bank</p>
+                                                                        <p className="text-xs font-bold text-blue-900">Detail Transfer Bank</p>
                                                                         <div className="space-y-2">
                                                                             <div className="flex justify-between items-center">
-                                                                                <span className="text-xs text-green-700 font-semibold">Bank:</span>
-                                                                                <span className="text-xs font-bold text-green-900">{selectedMethod.name}</span>
+                                                                                <span className="text-xs text-blue-700 font-semibold">Bank:</span>
+                                                                                <span className="text-xs font-bold text-blue-900">{selectedMethod.name}</span>
                                                                             </div>
                                                                             <div className="flex justify-between items-center">
-                                                                                <span className="text-xs text-green-700 font-semibold">No. Rekening:</span>
-                                                                                <span className="text-xs font-mono font-bold text-green-900 bg-white px-2 py-1 rounded border border-green-200">{selectedMethod.account_number}</span>
+                                                                                <span className="text-xs text-blue-700 font-semibold">No. Rekening:</span>
+                                                                                <span className="text-xs font-mono font-bold text-blue-900 bg-white px-2 py-1 rounded border border-blue-200">{selectedMethod.account_number}</span>
                                                                             </div>
                                                                             <div className="flex justify-between items-center">
-                                                                                <span className="text-xs text-green-700 font-semibold">Atas Nama:</span>
-                                                                                <span className="text-xs font-bold text-green-900">{selectedMethod.account_name}</span>
+                                                                                <span className="text-xs text-blue-700 font-semibold">Atas Nama:</span>
+                                                                                <span className="text-xs font-bold text-blue-900">{selectedMethod.account_name}</span>
                                                                             </div>
                                                                         </div>
-                                                                        <p className="text-[10px] text-green-600 mt-2 font-semibold italic">
+                                                                        <p className="text-[10px] text-blue-600 mt-2 font-semibold italic">
                                                                             Upload bukti transfer di halaman berikutnya setelah melakukan pembayaran.
                                                                         </p>
                                                                     </div>
@@ -858,7 +858,7 @@ export default function BookingConfirmPage() {
                                                     onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                                                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyVoucher(); } }}
                                                     placeholder="Masukkan kode voucher"
-                                                    className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-2xl px-4 py-3 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 uppercase`}
+                                                    className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-2xl px-4 py-3 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase`}
                                                     disabled={voucherLoading}
                                                 />
                                                 {voucherError && (
@@ -870,7 +870,7 @@ export default function BookingConfirmPage() {
                                             <button
                                                 onClick={handleApplyVoucher}
                                                 disabled={voucherLoading || !voucherCode.trim()}
-                                                className="px-5 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-2xl transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
+                                                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-2xl transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
                                             >
                                                 {voucherLoading ? (
                                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -887,7 +887,7 @@ export default function BookingConfirmPage() {
                                     <h2 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">2. Detail Tamu</h2>
                                     
                                     <div className="space-y-6">
-                                        <div className="relative border-b border-slate-200 focus-within:border-green-500 transition-colors py-1">
+                                        <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                             <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Nama Lengkap Sesuai KTP</label>
                                             <input 
                                                 type="text" 
@@ -902,7 +902,7 @@ export default function BookingConfirmPage() {
                                         </div>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <div className="relative border-b border-slate-200 focus-within:border-green-500 transition-colors py-1">
+                                            <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                                 <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Alamat Email</label>
                                                 <input 
                                                     type="email" 
@@ -916,7 +916,7 @@ export default function BookingConfirmPage() {
                                                 )}
                                             </div>
 
-                                            <div className="relative border-b border-slate-200 focus-within:border-green-500 transition-colors py-1">
+                                            <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                                 <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Nomor WhatsApp</label>
                                                 <input 
                                                     type="tel" 
@@ -931,7 +931,7 @@ export default function BookingConfirmPage() {
                                             </div>
                                         </div>
 
-                                        <div className="relative border-b border-slate-200 focus-within:border-green-500 transition-colors py-1">
+                                        <div className="relative border-b border-slate-200 focus-within:border-blue-500 transition-colors py-1">
                                             <label className="text-[11px] font-black text-slate-400 block uppercase tracking-widest">Catatan Tambahan (Opsional)</label>
                                             <textarea 
                                                 rows={2}
@@ -982,17 +982,17 @@ export default function BookingConfirmPage() {
                                             </div>
                                         </div>
                                     ) : ktpLoading ? (
-                                        <div className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl border-green-200 bg-green-50/20">
-                                            <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+                                        <div className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl border-blue-200 bg-blue-50/20">
+                                            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
                                             <p className="text-xs font-bold text-slate-600">Memproses file KTP...</p>
                                         </div>
                                     ) : (
                                         <label
                                             htmlFor="ktp-upload-desktop"
-                                            className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-green-400 hover:bg-green-50/30 ${formErrors.ktp_image ? 'border-red-400 bg-red-50/20' : 'border-slate-200 bg-slate-50/40'}`}
+                                            className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-blue-400 hover:bg-blue-50/30 ${formErrors.ktp_image ? 'border-red-400 bg-red-50/20' : 'border-slate-200 bg-slate-50/40'}`}
                                         >
-                                            <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center">
-                                                <ImagePlus className="w-6 h-6 text-green-500" />
+                                            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                                                <ImagePlus className="w-6 h-6 text-blue-500" />
                                             </div>
                                             <div className="text-center">
                                                 <p className="text-xs font-bold text-slate-700">Klik untuk unggah foto KTP</p>
@@ -1007,9 +1007,9 @@ export default function BookingConfirmPage() {
                                         </p>
                                     )}
 
-                                    <div className="bg-green-50/50 border border-green-200/60 rounded-2xl p-4 flex items-start space-x-3">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
-                                            <ShieldCheck className="w-4 h-4 text-green-600" />
+                                    <div className="bg-blue-50/50 border border-blue-200/60 rounded-2xl p-4 flex items-start space-x-3">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                                            <ShieldCheck className="w-4 h-4 text-blue-600" />
                                         </div>
                                         <div className="text-[11px] text-slate-550 font-medium leading-relaxed">
                                             Foto KTP harus jelas dan terbaca. Data KTP hanya digunakan untuk keperluan verifikasi identitas dan tidak akan dibagikan kepada pihak ketiga.
@@ -1027,10 +1027,10 @@ export default function BookingConfirmPage() {
                                                 type="checkbox" 
                                                 checked={agree}
                                                 onChange={(e) => setAgree(e.target.checked)}
-                                                className="mt-0.5 rounded border-slate-350 text-green-500 focus:ring-green-500 w-4 h-4 cursor-pointer"
+                                                className="mt-0.5 rounded border-slate-350 text-blue-500 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                                             />
                                             <span className="text-xs text-slate-555 leading-normal font-semibold">
-                                                Saya menyetujui <span className="text-green-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
+                                                Saya menyetujui <span className="text-blue-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
                                             </span>
                                         </label>
                                         {formErrors.agree && (
@@ -1040,7 +1040,7 @@ export default function BookingConfirmPage() {
                                         <button 
                                             type="submit"
                                             disabled={loading}
-                                            className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-4 rounded-2xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-4 cursor-pointer"
+                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] active:translate-y-[1px] text-white font-bold py-4 rounded-2xl shadow-lg transition-transform flex items-center justify-center space-x-2 text-xs uppercase tracking-wider disabled:opacity-50 mt-4 cursor-pointer"
                                         >
                                             {loading ? (
                                                 <>
@@ -1078,7 +1078,7 @@ export default function BookingConfirmPage() {
                                                     {format(parseISO(checkIn), 'dd MMM')} - {format(parseISO(checkOut), 'dd MMM yyyy', { locale: localeID })}
                                                 </span>
                                             </div>
-                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-green-500 hover:underline active:scale-95 transition-transform">
+                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline active:scale-95 transition-transform">
                                                 Ubah
                                             </Link>
                                         </div>
@@ -1088,7 +1088,7 @@ export default function BookingConfirmPage() {
                                                 <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">Tamu</span>
                                                 <span className="text-slate-800">{numGuests} Tamu</span>
                                             </div>
-                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-green-500 hover:underline active:scale-95 transition-transform">
+                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline active:scale-95 transition-transform">
                                                 Ubah
                                             </Link>
                                         </div>
@@ -1114,7 +1114,7 @@ export default function BookingConfirmPage() {
                                         {isRefundable && (
                                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
                                                 <span>Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                                <span className="text-green-500 font-bold font-sans whitespace-nowrap">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                                <span className="text-blue-500 font-bold font-sans whitespace-nowrap">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                             </div>
                                         )}
                                         {voucherDiscount > 0 && (
@@ -1139,7 +1139,7 @@ export default function BookingConfirmPage() {
  
                                     <div className="border-t border-slate-150 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 font-black text-slate-950 text-sm">
                                         <span>Total Biaya</span>
-                                        <span className="text-green-500 font-sans">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
+                                        <span className="text-blue-500 font-sans">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                     </div>
                                 </div>
 
@@ -1198,7 +1198,7 @@ export default function BookingConfirmPage() {
                                                     {format(parseISO(checkIn), 'dd MMM')} - {format(parseISO(checkOut), 'dd MMM yyyy', { locale: localeID })}
                                                 </span>
                                             </div>
-                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-green-500 hover:underline">
+                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline">
                                                 Ubah
                                             </Link>
                                         </div>
@@ -1207,7 +1207,7 @@ export default function BookingConfirmPage() {
                                                 <span className="text-[9px] text-slate-400 block font-black uppercase tracking-widest">Tamu</span>
                                                 <span className="text-slate-800 font-bold">{numGuests} Tamu</span>
                                             </div>
-                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-green-500 hover:underline">
+                                            <Link href={`/villas/${selectedVilla.slug}`} className="text-xs font-bold text-blue-500 hover:underline">
                                                 Ubah
                                             </Link>
                                         </div>
@@ -1226,7 +1226,7 @@ export default function BookingConfirmPage() {
                                                 placeholder="Nama lengkap..."
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
-                                                className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all ${formErrors.name ? 'border-red-400' : 'border-slate-200'}`}
+                                                className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.name ? 'border-red-400' : 'border-slate-200'}`}
                                             />
                                             {formErrors.name && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.name}</p>}
                                         </div>
@@ -1238,7 +1238,7 @@ export default function BookingConfirmPage() {
                                                     placeholder="email@contoh.com"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
-                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all ${formErrors.email ? 'border-red-400' : 'border-slate-200'}`}
+                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.email ? 'border-red-400' : 'border-slate-200'}`}
                                                 />
                                                 {formErrors.email && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.email}</p>}
                                             </div>
@@ -1249,7 +1249,7 @@ export default function BookingConfirmPage() {
                                                     placeholder="08xxxxx"
                                                     value={phone}
                                                     onChange={(e) => setPhone(e.target.value)}
-                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all ${formErrors.phone ? 'border-red-400' : 'border-slate-200'}`}
+                                                    className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${formErrors.phone ? 'border-red-400' : 'border-slate-200'}`}
                                                 />
                                                 {formErrors.phone && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.phone}</p>}
                                             </div>
@@ -1277,8 +1277,8 @@ export default function BookingConfirmPage() {
                                     />
 
                                     {ktpLoading ? (
-                                        <div className="flex items-center gap-3 p-4 border-2 border-dashed rounded-xl border-green-200 bg-green-50/20">
-                                            <Loader2 className="w-6 h-6 animate-spin text-green-500 shrink-0" />
+                                        <div className="flex items-center gap-3 p-4 border-2 border-dashed rounded-xl border-blue-200 bg-blue-50/20">
+                                            <Loader2 className="w-6 h-6 animate-spin text-blue-500 shrink-0" />
                                             <p className="text-xs font-bold text-slate-600">Memproses...</p>
                                         </div>
                                     ) : ktpPreview ? (
@@ -1305,8 +1305,8 @@ export default function BookingConfirmPage() {
                                             htmlFor="ktp-upload-mobile"
                                             className={`flex items-center gap-3 p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all ${formErrors.ktp_image ? 'border-red-400 bg-red-50/20' : 'border-slate-200 bg-slate-50/40'}`}
                                         >
-                                            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                <ImagePlus className="w-5 h-5 text-green-500" />
+                                            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <ImagePlus className="w-5 h-5 text-blue-500" />
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-slate-700">Tap untuk unggah foto KTP</p>
@@ -1345,7 +1345,7 @@ export default function BookingConfirmPage() {
 
                                 {methodsLoading ? (
                                     <div className="flex items-center justify-center py-12">
-                                        <Loader2 className="w-6 h-6 animate-spin text-green-500" />
+                                        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
                                     </div>
                                 ) : paymentMethods.length === 0 ? (
                                     <div className="bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-slate-500 text-xs">
@@ -1370,7 +1370,7 @@ export default function BookingConfirmPage() {
                                                                         onClick={() => setSelectedMethodId(method.id)}
                                                                         className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                                                                             isSelected
-                                                                                ? 'border-green-500 bg-green-50/20 ring-1 ring-green-500/20 shadow-xs'
+                                                                                ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20 shadow-xs'
                                                                                 : 'border-slate-200 bg-white hover:border-slate-350'
                                                                         }`}
                                                                     >
@@ -1384,7 +1384,7 @@ export default function BookingConfirmPage() {
                                                                             </div>
                                                                         </div>
                                                                         <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${
-                                                                            isSelected ? 'border-green-600 bg-green-600' : 'border-slate-300 bg-white'
+                                                                            isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-white'
                                                                         }`}>
                                                                             {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                                                                         </div>
@@ -1406,7 +1406,7 @@ export default function BookingConfirmPage() {
                                                                         onClick={() => setSelectedMethodId(method.id)}
                                                                         className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                                                                             isSelected
-                                                                                ? 'border-green-500 bg-green-50/20 ring-1 ring-green-500/20 shadow-xs'
+                                                                                ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/20 shadow-xs'
                                                                                 : 'border-slate-200 bg-white hover:border-slate-350'
                                                                         }`}
                                                                     >
@@ -1424,7 +1424,7 @@ export default function BookingConfirmPage() {
                                                                             </div>
                                                                         </div>
                                                                         <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${
-                                                                            isSelected ? 'border-green-600 bg-green-600' : 'border-slate-300 bg-white'
+                                                                            isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-white'
                                                                         }`}>
                                                                             {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                                                                         </div>
@@ -1435,7 +1435,7 @@ export default function BookingConfirmPage() {
                                                     )}
 
                                                     {selectedMethodId && (
-                                                        <div className="p-4 bg-green-50/30 border border-green-100 rounded-2xl text-xs font-semibold text-slate-605 leading-relaxed shadow-3xs">
+                                                        <div className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl text-xs font-semibold text-slate-605 leading-relaxed shadow-3xs">
                                                             {(() => {
                                                                 const method = paymentMethods.find(m => m.id === selectedMethodId);
                                                                 if (!method) return null;
@@ -1448,7 +1448,7 @@ export default function BookingConfirmPage() {
                                                                 } else {
                                                                     return (
                                                                         <p>
-                                                                            <strong>{method.name}:</strong> Transfer ke rekening <span className="font-mono font-bold text-green-600">{method.account_number}</span> a.n. {method.account_name}. Upload bukti transfer di halaman berikutnya.
+                                                                            <strong>{method.name}:</strong> Transfer ke rekening <span className="font-mono font-bold text-blue-600">{method.account_number}</span> a.n. {method.account_name}. Upload bukti transfer di halaman berikutnya.
                                                                         </p>
                                                                     );
                                                                 }
@@ -1495,7 +1495,7 @@ export default function BookingConfirmPage() {
                                                 onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                                                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyVoucher(); } }}
                                                 placeholder="Kode promo"
-                                                className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-xl px-3.5 py-2.5 text-xs font-bold font-mono focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 uppercase`}
+                                                className={`w-full border ${voucherError ? 'border-red-400' : 'border-slate-200'} rounded-xl px-3.5 py-2.5 text-xs font-bold font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase`}
                                                 disabled={voucherLoading}
                                             />
                                             {voucherError && (
@@ -1505,7 +1505,7 @@ export default function BookingConfirmPage() {
                                         <button
                                             onClick={handleApplyVoucher}
                                             disabled={voucherLoading || !voucherCode.trim()}
-                                            className="px-4 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
+                                            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed active:scale-95 shrink-0"
                                         >
                                             {voucherLoading ? (
                                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1542,7 +1542,7 @@ export default function BookingConfirmPage() {
                                             </div>
                                             <button 
                                                 onClick={() => setCurrentStep(2)}
-                                                className="text-xs font-bold text-green-500 hover:underline flex-shrink-0"
+                                                className="text-xs font-bold text-blue-500 hover:underline flex-shrink-0"
                                             >
                                                 Ubah
                                             </button>
@@ -1577,9 +1577,9 @@ export default function BookingConfirmPage() {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-left">
-                                                            <p className="text-xs text-green-900 font-bold mb-1">Cara Pembayaran:</p>
-                                                            <ol className="text-[11px] text-green-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
+                                                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-left">
+                                                            <p className="text-xs text-blue-900 font-bold mb-1">Cara Pembayaran:</p>
+                                                            <ol className="text-[11px] text-blue-800 font-medium space-y-1 list-decimal list-inside leading-relaxed">
                                                                 <li>Buka aplikasi e-wallet atau mobile banking</li>
                                                                 <li>Pilih menu Scan QR / QRIS</li>
                                                                 <li>Arahkan kamera ke QR code di atas</li>
@@ -1593,7 +1593,7 @@ export default function BookingConfirmPage() {
                                                     </div>
                                                     <div className="flex justify-between items-center text-xs">
                                                         <span className="text-slate-500 font-semibold">Total Pembayaran:</span>
-                                                        <span className="font-extrabold text-green-900 text-sm">
+                                                        <span className="font-extrabold text-blue-900 text-sm">
                                                             {formatPriceOrLoading(finalTotalAmount, methodsLoading)}
                                                         </span>
                                                     </div>
@@ -1618,7 +1618,7 @@ export default function BookingConfirmPage() {
                                                                     toast.success('Nomor rekening berhasil disalin!');
                                                                     setTimeout(() => setCopiedMethodId(null), 2000);
                                                                 }}
-                                                                className="text-[10px] font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-2 py-1 rounded-lg border border-green-200 transition-all cursor-pointer active:scale-95"
+                                                                className="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg border border-blue-200 transition-all cursor-pointer active:scale-95"
                                                             >
                                                                 {copiedMethodId === method.id ? 'Tersalin' : 'Salin'}
                                                             </button>
@@ -1630,7 +1630,7 @@ export default function BookingConfirmPage() {
                                                     </div>
                                                     <div className="flex justify-between items-center text-xs">
                                                         <span className="text-slate-500 font-semibold">Jumlah Transfer:</span>
-                                                        <span className="font-extrabold text-green-900 text-sm">
+                                                        <span className="font-extrabold text-blue-900 text-sm">
                                                             {formatPriceOrLoading(finalTotalAmount, methodsLoading)}
                                                         </span>
                                                     </div>
@@ -1642,7 +1642,7 @@ export default function BookingConfirmPage() {
 
                                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                                     <div className="flex items-center space-x-3 min-w-0">
-                                        <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                                             {name.charAt(0).toUpperCase() || 'U'}
                                         </div>
                                         <div className="min-w-0">
@@ -1655,7 +1655,7 @@ export default function BookingConfirmPage() {
                                         onClick={() => {
                                             setCurrentStep(1);
                                         }}
-                                        className="text-xs font-bold text-green-500 hover:underline flex-shrink-0"
+                                        className="text-xs font-bold text-blue-500 hover:underline flex-shrink-0"
                                     >
                                         Ubah
                                     </button>
@@ -1681,7 +1681,7 @@ export default function BookingConfirmPage() {
                                         {isRefundable && (
                                             <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                                 <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                                <span className="text-green-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                                <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                             </div>
                                         )}
                                         {voucherDiscount > 0 && (
@@ -1705,7 +1705,7 @@ export default function BookingConfirmPage() {
                                         
                                         <div className="border-t border-slate-150 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                             <span>Total Biaya</span>
-                                            <span className="text-green-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
+                                            <span className="text-blue-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1747,8 +1747,8 @@ export default function BookingConfirmPage() {
                                     <div
                                         className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer relative group transition-all duration-200 ${
                                             uploadTapAnim
-                                                ? 'border-green-500 bg-green-50/40 scale-[0.97]'
-                                                : 'border-slate-200 hover:border-green-400 hover:bg-slate-50/30 bg-slate-50/20'
+                                                ? 'border-blue-500 bg-blue-50/40 scale-[0.97]'
+                                                : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30 bg-slate-50/20'
                                         }`}
                                         onClick={() => {
                                             if (proofCompressing) return;
@@ -1759,8 +1759,8 @@ export default function BookingConfirmPage() {
                                     >
                                         {proofCompressing ? (
                                             <div className="py-4 flex flex-col items-center space-y-2.5">
-                                                <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
-                                                <span className="text-xs font-bold text-green-600">Memproses gambar...</span>
+                                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                                                <span className="text-xs font-bold text-blue-600">Memproses gambar...</span>
                                             </div>
                                         ) : proofPreview ? (
                                             <div className="space-y-3">
@@ -1777,7 +1777,7 @@ export default function BookingConfirmPage() {
                                                     </div>
                                                     <span className="truncate max-w-[200px] font-semibold">{proofFile?.name}</span>
                                                 </div>
-                                                <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors shadow-sm active:scale-95">
+                                                <span className="inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm active:scale-95">
                                                     Ganti Bukti Transfer
                                                 </span>
                                             </div>
@@ -1785,13 +1785,13 @@ export default function BookingConfirmPage() {
                                             <div className="py-2 space-y-2.5 flex flex-col items-center">
                                                 <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm ${
                                                     uploadTapAnim
-                                                        ? 'bg-green-600 border-green-600 text-white scale-110'
-                                                        : 'bg-white border-slate-200 text-slate-400 group-hover:text-green-600 group-hover:border-green-400 group-hover:shadow-md'
+                                                        ? 'bg-blue-600 border-blue-600 text-white scale-110'
+                                                        : 'bg-white border-slate-200 text-slate-400 group-hover:text-blue-600 group-hover:border-blue-400 group-hover:shadow-md'
                                                 }`}>
                                                     <Upload className={`w-5 h-5 stroke-[1.5] ${uploadTapAnim ? 'animate-bounce' : ''}`} />
                                                 </div>
                                                 <div>
-                                                    <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-green-600' : 'text-slate-700 group-hover:text-green-600'}`}>
+                                                    <span className={`text-xs font-bold block transition-colors ${uploadTapAnim ? 'text-blue-600' : 'text-slate-700 group-hover:text-blue-600'}`}>
                                                         {uploadTapAnim ? 'Buka galeri...' : 'Pilih file gambar'}
                                                     </span>
                                                     <span className="text-[10px] text-slate-400 block mt-1">JPG, PNG, WEBP (Maks 10MB, dikompres otomatis)</span>
@@ -1807,10 +1807,10 @@ export default function BookingConfirmPage() {
                                             type="checkbox" 
                                             checked={agree}
                                             onChange={(e) => setAgree(e.target.checked)}
-                                            className="mt-0.5 rounded border-slate-300 text-green-500 focus:ring-green-500 w-4 h-4 cursor-pointer"
+                                            className="mt-0.5 rounded border-slate-300 text-blue-500 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                                         />
                                         <span className="text-xs text-slate-550 leading-normal font-semibold text-left">
-                                            Saya menyetujui <span className="text-green-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
+                                            Saya menyetujui <span className="text-blue-500 font-bold hover:underline">Aturan Menginap</span> properti, termasuk larangan membawa hewan peliharaan, larangan merokok di dalam kamar, dan mematuhi jam tenang setelah pukul 22.00.
                                         </span>
                                     </label>
                                     {formErrors.agree && (
@@ -1830,7 +1830,7 @@ export default function BookingConfirmPage() {
                                     <span className="text-sm font-black text-slate-900 font-sans">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                                     <button 
                                         onClick={() => setIsPriceDetailOpen(true)}
-                                        className="text-[10px] font-bold text-green-500 hover:underline cursor-pointer"
+                                        className="text-[10px] font-bold text-blue-500 hover:underline cursor-pointer"
                                     >
                                         Detail
                                     </button>
@@ -1838,7 +1838,7 @@ export default function BookingConfirmPage() {
                             </div>
                             <button
                                 onClick={handleNextStep1}
-                                className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer"
                             >
                                 <span>Pilih Pembayaran</span>
                                 <ChevronRight className="w-4 h-4" />
@@ -1860,7 +1860,7 @@ export default function BookingConfirmPage() {
                             </button>
                             <button
                                 onClick={handleNextStep2}
-                                className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer"
                             >
                                 <span>Rincian Harga</span>
                                 <ChevronRight className="w-4 h-4" />
@@ -1884,7 +1884,7 @@ export default function BookingConfirmPage() {
                             <button
                                 onClick={() => handleSubmit()}
                                 disabled={loading}
-                                className="bg-green-600 hover:bg-green-750 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                className="bg-blue-600 hover:bg-blue-750 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                             >
                                 {loading ? (
                                     <>
@@ -1934,7 +1934,7 @@ export default function BookingConfirmPage() {
                             {isRefundable && (
                                 <div className="flex justify-between items-start gap-4 border-t border-slate-50 pt-2.5">
                                     <span className="text-left">Pilihan tarif (Bisa dikembalikan +11.1%)</span>
-                                    <span className="text-green-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
+                                    <span className="text-blue-500 font-bold font-sans flex-shrink-0">+{formatPrice(Math.round((priceBreakdown.weekdays.total + priceBreakdown.weekends.total) * 0.11111))}</span>
                                 </div>
                             )}
                             {voucherDiscount > 0 && (
@@ -1958,7 +1958,7 @@ export default function BookingConfirmPage() {
                             
                             <div className="border-t border-slate-100 pt-4 flex justify-between items-center font-black text-slate-900 text-sm">
                                 <span>Total</span>
-                                <span className="text-green-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
+                                <span className="text-blue-600 font-sans text-base">{formatPriceOrLoading(finalTotalAmount, methodsLoading)}</span>
                             </div>
                         </div>
                         

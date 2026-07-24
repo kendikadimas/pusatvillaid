@@ -172,14 +172,14 @@ export default function AdminUsersPage() {
                 </div>
                 <button
                     onClick={handleOpenCreate}
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2.5 sm:px-5 sm:py-3 rounded-[8px] transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-5 sm:py-3 rounded-[8px] transition-all duration-200 flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer shrink-0"
                 >
                     <Plus className="w-4.5 h-4.5" />
                     <span className="hidden sm:inline">Tambah Admin</span>
                 </button>
             </div>
 
-            <div className="flex items-center bg-white border border-[#dddddd] rounded-[8px] px-4 py-2.5 max-w-md transition-colors focus-within:ring-2 focus-within:ring-green-500/20 focus-within:border-green-500">
+            <div className="flex items-center bg-white border border-[#dddddd] rounded-[8px] px-4 py-2.5 max-w-md transition-colors focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
                 <Search className="w-4 h-4 text-slate-500 mr-2.5 flex-shrink-0" />
                 <input
                     type="text"
@@ -204,13 +204,13 @@ export default function AdminUsersPage() {
                     {filteredAdmins.map(admin => (
                         <div key={admin.id} className="bg-white border border-[#dddddd] rounded-[14px] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
                             <div className="flex items-center space-x-4">
-                                <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
                                     {admin.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm font-bold text-[#222222]">{admin.name}</span>
-                                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">Admin</span>
+                                        <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Admin</span>
                                     </div>
                                     <span className="text-xs text-slate-500">{admin.email}</span>
                                     <div className="flex items-center gap-3 mt-1">
@@ -226,7 +226,7 @@ export default function AdminUsersPage() {
                             <div className="flex items-center gap-2 sm:flex-shrink-0">
                                 <button
                                     onClick={() => handleOpenEdit(admin)}
-                                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-green-600 transition-colors cursor-pointer"
+                                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
                                     title="Edit"
                                 >
                                     <UserCog className="w-4 h-4" />
@@ -273,19 +273,19 @@ export default function AdminUsersPage() {
                             <div>
                                 <label className="block text-[11px] font-bold text-slate-500 mb-1.5">Nama Lengkap</label>
                                 <input type="text" required value={name} onChange={e => setName(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500" />
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                             </div>
                             <div>
                                 <label className="block text-[11px] font-bold text-slate-500 mb-1.5">Email</label>
                                 <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500" />
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                             </div>
                             <div>
                                 <label className="block text-[11px] font-bold text-slate-500 mb-1.5">
                                     Password {editingId ? '(kosongkan jika tidak diubah)' : ''}
                                 </label>
                                 <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500" />
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                             </div>
 
                             <div>
@@ -306,8 +306,8 @@ export default function AdminUsersPage() {
                                                             onClick={() => togglePermission(perm)}
                                                             className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
                                                                 isSelected
-                                                                    ? 'bg-green-600 text-white border-green-600'
-                                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-green-300'
+                                                                    ? 'bg-blue-600 text-white border-blue-600'
+                                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
                                                             }`}
                                                         >
                                                             {isSelected && <Check className="w-3 h-3" />}
@@ -327,7 +327,7 @@ export default function AdminUsersPage() {
                                     Batal
                                 </button>
                                 <button type="submit" disabled={submitting}
-                                    className="px-5 py-2.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
+                                    className="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
                                     {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                                     {editingId ? 'Simpan' : 'Tambah Admin'}
                                 </button>

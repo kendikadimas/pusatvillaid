@@ -712,7 +712,7 @@ function AdminEditVillaContent() {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-32">
-                <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
             </div>
         );
     }
@@ -735,7 +735,7 @@ function AdminEditVillaContent() {
                 <button 
                     onClick={() => setActiveTab('info')}
                     className={`pb-3 border-b-2 cursor-pointer transition-colors ${
-                        activeTab === 'info' ? 'border-green-500 text-green-600' : 'border-transparent hover:text-slate-800'
+                        activeTab === 'info' ? 'border-blue-500 text-blue-600' : 'border-transparent hover:text-slate-800'
                     }`}
                 >
                     1. Info Detail
@@ -743,7 +743,7 @@ function AdminEditVillaContent() {
                 <button 
                     onClick={() => setActiveTab('photos')}
                     className={`pb-3 border-b-2 cursor-pointer transition-colors ${
-                        activeTab === 'photos' ? 'border-green-500 text-green-600' : 'border-transparent hover:text-slate-800'
+                        activeTab === 'photos' ? 'border-blue-500 text-blue-600' : 'border-transparent hover:text-slate-800'
                     }`}
                 >
                     2. Galeri Foto ({photos.length})
@@ -751,7 +751,7 @@ function AdminEditVillaContent() {
                 <button 
                     onClick={() => setActiveTab('blocked_dates')}
                     className={`pb-3 border-b-2 cursor-pointer transition-colors ${
-                        activeTab === 'blocked_dates' ? 'border-green-500 text-green-600' : 'border-transparent hover:text-slate-800'
+                        activeTab === 'blocked_dates' ? 'border-blue-500 text-blue-600' : 'border-transparent hover:text-slate-800'
                     }`}
                 >
                     3. Blokir Tanggal ({blockedDates.length})
@@ -773,7 +773,7 @@ function AdminEditVillaContent() {
                                     type="text" 
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold ${
+                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
                                         formErrors.name ? 'border-red-500' : 'border-slate-200'
                                     }`}
                                 />
@@ -787,7 +787,7 @@ function AdminEditVillaContent() {
                                     value={shortDesc}
                                     onChange={(e) => setShortDesc(e.target.value)}
                                     maxLength={150}
-                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold ${
+                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
                                         formErrors.short_desc ? 'border-red-500' : 'border-slate-200'
                                     }`}
                                 />
@@ -804,7 +804,7 @@ function AdminEditVillaContent() {
                                     type="text" 
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold ${
+                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
                                         formErrors.location ? 'border-red-500' : 'border-slate-200'
                                     }`}
                                 />
@@ -828,7 +828,7 @@ function AdminEditVillaContent() {
                                         <select 
                                             value={destinationId}
                                             onChange={(e) => setDestinationId(e.target.value)}
-                                            className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                            className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
                                                 formErrors.destination_id ? 'border-red-500' : 'border-slate-200'
                                             }`}
                                         >
@@ -840,16 +840,16 @@ function AdminEditVillaContent() {
                                         <button
                                             type="button"
                                             onClick={() => setShowNewDestination(true)}
-                                            className="text-[10px] font-bold text-green-600 hover:text-green-700 underline transition-colors"
+                                            className="text-[10px] font-bold text-blue-600 hover:text-blue-700 underline transition-colors"
                                         >
                                             + Tambah destinasi baru
                                         </button>
                                         {formErrors.destination_id && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.destination_id}</p>}
                                     </div>
                                 ) : (
-                                    <div className="space-y-2 p-3 border border-green-200 bg-green-50/30 rounded-lg">
+                                    <div className="space-y-2 p-3 border border-blue-200 bg-blue-50/30 rounded-lg">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-bold text-green-700">Tambah Destinasi Baru</span>
+                                            <span className="text-[10px] font-bold text-blue-700">Tambah Destinasi Baru</span>
                                             <button
                                                 type="button"
                                                 onClick={() => setShowNewDestination(false)}
@@ -871,14 +871,14 @@ function AdminEditVillaContent() {
                                                     setNewDestCity(cityMatch.city);
                                                 }
                                             }}
-                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Kota/kabupaten *"
                                             value={newDestCity}
                                             onChange={(e) => setNewDestCity(e.target.value)}
-                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                         />
                                         {newDestCity.trim() && (() => {
                                             const existing = destinations.find(d =>
@@ -897,7 +897,7 @@ function AdminEditVillaContent() {
                                                             setNewDestCity('');
                                                             setShowNewDestination(false);
                                                         }}
-                                                        className="ml-1 text-green-600 hover:text-green-700 underline font-bold"
+                                                        className="ml-1 text-blue-600 hover:text-blue-700 underline font-bold"
                                                     >
                                                         Gunakan yang sudah ada
                                                     </button>
@@ -908,7 +908,7 @@ function AdminEditVillaContent() {
                                             type="button"
                                             onClick={handleCreateDestination}
                                             disabled={savingDestination}
-                                            className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold text-[11px] py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
+                                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-[11px] py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
                                         >
                                             {savingDestination ? (
                                                 <>
@@ -939,7 +939,7 @@ function AdminEditVillaContent() {
                                         }
                                         setMapsUrl(val);
                                     }}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                         </div>
@@ -950,7 +950,7 @@ function AdminEditVillaContent() {
                                 rows={6}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold max-h-40 sm:max-h-none overflow-y-auto ${
+                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-40 sm:max-h-none overflow-y-auto ${
                                     formErrors.description ? 'border-red-500' : 'border-slate-200'
                                 }`}
                             />
@@ -970,7 +970,7 @@ function AdminEditVillaContent() {
                                     min="1"
                                     value={bedrooms}
                                     onChange={(e) => setBedrooms(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                             <div>
@@ -980,7 +980,7 @@ function AdminEditVillaContent() {
                                     min="1"
                                     value={bathrooms}
                                     onChange={(e) => setBathrooms(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                             <div>
@@ -990,7 +990,7 @@ function AdminEditVillaContent() {
                                     min="1"
                                     value={maxGuests}
                                     onChange={(e) => setMaxGuests(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                             <div>
@@ -1000,7 +1000,7 @@ function AdminEditVillaContent() {
                                     min="1"
                                     value={minNights}
                                     onChange={(e) => setMinNights(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
 
@@ -1010,7 +1010,7 @@ function AdminEditVillaContent() {
                                     type="time" 
                                     value={checkInTime}
                                     onChange={(e) => setCheckInTime(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                             <div>
@@ -1019,7 +1019,7 @@ function AdminEditVillaContent() {
                                     type="time" 
                                     value={checkOutTime}
                                     onChange={(e) => setCheckOutTime(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                         </div>
@@ -1036,7 +1036,7 @@ function AdminEditVillaContent() {
                                     type="number" 
                                     value={pricePerNight}
                                     onChange={(e) => setPricePerNight(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold ${
+                                    className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold ${
                                         formErrors.price_per_night ? 'border-red-500' : 'border-slate-200'
                                     }`}
                                 />
@@ -1050,7 +1050,7 @@ function AdminEditVillaContent() {
                                     value={weekendPrice}
                                     placeholder="Kosongkan jika sama dengan harga weekday"
                                     onChange={(e) => setWeekendPrice(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                             </div>
                         </div>
@@ -1097,7 +1097,7 @@ function AdminEditVillaContent() {
                                         value={newAmenityName}
                                         onChange={(e) => setNewAmenityName(e.target.value)}
                                         placeholder="Contoh: Kolam Renang Infinity"
-                                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                                     />
                                 </div>
@@ -1107,7 +1107,7 @@ function AdminEditVillaContent() {
                                     <button
                                         type="button"
                                         onClick={() => setIsIconPickerOpen(!isIconPickerOpen)}
-                                        className="bg-white border border-slate-200 hover:border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold cursor-pointer min-w-[140px] flex items-center justify-between"
+                                        className="bg-white border border-slate-200 hover:border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold cursor-pointer min-w-[140px] flex items-center justify-between"
                                     >
                                         {(() => {
                                             const CurrentIcon = getIconComponentByKey(newAmenityIcon);
@@ -1137,7 +1137,7 @@ function AdminEditVillaContent() {
                                                     value={iconSearch}
                                                     onChange={(e) => setIconSearch(e.target.value)}
                                                     placeholder="Cari ikon..."
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                                     autoFocus
                                                 />
                                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
@@ -1158,7 +1158,7 @@ function AdminEditVillaContent() {
                                                                     }}
                                                                     className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer ${
                                                                         isSelected 
-                                                                            ? 'border-green-500 bg-green-50 text-green-600' 
+                                                                            ? 'border-blue-500 bg-blue-50 text-blue-600' 
                                                                             : 'border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-600'
                                                                     }`}
                                                                 >
@@ -1176,7 +1176,7 @@ function AdminEditVillaContent() {
                                 <button 
                                     type="button"
                                     onClick={addAmenity}
-                                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
                                     title="Tambah Fasilitas"
                                 >
                                     <Plus className="w-4 h-4" />
@@ -1210,7 +1210,7 @@ function AdminEditVillaContent() {
                                 rows={3}
                                 value={rules}
                                 onChange={(e) => setRules(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold max-h-32 sm:max-h-none overflow-y-auto"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-32 sm:max-h-none overflow-y-auto"
                             />
                         </div>
 
@@ -1220,7 +1220,7 @@ function AdminEditVillaContent() {
                                 id="isActive"
                                 checked={isActive}
                                 onChange={(e) => setIsActive(e.target.checked)}
-                                className="rounded border-slate-300 text-green-600 focus:ring-green-500 w-4 h-4 cursor-pointer"
+                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                             />
                             <label htmlFor="isActive" className="text-xs font-bold text-slate-700 cursor-pointer">
                                 Aktifkan Villa (Tampilkan langsung di katalog website)
@@ -1234,22 +1234,22 @@ function AdminEditVillaContent() {
                         <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Nama</label>
-                                <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">No. WhatsApp Host</label>
-                                <input type="text" placeholder="081234567890" value={hostPhone} onChange={(e) => setHostPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="081234567890" value={hostPhone} onChange={(e) => setHostPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Tahun Jadi Host</label>
-                                <input type="number" min="0" value={hostYears} onChange={(e) => setHostYears(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="number" min="0" value={hostYears} onChange={(e) => setHostYears(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Joined Label</label>
-                                <input type="text" value={hostJoinedLabel} placeholder="Mulai menerima tamu 2024" onChange={(e) => setHostJoinedLabel(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" value={hostJoinedLabel} placeholder="Mulai menerima tamu 2024" onChange={(e) => setHostJoinedLabel(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="flex items-center space-x-2 pt-6">
-                                <input type="checkbox" id="hostIsVerified" checked={hostIsVerified} onChange={(e) => setHostIsVerified(e.target.checked)} className="w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500" />
+                                <input type="checkbox" id="hostIsVerified" checked={hostIsVerified} onChange={(e) => setHostIsVerified(e.target.checked)} className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" />
                                 <label htmlFor="hostIsVerified" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer">Host Terverifikasi</label>
                             </div>
                             <div className="sm:col-span-5 space-y-2">
@@ -1310,7 +1310,7 @@ function AdminEditVillaContent() {
                                 </ul>
                             )}
                             <div className="flex space-x-2">
-                                <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                                 <button type="button" onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Tentang Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
@@ -1326,7 +1326,7 @@ function AdminEditVillaContent() {
                                 {highlightsList.map((hl, idx) => (
                                     <div key={idx} className="flex items-start justify-between border border-slate-200 rounded-xl p-3 bg-slate-50">
                                         <div className="flex items-start space-x-3 text-xs">
-                                            <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-green-500 font-bold shrink-0">{hl.icon}</span>
+                                            <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-blue-500 font-bold shrink-0">{hl.icon}</span>
                                             <div><h5 className="font-bold text-slate-800">{hl.title}</h5><p className="text-[11px] text-slate-500 mt-0.5">{hl.description}</p></div>
                                         </div>
                                         <button type="button" onClick={() => setHighlightsList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 p-1 cursor-pointer shrink-0"><X className="w-4 h-4" /></button>
@@ -1337,17 +1337,17 @@ function AdminEditVillaContent() {
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Ikon</label>
-                                <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold cursor-pointer">
+                                <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
                                     <option value="Wind">Kipas/AC</option><option value="Key">Check-in</option><option value="Car">Parkir</option><option value="Shield">Keamanan</option><option value="Waves">Kolam</option><option value="Trophy">Favorit</option><option value="Coffee">Sarapan</option><option value="Sparkles">Estetik</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Judul</label>
-                                <input type="text" placeholder="Dirancang agar sejuk" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Dirancang agar sejuk" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Deskripsi</label>
-                                <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
                                 <button type="button" onClick={() => { if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); setHlTitle(''); setHlDesc(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Sorotan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
@@ -1424,11 +1424,11 @@ function AdminEditVillaContent() {
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Kamar</label>
-                                <input type="text" placeholder="Kamar tidur 1" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Kamar tidur 1" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-2">
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Keterangan Tempat Tidur</label>
-                                <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
                                 <button type="button" onClick={() => { if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field Kamar wajib diisi.'); return; } setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); setBrImage(''); setBrTitle(''); setBrSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Kamar"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
@@ -1454,13 +1454,13 @@ function AdminEditVillaContent() {
                                 </ul>
                             )}
                             <div className="flex space-x-2">
-                                <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                                 <button type="button" onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Keselamatan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                         <div>
                             <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Deskripsi Lingkungan</label>
-                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
+                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
                         </div>
                     </div>
 
@@ -1475,7 +1475,7 @@ function AdminEditVillaContent() {
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                         >
                             {submitting ? (
                                 <>
@@ -1511,7 +1511,7 @@ function AdminEditVillaContent() {
                                 type="button"
                                 onClick={savePhotoGallery}
                                 disabled={savingPhotos}
-                                className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-sm transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                                className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-sm transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                             >
                                 {savingPhotos ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /><span>Menyimpan...</span></> : <><Save className="w-3.5 h-3.5" /><span>Simpan Galeri</span></>}
                             </button>
@@ -1539,7 +1539,7 @@ function AdminEditVillaContent() {
                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
                                         <span className="text-sm font-bold text-slate-800">{cat}</span>
                                         {catPhotos.length > 0 && (
-                                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                                                 {catPhotos.length} foto
                                             </span>
                                         )}
@@ -1548,7 +1548,7 @@ function AdminEditVillaContent() {
                                     {/* Upload button for this category */}
                                     <label className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all active:scale-95 ${
                                         isActiveUpload
-                                            ? 'bg-green-600 text-white shadow-sm'
+                                            ? 'bg-blue-600 text-white shadow-sm'
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                     }`}>
                                          <input
@@ -1590,7 +1590,7 @@ function AdminEditVillaContent() {
                                                                     className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                                                                 />
                                                                 {isMainPhoto && (
-                                                                    <span className="absolute top-2.5 left-2.5 bg-green-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow-sm z-10">
+                                                                    <span className="absolute top-2.5 left-2.5 bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow-sm z-10">
                                                                         UTAMA
                                                                     </span>
                                                                 )}
@@ -1611,7 +1611,7 @@ function AdminEditVillaContent() {
                                                                         value={getPhotoDesc(photo)}
                                                                         onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)}
                                                                         placeholder="Deskripsikan foto ini..."
-                                                                        className="w-full bg-white border border-slate-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/10 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none transition-all"
+                                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none transition-all"
                                                                     />
                                                                 </div>
                                                                 <div>
@@ -1619,7 +1619,7 @@ function AdminEditVillaContent() {
                                                                     <select
                                                                         value={getPhotoCategory(photo)}
                                                                         onChange={(e) => handlePhotoCategoryChange(index, e.target.value)}
-                                                                        className="w-full bg-white border border-slate-200 focus:border-green-500 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none cursor-pointer"
+                                                                        className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none cursor-pointer"
                                                                     >
                                                                         {PHOTO_CATEGORIES.map(c => (
                                                                             <option key={c} value={c}>{c}</option>
@@ -1645,7 +1645,7 @@ function AdminEditVillaContent() {
                                 type="button"
                                 onClick={savePhotoGallery}
                                 disabled={savingPhotos}
-                                className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                             >
                                 {savingPhotos ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Menyimpan...</span></> : <><Save className="w-4 h-4" /><span>Simpan Galeri</span></>}
                             </button>
@@ -1660,7 +1660,7 @@ function AdminEditVillaContent() {
                     {/* Calendar Nav */}
                     <div className="flex items-center justify-between flex-wrap gap-3">
                         <div className="flex items-center space-x-2">
-                            <CalendarIcon className="w-5 h-5 text-green-600" />
+                            <CalendarIcon className="w-5 h-5 text-blue-600" />
                             <h3 className="text-sm font-bold text-slate-900 capitalize">
                                 {format(blockCalendarMonth, 'MMMM yyyy', { locale: localeID })}
                             </h3>
@@ -1674,7 +1674,7 @@ function AdminEditVillaContent() {
                                 }}
                                 className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all active:scale-95 cursor-pointer ${
                                     isBulkMode
-                                        ? 'bg-green-600 border-green-600 text-white'
+                                        ? 'bg-blue-600 border-blue-600 text-white'
                                         : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                                 }`}
                             >
@@ -1720,7 +1720,7 @@ function AdminEditVillaContent() {
                                 textColor = 'text-slate-300';
                             }
                             if (isSelected && !isBlocked) {
-                                cellBg = 'bg-green-500 border-green-500';
+                                cellBg = 'bg-blue-500 border-blue-500';
                                 textColor = 'text-white';
                             }
 
@@ -1745,7 +1745,7 @@ function AdminEditVillaContent() {
                                             handleBlockDateSingle(dateStr);
                                         }
                                     }}
-                                    className={`h-12 sm:h-14 rounded-lg border flex flex-col items-center justify-center transition-all active:scale-90 cursor-pointer relative ${cellBg} ${isToday && !isBlocked ? 'ring-2 ring-green-400' : ''}`}
+                                    className={`h-12 sm:h-14 rounded-lg border flex flex-col items-center justify-center transition-all active:scale-90 cursor-pointer relative ${cellBg} ${isToday && !isBlocked ? 'ring-2 ring-blue-400' : ''}`}
                                 >
                                     <span className={`text-xs font-bold ${textColor}`}>{dayNum}</span>
                                     {isBlocked && (
@@ -1753,7 +1753,7 @@ function AdminEditVillaContent() {
                                     )}
                                     {isBulkMode && !isBlocked && !isPast && (
                                         <div className={`absolute top-1 right-1 w-3.5 h-3.5 rounded border flex items-center justify-center text-[8px] ${
-                                            isSelected ? 'bg-white border-white text-green-600' : 'bg-white/50 border-slate-300'
+                                            isSelected ? 'bg-white border-white text-blue-600' : 'bg-white/50 border-slate-300'
                                         }`}>
                                             {isSelected && <Check className="w-2.5 h-2.5" />}
                                         </div>
@@ -1770,7 +1770,7 @@ function AdminEditVillaContent() {
                             <span>Diblokir</span>
                         </div>
                         <div className="flex items-center space-x-1.5">
-                            <div className="w-3 h-3 rounded bg-green-500" />
+                            <div className="w-3 h-3 rounded bg-blue-500" />
                             <span>Dipilih</span>
                         </div>
                         <span className="text-slate-400">| Total: {blockedDates.length} tanggal diblokir</span>
@@ -1778,9 +1778,9 @@ function AdminEditVillaContent() {
 
                     {/* Bulk action bar */}
                     {isBulkMode && bulkSelectedDates.length > 0 && (
-                        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 space-y-3">
+                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-green-700">{bulkSelectedDates.length} tanggal dipilih</span>
+                                <span className="text-xs font-bold text-blue-700">{bulkSelectedDates.length} tanggal dipilih</span>
                                 <button
                                     type="button"
                                     onClick={() => setBulkSelectedDates([])}
@@ -1795,7 +1795,7 @@ function AdminEditVillaContent() {
                                     placeholder="Alasan pemblokiran massal..."
                                     value={bulkReason}
                                     onChange={(e) => setBulkReason(e.target.value)}
-                                    className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                    className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                 />
                                 <button
                                     type="button"
@@ -1856,7 +1856,7 @@ function AdminEditVillaContent() {
 
 export default function AdminEditVillaPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center items-center py-32"><Loader2 className="w-8 h-8 animate-spin text-green-500" /></div>}>
+        <Suspense fallback={<div className="flex justify-center items-center py-32"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>}>
             <AdminEditVillaContent />
         </Suspense>
     );

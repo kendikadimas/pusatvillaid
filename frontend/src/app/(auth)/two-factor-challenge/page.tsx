@@ -104,7 +104,7 @@ export default function TwoFactorChallengePage() {
                                 onChange={(e) => setRecoveryCode(e.target.value)}
                                 autoFocus={showRecoveryInput}
                                 required
-                                className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
+                                className="h-10 rounded-lg border-slate-200 bg-white transition-all duration-200 placeholder:text-[#787774] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:placeholder:text-slate-500"
                             />
                             <InputError message={errors.recovery_code} />
                         </div>
@@ -131,7 +131,7 @@ export default function TwoFactorChallengePage() {
                                                 <InputOTPSlot
                                                     key={index}
                                                     index={index}
-                                                    className="size-11 rounded-lg border-slate-200 text-lg font-semibold shadow-sm transition-all duration-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-slate-700"
+                                                    className="size-11 rounded-lg border-slate-200 text-lg font-semibold shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700"
                                                 />
                                             ),
                                         )}
@@ -144,7 +144,7 @@ export default function TwoFactorChallengePage() {
 
                     <Button
                         type="submit"
-                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-green-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                         disabled={processing}
                     >
                         {processing && <Spinner className="mr-2" />}
@@ -155,7 +155,7 @@ export default function TwoFactorChallengePage() {
                         <span>Or </span>
                         <button
                             type="button"
-                            className="font-semibold text-green-600 underline decoration-green-200 underline-offset-4 transition-colors duration-200 hover:text-green-700 hover:decoration-green-300 dark:text-green-400 dark:hover:text-green-300"
+                            className="font-semibold text-blue-600 underline decoration-blue-200 underline-offset-4 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-300 dark:text-blue-400 dark:hover:text-blue-300"
                             onClick={toggleRecoveryMode}
                         >
                             {authConfigContent.toggleText}

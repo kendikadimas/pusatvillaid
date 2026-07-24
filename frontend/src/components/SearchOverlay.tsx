@@ -282,7 +282,7 @@ export default function SearchOverlay({
                                 {step === 'guests' && 'Pilih Tamu'}
                             </span>
                             {location && step !== 'location' && (
-                                <span className="text-xs text-green-600 font-semibold truncate block mt-0.5">
+                                <span className="text-xs text-blue-600 font-semibold truncate block mt-0.5">
                                     {location}
                                     {dateRange?.from && ` · ${format(dateRange.from, 'd MMM')} - ${dateRange.to ? format(dateRange.to, 'd MMM') : ''}`}
                                 </span>
@@ -319,7 +319,7 @@ export default function SearchOverlay({
                                         }
                                     }}
                                     placeholder="Cari destinasi atau nama villa..."
-                                    className="w-full pl-12 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all placeholder-slate-400"
+                                    className="w-full pl-12 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder-slate-400"
                                 />
                                 {searchQuery && (
                                     <button
@@ -369,7 +369,7 @@ export default function SearchOverlay({
                                             onClick={() => handleSelectLocationItem(dest.name)}
                                             className="flex items-center gap-3 w-full p-2.5 rounded-2xl hover:bg-slate-50 transition-colors text-left cursor-pointer"
                                         >
-                                            <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
                                                 <MapPin className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -450,12 +450,12 @@ export default function SearchOverlay({
                                     hideNavigation
                                     className="text-slate-800 w-full flex justify-center"
                                     classNames={{
-                                        selected: "bg-green-600 text-white hover:bg-green-700 rounded-full",
-                                        today: "text-green-600 font-black rounded-full",
+                                        selected: "bg-blue-600 text-white hover:bg-blue-700 rounded-full",
+                                        today: "text-blue-600 font-black rounded-full",
                                         month_caption: "flex items-center w-full mb-4 px-3",
                                         caption_label: "flex-1 text-center text-sm font-bold text-slate-900",
-                                        range_start: "bg-green-600 text-white rounded-full font-bold",
-                                        range_end: "bg-green-600 text-white rounded-full font-bold",
+                                        range_start: "bg-blue-600 text-white rounded-full font-bold",
+                                        range_end: "bg-blue-600 text-white rounded-full font-bold",
                                     }}
                                     components={{
                                         MonthCaption: ({ calendarMonth, displayIndex, children, ...divProps }) => {
@@ -595,7 +595,7 @@ export default function SearchOverlay({
                         <button
                             onClick={handleNextFromDates}
                             disabled={!canProceedFromDates}
-                            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white font-bold text-xs py-3 px-6 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-green-500/10"
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs py-3 px-6 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/10"
                         >
                             <span>Selanjutnya</span>
                         </button>
@@ -612,7 +612,7 @@ export default function SearchOverlay({
                         </button>
                         <button
                             onClick={handleSearchSubmit}
-                            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-3 px-7 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-green-500/10"
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-7 rounded-full transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/10"
                         >
                             <Search className="w-3.5 h-3.5" />
                             <span>Cari Villa</span>

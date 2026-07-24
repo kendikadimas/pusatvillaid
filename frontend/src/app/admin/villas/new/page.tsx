@@ -338,7 +338,7 @@ export default function AdminNewVillaPage() {
             <div className="flex border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider space-x-4 sm:space-x-6 overflow-x-auto scrollbar-hide">
                 <button 
                     type="button"
-                    className="pb-3 border-b-2 border-green-500 text-green-600 cursor-pointer"
+                    className="pb-3 border-b-2 border-blue-500 text-blue-600 cursor-pointer"
                 >
                     1. Info Detail
                 </button>
@@ -377,7 +377,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Contoh: Villa Kencana Cilember"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 ${
+                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                         formErrors.name ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                     }`}
                                 />
@@ -392,7 +392,7 @@ export default function AdminNewVillaPage() {
                                     value={shortDesc}
                                     onChange={(e) => setShortDesc(e.target.value)}
                                     maxLength={150}
-                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 ${
+                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                         formErrors.short_desc ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                     }`}
                                 />
@@ -410,7 +410,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Contoh: Cilember, Cisarua, Bogor"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 ${
+                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                         formErrors.location ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                     }`}
                                 />
@@ -434,7 +434,7 @@ export default function AdminNewVillaPage() {
                                         <select 
                                             value={destinationId}
                                             onChange={(e) => setDestinationId(e.target.value)}
-                                            className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                            className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
                                                 formErrors.destination_id ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                             }`}
                                         >
@@ -446,16 +446,16 @@ export default function AdminNewVillaPage() {
                                         <button
                                             type="button"
                                             onClick={() => setShowNewDestination(true)}
-                                            className="text-[11px] font-bold text-green-600 hover:text-green-700 underline transition-colors"
+                                            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 underline transition-colors"
                                         >
                                             + Tambah destinasi baru
                                         </button>
                                         {formErrors.destination_id && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.destination_id}</p>}
                                     </div>
                                 ) : (
-                                    <div className="space-y-2 p-3 border border-green-200 bg-green-50/30 rounded-lg">
+                                    <div className="space-y-2 p-3 border border-blue-200 bg-blue-50/30 rounded-lg">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[11px] font-bold text-green-700">Tambah Destinasi Baru</span>
+                                            <span className="text-[11px] font-bold text-blue-700">Tambah Destinasi Baru</span>
                                             <button
                                                 type="button"
                                                 onClick={() => setShowNewDestination(false)}
@@ -478,14 +478,14 @@ export default function AdminNewVillaPage() {
                                                     setNewDestCity(cityMatch.city);
                                                 }
                                             }}
-                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold"
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Kota/kabupaten *"
                                             value={newDestCity}
                                             onChange={(e) => setNewDestCity(e.target.value)}
-                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold"
+                                            className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                         />
                                         {newDestCity.trim() && (() => {
                                             const existing = destinations.find(d =>
@@ -504,7 +504,7 @@ export default function AdminNewVillaPage() {
                                                             setNewDestCity('');
                                                             setShowNewDestination(false);
                                                         }}
-                                                        className="ml-1 text-green-600 hover:text-green-700 underline font-bold"
+                                                        className="ml-1 text-blue-600 hover:text-blue-700 underline font-bold"
                                                     >
                                                         Gunakan yang sudah ada
                                                     </button>
@@ -515,7 +515,7 @@ export default function AdminNewVillaPage() {
                                             type="button"
                                             onClick={handleCreateDestination}
                                             disabled={savingDestination}
-                                            className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold text-xs py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
+                                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
                                         >
                                             {savingDestination ? (
                                                 <>
@@ -547,7 +547,7 @@ export default function AdminNewVillaPage() {
                                         }
                                         setMapsUrl(val);
                                     }}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200"
                                 />
                             </div>
                         </div>
@@ -559,7 +559,7 @@ export default function AdminNewVillaPage() {
                                 placeholder="Tulis deskripsi detail villa..."
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 max-h-40 overflow-y-auto ${
+                                className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 max-h-40 overflow-y-auto ${
                                     formErrors.description ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                 }`}
                             />
@@ -579,7 +579,7 @@ export default function AdminNewVillaPage() {
                                     min="1"
                                     value={bedrooms}
                                     onChange={(e) => setBedrooms(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -590,7 +590,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Total tempat tidur"
                                     value={beds}
                                     onChange={(e) => setBeds(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -600,7 +600,7 @@ export default function AdminNewVillaPage() {
                                     min="1"
                                     value={bathrooms}
                                     onChange={(e) => setBathrooms(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -610,7 +610,7 @@ export default function AdminNewVillaPage() {
                                     min="1"
                                     value={maxGuests}
                                     onChange={(e) => setMaxGuests(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -620,7 +620,7 @@ export default function AdminNewVillaPage() {
                                     min="1"
                                     value={minNights}
                                     onChange={(e) => setMinNights(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
 
@@ -630,7 +630,7 @@ export default function AdminNewVillaPage() {
                                     type="time" 
                                     value={checkInTime}
                                     onChange={(e) => setCheckInTime(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -639,7 +639,7 @@ export default function AdminNewVillaPage() {
                                     type="time" 
                                     value={checkOutTime}
                                     onChange={(e) => setCheckOutTime(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                         </div>
@@ -657,7 +657,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Contoh: 2500000"
                                     value={pricePerNight}
                                     onChange={(e) => setPricePerNight(e.target.value)}
-                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200 ${
+                                    className={`w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200 ${
                                         formErrors.price_per_night ? 'border-red-500' : 'border-[#dddddd] hover:border-[#bbbbbb]'
                                     }`}
                                 />
@@ -671,7 +671,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Kosongkan jika sama dengan harga weekday"
                                     value={weekendPrice}
                                     onChange={(e) => setWeekendPrice(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                             </div>
                             <div>
@@ -681,7 +681,7 @@ export default function AdminNewVillaPage() {
                                     placeholder="Contoh: 150000"
                                     value={cleaningFee}
                                     onChange={(e) => setCleaningFee(e.target.value)}
-                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-mono tabular-nums font-semibold transition-all duration-200"
+                                    className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono tabular-nums font-semibold transition-all duration-200"
                                 />
                                 <p className="text-[9px] text-[#6a6a6a] mt-1">Biaya sekali bayar di samping harga sewa.</p>
                             </div>
@@ -729,7 +729,7 @@ export default function AdminNewVillaPage() {
                                         value={newAmenityName}
                                         onChange={(e) => setNewAmenityName(e.target.value)}
                                         placeholder="Contoh: Kolam Renang Infinity"
-                                        className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                        className="w-full bg-white border border-[#dddddd] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                                     />
                                 </div>
@@ -739,7 +739,7 @@ export default function AdminNewVillaPage() {
                                     <button
                                         type="button"
                                         onClick={() => setIsIconPickerOpen(!isIconPickerOpen)}
-                                        className="bg-white border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold cursor-pointer min-w-[140px] flex items-center justify-between"
+                                        className="bg-white border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold cursor-pointer min-w-[140px] flex items-center justify-between"
                                     >
                                         {(() => {
                                             const CurrentIcon = getIconComponentByKey(newAmenityIcon);
@@ -769,7 +769,7 @@ export default function AdminNewVillaPage() {
                                                     value={iconSearch}
                                                     onChange={(e) => setIconSearch(e.target.value)}
                                                     placeholder="Cari ikon..."
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                                     autoFocus
                                                 />
                                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
@@ -790,7 +790,7 @@ export default function AdminNewVillaPage() {
                                                                     }}
                                                                     className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer ${
                                                                         isSelected 
-                                                                            ? 'border-green-500 bg-green-50 text-green-600' 
+                                                                            ? 'border-blue-500 bg-blue-50 text-blue-600' 
                                                                             : 'border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-600'
                                                                     }`}
                                                                 >
@@ -808,7 +808,7 @@ export default function AdminNewVillaPage() {
                                 <button 
                                     type="button"
                                     onClick={addAmenity}
-                                    className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-2.5 sm:px-4 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer shrink-0"
                                     title="Tambah Fasilitas"
                                 >
                                     <Plus className="w-4 h-4" />
@@ -838,22 +838,22 @@ export default function AdminNewVillaPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Nama Host</label>
-                                <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">No. WhatsApp Host</label>
-                                <input type="text" placeholder="081234567890" value={hostPhone} onChange={(e) => setHostPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="081234567890" value={hostPhone} onChange={(e) => setHostPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Tahun Jadi Host</label>
-                                <input type="number" min="0" value={hostYears} onChange={(e) => setHostYears(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="number" min="0" value={hostYears} onChange={(e) => setHostYears(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-600 block mb-1.5 uppercase tracking-wider">Joined Label</label>
-                                <input type="text" value={hostJoinedLabel} placeholder="Mulai menerima tamu 2024" onChange={(e) => setHostJoinedLabel(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" value={hostJoinedLabel} placeholder="Mulai menerima tamu 2024" onChange={(e) => setHostJoinedLabel(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="flex items-center space-x-2 pt-6">
-                                <input type="checkbox" id="hostIsVerified" checked={hostIsVerified} onChange={(e) => setHostIsVerified(e.target.checked)} className="w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500" />
+                                <input type="checkbox" id="hostIsVerified" checked={hostIsVerified} onChange={(e) => setHostIsVerified(e.target.checked)} className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" />
                                 <label htmlFor="hostIsVerified" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer">Host Terverifikasi</label>
                             </div>
                             <div className="sm:col-span-5 space-y-2">
@@ -898,7 +898,7 @@ export default function AdminNewVillaPage() {
                                     </ul>
                                 )}
                                 <div className="flex space-x-2">
-                                    <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                    <input type="text" placeholder="Contoh: Lahir di tahun 80-an" value={hostAboutInput} onChange={(e) => setHostAboutInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                                     <button type="button" onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Tentang Host"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                                 </div>
                             </div>
@@ -913,7 +913,7 @@ export default function AdminNewVillaPage() {
                                 {highlightsList.map((hl, idx) => (
                                     <div key={idx} className="flex items-start justify-between border border-slate-200 rounded-xl p-3 bg-slate-50">
                                         <div className="flex items-start space-x-3 text-xs">
-                                            <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-green-500 font-bold shrink-0">{hl.icon}</span>
+                                            <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-blue-500 font-bold shrink-0">{hl.icon}</span>
                                             <div><h5 className="font-bold text-slate-800">{hl.title}</h5><p className="text-[11px] text-slate-500 mt-0.5">{hl.description}</p></div>
                                         </div>
                                         <button type="button" onClick={() => setHighlightsList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 p-1 cursor-pointer shrink-0"><X className="w-4 h-4" /></button>
@@ -924,17 +924,17 @@ export default function AdminNewVillaPage() {
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Ikon</label>
-                                <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold cursor-pointer">
+                                <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
                                     <option value="Wind">Kipas/AC</option><option value="Key">Check-in</option><option value="Car">Parkir</option><option value="Shield">Keamanan</option><option value="Waves">Kolam</option><option value="Trophy">Favorit</option><option value="Coffee">Sarapan</option><option value="Sparkles">Estetik</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Judul</label>
-                                <input type="text" placeholder="Dirancang agar sejuk" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Dirancang agar sejuk" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Deskripsi</label>
-                                <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Atasi panas dengan AC..." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
                                 <button type="button" onClick={() => { if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); setHlTitle(''); setHlDesc(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Sorotan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
@@ -1011,11 +1011,11 @@ export default function AdminNewVillaPage() {
                             </div>
                             <div>
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Nama Kamar</label>
-                                <input type="text" placeholder="Kamar tidur 1" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Kamar tidur 1" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-2">
                                 <label className="text-[9px] font-bold text-slate-600 block mb-1 uppercase tracking-wider">Keterangan Tempat Tidur</label>
-                                <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="1 tempat tidur king" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                             </div>
                             <div className="sm:col-span-3 flex justify-end">
                                 <button type="button" onClick={() => { if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field Kamar wajib diisi.'); return; } setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); setBrImage(''); setBrTitle(''); setBrSubtext(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:py-1.5 sm:px-3 rounded-xl flex items-center justify-center space-x-1 cursor-pointer" title="Tambah Kamar"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
@@ -1041,13 +1041,13 @@ export default function AdminNewVillaPage() {
                                 </ul>
                             )}
                             <div className="flex space-x-2">
-                                <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" />
+                                <input type="text" placeholder="Alarm asap tidak dilaporkan" value={safetyInput} onChange={(e) => setSafetyInput(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" />
                                 <button type="button" onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] p-2.5 sm:px-4 sm:py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer shrink-0" title="Tambah Keselamatan"><Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">Tambah</span></button>
                             </div>
                         </div>
                         <div>
                             <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1.5">Deskripsi Lingkungan</label>
-                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
+                            <textarea rows={2} placeholder="Hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold max-h-24 sm:max-h-none overflow-y-auto" />
                         </div>
                     </div>
 
@@ -1062,7 +1062,7 @@ export default function AdminNewVillaPage() {
                                 placeholder="Tulis aturan villa dipisahkan dengan baris baru..."
                                 value={rules}
                                 onChange={(e) => setRules(e.target.value)}
-                                className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all duration-200 max-h-32 overflow-y-auto"
+                                className="w-full bg-slate-50 border border-[#dddddd] hover:border-[#bbbbbb] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 max-h-32 overflow-y-auto"
                             />
                         </div>
 
@@ -1072,7 +1072,7 @@ export default function AdminNewVillaPage() {
                                 id="isActive"
                                 checked={isActive}
                                 onChange={(e) => setIsActive(e.target.checked)}
-                                className="rounded border-[#dddddd] text-green-600 focus:ring-green-500 w-4 h-4 cursor-pointer"
+                                className="rounded border-[#dddddd] text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                             />
                             <label htmlFor="isActive" className="text-xs font-semibold text-[#222222] cursor-pointer select-none">
                                 Aktifkan villa (tampilkan langsung di katalog website setelah disimpan)
@@ -1091,7 +1091,7 @@ export default function AdminNewVillaPage() {
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2.5 px-4 rounded-lg  transition-all flex items-center space-x-1.5 disabled:opacity-50 active:scale-95 cursor-pointer"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-lg  transition-all flex items-center space-x-1.5 disabled:opacity-50 active:scale-95 cursor-pointer"
                         >
                             {submitting ? (
                                 <>
@@ -1115,7 +1115,7 @@ export default function AdminNewVillaPage() {
                 {/* Header Indicator */}
                 <div className="flex items-center justify-between bg-slate-950 text-white rounded-xl px-4 py-3.5 shadow-sm">
                     <div className="flex items-center space-x-2">
-                        <Eye className="w-4 h-4 text-green-400" />
+                        <Eye className="w-4 h-4 text-blue-400" />
                         <span className="text-xs font-bold uppercase tracking-wider">Live Preview Halaman Villa</span>
                     </div>
                     <span className="flex items-center space-x-1 shrink-0">
@@ -1157,8 +1157,8 @@ export default function AdminNewVillaPage() {
                                         {shortDesc}
                                     </p>
                                 )}
-                                <div className="flex items-center text-[13px] font-medium text-[#16a34a] leading-normal">
-                                    <Star className="w-3 h-3 fill-[#16a34a] text-[#16a34a] mr-0.5 shrink-0" />
+                                <div className="flex items-center text-[13px] font-medium text-[#2563EB] leading-normal">
+                                    <Star className="w-3 h-3 fill-[#2563EB] text-[#2563EB] mr-0.5 shrink-0" />
                                     <span>4.8 <span className="text-slate-400 text-xs font-normal">(Mock)</span></span>
                                 </div>
                             </div>
@@ -1211,7 +1211,7 @@ export default function AdminNewVillaPage() {
                                         );
                                     })}
                                     {selectedAmenities.length > 6 && (
-                                        <div className="text-[#16a34a] font-bold text-[10px] uppercase tracking-wider col-span-2 mt-1">
+                                        <div className="text-[#2563EB] font-bold text-[10px] uppercase tracking-wider col-span-2 mt-1">
                                             +{selectedAmenities.length - 6} Fasilitas Lainnya
                                         </div>
                                     )}
@@ -1229,7 +1229,7 @@ export default function AdminNewVillaPage() {
                                     <span className="text-[10px] text-slate-500 font-medium"> / malam</span>
                                 </div>
                                 {weekendPrice && (
-                                    <div className="text-[10px] text-right font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">
+                                    <div className="text-[10px] text-right font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
                                         Weekend: {formatPrice(weekendPrice)}
                                     </div>
                                 )}

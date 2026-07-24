@@ -159,7 +159,7 @@ export default function AdminAnalyticsPage() {
         }
     };
 
-    const COLORS = ['#10b981', '#22c55e', '#f59e0b', '#6b7280', '#ec4899', '#8b5cf6'];
+    const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#6b7280', '#ec4899', '#8b5cf6'];
 
     return (
         <div className="space-y-6">
@@ -189,7 +189,7 @@ export default function AdminAnalyticsPage() {
                     </div>
                     <button
                         onClick={handleExport}
-                        className="w-full sm:w-auto bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#222222] font-extrabold py-2.5 px-4 rounded-[8px] hover:border-slate-300 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                        className="w-full sm:w-auto bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#222222] font-extrabold py-2.5 px-4 rounded-[8px] hover:border-slate-300 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
                         <Download className="w-4 h-4 text-[#6a6a6a]" />
                         <span>Ekspor laporan</span>
@@ -200,7 +200,7 @@ export default function AdminAnalyticsPage() {
             {/* Loading Board */}
             {loading ? (
                 <div className="flex justify-center items-center py-32">
-                    <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
                 </div>
             ) : (
                 <div className="space-y-8">
@@ -208,10 +208,10 @@ export default function AdminAnalyticsPage() {
                     {/* Summary row */}
                     <div className="rounded-[14px] p-6">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
+                            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg shadow-blue-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
-                                        <span className="text-[10px] text-green-100 font-bold block uppercase tracking-wider mb-1.5">Total omset</span>
+                                        <span className="text-[10px] text-blue-100 font-bold block uppercase tracking-wider mb-1.5">Total omset</span>
                                         <span className="text-2xl font-black text-white tracking-tight">
                                             Rp {summary.totalRevenue.toLocaleString('id-ID')}
                                         </span>
@@ -222,12 +222,12 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
+                            <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-[14px] shadow-lg shadow-indigo-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5">
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
-                                        <span className="text-[10px] text-green-100 font-bold block uppercase tracking-wider mb-1.5">Total reservasi aktif</span>
+                                        <span className="text-[10px] text-indigo-100 font-bold block uppercase tracking-wider mb-1.5">Total reservasi aktif</span>
                                         <span className="text-2xl font-black text-white tracking-tight">
-                                            {summary.totalBookings} <span className="text-sm font-bold text-green-200 lowercase">booking</span>
+                                            {summary.totalBookings} <span className="text-sm font-bold text-indigo-200 lowercase">booking</span>
                                         </span>
                                     </div>
                                     <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -236,10 +236,10 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg shadow-green-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
+                            <div className="bg-gradient-to-br from-sky-600 to-sky-700 rounded-[14px] shadow-lg shadow-sky-500/20 p-6 transition-all duration-200 hover:shadow-xl hover:shadow-sky-500/30 hover:-translate-y-0.5">
                                 <div className="flex items-start justify-between">
                                     <div className="min-w-0">
-                                        <span className="text-[10px] text-green-100 font-bold block uppercase tracking-wider mb-1.5">Nilai rata-rata sewa</span>
+                                        <span className="text-[10px] text-sky-100 font-bold block uppercase tracking-wider mb-1.5">Nilai rata-rata sewa</span>
                                         <span className="text-2xl font-black text-white tracking-tight">
                                             Rp {Math.round(summary.avgOrderValue).toLocaleString('id-ID')}
                                         </span>
@@ -257,7 +257,7 @@ export default function AdminAnalyticsPage() {
                         {/* Daily Revenue Bar Chart (2 cols) */}
                         <div className="lg:col-span-2 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full">
                             <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
-                                <BarChart3 className="w-4.5 h-4.5 text-green-500" />
+                                <BarChart3 className="w-4.5 h-4.5 text-blue-500" />
                                 <span>Tren penjualan harian (IDR)</span>
                             </h3>
                             <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
@@ -380,7 +380,7 @@ export default function AdminAnalyticsPage() {
                         {/* Conversion Funnel / Status */}
                         <div className="lg:col-span-2 bg-white rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6 h-full">
                             <h3 className="text-sm font-bold text-[#222222] border-b border-[#dddddd] pb-3 mb-6 uppercase tracking-wider flex items-center space-x-1.5">
-                                <Clock className="w-4.5 h-4.5 text-green-500" />
+                                <Clock className="w-4.5 h-4.5 text-blue-500" />
                                 <span>Status rasio pemesanan (kuantitas)</span>
                             </h3>
                             <div className="h-80 w-full text-xs font-medium text-[#6a6a6a] overflow-x-auto">
@@ -393,7 +393,7 @@ export default function AdminAnalyticsPage() {
                                             <XAxis dataKey="step" stroke="#94a3b8" />
                                             <YAxis stroke="#94a3b8" tickFormatter={(v: number) => v.toLocaleString('id-ID')} />
                                             <Tooltip formatter={(value) => [`${value} Booking`, 'Kuantitas']} />
-                                            <Bar dataKey="value" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 ) : (

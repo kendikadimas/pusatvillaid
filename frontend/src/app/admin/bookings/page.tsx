@@ -163,7 +163,7 @@ export default function AdminBookingsPage() {
                 </div>
                 <button
                     onClick={handleExport}
-                    className="bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#6a6a6a] font-extrabold p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] hover:border-[#dddddd] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 shrink-0"
+                    className="bg-white border border-[#dddddd] hover:bg-slate-50 active:scale-95 text-[#6a6a6a] font-extrabold p-2.5 sm:px-4 sm:py-2.5 rounded-[8px] hover:border-[#dddddd] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
                     title="Unduh laporan (CSV)"
                 >
                     <Download className="w-4 h-4 text-[#6a6a6a]" />
@@ -174,7 +174,7 @@ export default function AdminBookingsPage() {
             {/* Filter and Search Panel */}
             <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] p-6">
                 <div className="flex items-center space-x-2 border-b border-[#dddddd] pb-3 mb-5">
-                    <SlidersHorizontal className="w-4 h-4 text-green-500" />
+                    <SlidersHorizontal className="w-4 h-4 text-blue-500" />
                     <span className="text-sm font-bold text-[#222222] tracking-tight">Filter pencarian</span>
                 </div>
                 
@@ -187,7 +187,7 @@ export default function AdminBookingsPage() {
                                 placeholder="Cari kode booking, nama tamu, atau email..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all"
+                                className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                             />
                             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
                         </div>
@@ -198,7 +198,7 @@ export default function AdminBookingsPage() {
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         >
                             <option value="">Semua status</option>
                             <option value="pending">Pending</option>
@@ -211,7 +211,7 @@ export default function AdminBookingsPage() {
                     <div>
                         <button
                             type="submit"
-                            className="w-full bg-green-500 hover:bg-green-650 active:scale-95 text-white font-extrabold text-xs py-2.5 rounded-[8px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                            className="w-full bg-blue-500 hover:bg-blue-650 active:scale-95 text-white font-extrabold text-xs py-2.5 rounded-[8px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             Cari data
                         </button>
@@ -225,7 +225,7 @@ export default function AdminBookingsPage() {
                         <select
                             value={paymentStatus}
                             onChange={(e) => setPaymentStatus(e.target.value)}
-                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         >
                             <option value="">Semua pembayaran</option>
                             <option value="unpaid">Belum Bayar</option>
@@ -242,7 +242,7 @@ export default function AdminBookingsPage() {
                             type="date"
                             value={checkInFrom}
                             onChange={(e) => setCheckInFrom(e.target.value)}
-                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         />
                     </div>
 
@@ -252,7 +252,7 @@ export default function AdminBookingsPage() {
                             type="date"
                             value={checkInTo}
                             onChange={(e) => setCheckInTo(e.target.value)}
-                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 font-semibold transition-all"
+                            className="w-full bg-slate-50 border border-[#dddddd] rounded-[8px] px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all"
                         />
                     </div>
 
@@ -271,7 +271,7 @@ export default function AdminBookingsPage() {
             <div className="bg-white border border-[#dddddd] rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.1)] overflow-hidden">
                 <div className="flex items-center justify-between px-6 py-5 border-b border-[#dddddd]">
                     <h3 className="font-bold text-[#222222] flex items-center space-x-2 text-sm tracking-tight">
-                        <BookOpen className="w-4 h-4 text-green-500" />
+                        <BookOpen className="w-4 h-4 text-blue-500" />
                         <span>Daftar pemesanan</span>
                     </h3>
                 </div>
@@ -376,7 +376,7 @@ export default function AdminBookingsPage() {
                                                     </a>
                                                     <Link 
                                                         href={`/admin/bookings/detail?id=${b.id}`}
-                                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 shrink-0"
+                                                        className="inline-flex bg-white hover:bg-slate-50 text-[#222222] border border-[#dddddd] font-extrabold p-2 sm:py-2 sm:px-3 rounded-[8px] text-xs items-center space-x-1.5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
                                                         title="Detail Pesanan"
                                                     >
                                                         <Eye className="w-3.5 h-3.5 text-[#6a6a6a]" />
@@ -474,7 +474,7 @@ export default function AdminBookingsPage() {
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             Sebelumnya
                         </button>
@@ -482,9 +482,9 @@ export default function AdminBookingsPage() {
                             <button
                                 key={i}
                                 onClick={() => setCurrentPage(i + 1)}
-                                className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                                className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                                     currentPage === i + 1
-                                        ? 'bg-green-500 text-white'
+                                        ? 'bg-blue-500 text-white'
                                         : 'border border-[#dddddd] text-[#6a6a6a] hover:bg-slate-50 bg-white'
                                 }`}
                             >
@@ -494,7 +494,7 @@ export default function AdminBookingsPage() {
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                            className="px-3 py-1.5 rounded-[8px] border border-[#dddddd] text-xs font-semibold text-[#6a6a6a] hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             Selanjutnya
                         </button>
